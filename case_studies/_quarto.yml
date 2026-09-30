@@ -1,0 +1,8 @@
+project:
+  output-dir: ../docs/case_studies
+  execute-dir: project
+
+lang: de
+
+execute:
+  freeze: auto

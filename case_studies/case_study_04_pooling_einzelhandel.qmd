@@ -1,0 +1,190 @@
+---
+title: "Fallstudie 4: Risk Pooling im E-Commerce"
+subtitle: "Zentral- oder Regionallager für einen brasilianischen Online-Marktplatz (Olist-Daten)"
+author: "Supply Chain Management – Gruppenarbeit"
+lang: de
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    embed-resources: true
+    code-fold: show
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-note}
+## Steckbrief
+
+| | |
+|---|---|
+| **Thema** | Standort- und Produkt-Pooling, Zentralisierung von Beständen |
+| **Vorlesungsbezug** | Kapitel 6 des Readers: Sicherheitsbestand, Servicegrad, Quadratwurzelgesetz, Einfluss der Korrelation |
+| **Typ** | Datenbasierte Fallstudie mit **realen Bestelldaten** (*Brazilian E-Commerce Public Dataset by Olist*, Kaggle) |
+| **Gruppengröße** | 3–6 Personen |
+| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+:::
+
+# Lernziele
+
+Nach Bearbeitung der Fallstudie können Sie
+
+- aus realen Bestelldaten die für die Bestandsplanung relevanten Kenngrößen (Mittelwert, Prognosefehler, Korrelation) ableiten,
+- Sicherheitsbestände für zentrale, regionale und hybride Lagerstrukturen berechnen,
+- das **Quadratwurzelgesetz** empirisch überprüfen und Abweichungen durch Korrelationen und ungleich große Regionen erklären,
+- Standort-Pooling und Produkt-Pooling unterscheiden und
+- den Pooling-Vorteil gegen Transportkosten und Lieferzeiten abwägen.
+
+# Ausgangslage
+
+**Olist** ist ein brasilianischer Online-Marktplatz, über den kleine und mittlere Händler ihre Produkte auf großen Verkaufsplattformen anbieten. Bisher versenden die Händler selbst, die meisten davon aus dem Bundesstaat São Paulo. Kundinnen und Kunden im Norden und Nordosten Brasiliens warten deshalb oft zwei bis drei Wochen auf ihre Bestellung und zahlen deutlich höhere Frachtkosten.
+
+Das Management prüft daher den Aufbau eines eigenen **Fulfillment-Netzes**: Die Händler lagern ihre Ware bei Olist ein, und Olist übernimmt Lagerung und Versand. Für die umsatzstärksten Produktkategorien stehen drei Strukturen zur Diskussion:
+
+- **Struktur Z (zentral):** ein Fulfillment-Center in Cajamar (Großraum São Paulo) beliefert ganz Brasilien.
+- **Struktur R (regional):** fünf Regionallager, je eines pro Großregion: Cajamar (Sudeste), Curitiba (Sul), Goiânia (Centro-Oeste), Recife (Nordeste) und Belém (Norte).
+- **Struktur H (hybrid):** zwei Lager: Cajamar für Sudeste, Sul und Centro-Oeste sowie Recife für Nordeste und Norte.
+
+Die Brasilien-Perspektive macht den Fall besonders lehrreich: Die Regionen unterscheiden sich stark in Größe, Kaufkraft und Erreichbarkeit, und die Nachfrage ist sehr ungleich verteilt.
+
+# Daten
+
+## Datensatz
+
+**Brazilian E-Commerce Public Dataset by Olist** (Kaggle, Lizenz CC BY-NC-SA 4.0, kein Wettbewerb):
+<https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce>
+
+Der Datensatz enthält rund 100.000 echte, anonymisierte Bestellungen aus den Jahren 2016 bis 2018. Für die Fallstudie benötigen Sie fünf der neun Tabellen:
+
+| Datei | Relevante Spalten |
+|---|---|
+| `olist_orders_dataset.csv` | `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp`, `order_delivered_customer_date` |
+| `olist_order_items_dataset.csv` | `order_id`, `product_id`, `seller_id`, `price`, `freight_value` (eine Zeile je Artikel) |
+| `olist_customers_dataset.csv` | `customer_id`, `customer_state` (Bundesstaat, z. B. `SP`, `BA`) |
+| `olist_products_dataset.csv` | `product_id`, `product_category_name` (portugiesisch) |
+| `product_category_name_translation.csv` | Übersetzung der Kategorienamen ins Englische |
+
+Die Zuordnung der 27 Bundesstaaten zu den fünf Großregionen ist im Startercode enthalten.
+
+::: {.callout-important}
+## Hinweise zur Datenaufbereitung
+- Verwenden Sie als Nachfrage die **Anzahl bestellter Artikel** (Zeilen in `order_items`) je Woche, Region und Produktkategorie. Schließen Sie stornierte und nicht verfügbare Bestellungen aus.
+- Die Daten sind erst ab Anfang 2017 vollständig und enden im August 2018. Beschränken Sie die Analyse auf die Wochen vom **02.01.2017 bis 20.08.2018** (86 Wochen).
+- Das Geschäft wächst 2017 stark, und im November gibt es einen deutlichen Ausschlag (Black Friday). Rohe Standardabweichungen sind daher kein geeignetes Maß für die Unsicherheit.
+- Konzentrieren Sie sich auf die **10 größten Produktkategorien**.
+:::
+
+## Planungsparameter
+
+| Parameter | Wert |
+|---|---|
+| Hochrechnung | Der Datensatz ist ein Ausschnitt des Geschäfts. Rechnen Sie Mengen mit dem Faktor **50** auf das geplante Fulfillment-Volumen hoch. Unterstellen Sie dabei, dass der Variationskoeffizient der Prognosefehler gleich bleibt. |
+| Zielservicegrad (α) | 95 % |
+| Wiederbeschaffungszeit Händler → Lager | 2 Wochen (Recife und Belém: 3 Wochen) |
+| Warenwert | 60 % des Verkaufspreises (`price`) |
+| Lagerhaltungskostensatz | 25 % p. a. vom Warenwert |
+| Fracht zum Kunden | Zentrale Belieferung: durchschnittliche `freight_value` der jeweiligen Region laut Daten. Belieferung aus einem Lager in der eigenen Region: Frachtniveau der Region Sudeste. |
+| Nachschub in ein Regionallager | 4 BRL je Artikel (Komplettladungen ab São Paulo) |
+| Fixkosten je Lager (anteilig für die betrachteten Kategorien) | Cajamar: 2,0 Mio. BRL/Jahr, jedes weitere Lager: 0,9 Mio. BRL/Jahr |
+
+# Aufgaben
+
+## Teil A – Datenaufbereitung und Exploration
+
+**A1.** Verknüpfen Sie die Tabellen und erzeugen Sie für die 10 größten Kategorien die wöchentliche Artikelnachfrage je Region. Beschreiben Sie die Verteilung der Nachfrage auf die Regionen, den Trend und Sondereffekte. Stellen Sie außerdem die tatsächlichen Lieferzeiten (Bestellung bis Zustellung) und Frachtkosten je Region dar.
+
+**A2.** Bestimmen Sie je Kategorie und Region die Prognosefehler einer einfachen Prognose, z. B. gleitender Durchschnitt der letzten 8 Wochen. Begründen Sie, warum für den Sicherheitsbestand der Prognosefehler und nicht die Rohstreuung maßgeblich ist.
+
+## Teil B – Standort-Pooling
+
+**B1.** Berechnen Sie je Kategorie den Sicherheitsbestand $SB = z_\alpha\,\sigma\sqrt{L}$ in den Strukturen Z, R und H, und zwar (a) unter der Annahme **unabhängiger** regionaler Nachfragen (Quadratwurzelgesetz; beachten Sie die ungleich großen Regionen) und (b) mit der **empirischen Kovarianzmatrix** der Prognosefehler, $\sigma_{\text{pool}} = \sqrt{\mathbf 1^\top \Sigma\,\mathbf 1}$.
+
+**B2.** Vergleichen Sie (a) und (b). Warum fällt der Pooling-Effekt deutlich kleiner aus, als das Quadratwurzelgesetz mit $\sqrt{5}$ verspricht? Unterscheiden Sie zwischen dem Einfluss der Korrelation und dem der ungleichen Regionsgrößen.
+
+**B3.** Vergleichen Sie die jährlichen Gesamtkosten der drei Strukturen: Lagerhaltungskosten der Sicherheitsbestände, Fracht zum Kunden, Nachschub und Fixkosten. Welche Struktur ist am günstigsten? Ab welchen Fixkosten je Regionallager kippt die Entscheidung (Break-even)?
+
+## Teil C – Produkt-Pooling und selektive Bevorratung
+
+**C1.** Vergleichen Sie den Variationskoeffizienten der Prognosefehler einer einzelnen Kategorie mit dem aller 10 Kategorien zusammen. Nutzen Sie das Ergebnis für eine **selektive Bevorratung**: Welche Kategorien sollten in Recife (Struktur H) vorrätig sein, und welche sollten nur zentral in Cajamar gelagert werden? Berücksichtigen Sie Volumen, Variabilität, Warenwert und Frachtkosten.
+
+## Teil D – Empfehlung und Reflexion
+
+**D1. Empfehlung.** Formulieren Sie eine Empfehlung an das Olist-Management. Berücksichtigen Sie dabei neben den Kosten auch die Lieferzeit als Wettbewerbsfaktor.
+
+**D2. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+
+1. Wie gut hat das Quadratwurzelgesetz die realen Daten beschrieben? Was lernen Sie daraus über die Anwendung von Lehrbuchformeln auf reale Daten?
+2. In diesem Fall ist der Pooling-Vorteil vermutlich klein im Vergleich zu Fracht und Lieferzeit. Was bedeutet das für die Rolle von Bestandsargumenten bei Netzwerkentscheidungen?
+3. Welche Entscheidungen bei der Datenaufbereitung (Zeitraum, Kategorien, Prognosemethode) und welche Annahmen (Hochrechnungsfaktor, gleichbleibender Variationskoeffizient) beeinflussen Ihr Ergebnis am stärksten?
+4. Die Daten zeigen Bestellungen, nicht die Nachfrage, die bei kürzeren Lieferzeiten entstanden wäre. Wie könnte ein Regionallager im Nordosten die Nachfrage selbst verändern, und warum fehlt dieser Effekt in Ihrer Rechnung?
+5. Welche Besonderheiten eines großen Schwellenlandes wie Brasilien (Infrastruktur, Steuern zwischen Bundesstaaten, Kaufkraftunterschiede) spielen für die Standortfrage eine Rolle, die das Pooling-Modell nicht abbildet?
+
+# Literatur
+
+- Olist (2018): *Brazilian E-Commerce Public Dataset by Olist*. Kaggle, <https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce>.
+- Eppen, G. D. (1979): Effects of Centralization on Expected Costs in a Multi-Location Newsboy Problem. *Management Science* 25(5), 498–501.
+- Reader zur Vorlesung, Kapitel 6.
+
+# Anhang: R-Startercode
+
+```{r}
+#| label: starter
+#| eval: false
+library(tidyverse)
+source("../R/scm_functions.R")   # pooling_safety_stock()
+
+pfad   <- "olist/"   # Ordner mit den entpackten CSV-Dateien
+orders <- read_csv(paste0(pfad, "olist_orders_dataset.csv"))
+items  <- read_csv(paste0(pfad, "olist_order_items_dataset.csv"))
+cust   <- read_csv(paste0(pfad, "olist_customers_dataset.csv"))
+prod   <- read_csv(paste0(pfad, "olist_products_dataset.csv"))
+transl <- read_csv(paste0(pfad, "product_category_name_translation.csv"))
+names(transl)[1] <- "product_category_name"   # entfernt ggf. ein BOM-Zeichen
+
+regionen <- tibble(
+  customer_state = c("AC","AP","AM","PA","RO","RR","TO",
+                     "AL","BA","CE","MA","PB","PE","PI","RN","SE",
+                     "DF","GO","MT","MS",
+                     "ES","MG","RJ","SP",
+                     "PR","RS","SC"),
+  region = c(rep("Norte", 7), rep("Nordeste", 9), rep("Centro-Oeste", 4),
+             rep("Sudeste", 4), rep("Sul", 3))
+)
+
+daten <- items |>
+  inner_join(orders, by = "order_id") |>
+  filter(!order_status %in% c("canceled", "unavailable")) |>
+  inner_join(cust, by = "customer_id") |>
+  left_join(prod, by = "product_id") |>
+  left_join(transl, by = "product_category_name") |>
+  left_join(regionen, by = "customer_state") |>
+  mutate(kategorie = product_category_name_english,
+         woche = floor_date(as_date(order_purchase_timestamp), "week", week_start = 1)) |>
+  filter(woche >= as.Date("2017-01-02"), woche <= as.Date("2018-08-20"))
+
+top10 <- daten |> count(kategorie, sort = TRUE) |> slice_head(n = 10) |> pull(kategorie)
+
+wochen <- daten |>
+  filter(kategorie %in% top10) |>
+  count(kategorie, region, woche, name = "menge") |>
+  complete(kategorie, region, woche, fill = list(menge = 0))
+
+# Beispiel: Prognosefehler (gleitender Durchschnitt über 8 Wochen) für eine Kategorie
+fehler <- wochen |>
+  filter(kategorie == "health_beauty") |>
+  group_by(region) |> arrange(woche) |>
+  mutate(prognose = lag(zoo::rollmeanr(menge, 8, fill = NA)),
+         fehler   = menge - prognose) |>
+  ungroup() |> drop_na(fehler) |>
+  select(woche, region, fehler) |>
+  pivot_wider(names_from = region, values_from = fehler)
+
+Sigma <- cov(as.matrix(fehler[, -1]))
+z <- qnorm(0.95); L <- 2
+c(SB_regional = sum(z * sqrt(diag(Sigma)) * sqrt(L)),
+  SB_zentral  = z * sqrt(sum(Sigma)) * sqrt(L))
+```

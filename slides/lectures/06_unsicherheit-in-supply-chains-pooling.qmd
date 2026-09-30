@@ -1,0 +1,3430 @@
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+library(quarto)
+library(readr)
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(kableExtra)
+library(planr)
+library(dplyr)
+library(MASS)
+
+source("../R/scm_functions.R")
+```
+
+
+# Unsicherheits- und Risikomanagement in Supply Chains
+
+## Unsicherheit in Supply Chains 
+
+- **Pooling**
+- Newsvendor-Modell
+- Bullwhip-Effekt
+
+## Lernziele {#learning-objectives-uncertainty-pooling}
+
+Nach dieser Einheit können Sie …
+
+- Quellen und Auswirkungen von Unsicherheit in Supply Chains **erläutern**,
+- Nachfrageunsicherheit, implizierte Unsicherheit und Reaktionsfähigkeit **voneinander abgrenzen**,
+- den Effekt von Risikopooling auf Nachfragevarianz und Sicherheitsbestände **analysieren**,
+- zentrale und dezentrale Bestandsstrukturen unter Unsicherheit **vergleichen und beurteilen**.
+
+**Literatur zur Vertiefung**
+
+- **Pooling, Nachfragevariabilität und Bestandsentscheidungen:** [@cachon2024matching, Kapitel 10–13].
+- **Sicherheitsbestände, Servicegrade und Inventory-Management:** [@silver2017inventory, Kapitel 6–8].
+
+---
+
+## Fallstudie: SushiFresh GmbH {#slide-sushifresh-pooling-intro}
+::: slide-subtitle
+Sechs Filialen, ein neues Zentralwerk
+:::
+
+::: {.callout-note appearance="simple"}
+## Ausgangslage
+**SushiFresh GmbH** ist ein fiktiver, regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet und beliefert täglich **sechs Filialen**. In Kapitel 5 fiel die Entscheidung, die Produktion auf **einen zentralen Standort in Wiesbaden-Erbenheim** zu konsolidieren. Dieses Kapitel fragt: Wie hoch ist der dafür nötige Sicherheitsbestand — dezentral vs. zentral?
+:::
+
+```{r sushifresh-filialtabelle}
+#| echo: false
+#| warning: false
+#| message: false
+
+sf_filialen <- data.frame(
+  Filiale = c("Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim", "Darmstadt", "Offenbach"),
+  mu      = c(120, 150, 280, 90, 110, 95),
+  sigma   = c(25, 30, 55, 20, 24, 22)
+)
+
+kbl(sf_filialen,
+    col.names = c("Filiale", "μ (Boxen/Tag)", "σ"),
+    align = c("l", "r", "r")) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"), full_width = TRUE) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(3, bold = TRUE, background = "#FFF3CD")
+```
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Gesamtnachfrage: **845 Boxen/Tag**. Frankfurt (fett) ist die größte **und** volatilste Filiale.
+:::
+:::
+
+---
+
+## Die Natur der Unsicherheit {#slide-pooling-1}
+::: slide-subtitle
+Implizierte Unsicherheit in Supply Chains [@chopra2025supply]
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**Implizierte Unsicherheit** (*implied uncertainty*) bezeichnet die Unsicherheit, mit der eine Supply Chain umgehen **muss** — bestimmt durch die Kombination aus **Nachfrageunsicherheit** und den **Serviceanforderungen** des Marktes [@chopra2025supply, Kap. 2].
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.fragment .fade-up}
+::: smaller-text
+**Zwei Quellen implizierter Unsicherheit**
+
+| Dimension | Niedrig | Hoch |
+|---|---|---|
+| **Nachfrageunsicherheit** | Salz, Strom | Fashion, Elektronik |
+| **Liefervariabilität** | Beton, Kohle | Halbleiter, Fischfang |
+
+$\rightarrow$ Hohe implizierte Unsicherheit erfordert **reaktionsfähige** (*responsive*) Supply Chains mit Pufferkapazität.
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+
+```{r implied-uncertainty-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.5
+
+# Implied Uncertainty Spectrum nach Chopra & Meindl
+produkte <- data.frame(
+  label     = c("Salz", "Suppe", "Bier", "Kleidung",
+                "PC", "Fashion", "Telefonchips"),
+  iu_score  = c(0.05, 0.18, 0.30, 0.52, 0.65, 0.82, 0.94),
+  kategorie = c("Functional", "Functional", "Functional",
+                "Hybrid", "Hybrid", "Innovative", "Innovative")
+)
+
+farben <- c("Functional" = "#52B788",
+            "Hybrid"     = "#E9C46A",
+            "Innovative" = "#E76F51")
+
+fig_iu <- plot_ly(produkte,
+  x    = ~iu_score,
+  y    = rep(1, nrow(produkte)),
+  type = "scatter", mode = "markers+text",
+  color = ~kategorie, colors = farben,
+  marker = list(size = 22, opacity = 0.9,
+                line = list(color = "white", width = 1.5)),
+  text        = ~label,
+  textposition = "top center",
+  textfont    = list(size = 12, family = "Arial", color = "#1F2933")
+) %>%
+  layout(
+    xaxis = list(
+      title    = "Implizierte Unsicherheit →",
+      range    = c(-0.05, 1.05),
+      tickvals = c(0, 0.5, 1),
+      ticktext = c("Niedrig", "Mittel", "Hoch"),
+      fixedrange = TRUE
+    ),
+    yaxis = list(
+      visible    = FALSE,
+      range      = c(0.8, 1.5),
+      fixedrange = TRUE
+    ),
+    legend = list(orientation = "h", y = -0.15, title = list(text = "Produkttyp")),
+    annotations = list(
+      list(
+        x = 0.12, y = 0.82, xref = "x", yref = "paper",
+        text = "<b>Efficient SC</b><br>wenig Puffer nötig",
+        showarrow = FALSE,
+        font = list(size = 11, color = "#52B788", family = "Arial"),
+        align = "center"
+      ),
+      list(
+        x = 0.88, y = 0.82, xref = "x", yref = "paper",
+        text = "<b>Responsive SC</b><br>Puffer & Flexibilität",
+        showarrow = FALSE,
+        font = list(size = 11, color = "#E76F51", family = "Arial"),
+        align = "center"
+      )
+    ),
+    shapes = list(list(
+      type = "line",
+      x0 = 0.5, x1 = 0.5, y0 = 0, y1 = 1,
+      xref = "x", yref = "paper",
+      line = list(color = "#9CA3AF", dash = "dot", width = 1.2)
+    )),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 30, r = 20, t = 20, b = 60),
+    height = 330
+  )
+
+fig_iu
+```
+
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Das Grunddilemma
+- **Nachfrage** ist variabel und schwer vorhersagbar
+- **Kapazitäten** (Werke, Lager, Personal) werden im Voraus festgelegt
+- $\rightarrow$ Mismatch zwischen Angebot und Nachfrage ist **strukturell unvermeidlich**
+:::
+:::
+
+---
+
+## Die Natur der Unsicherheit {#slide-pooling-mismatch}
+::: slide-subtitle
+Mismatch: Schwankende Nachfrage vs. fixe Kapazität
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+Kapazitäten (Maschinen, Personal, Lagerraum) werden **ex ante** bestimmt. Die Nachfrage realisiert sich **ex post**. Das Ergebnis: **systematischer Mismatch** in beide Richtungen.
+:::
+
+::: {.fragment .fade-up}
+::: smaller-text
+
+**Konsequenzen des Mismatches**
+
+| Szenario | Phänomen | Folge |
+|---|---------|---------| 
+| $d > C$ | Überlastung | Lost Sales, Umsatzverlust |
+| $d < C$ | Unterauslastung | Leerkosten |
+| $d \approx C$ | Gleichgewicht |  bei perfekter Prognose |
+
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+
+```{r mismatch-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.5
+
+set.seed(12)
+n_periods <- 24
+mu_d <- 120
+sigma_d <- 25
+C <- 130
+
+t_vals <- 1:n_periods
+d_vals <- pmax(40, round(rnorm(n_periods, mu_d, sigma_d)))
+prod_vals <- pmin(d_vals, C)
+lost_vals <- pmax(0, d_vals - C)
+idle_vals <- pmax(0, C - d_vals)
+
+df_mm <- data.frame(
+  t = t_vals, d = d_vals, prod = prod_vals,
+  lost = lost_vals, idle = idle_vals
+)
+
+fig_mm <- plot_ly(df_mm, x = ~t)
+
+# Kapazitätsgrenze
+fig_mm <- fig_mm %>% add_trace(
+  x = c(1, n_periods), y = c(C, C),
+  type = "scatter", mode = "lines",
+  name = paste0("Kapazität C = ", C),
+  line = list(color = "#6B7280", width = 1.8, dash = "dash"),
+  hoverinfo = "skip"
+)
+
+# Leerkapazität (shaded)
+fig_mm <- fig_mm %>% add_trace(
+  x = ~t, y = ~idle,
+  type = "bar", name = "Idle Capacity (C − d)",
+  marker = list(color = "rgba(234,179,8,0.45)",
+                line = list(color = "rgba(234,179,8,0.0)", width = 0)),
+  base = ~prod
+)
+
+# Lost Sales (shaded above C)
+fig_mm <- fig_mm %>% add_trace(
+  x = ~t, y = ~lost,
+  type = "bar", name = "Lost Sales (d − C)",
+  marker = list(color = "rgba(220,38,38,0.55)",
+                line = list(color = "rgba(220,38,38,0.0)", width = 0)),
+  base = C
+)
+
+# Produktion
+fig_mm <- fig_mm %>% add_trace(
+  x = ~t, y = ~prod,
+  type = "scatter", mode = "lines",
+  name = "Produktion / Verkauf",
+  line = list(color = cols$top, width = 2)
+)
+
+# Nachfrage
+fig_mm <- fig_mm %>% add_trace(
+  x = ~t, y = ~d,
+  type = "scatter", mode = "lines+markers",
+  name = "Nachfrage d",
+  line   = list(color = "#1D4ED8", width = 1.5),
+  marker = list(color = "#1D4ED8", size = 5)
+)
+
+fig_mm <- fig_mm %>% layout(
+  barmode = "overlay",
+  xaxis = list(title = "Periode", dtick = 3, fixedrange = TRUE),
+  yaxis = list(title = "Einheiten",
+               range = c(40, max(d_vals) * 1.12),
+               fixedrange = TRUE),
+  legend = list(orientation = "h", y = -0.22,
+                font = list(size = 11)),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 10, b = 70),
+  height = 370,
+  width = 650
+)
+
+fig_mm
+```
+
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Praxisbeispiele
+- **Automobilindustrie:** Werke produzieren nur bestimmte Modelle für mehrere Jahre $\rightarrow$ Auslastung hängt von Nachfrage ab
+- **Einzelhandel:** Saisonware (Weihnachtsartikel) wird zu früh bestellt, Reste werden verramscht
+- **Krankenhaus:** OP-Kapazitäten sind täglich fix, Notfallaufkommen ist hochvariabel
+:::
+:::
+
+
+
+---
+
+## Umgang mit Unsicherheit {#slide-cp-background}
+::: slide-subtitle
+Kapazitätspooling
+:::
+
+::: {.callout-note appearance="simple"}
+## Ausgangssituation (Struktur nach Cachon & Terwiesch, Kap. 17)
+In der **Gründungsphase** betrieb SushiFresh zunächst nur **2 Pilotküchen** für **2 Pilotstandorte** (die heutigen Filialen Wiesbaden und Mainz). Jede Küche ist genau ihrem eigenen Standort zugeordnet – **keine Flexibilität**. Die Kapazität je Küche beträgt **90 Boxen/Tag**. Die Nachfrage ist **unsicher** und wird beobachtet, nachdem die Kapazitäten festgelegt wurden.
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Konsequenzen der Inflexibilität
+- Übersteigt die Nachfrage die Kapazität $\rightarrow$ **Fehlmenge** (Lost Sales)
+- Liegt die Nachfrage unter der Kapazität $\rightarrow$ **Leerkapazität** (Idle Capacity)
+- Beide Effekte reduzieren die **Systemperformance**
+:::
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.fragment .fade-up}
+
+```{r cp-mismatch-setup}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Empirische Nachfragedaten aus cp_data (Monate 1–12)
+cp_data_bg <- data.frame(
+  Monat = 1:12,
+  dA    = c(78, 79, 92, 76, 95, 104, 87, 92, 91, 85, 96, 93),
+  dB    = c(102, 92, 93, 87, 80,  97, 90, 76, 89, 86, 89, 93)
+)
+C_bg <- 90
+
+make_mismatch_fig <- function(d_vals, C, werk_label, farbe_linie,
+                               height = 290, width = 600) {
+  t_vals    <- seq_along(d_vals)
+  prod_vals <- pmin(d_vals, C)
+  lost_vals <- pmax(0, d_vals - C)
+  idle_vals <- pmax(0, C - d_vals)
+
+  df <- data.frame(t = t_vals, d = d_vals, prod = prod_vals,
+                   lost = lost_vals, idle = idle_vals)
+
+  fig <- plot_ly(df, x = ~t)
+
+  # Kapazitätsgrenze
+  fig <- fig %>% add_trace(
+    x = c(1, max(t_vals)), y = c(C, C),
+    type = "scatter", mode = "lines",
+    name = paste0("C = ", C),
+    line = list(color = "#6B7280", width = 1.6, dash = "dash"),
+    hoverinfo = "skip",
+    showlegend = TRUE
+  )
+
+  # Leerkapazität (gelb)
+  fig <- fig %>% add_trace(
+    x = ~t, y = ~idle,
+    type = "bar", name = "Idle Capacity (C − d)",
+    marker = list(color = "rgba(234,179,8,0.45)",
+                  line = list(color = "rgba(234,179,8,0.0)", width = 0)),
+    base = ~prod
+  )
+
+  # Lost Sales (rot)
+  fig <- fig %>% add_trace(
+    x = ~t, y = ~lost,
+    type = "bar", name = "Lost Sales (d − C)",
+    marker = list(color = "rgba(220,38,38,0.55)",
+                  line = list(color = "rgba(220,38,38,0.0)", width = 0)),
+    base = C
+  )
+
+  # Produktion / Verkauf
+  fig <- fig %>% add_trace(
+    x = ~t, y = ~prod,
+    type = "scatter", mode = "lines",
+    name = "Produktion",
+    line = list(color = farbe_linie, width = 2)
+  )
+
+  # Nachfragelinie
+  fig <- fig %>% add_trace(
+    x = ~t, y = ~d,
+    type = "scatter", mode = "lines+markers",
+    name = "Nachfrage d",
+    line   = list(color = "#1D4ED8", width = 1.4),
+    marker = list(color = "#1D4ED8", size = 5)
+  )
+
+  fig <- fig %>% layout(
+    barmode = "overlay",
+    title   = list(text = paste0("<b>", werk_label, "</b>"),
+                   font = list(size = 13, color = "#1F2933", family = "Arial"),
+                   x = 0.02, xanchor = "left"),
+    xaxis   = list(title = "Monat", dtick = 2, fixedrange = TRUE,
+                   range = c(0.5, max(t_vals) + 0.5)),
+    yaxis   = list(title = "Einheiten",
+                   range = c(60, max(d_vals) * 1.15),
+                   fixedrange = TRUE),
+    legend  = list(orientation = "h", y = -0.30,
+                   font = list(size = 10)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 45, r = 10, t = 30, b = 65),
+    height = height
+  )
+
+  fig
+}
+```
+
+```{r cp-mismatch-werkA}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_mismatch_fig(
+  d_vals      = cp_data_bg$dA,
+  C           = C_bg,
+  werk_label  = "Küche Wiesbaden (Pilot)",
+  farbe_linie = cols$top,
+  height      = 270,
+  width       = 600
+)
+```
+
+```{r cp-mismatch-werkB}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_mismatch_fig(
+  d_vals      = cp_data_bg$dB,
+  C           = C_bg,
+  werk_label  = "Küche Mainz (Pilot)",
+  farbe_linie = cols$mid,
+  height      = 270,
+  width       = 600
+)
+```
+
+:::
+
+:::
+:::
+
+---
+
+## Kapazitätspooling {#slide-cp-original}
+::: slide-subtitle
+Originalkonfiguration – Jede Küche beliefert nur ihre zugewiesene Filiale
+:::
+
+**Monatliche Nachfrage und Produktion, Pilotphase ($C^{Wi} = C^{Ma} = 90$)**
+
+::: columns
+::: {.column width="25%"}
+
+::: small-text
+
+```{r cp-original-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+C1 <- C2 <- 90
+
+cp_data <- data.frame(
+  Monat = 1:12,
+  dA    = c(78, 79, 92, 76, 95,104, 87, 92, 91, 85, 96, 93),
+  dB    = c(102, 92, 93, 87, 80, 97, 90, 76, 89, 86, 89, 93),
+  xA    = c(78, 79, 90, 76, 90, 90, 87, 90, 90, 85, 90, 90),
+  xB    = c(90, 90, 90, 87, 80, 90, 90, 76, 89, 86, 89, 90)
+)
+
+cp.means <- colMeans(cp_data)
+cp.means[1] <- NA
+
+cp_data <- rbind(cp_data,cp.means)
+
+cp_data$Monat <- as.character(cp_data$Monat)
+
+cp_data$Monat[13] <- "&#8960;"
+
+kbl(cp_data,
+    col.names = c("Monat", "d<sub>t</sub><sup>Wi</sup>", "d<sub>t</sub><sup>Ma</sup>",
+                  "x<sub>t</sub><sup>Wi</sup>", "x<sub>t</sub><sup>Ma</sup>"),
+    align = c("c","r","r","r","r"),
+    escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 20) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(13, bold = TRUE, background = "#2F3E4640")
+```
+
+:::
+:::
+
+
+::: {.column width="27%"}
+
+```{r cp-original-graph}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3
+
+# Original-Setting: C1->1->A, C2->2->B (getrennte Linien, kein Pooling)
+plants <- data.frame(
+  id  = c("P1","P2"),
+  lbl = c("1","2"),
+  cl  = c("C<sup>Wi</sup>","C<sup>Ma</sup>"),
+  x   = 0.35,
+  y   = c(0.72, 0.28)
+)
+
+markets <- data.frame(
+  id  = c("A","B"),
+  lbl = c("A","B"),
+  dj  = c("d<sup>Wi</sup>","d<sup>Ma</sup>"),
+  x   = 0.72,
+  y   = c(0.72, 0.28)
+)
+
+pxy <- setNames(plants[,  c("x","y")], c("x","y")); rownames(pxy) <- plants$id
+mxy <- setNames(markets[, c("x","y")], c("x","y")); rownames(mxy) <- markets$id
+
+r <- 0.055  # Knotenradius in Plot-Koordinaten
+
+edges <- data.frame(
+  from = c("P1","P2"),
+  to   = c("A","B"),
+  lbl  = c("x<sup>Wi,Wi</sup>","x<sup>Ma,Ma</sup>"),
+  dash = c(FALSE, FALSE),
+  stringsAsFactors = FALSE
+)
+
+fig <- plot_ly(type = "scatter", mode = "markers")
+
+for (i in seq_len(nrow(edges))) {
+  x0 <- pxy[edges$from[i], "x"];  y0 <- pxy[edges$from[i], "y"]
+  x1 <- mxy[edges$to[i],   "x"];  y1 <- mxy[edges$to[i],   "y"]
+  dx <- x1 - x0;  dy <- y1 - y0;  d <- sqrt(dx^2 + dy^2)
+  ax <- x0 + r * dx / d;  ay <- y0 + r * dy / d
+  ex <- x1 - r * dx / d;  ey <- y1 - r * dy / d
+
+  fig <- fig %>% add_annotations(
+    x = ex, y = ey, ax = ax, ay = ay,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+    arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
+  )
+
+  if (nchar(edges$lbl[i]) > 0) {
+    fig <- fig %>% add_annotations(
+      x = (ax + ex) / 2, y = (ay + ey) / 2 + 0.06,
+      xref = "x", yref = "y",
+      text = edges$lbl[i], showarrow = FALSE,
+      font = list(size = 13, color = "#1F2933", family = "Arial")
+    )
+  }
+}
+
+# Kostenlabels links der Pflanzen
+fig <- fig %>% add_annotations(
+  x = plants$x - 0.12, y = plants$y,
+  xref = "x", yref = "y",
+  text = plants$cl, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "right"
+)
+
+# Pflanzen-Knoten (Hexagon)
+fig <- fig %>% add_trace(
+  x = plants$x, y = plants$y, text = plants$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "hexagon", size = 42,
+                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
+  textfont = list(size = 16, color = "#1F2933", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Markt-Knoten (Circle)
+fig <- fig %>% add_trace(
+  x = markets$x, y = markets$y, text = markets$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "circle", size = 42,
+                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
+  textfont = list(size = 16, color = "white", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Nachfragelabels rechts der Märkte
+fig <- fig %>% add_annotations(
+  x = markets$x + 0.09, y = markets$y,
+  xref = "x", yref = "y",
+  text = markets$dj, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "left"
+)
+
+# Set-Labels oben
+fig <- fig %>% add_annotations(
+  x = c(0.35, 0.72), y = c(1.00, 1.00),
+  xref = "x", yref = "y",
+  text = c("<b>Küche</b>", "<b>Filiale</b>"),
+  showarrow = FALSE,
+  font = list(size = 13, color = "#1F2933", family = "Arial")
+)
+
+fig <- fig %>% layout(
+  xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
+  yaxis = list(visible = FALSE, range = c(0, 1.08),  fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 50, t = 10, b = 10),
+  height = 250,
+  width  = 400
+)
+
+fig
+```
+:::
+
+
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## System Evaluation
+
+- **Erwartete Nachfrage:** $E(d^{Wi})=$ `r round(mean(cp_data$dA),1)`; $E(d^{Ma})=$ `r round(mean(cp_data$dB),1)`
+- **Erwartete Produktion:** $E(x^{Wi})=$ `r round(mean(cp_data$xA),1)`; $E(x^{Ma})=$ `r round(mean(cp_data$xB),1)`
+- **Auslastung Standorte:** $\frac{E(x^{Wi})}{C^{Wi}}=$ `r round(mean(cp_data$xA)/C1*100,1)` %; $\frac{E(x^{Ma})}{C^2}=$ `r round(mean(cp_data$xB)/C2*100,1)` %
+- **Erwarteter Lieferservicegrad:** $\frac{E(x^{Wi})}{E(d^{Wi})}=$ `r round(mean(cp_data$xA/cp_data$dA)*100,1)` %; $\frac{E(x^{Ma})}{E(d^{Ma})}=$ `r round(mean(cp_data$xB/cp_data$dB)*100,1)` %
+:::
+:::
+
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Problem
+Auslastung und Lieferservicegrad sind hoch, dennoch gibt es **lost sales** und **Unterauslastung** $\rightarrow$ Kann gegenseitiges Aushelfen (**Kapazitätspooling**) die Kennzahlen verbessern?
+:::
+:::
+
+
+---
+
+## Kapazitätspooling {#slide-cp-pooling-1side}
+::: slide-subtitle
+Einseitiges Pooling – Küche Wiesbaden kann beide Standorte beliefern
+:::
+
+::: columns
+::: {.column width="30%"}
+
+::: small-text
+```{r cp-pooling-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+C1 <- 90; C2 <- 90
+
+cp_pool_1 <- cp_data[-13,] %>%
+  mutate(
+    x1A = pmin(dA, C1),
+    x1B = ifelse(dB > C2 & dA < C1,
+                 pmin(C1 - dA, dB - C2), 0),
+    x1  = x1A + x1B,
+    x2B = pmin(C2, dB),
+    xB =  x2B + x1B
+  )
+
+kbl(cp_pool_1[, c("Monat","dA","dB","x1A","x1B","x2B")],
+    col.names = c("Monat", "d<sub>t</sub><sup>Wi</sup>", "d<sub>t</sub><sup>Ma</sup>",
+                  "x<sub>t</sub><sup>Wi,Wi</sup>", "x<sub>t</sub><sup>Wi,Ma</sup>", "x<sub>t</sub><sup>2B</sup>"),
+    align = c("c","r","r","r","r","r"),
+    escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 22) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  column_spec(4:5, background = "#E8F4F1") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+:::
+:::
+
+
+::: {.column width="25%"}
+
+```{r cp-pooling-graph}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3
+
+# Pooling-Setting: C1->1->A (solid), C1->1->B (gestrichelt), C2->2->B (solid)
+plants <- data.frame(
+  id  = c("P1","P2"),
+  lbl = c("1","2"),
+  cl  = c("C<sup>Wi</sup>","C<sup>Ma</sup>"),
+  x   = 0.35,
+  y   = c(0.72, 0.28)
+)
+
+markets <- data.frame(
+  id  = c("A","B"),
+  lbl = c("A","B"),
+  dj  = c("d<sup>Wi</sup>","d<sup>Ma</sup>"),
+  x   = 0.72,
+  y   = c(0.72, 0.28)
+)
+
+pxy <- setNames(plants[,  c("x","y")], c("x","y")); rownames(pxy) <- plants$id
+mxy <- setNames(markets[, c("x","y")], c("x","y")); rownames(mxy) <- markets$id
+
+r <- 0.06  # Knotenradius in Plot-Koordinaten
+
+edges <- data.frame(
+  from  = c("P1","P1","P2"),
+  to    = c("A",  "B",  "B"),
+  lbl   = c("x<sup>Wi,Wi</sup>", "x<sup>Wi,Ma</sup>", "x<sup>Ma,Ma</sup>"),
+  dash  = c(FALSE, TRUE, FALSE),   # TRUE = gestrichelt (Pooling-Pfeil)
+  stringsAsFactors = FALSE
+)
+
+fig <- plot_ly(type = "scatter", mode = "markers")
+
+for (i in seq_len(nrow(edges))) {
+  x0 <- pxy[edges$from[i], "x"];  y0 <- pxy[edges$from[i], "y"]
+  x1 <- mxy[edges$to[i],   "x"];  y1 <- mxy[edges$to[i],   "y"]
+  dx <- x1 - x0;  dy <- y1 - y0;  d <- sqrt(dx^2 + dy^2)
+  ax <- x0 + r * dx / d;  ay <- y0 + r * dy / d
+  ex <- x1 - r * dx / d;  ey <- y1 - r * dy / d
+
+  # Gestrichelter Pfeil via Liniensegmente (Plotly unterstützt kein dash bei add_annotations)
+  if (edges$dash[i]) {
+    # Segmentierte gestrichelte Linie mit 6 Abschnitten
+    n_seg <- 10
+    xs <- seq(ax, ex, length.out = n_seg + 1)
+    ys <- seq(ay, ey, length.out = n_seg + 1)
+    for (s in seq(1, n_seg, by = 2)) {
+      fig <- fig %>% add_segments(
+        x = xs[s], xend = xs[s+1],
+        y = ys[s], yend = ys[s+1],
+        line = list(color = "#4B4B4B", width = 1.8, dash = "solid"),
+        hoverinfo = "skip", showlegend = FALSE
+      )
+    }
+    # Pfeilspitze am Endpunkt
+    fig <- fig %>% add_annotations(
+      x = ex, y = ey, ax = xs[n_seg], ay = ys[n_seg],
+      xref = "x", yref = "y", axref = "x", ayref = "y",
+      showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+      arrowwidth = 1.8, arrowcolor = "#4B4B4B", text = ""
+    )
+  } else {
+    fig <- fig %>% add_annotations(
+      x = ex, y = ey, ax = ax, ay = ay,
+      xref = "x", yref = "y", axref = "x", ayref = "y",
+      showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+      arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
+    )
+  }
+
+  # Kantenlabel
+  if (nchar(edges$lbl[i]) > 0) {
+    # x^1B-Label leicht versetzt (Überkreuzungspfeil)
+    lbl_off_x <- ifelse(edges$dash[i],  0.03, 0.00)
+    lbl_off_y <- ifelse(edges$dash[i], -0.05, 0.06)
+    fig <- fig %>% add_annotations(
+      x = (ax + ex) / 2 + lbl_off_x,
+      y = (ay + ey) / 2 + lbl_off_y,
+      xref = "x", yref = "y",
+      text = edges$lbl[i], showarrow = FALSE,
+      font = list(size = 13, color = "#1F2933", family = "Arial")
+    )
+  }
+}
+
+# Kostenlabels links der Pflanzen
+fig <- fig %>% add_annotations(
+  x = plants$x - 0.12, y = plants$y,
+  xref = "x", yref = "y",
+  text = plants$cl, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "right"
+)
+
+# Pflanzen-Knoten (Hexagon)
+fig <- fig %>% add_trace(
+  x = plants$x, y = plants$y, text = plants$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "hexagon", size = 42,
+                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
+  textfont = list(size = 16, color = "#1F2933", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Markt-Knoten (Circle)
+fig <- fig %>% add_trace(
+  x = markets$x, y = markets$y, text = markets$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "circle", size = 42,
+                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
+  textfont = list(size = 16, color = "white", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Nachfragelabels rechts der Märkte
+fig <- fig %>% add_annotations(
+  x = markets$x + 0.09, y = markets$y,
+  xref = "x", yref = "y",
+  text = markets$dj, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "left"
+)
+
+# Set-Labels oben
+fig <- fig %>% add_annotations(
+  x = c(0.35, 0.72), y = c(1.00, 1.00),
+  xref = "x", yref = "y",
+  text = c("<b>Küche</b>", "<b>Filiale</b>"),
+  showarrow = FALSE,
+  font = list(size = 13, color = "#1F2933", family = "Arial")
+)
+
+fig <- fig %>% layout(
+  xaxis = list(visible = FALSE, range = c(0.2, .9), fixedrange = TRUE),
+  yaxis = list(visible = FALSE, range = c(0.2, 1),  fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 50, t = 10, b = 10),
+  height = 250,
+  width  = 400
+)
+
+fig
+```
+:::
+
+
+::: {.column width="44%"}
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+**Pooling-Regel** (wenn $d_t^{Ma} > C^{Ma}$ und $d_t^{Wi} < C^{Wi}$):
+
+$$x_t^1 = d_t^{Wi} + \min(C^{Wi} - d_t^{Wi};\; d_t^{Ma} - C^{Ma})$$
+$$x_t^{Ma,Ma} = C^{Ma}$$
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## System Evaluation (Pooling)
+
+- **Produktion Werk 1:** $E(x^{Wi})=$ `r round(mean(cp_pool_1$x1),1)`
+- **Versorgung Markt B:** $E(x^{Wi,Ma}+x^{Ma,Ma})=$ `r round(mean(cp_pool_1$xB),1)`
+- **Auslastung Werk 1:** $\frac{E(x^{Wi})}{C^{Wi}}=$ `r round(mean(cp_pool_1$x1)/C1*100,1)` %
+- **Lieferservicegrad Markt B:** $\frac{E(x^{Wi,Ma}+x^{Ma,Ma})}{E(d^{Ma})}=$ `r round(mean(cp_pool_1$xB)/mean(cp_pool_1$dB)*100,1)` %
+:::
+:::
+
+:::
+:::
+
+---
+
+
+## Kapazitätspooling {#slide-cp-pooling-2side}
+::: slide-subtitle
+Zweiseitiges Pooling – Beide Küchen können beide Standorte beliefern
+:::
+
+
+:::: columns
+::: {.column width="30%"}
+
+::: small-text
+```{r cp-pooling-table2}
+#| echo: false
+#| warning: false
+#| message: false
+
+cp_pool <- cp_data[-13,] %>%
+  mutate(
+    x1A = pmin(dA, C1),
+    x1B = ifelse(dB > C2 & dA < C1,
+                 pmin(C1 - dA, dB - C2), 0),
+    x1  = x1A + x1B,
+    x2B = pmin(C2, dB),
+    x2A = ifelse(dA > C1 & dB < C2,
+                 pmin(C2 - dB, dA - C1), 0),
+    x2  = x2A + x2B,
+    xA = x2A + x1A,
+    xB = x2B + x1B
+  )
+
+kbl(cp_pool[, c("Monat","dA","dB","x1A","x1B","x2B", "x2A")],
+    col.names = c("Monat", "d<sub>t</sub><sup>Wi</sup>", "d<sub>t</sub><sup>Ma</sup>",
+                  "x<sub>t</sub><sup>Wi,Wi</sup>", "x<sub>t</sub><sup>Wi,Ma</sup>", "x<sub>t</sub><sup>Ma,Ma</sup>", "x<sub>t</sub><sup>Ma,Wi</sup>"),
+    align = c("c","r","r","r","r","r","r"),
+    escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 22) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  column_spec(4:5, background = "#E8F4F1") |>
+  column_spec(6:7, background = "#E8F4A1") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+:::
+:::
+
+
+::: {.column width="25%"}
+
+```{r cp-pooling-graph2}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3
+
+# Pooling-Setting: C1->1->A (solid), C1->1->B (gestrichelt), C2->2->B (solid)
+plants <- data.frame(
+  id  = c("P1","P2"),
+  lbl = c("1","2"),
+  cl  = c("C<sup>Wi</sup>","C<sup>Ma</sup>"),
+  x   = 0.35,
+  y   = c(0.72, 0.28)
+)
+
+markets <- data.frame(
+  id  = c("A","B"),
+  lbl = c("A","B"),
+  dj  = c("d<sup>Wi</sup>","d<sup>Ma</sup>"),
+  x   = 0.72,
+  y   = c(0.72, 0.28)
+)
+
+pxy <- setNames(plants[,  c("x","y")], c("x","y")); rownames(pxy) <- plants$id
+mxy <- setNames(markets[, c("x","y")], c("x","y")); rownames(mxy) <- markets$id
+
+r <- 0.06  # Knotenradius in Plot-Koordinaten
+
+edges <- data.frame(
+  from  = c("P1","P1","P2", "P2"),
+  to    = c("A",  "B",  "B", "A"),
+  lbl   = c("x<sup>Wi,Wi</sup>", "x<sup>Wi,Ma</sup>", "x<sup>Ma,Ma</sup>",  "x<sup>Ma,Wi</sup>"),
+  dash  = c(FALSE, TRUE, FALSE, TRUE),   # TRUE = gestrichelt (Pooling-Pfeil)
+  stringsAsFactors = FALSE
+)
+
+fig <- plot_ly(type = "scatter", mode = "markers")
+
+for (i in seq_len(nrow(edges))) {
+  x0 <- pxy[edges$from[i], "x"];  y0 <- pxy[edges$from[i], "y"]
+  x1 <- mxy[edges$to[i],   "x"];  y1 <- mxy[edges$to[i],   "y"]
+  dx <- x1 - x0;  dy <- y1 - y0;  d <- sqrt(dx^2 + dy^2)
+  ax <- x0 + r * dx / d;  ay <- y0 + r * dy / d
+  ex <- x1 - r * dx / d;  ey <- y1 - r * dy / d
+
+  # Gestrichelter Pfeil via Liniensegmente (Plotly unterstützt kein dash bei add_annotations)
+  if (edges$dash[i]) {
+    # Segmentierte gestrichelte Linie mit 6 Abschnitten
+    n_seg <- 10
+    xs <- seq(ax, ex, length.out = n_seg + 1)
+    ys <- seq(ay, ey, length.out = n_seg + 1)
+    for (s in seq(1, n_seg, by = 2)) {
+      fig <- fig %>% add_segments(
+        x = xs[s], xend = xs[s+1],
+        y = ys[s], yend = ys[s+1],
+        line = list(color = "#4B4B4B", width = 1.8, dash = "solid"),
+        hoverinfo = "skip", showlegend = FALSE
+      )
+    }
+    # Pfeilspitze am Endpunkt
+    fig <- fig %>% add_annotations(
+      x = ex, y = ey, ax = xs[n_seg], ay = ys[n_seg],
+      xref = "x", yref = "y", axref = "x", ayref = "y",
+      showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+      arrowwidth = 1.8, arrowcolor = "#4B4B4B", text = ""
+    )
+  } else {
+    fig <- fig %>% add_annotations(
+      x = ex, y = ey, ax = ax, ay = ay,
+      xref = "x", yref = "y", axref = "x", ayref = "y",
+      showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+      arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
+    )
+  }
+
+  # Kantenlabel
+  # x^1B-Label leicht versetzt (Überkreuzungspfeil)
+  lbl_off_x <- ifelse(i >= 3, ifelse(i==3, 0.03 , -0.02), 0.00)
+  lbl_off_y <- ifelse(i >= 3, ifelse(i==3, -0.05 , -0.08), 0.06)
+  fig <- fig %>% add_annotations(
+    x = (ax + ex) / 2 + lbl_off_x,
+    y = (ay + ey) / 2 + lbl_off_y,
+    xref = "x", yref = "y",
+    text = edges$lbl[i], showarrow = FALSE,
+    font = list(size = 13, color = "#1F2933", family = "Arial")
+  )
+  
+}
+
+# Kostenlabels links der Pflanzen
+fig <- fig %>% add_annotations(
+  x = plants$x - 0.12, y = plants$y,
+  xref = "x", yref = "y",
+  text = plants$cl, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "right"
+)
+
+# Pflanzen-Knoten (Hexagon)
+fig <- fig %>% add_trace(
+  x = plants$x, y = plants$y, text = plants$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "hexagon", size = 42,
+                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
+  textfont = list(size = 16, color = "#1F2933", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Markt-Knoten (Circle)
+fig <- fig %>% add_trace(
+  x = markets$x, y = markets$y, text = markets$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "circle", size = 42,
+                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
+  textfont = list(size = 16, color = "white", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Nachfragelabels rechts der Märkte
+fig <- fig %>% add_annotations(
+  x = markets$x + 0.09, y = markets$y,
+  xref = "x", yref = "y",
+  text = markets$dj, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "left"
+)
+
+# Set-Labels oben
+fig <- fig %>% add_annotations(
+  x = c(0.35, 0.72), y = c(1.00, 1.00),
+  xref = "x", yref = "y",
+  text = c("<b>Küche</b>", "<b>Filiale</b>"),
+  showarrow = FALSE,
+  font = list(size = 13, color = "#1F2933", family = "Arial")
+)
+
+fig <- fig %>% layout(
+  xaxis = list(visible = FALSE, range = c(0.2, .9), fixedrange = TRUE),
+  yaxis = list(visible = FALSE, range = c(0.2, 1),  fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 50, t = 10, b = 10),
+  height = 250,
+  width  = 400
+)
+
+fig
+```
+:::
+
+
+::: {.column width="44%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## System Evaluation
+
+- **Produktion Wiesbaden:** $E(x^{Wi})=$ `r round(mean(cp_pool$x1),1)`
+- **Produktion Mainz:** $E(x^{Ma})=$ `r round(mean(cp_pool$x2),1)`
+- **Versorgung Wiesbaden:** $E(x^{Wi, Wi}+x^{Ma, Wi})=$ `r round(mean(cp_pool$xA),1)`
+- **Versorgung Mainz:** $E(x^{Wi,Ma}+x^{Ma, Ma})=$ `r round(mean(cp_pool$xB),1)`
+- **Auslastung Wiesbaden:** $\frac{E(x^{Wi})}{C^{Wi}}=$ `r round(mean(cp_pool$x1)/C1*100,1)` % 
+- **Auslastung Werk 2:** $\frac{E(x^{Ma})}{C^{Ma}}=$ `r round(mean(cp_pool$x2)/C2*100,1)` % 
+- **Lieferservicegrad Wiesbaden:** $\frac{E(x^{Wi,Wi}+x^{Ma,Wi})}{E(d^{Wi})}=$ `r round(mean(cp_pool$xA)/mean(cp_pool$dA)*100,1)` % 
+- **Lieferservicegrad Mainz:** $\frac{E(x^{Ma,Ma}+x^{Wi,Ma})}{E(d^{Ma})}=$  `r round(mean(cp_pool$xB)/mean(cp_pool$dB)*100,1)` % 
+:::
+:::
+
+:::
+::::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Versorgungssystem reagiert als wäre die Trennung zwischen Märkten/Produkten und Werken aufgehoben $\rightarrow$ Gesamtkapazität und Gesamtnachfrage entscheidend
+:::
+:::
+
+---
+
+## Kapazitätspooling {#slide-cp-kpis}
+::: slide-subtitle
+Kennzahlenvergleich
+:::
+
+```{r cp-kpi-compute}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+cp_data <- cp_data[-13,]
+
+tot.demand <- c(sum(cp_data$dA), sum(cp_data$dB))
+
+kpi_df <- data.frame(
+  Kennzahl = c(
+    "Ø Produktion Wiesbaden (Einh.)",
+    "Ø Produktion Mainz (Einh.)",
+    "Ø Verkäufe Wiesbaden (Einh.)",
+    "Ø Verkäufe Mainz (Ei,nh.)",
+    "Lost Sales Wiesbaden (Einh.)",
+    "Lost Sales Mainz (Einh.)",
+    "Auslastung Wiesbaden (%)",
+    "Auslastung Mainz (%)",
+    "Verkaufsquote Wiesbaden (%)",
+    "Verkaufsquote Mainz (%)"
+  ),
+  Dezentral = c(
+    round(mean(cp_data$xA), 1),
+    round(mean(cp_data$xB), 1),
+    round(mean(cp_data$xA), 1),
+    round(mean(cp_data$xB), 1),
+    sum(cp_data$dA)-sum(cp_data$xA),
+    sum(cp_data$dB)-sum(cp_data$xB),
+    round(mean(cp_data$xA/C1*100), 1),
+    round(mean(cp_data$xB/C2*100), 1),
+    round(sum(cp_data$xA)/tot.demand[1]*100, 1),
+    round(sum(cp_data$xB)/tot.demand[2]*100, 1)
+  ),
+  "Pooling einseitig" = c(
+    round(mean(cp_pool_1$x1), 1),
+    round(mean(cp_pool_1$x2B), 1),
+    round(mean(cp_pool_1$xA), 1),
+    round(mean(cp_pool_1$xB), 1),
+    sum(cp_pool_1$dA)-sum(cp_pool_1$xA),
+    sum(cp_pool_1$dB)-sum(cp_pool_1$xB),
+    round(mean(cp_pool_1$xA/C1*100), 1),
+    round(mean(cp_pool_1$xB/C2*100), 1),
+    round(sum(cp_pool_1$xA)/tot.demand[1]*100, 1),
+    round(sum(cp_pool_1$xB)/tot.demand[2]*100, 1)
+  ),
+  "Pooling zweiseitig" = c(
+    round(mean(cp_pool$x1), 1),
+    round(mean(cp_pool$x2), 1),
+    round(mean(cp_pool$xA), 1),
+    round(mean(cp_pool$xB), 1),
+    sum(cp_pool$dA)-sum(cp_pool$xA),
+    sum(cp_pool$dB)-sum(cp_pool$xB),
+    round(mean(cp_pool$xA/C1*100), 1),
+    round(mean(cp_pool$xB/C2*100), 1),
+    round(sum(cp_pool$xA)/tot.demand[1]*100, 1),
+    round(sum(cp_pool$xB)/tot.demand[2]*100, 1)
+  )
+)
+```
+
+::: columns
+::: {.column width="50%"}
+
+```{r cp-kpi-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+kbl(kpi_df,
+    col.names = c("Kennzahl", "Dezentral", "Pooling einseitig", "Pooling zweiseitig"),
+    align = c("l", "r", "r", "r")) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"),
+                full_width = TRUE, font_size = 20) |>
+  column_spec(1) |>
+  column_spec(2, background = "#F3E7AE") |>
+  column_spec(3, bold = TRUE, background = "#E8F4F1") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+
+:::
+::: {.column width="48%"}
+
+::: {.fragment .fade-up}
+
+```{r cp-kpi-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4
+
+metriken <- c("Auslastung\n Wiesbaden (%)","Auslastung\n Mainz (%)", "Verkaufsquote\n Wiesbaden (%)", "Verkaufsquote\n Mainz (%)")
+dez_vals  <- kpi_df$Dezentral[c(7:10)]
+pool1_vals <- kpi_df$Pooling.einseitig[c(7:10)]
+pool2_vals <- kpi_df$Pooling.zweiseitig[c(7:10)]
+
+fig_kpi <- plot_ly()
+
+fig_kpi <- fig_kpi %>% add_trace(
+  x = metriken, y = dez_vals,
+  type = "bar", name = "Dezentral",
+  marker = list(color = "#E9C46A",
+                line = list(color = "#B8951A", width = 1)),
+  text = paste0(dez_vals, " %"),
+  textposition = "outside",
+  textfont = list(size = 13, family = "Arial", color = "#1F2933")
+)
+
+fig_kpi <- fig_kpi %>% add_trace(
+  x = metriken, y = pool1_vals,
+  type = "bar", name = "Pooling einseitig",
+  marker = list(color = cols$top,
+                line = list(color = "#01696f", width = 1)),
+  text = paste0(pool1_vals, " %"),
+  textposition = "outside",
+  textfont = list(size = 13, family = "Arial", color = "#1F2933")
+)
+
+fig_kpi <- fig_kpi %>% add_trace(
+  x = metriken, y = pool2_vals,
+  type = "bar", name = "Pooling zweiseitig",
+  marker = list(color = cols$mid,
+                line = list(color = "#a16a61", width = 1)),
+  text = paste0(pool2_vals, " %"),
+  textposition = "outside",
+  textfont = list(size = 13, family = "Arial", color = "#1F2933")
+)
+
+fig_kpi <- fig_kpi %>% layout(
+  barmode = "group",
+  xaxis = list(title = "", fixedrange = TRUE),
+  yaxis = list(title = "Wert (%)", fixedrange = TRUE,
+               range = c(90, 102)),
+  legend = list(orientation = "h", y = -0.18),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 30, b = 60),
+  height = 370
+)
+
+fig_kpi
+```
+
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Nutzen des Kapazitätspooling
+Kapazitätspooling verbessert **alle** Servicekennzahlen gleichzeitig: mehr Verkäufe, höhere Auslastung, weniger Leerkapazität – ohne zusätzliche Produktionskapazität.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Kosten des Kapazitätspooling
+Kapazitätspooling benötigt jedoch zusätzliche logistische Kapazitäten und vor allem technologische Flexibilität
+:::
+:::
+
+---
+
+## Kapazitätspooling {#slide-chaining}
+::: slide-subtitle
+Chaining
+:::
+
+::: {.callout-note appearance="minimal"}
+**Chaining**
+
+Kapazitätspooling ermöglicht die gemeinsame Nutzung von Kapazitäten für verschiedene Märkte. Es erfordert jedoch technologische und logistische Flexibilität. Je mehr Märkte und Produkte zu bedienen sind, desto komplexer und kostspieliger ist Kapazitätspooling. Die Frage ist also, wie Kapazitätspooling bei mehreren Produkten und Märkten organisiert werden kann?
+:::
+
+::::: {.smaller-text}
+:::: columns
+
+::: {.column width="33%"}
+::: {.fragment .fade-up}
+**vollständiges Chaining**
+
+```{r cp-full-chain1}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "95%"
+#| fig-height: 3.2
+
+draw_network <- function(edges, plants, markets, r = 0.055, range.x = c(0,1), range.y = c(0,1), width = 120, height = 320 ) {
+  fig <- plot_ly(type = "scatter", mode = "markers")
+
+  for (i in seq_len(nrow(edges))) {
+    p  <- plants[edges$from[i], ]
+    m  <- markets[edges$to[i], ]
+    dx <- m$x - p$x; dy <- m$y - p$y; d <- sqrt(dx^2+dy^2)
+    ax <- p$x + r*dx/d; ay <- p$y + r*dy/d
+    ex <- m$x - r*dx/d; ey <- m$y - r*dy/d
+
+    if (edges$dash[i]) {
+      n_seg <- 12
+      xs <- seq(ax, ex, length.out = n_seg+1)
+      ys <- seq(ay, ey, length.out = n_seg+1)
+      for (s in seq(1, n_seg-1, by=2)) {
+        fig <- fig %>% add_segments(
+          x = xs[s], xend = xs[s+1], y = ys[s], yend = ys[s+1],
+          line = list(color="#4B4B4B", width=1.6),
+          hoverinfo="skip", showlegend=FALSE
+        )
+      }
+      fig <- fig %>% add_annotations(
+        x=ex, y=ey, ax=xs[n_seg], ay=ys[n_seg],
+        xref="x", yref="y", axref="x", ayref="y",
+        showarrow=TRUE, arrowhead=2, arrowsize=0.9,
+        arrowwidth=1.6, arrowcolor="#4B4B4B", text=""
+      )
+    } else {
+      fig <- fig %>% add_annotations(
+        x=ex, y=ey, ax=ax, ay=ay,
+        xref="x", yref="y", axref="x", ayref="y",
+        showarrow=TRUE, arrowhead=2, arrowsize=0.9,
+        arrowwidth=2.0, arrowcolor="#222222", text=""
+      )
+    }
+  }
+
+  # Werke-Knoten (Hexagon)
+  fig <- fig %>% add_trace(
+    x=plants$x, y=plants$y, text=plants$lbl, mode="markers+text",
+    marker=list(symbol="hexagon", size=36,
+                color="#BFDBF7", line=list(color="#4B5563",width=1.5)),
+    textfont=list(size=14, color="#1F2933", family="Arial"),
+    textposition="middle center", hoverinfo="skip", showlegend=FALSE
+  )
+
+  # Markt-Knoten (Circle)
+  fig <- fig %>% add_trace(
+    x=markets$x, y=markets$y, text=markets$lbl, mode="markers+text",
+    marker=list(symbol="circle", size=36,
+                color="#2D9E8E", line=list(color="#2F3E46",width=1.5)),
+    textfont=list(size=14, color="white", family="Arial"),
+    textposition="middle center", hoverinfo="skip", showlegend=FALSE
+  )
+
+  fig %>% layout(
+    xaxis=list(visible=FALSE, range=range.x, fixedrange=TRUE),
+    yaxis=list(visible=FALSE, range=range.y, fixedrange=TRUE),
+    plot_bgcolor="transparent", paper_bgcolor="transparent",
+    margin=list(l=10,r=10,t=30,b=10), height=height, width=width
+  )
+}
+
+
+plants  <- data.frame(id = paste0("P",1:4), lbl = as.character(1:4),
+                      x = 0.20, y = c(0.85,0.58,0.38,0.12))
+markets <- data.frame(id = c("A","B","C","D"), lbl = c("A","B","C","D"),
+                      x = 0.78, y = c(0.85,0.58,0.38,0.12))
+rownames(plants)  <- plants$id
+rownames(markets) <- markets$id
+
+r <- 0.055
+
+edges <- data.frame(
+  from = c("P1","P2","P3","P4",   "P1","P2","P3","P4",   "P1","P2","P3","P4",   "P1","P2","P3","P4"),
+  to   = c("A","B","C","D",       "B","C","D","A",       "C","D","A","B",       "D","A","B","C"),
+  dash = c(rep(FALSE,4),          rep(TRUE,4),          rep(TRUE,4),          rep(TRUE,4)),
+  stringsAsFactors = FALSE
+)
+
+draw_network(edges, plants, markets, range.y = c(.05,.925), width = 300, height = 300)
+
+```
+
+Verbindungen: $n \cdot n = 16$
+
+Technologien je Werk: $n=4$
+
+Märkte je Werk: $n=4$
+:::
+:::
+
+::: {.column width="33%"}
+
+::: {.fragment .fade-up}
+**Kurzes Chaining**  
+
+```{r chaining-short}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "95%"
+#| fig-height: 3.2
+
+# Solid: 1->A, 2->B, 3->C, 4->D
+# Dashed (short chain, next neighbour +1): 1->B, 2->C, 3->D, 4->A  (wrap-around)
+# Dashed cross-down: 2->A, 3->B  etc. (Cachon: "short" = neighbor skip)
+edges <- data.frame(
+  from = c("P1","P2","P3","P4",   "P1","P2","P3","P4"),
+  to   = c("A","B","C","D",       "B","A","D","C"),
+  dash = c(rep(FALSE,4),          rep(TRUE,4)),
+  stringsAsFactors = FALSE
+)
+
+draw_network(edges, plants, markets, range.y = c(.05,.925), width = 300, height = 300)
+```
+
+Verbindungen: $2 \cdot n = 8$
+
+Technologien je Werk: $n=2$
+
+Märkte je Werk: $n=2$
+:::
+:::
+
+
+::: {.column width="33%"}
+
+::: {.fragment .fade-up}
+**Langes Chaining**  
+
+```{r chaining-long}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "95%"
+#| fig-height: 3.2
+
+# Long SC alternative: Solid: 1->A, 2->B, 3->C, 4->D
+# Dashed (long chain, skip +2): 1->C, 2->D, 3->A, 4->B
+edges_long <- data.frame(
+  from = c("P1","P2","P3","P4",   "P1","P2","P3","P4"),
+  to   = c("A","B","C","D",       "B","C","D","A"),
+  dash = c(rep(FALSE,4),          rep(TRUE,4)),
+  stringsAsFactors = FALSE
+)
+
+draw_network(edges_long, plants, markets, range.y = c(.05,.925), width = 300, height = 300)
+```
+
+Verbindungen: $2 \cdot n = 8$
+
+Technologien je Werk: $n=2$
+
+Märkte je Werk: $n=4$
+
+:::
+:::
+::::
+:::::
+
+---
+
+## Umgang mit Unsicherheit {#slide-inv-pooling-intro}
+::: slide-subtitle
+Pooling über die Zeit - Sicherheitsbestände 
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+## Definition Sicherheitsbestand (Wiederholung)
+
+Sicherheitsbestände gleichen Nachfrageschwankungen über die Zeit aus. Sei $S$ der Anfangslagerbestand zu Begin der Risikoperiode und $\mu$ der erwartete Bedarf in der Risikoperiode, dann gilt für den Sicherheitsbestand $sb$: $sb = S - \mu$
+
+Beispiel: Das Zentralwerk Wiesbaden-Erbenheim bestellt frische Lachsfilet-Kisten periodisch beim Fischgroßhändler.
+:::
+
+:::: columns
+::: {.column width="33%"}
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+## Festlegung von Sicherheitsbeständen
+
+- *nach Kosten*: Sicherheitsbestände verursachen Lagerhaltungskosten und vermeiden Fehlmengenkosten $\rightarrow$ Kostenabwägung 
+- *Lieferbereitschaft*: Absicherung des Risikos, im Risikozeitraum nicht lieferfähig zu sein ($\alpha$-Servicegrad)
+- *Versorgungsgrad*: Anteil der Nachfrage, die langfristig innerhalb des Risikozeitraums erfüllt werden soll ($\beta$-Servicegrad)
+:::
+:::
+:::
+
+
+::: {.column width="65%"}
+
+::: {.fragment .fade-up}
+
+```{r ts-lager-graph}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "95%"
+#| fig-height: 6
+
+set.seed(42)
+n   <- 24        # Perioden
+lam <- 20        # mittlere Nachfrage (Poisson)
+t   <- 4         # Bestellintervall
+S   <- 135       # Order-up-to-Level
+wbz <- 2         # Wiederbeschaffungszeit (Perioden)
+l.ini <- 120     # Anfangslagerbestand
+sb <- S - (t + wbz) * lam
+
+demand <- rpois(n, lambda = lam)
+
+# --- Simulation ---
+res <- tS.lager(d = demand, t = t, S = S, l.ini = l.ini, wbz = wbz)
+res <- as.data.frame(res)
+
+# --- Subset: nur Perioden 2 bis 22 ---
+idx      <- 2:22
+perioden <- seq_len(nrow(res))[idx]
+res_sub  <- res[idx, ]
+
+# --- Doppelpfeile: Länge 3.95, lückenlos nebeneinander ---
+arrow_len <- t - 0.05          # 3.95 (leicht kürzer als Bestellintervall t=4)
+x_start   <- perioden[1]
+x_end     <- perioden[length(perioden)]
+
+# Pfeil-Startpunkte: lückenlos ab x_start
+arrow_x0 <- seq(x_start, x_end - arrow_len + 0.01, by = arrow_len)
+arrow_x1 <- arrow_x0 + arrow_len
+
+# y-Position der Pfeile: knapp unterhalb Nulllinie
+y_min_data <- min(pmin(0, res_sub$Lagerbestand), na.rm = TRUE)
+y_arrow    <- y_min_data - abs(y_min_data) * 0.15 - 5
+
+fig <- plot_ly()
+
+# Lagerbestand
+fig <- fig |> add_lines(
+  x = perioden, y = res_sub$Lagerbestand,
+  line = list(shape = "hvh"), name = "Lagerbestand"
+)
+
+# Sicherheitsbestand
+fig <- fig |> add_lines(
+  x = perioden, y = sb,
+  name = "Sicherheitsbestand"
+)
+
+# Fehlmengen-Füllung
+fig <- fig |> add_trace(
+  x = perioden, y = pmin(0, res_sub$Lagerbestand),
+  type = "scatter", mode = "lines",
+  line = list(shape = "hvh", color = "transparent"),
+  name = "Fehlmengen",
+  fill = "tozeroy", fillcolor = "#FF000050"
+)
+
+# --- Doppelpfeile zeichnen ---
+for (i in seq_along(arrow_x0)) {
+  x0 <- arrow_x0[i]
+  x1 <- arrow_x1[i]
+  xm <- (x0 + x1) / 2
+
+  # Horizontale Linie (Schaft des Doppelpfeils)
+  fig <- fig |> add_segments(
+    x = x0, xend = x1,
+    y = y_arrow, yend = y_arrow,
+    line = list(color = "#333333", width = 1.5),
+    showlegend = FALSE, hoverinfo = "skip"
+  )
+
+  # Linke Pfeilspitze (zeigt nach links)
+  fig <- fig |> add_annotations(
+    x = x0, y = y_arrow,
+    ax = x0 + 0.6, ay = y_arrow,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
+    arrowwidth = 1.5, arrowcolor = "#333333", text = ""
+  )
+
+  # Rechte Pfeilspitze (zeigt nach rechts)
+  fig <- fig |> add_annotations(
+    x = x1, y = y_arrow,
+    ax = x1 - 0.6, ay = y_arrow,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
+    arrowwidth = 1.5, arrowcolor = "#333333", text = ""
+  )
+
+  # Beschriftung "Periode" zentriert unter dem Pfeil
+  fig <- fig |> add_annotations(
+    x = xm, y = y_arrow,
+    xref = "x", yref = "y",
+    text = "Periode", showarrow = FALSE,
+    yshift = -16,
+    font = list(size = 11, color = "#333333", family = "Arial")
+  )
+}
+
+fig <- fig |> layout(
+  legend = list(
+    orientation = "h",
+    x           = 0.5,
+    y           = 1.12,
+    xanchor     = "center",
+    yanchor     = "top"
+  ),
+  xaxis = list(
+    showticklabels = FALSE,     # keine Zahlen auf der x-Achse
+    showgrid       = FALSE,
+    zeroline       = FALSE,
+    range          = c(x_start - 0.3, x_end + 0.3)
+  ),
+  yaxis = list(
+    title = "Bestand",
+    range = c(y_arrow - 10, NA)  # y-Achse nach unten erweitern für Pfeile
+  ),
+  margin = list(b = 55),           # Randplatz für Beschriftung unterhalb
+  height= 550,
+  width = 1000
+)
+
+fig
+```
+
+:::
+:::
+::::
+
+
+---
+
+## Sicherheitsbestände  {#slide-alpha-empirisch}
+::: slide-subtitle
+$\alpha$-Servicegrad und empirische Verteilungsfunktion
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+Gehen Sie davon aus, dass ein Fehlmengenrisiko von 5% akzeptable ist und der $\alpha$-Servicegrad daher 95% beträgt.
+*Frage*: Welcher (minimale) Anfangslagerbestand sichert diesen Servicegrad?
+*Antwort*:  Formal soll gelten $P(d \leq S) \geq \alpha$. Für eine empirische Nachfrageverteilung $F(d)$ gilt also $\hat{F}(S) \geq \alpha$ oder $S \geq \hat{F}^{-1}(\alpha)$. Wir suchen also ein **(empirisches) Quantil**.
+:::
+
+:::: columns
+::: {.column width="25%"}
+
+```{r alpha-ecdf-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+dA <- cp_data$dA
+mu_A <- mean(dA)
+dA_sorted <- unique(sort(dA))
+dA_freq <- table(dA)
+n_obs <- length(dA)
+F_emp <- cumsum(dA_freq)/ n_obs
+F_emp_pct <- paste0(round(F_emp * 100, 1), " %")
+
+# α-Schwellen hervorheben (75%, 90%, 95%)
+alpha_rows <- sapply(c(0.75, 0.90, 0.95), function(a) which(F_emp >= a)[1])
+
+ecdf_df <- data.frame(
+  Rang = seq_len(length(dA_freq)),
+  d    = dA_sorted,
+  H    = as.numeric(dA_freq),
+  F    = F_emp_pct
+)
+
+tbl <- kbl(ecdf_df,
+    col.names = c("Rang", "d<sub>t</sub>", "Anzahl", "F̂(d)"),
+    align = c("c", "r","r", "r"),
+    escape = FALSE,
+    caption = paste0("μ = ", round(mu_A, 1), " | n = ", n_obs)) |>
+  kable_styling(
+    bootstrap_options = c("condensed", "striped"),
+    full_width = TRUE,
+    font_size = 22
+  ) |>
+  column_spec(1, color = "gray") |>
+  column_spec(2, bold = TRUE) |>
+  column_spec(3, bold = TRUE) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+
+# α-Zeilen farblich markieren
+tbl <- tbl |>
+  row_spec(alpha_rows[1], background = "#FFF3CD", bold = TRUE) |>  # α=75%
+  row_spec(alpha_rows[2], background = "#CCE5FF", bold = TRUE) |>  # α=90%
+  row_spec(alpha_rows[3], background = "#FFD6CC", bold = TRUE)    # α=95%
+
+tbl
+```
+
+:::
+
+::: {.column width="74%"}
+::: {.fragment .fade-up}
+```{r alpha-ecdf-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.5
+
+mu_A <- mean(dA)
+dA_sorted <- sort(dA)
+n_obs <- length(dA_sorted)
+F_emp <- seq_len(n_obs) / n_obs
+
+# Korrekte rechtsseitig-stetige Treppenfunktion
+x_ecdf <- c(min(dA_sorted) - 6, min(dA_sorted))
+y_ecdf <- c(0, 0)
+for (i in seq_len(n_obs)) {
+  x_ecdf <- c(x_ecdf, dA_sorted[i], dA_sorted[i])
+  y_ecdf <- c(y_ecdf, if (i == 1) 0 else F_emp[i - 1], F_emp[i])
+  if (i < n_obs) {
+    x_ecdf <- c(x_ecdf, dA_sorted[i], dA_sorted[i + 1])
+    y_ecdf <- c(y_ecdf, F_emp[i], F_emp[i])
+  }
+}
+x_ecdf <- c(x_ecdf, dA_sorted[n_obs], dA_sorted[n_obs] + 6)
+y_ecdf <- c(y_ecdf, 1, 1)
+
+alpha_show  <- c(0.75, 0.90, 0.95)
+alpha_cols  <- c("#E9A000", "#2196F3", "#E76F51")
+alpha_labels <- c("α = 75%", "α = 90%", "α = 95%")
+
+fig <- plot_ly()
+
+# ECDF-Treppe
+fig <- fig %>% add_trace(
+  x = x_ecdf, y = y_ecdf,
+  type = "scatter", mode = "lines",
+  name = "F̂(d)",
+  line = list(color = cols$top, width = 2.8),
+  hovertemplate = "d = %{x}<br>F̂(d) = %{y:.3f}<extra></extra>"
+)
+
+# Beobachtungspunkte
+fig <- fig %>% add_trace(
+  x = dA_sorted, y = F_emp,
+  type = "scatter", mode = "markers",
+  name = "Beobachtungen",
+  marker = list(color = cols$top, size = 9,
+                line = list(color = "white", width = 1.5)),
+  hovertemplate = "d = %{x}<br>F̂ = %{y:.3f}<extra></extra>"
+)
+
+# α-Linien + Ablese-Linien
+for (j in seq_along(alpha_show)) {
+  a     <- alpha_show[j]
+  idx_a <- which(F_emp >= a)[1]
+  S_a   <- dA_sorted[idx_a]
+  sb_a  <- round(S_a - mu_A, 1)
+  col_a <- alpha_cols[j]
+
+  fig <- fig %>% add_trace(
+    x = c(min(dA_sorted) - 6, S_a), y = c(a, a),
+    type = "scatter", mode = "lines",
+    name = alpha_labels[j],
+    line = list(color = col_a, width = 1.8, dash = "dot"),
+    hoverinfo = "skip", showlegend = TRUE
+  )
+  fig <- fig %>% add_trace(
+    x = c(S_a, S_a), y = c(0, a),
+    type = "scatter", mode = "lines",
+    line = list(color = col_a, width = 1.8, dash = "dot"),
+    hoverinfo = "skip", showlegend = FALSE
+  )
+  fig <- fig %>% add_annotations(
+    x = S_a, y = -0.045,
+    xref = "x", yref = "paper",
+    text = paste0("<b>S=", S_a, "<br>sb=", sb_a, "</b>"),
+    showarrow = FALSE,
+    font = list(size = 16, color = col_a, family = "Arial"),
+    xanchor = "center"
+  )
+}
+
+# μ-Linie
+fig <- fig %>% add_trace(
+  x = c(mu_A, mu_A), y = c(0, 1),
+  type = "scatter", mode = "lines",
+  name = paste0("μ = ", round(mu_A, 1)),
+  line = list(color = "#6B7280", width = 1.4, dash = "dashdot"),
+  hoverinfo = "skip"
+)
+
+fig <- fig %>% layout(
+  xaxis = list(
+    title = "Nachfrage d<sub>t</sub><sup>Wi</sup>",
+    fixedrange = TRUE,
+    range = c(min(dA_sorted) - 7, max(dA_sorted) + 7)
+  ),
+  yaxis = list(
+    title = "F̂(d)",
+    fixedrange = TRUE,
+    range = c(-0.05, 1.08),
+    tickformat = ".0%"
+  ),
+  #legend = list(orientation = "h", y = -0.26, font = list(size = 16)),
+  legend = list(
+    orientation = "v",
+    x           = 0.99,
+    y           = 0.75,
+    xanchor     = "right",
+    yanchor     = "top"
+  ),
+  
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 15, t = 10, b = 85),
+  height = 420,
+  width = 1100
+)
+
+fig
+```
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+Sicherheitsbestände $sb=S-\mu$: $sb_{75\%}=4$, $sb_{90\%}=7$, $sb_{95\%}=15$
+:::
+:::
+
+:::
+::::
+
+---
+
+## Lagerbestandspooling {#slide-dezentral-zentral-empirisch}
+::: slide-subtitle
+Sicherheitsbestände bei dezentraler und zentraler Lagerhaltung 
+:::
+
+:::: columns
+
+<!-- ══════════════════ LINKE SPALTE: DEZENTRAL ══════════════════ -->
+::: {.column width="50%"}
+
+**Dezentrales Netzwerk**
+
+```{r alpha-decentral-network}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 1.75
+
+plants  <- data.frame(id = 1:2, lbl = as.character(1:2),
+                      x = 0.20, y = c(0.85,0.48))
+markets <- data.frame(id = c("A","B"), lbl = c("A","B"),
+                      x = 0.78, y = c(0.85,0.48))
+rownames(plants)  <- plants$id
+rownames(markets) <- markets$id
+
+r <- 0.055
+
+edges <- data.frame(
+  from = c("1","2"),
+  to   = c("A","B"),
+  dash = c(rep(FALSE,2)),
+  stringsAsFactors = FALSE
+)
+
+draw_network(edges, plants, markets, range.y = c(.35,1), width = 300, height = 150)
+
+```
+
+```{r alpha-ecdf-dec}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.75
+
+dA <- cp_data$dA
+dB <- cp_data$dB
+mu_A <- mean(dA); mu_B <- mean(dB)
+
+# Hilfsfunktion: ECDF-Treppenpunkte
+make_ecdf_xy <- function(d) {
+  ds <- sort(d); n <- length(ds); Fe <- seq_len(n) / n
+  x <- c(min(ds)-5, min(ds)); y <- c(0, 0)
+  for (i in seq_len(n)) {
+    x <- c(x, ds[i], ds[i])
+    y <- c(y, if(i==1) 0 else Fe[i-1], Fe[i])
+    if (i < n) { x <- c(x, ds[i], ds[i+1]); y <- c(y, Fe[i], Fe[i]) }
+  }
+  x <- c(x, ds[n], ds[n]+5); y <- c(y, 1, 1)
+  list(x=x, y=y, sorted=ds, F=Fe)
+}
+
+eA <- make_ecdf_xy(dA)
+eB <- make_ecdf_xy(dB)
+
+alpha <- 0.95
+S_A <- eA$sorted[which(eA$F >= alpha)][1]
+S_B <- eB$sorted[which(eB$F >= alpha)][1]
+S_mid <- (S_A + S_B)/2
+
+sb_A <- round(S_A - mu_A, 1)
+sb_B <- round(S_B - mu_B, 1)
+col_A <- cols$top     # Markt A — Hauptfarbe
+col_B <- cols$mid     # Markt B — sekundäre Farbe
+
+fig_dec2 <- plot_ly()
+
+# ECDF Markt A
+fig_dec2 <- fig_dec2%>% add_trace(
+  x=eA$x, y=eA$y, type="scatter", mode="lines",
+  name="F̂<sub>WI</sub>(d)", line=list(color=col_A, width=2.5),
+  hovertemplate="d=%{x}<br>F̂̂<sub>WI</sub>=%{y:.2f}<extra></extra>"
+) %>% add_trace(
+  x=eA$sorted, y=eA$F, type="scatter", mode="markers",
+  showlegend=FALSE, marker=list(color=col_A, size=7,
+  line=list(color="white", width=1)), hoverinfo="skip"
+)
+
+# ECDF Markt B
+fig_dec2 <- fig_dec2%>% add_trace(
+  x=eB$x, y=eB$y, type="scatter", mode="lines",
+  name="F̂<sub>Ma</sub>(d)", line=list(color=col_B, width=2.5, dash="dash"),
+  hovertemplate="d=%{x}<br>F̂̂<sub>Ma</sub>=%{y:.2f}<extra></extra>"
+) %>% add_trace(
+  x=eB$sorted, y=eB$F, type="scatter", mode="markers",
+  showlegend=FALSE, marker=list(color=col_B, size=7,
+  line=list(color="white", width=1)), hoverinfo="skip"
+)
+
+# α = 95%-Linie
+fig_dec2 <- fig_dec2%>% add_trace(
+  x=c(min(c(dA,dB))-6, max(S_A, S_B)), y=c(alpha, alpha),
+  type="scatter", mode="lines", name="α = 95%",
+  line=list(color="#E76F51", width=1.6, dash="dot"), hoverinfo="skip"
+)
+# Vertikale Ablese-Linien
+for (vals in list(list(S=S_A, mu=mu_A, sb=sb_A, col=col_A, lbl="A"),
+                  list(S=S_B, mu=mu_B, sb=sb_B, col=col_B, lbl="B"))) {
+  fig_dec2 <- fig_dec2%>%
+    add_trace(x=c(vals$S, vals$S), y=c(0, alpha), type="scatter", mode="lines",
+              line=list(color=vals$col, width=1.3, dash="dot"),
+              hoverinfo="skip", showlegend=FALSE) %>%
+    add_annotations(x=ifelse(vals$S < S_mid, vals$S*.975,  vals$S*1.025) , y=0.05, xref="x", yref="paper",
+      text=paste0("<b>S<sub>",vals$lbl,"</sub>=",vals$S,"<br>sb<sub>",vals$lbl,"</sub>=",vals$sb,"</b>"),
+      showarrow=FALSE, font=list(size=15, color=vals$col, family="Arial"),
+      xanchor="center")
+}
+# μ-Linien
+for (vals in list(list(mu=mu_A, col=col_A, nm=paste0("μ<sub>Wi</sub>=",round(mu_A,1))),
+                  list(mu=mu_B, col=col_B, nm=paste0("μ<sub>Ma</sub>=",round(mu_B,1))))) {
+  fig_dec2 <- fig_dec2%>% add_trace(
+    x=c(vals$mu, vals$mu), y=c(0,1), type="scatter", mode="lines",
+    name=vals$nm, line=list(color=vals$col, width=1.2, dash="dashdot"),
+    hoverinfo="skip"
+  )
+}
+
+fig_dec2 <- fig_dec2%>% layout(
+  xaxis=list(title="Nachfrage d", fixedrange=F,
+             range=c(min(c(dA,dB))-8, max(S_A,S_B)+8)),
+  yaxis=list(title="F̂(d)", fixedrange=F, range=c(-0.06,1.08),
+             tickformat=".0%"),
+  #legend=list(orientation="h", y=-0.28, font=list(size=10)),
+  legend = list(
+    orientation = "v",
+    x           = 0.99,
+    y           = 0.75,
+    xanchor     = "right",
+    yanchor     = "top",
+    size = 13
+  ),
+  plot_bgcolor="transparent", paper_bgcolor="transparent",
+  margin=list(l=50, r=10, t=5, b=85), height=350, width = 750
+)
+fig_dec2
+```
+
+:::
+
+<!-- ══════════════════ RECHTE SPALTE: ZENTRAL ══════════════════ -->
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+
+**Zentrales Netzwerk (Pooling)**
+
+```{r alpha-central-network}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 1.75
+
+plants  <- data.frame(id = 0, lbl = as.character(0),
+                      x = 0.20, y = c(0.61))
+markets <- data.frame(id = c("A","B"), lbl = c("A","B"),
+                      x = 0.78, y = c(0.85,0.48))
+rownames(plants)  <- plants$id
+rownames(markets) <- markets$id
+
+r <- 0.055
+
+edges <- data.frame(
+  from = c("0"),
+  to   = c("A","B"),
+  dash = c(rep(FALSE,2)),
+  stringsAsFactors = FALSE
+)
+
+draw_network(edges, plants, markets, range.y = c(.35,1), width = 300, height = 150)
+
+```
+
+```{r alpha-ecdf-central}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.75
+
+dTotal <- cp_data$dA + cp_data$dB
+mu_T   <- mean(dTotal)
+eT     <- make_ecdf_xy(dTotal)
+
+S_T  <- eT$sorted[which(eT$F >= alpha)][1]
+sb_T <- round(S_T - mu_T, 1)
+col_T <- "#F4A261"  # Zentrallager-Farbe (orange)
+
+fig_cen2 <- plot_ly()
+
+# ECDF Gesamtnachfrage
+fig_cen2 <- fig_cen2%>% add_trace(
+  x=eT$x, y=eT$y, type="scatter", mode="lines",
+  name="F̂<sub>A+B</sub>(d)", line=list(color=col_T, width=2.8),
+  hovertemplate="d=%{x}<br>F̂=%{y:.2f}<extra></extra>"
+) %>% add_trace(
+  x=eT$sorted, y=eT$F, type="scatter", mode="markers",
+  showlegend=FALSE, marker=list(color=col_T, size=7,
+  line=list(color="white", width=1)), hoverinfo="skip"
+)
+
+# α = 95%-Linie
+fig_cen2 <- fig_cen2%>% add_trace(
+  x=c(min(dTotal)-8, S_T), y=c(alpha, alpha),
+  type="scatter", mode="lines", name="α = 95%",
+  line=list(color="#E76F51", width=1.6, dash="dot"), hoverinfo="skip"
+) %>% add_trace(
+  x=c(S_T, S_T), y=c(0, alpha), type="scatter", mode="lines",
+  line=list(color=col_T, width=1.3, dash="dot"),
+  hoverinfo="skip", showlegend=FALSE
+) %>% add_annotations(
+  x=S_T, y=0.05, xref="x", yref="paper",
+  text=paste0("<b>S<sub>0</sub>=",S_T,"<br>sb<sub>0</sub>=",sb_T,"</b>"),
+  showarrow=FALSE, font=list(size=15, color=col_T, family="Arial"),
+  xanchor="center"
+) %>% add_trace(
+  x=c(mu_T, mu_T), y=c(0,1), type="scatter", mode="lines",
+  name=paste0("μ<sub>Wi+Ma</sub>=",round(mu_T,1)),
+  line=list(color="#6B7280", width=1.2, dash="dashdot"), hoverinfo="skip"
+)
+
+fig_cen2 <- fig_cen2%>% layout(
+  xaxis=list(title="Gesamtnachfrage d<sup>Wi</sup>+d<sup>Ma</sup>",
+             fixedrange=TRUE, range=c(min(dTotal)-10, S_T+12)),
+  yaxis=list(title="F̂(d)", fixedrange=TRUE, range=c(-0.06,1.08),
+             tickformat=".0%"),
+#  legend=list(orientation="h", y=-0.28, font=list(size=10)),
+legend = list(
+    orientation = "v",
+    x           = 0.99,
+    y           = 0.75,
+    xanchor     = "right",
+    yanchor     = "top",
+    size = 13
+  ),
+  plot_bgcolor="transparent", paper_bgcolor="transparent",
+  margin=list(l=50, r=10, t=5, b=85), height=350, width = 750
+)
+fig_cen2
+```
+
+:::
+:::
+
+::::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon="info"}
+Einsparung an Sicherheitsbestand: $sb_{dezentral}=sb_{A}+sb_{B}=27.5$ vs. $sb_{0}=22.5$  $\rightarrow$ 5 Einheiten oder 18 %
+:::
+:::
+## Lagerbestandspooling {#slide-dezentral-zentral-parameterisch}
+::: slide-subtitle
+Sicherheitsbestände bei bekannter Nachfrageverteilung
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+## Nachfrageverteilung
+
+Oft wird davon ausgegangen, dass die Nachfrage nach Gütern in einer bestimmten Zeitspanne eine Zufallsvariable ist, deren Verteilungsparameter (wie Mittelwert und Varianz) bekannt sind oder geschätzt werden können. Reale Daten weichen davon oft ab — simuliert am Beispiel **Frankfurt/Offenbach** mit gelegentlichen, gemeinsamen Feiertags-Spitzen.
+
+:::
+
+
+```{r}
+#| label: sushifresh-sim-data-prep
+#| echo: false
+#| warning: false
+#| message: false
+
+# ── Simulierte Tagesnachfrage Frankfurt & Offenbach ───────────────────────────
+# (reproduzierbar per set.seed(); ersetzt Realdaten durch synthetische Reihen
+#  mit gelegentlichen, gemeinsamen "Feiertags-Spitzen")
+
+set.seed(616)
+n_tage <- 250
+
+dA <- pmax(30, round(rnorm(n_tage, mean = 280, sd = 55 * 0.7)))   # Frankfurt
+dB <- pmax(10, round(rnorm(n_tage, mean = 95,  sd = 22 * 0.7)))   # Offenbach
+
+spitzentage <- sample(seq_len(n_tage), size = 6)
+dA[spitzentage] <- dA[spitzentage] + round(runif(6, 220, 420))
+dB[spitzentage] <- dB[spitzentage] + round(runif(6, 70, 150))
+
+prod.names <- c("Frankfurt", "Offenbach")
+dpool <- dA + dB
+
+# ── Parameter schätzen ────────────────────────────────────────────────────────
+muA  <- mean(dA, na.rm = TRUE);  sigA <- sd(dA, na.rm = TRUE)
+muB  <- mean(dB, na.rm = TRUE);  sigB <- sd(dB, na.rm = TRUE)
+mupool  <- mean(dpool, na.rm = TRUE);  sigpool <- sd(dpool, na.rm = TRUE)
+
+n_perioden <- length(dA)
+```
+
+
+::: columns
+::: {.column width="52%"}
+
+```{r}
+#| label: sushifresh-sim-ecdf-fit
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.2
+
+# ── Farben ────────────────────────────────────────────────────────────────────
+colA <- cols$top
+colB <- cols$atp
+colpool <- cols$dash
+
+# ── Hilfsfunktion: ECDF-Treppenpunkte ─────────────────────────────────────────
+make_ecdf_xy <- function(d) {
+  d <- d[!is.na(d)]
+  ds <- sort(d); n <- length(ds); Fe <- seq_len(n) / n
+  x <- c(min(ds) - 0.08 * diff(range(ds)), min(ds))
+  y <- c(0, 0)
+  for (i in seq_len(n)) {
+    x <- c(x, ds[i], ds[i])
+    y <- c(y, if (i == 1) 0 else Fe[i - 1], Fe[i])
+    if (i < n) { x <- c(x, ds[i], ds[i + 1]); y <- c(y, Fe[i], Fe[i]) }
+  }
+  x <- c(x, ds[n], ds[n] + 0.08 * diff(range(ds)))
+  y <- c(y, 1, 1)
+  list(x = x, y = y, sorted = ds, F = Fe)
+}
+
+eA <- make_ecdf_xy(dA);  eB <- make_ecdf_xy(dB); ePool <- make_ecdf_xy(dpool)
+
+# ── Normalverteilungs-CDF-Kurven ──────────────────────────────────────────────
+xgridA <- seq(min(dA, na.rm=TRUE) - 200, max(dA, na.rm=TRUE) + 200, length.out = 300)
+xgridB <- seq(min(dB, na.rm=TRUE) - 200, max(dB, na.rm=TRUE) + 200, length.out = 300)
+xgridpool <- seq(min(dpool, na.rm=TRUE) - 5000, max(dpool, na.rm=TRUE) + 200, length.out = 300)
+
+# ── KS-Test ───────────────────────────────────────────────────────────────────
+ksA <- ks.test(dA, "pnorm", muA, sigA)
+ksB <- ks.test(dB, "pnorm", muB, sigB)
+kspool <- ks.test(dpool, "pnorm", mupool, sigpool)
+
+fmt_p <- function(p) if (p < 0.001) "<0.001" else paste0("= ", round(p, 3))
+
+# ── Plot ──────────────────────────────────────────────────────────────────────
+fig <- plotly::plot_ly()
+
+fig <- fig |>
+  plotly::add_trace(x = eA$x, y = eA$y, type = "scatter", mode = "lines",
+            name = paste0("ECDF ",prod.names[1]),
+            line = list(color = colA, width = 2.2),
+            marker = list(color = colA, size = 6,
+                          line = list(color = "white", width = 1))) |>
+  plotly::add_trace(x = xgridA, y = pnorm(xgridA, muA, sigA),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muA), ", ", round(sigA), "²)"),
+            line = list(color = colA, width = 2.2, dash = "dot")) 
+  
+
+
+fig <- fig |>
+  plotly::add_trace(x = eB$x, y = eB$y, type = "scatter", mode = "lines+markers",
+            name = paste0("ECDF ",prod.names[2]),
+            line = list(color = colB, width = 2.2),
+            marker = list(color = colB, size = 6,
+                          line = list(color = "white", width = 1))) |>
+  plotly::add_trace(x = xgridB, y = pnorm(xgridB, muB, sigB),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muB), ", ", round(sigB), "²)"),
+            line = list(color = colB, width = 2.2, dash = "dot"))
+
+
+# fig <- fig |>  
+#   plotly::add_trace(x = ePool$x, y = ePool$y, type = "scatter", mode = "lines+markers",
+#             name = "ECDF Gesamtnachfrage",
+#             line = list(color = colpool, width = 2.2), 
+#             marker = list(color = colpool, size = 6, line = list(color = "white", width = 1))) |>
+#   plotly::add_trace(x = xgridpool, y = pnorm(xgridpool, mupool, sigpool),
+#             type = "scatter", mode = "lines",
+#             name = paste0("N(", round(mupool), ", ", round(sigpool), "²) "),
+#             line = list(color = colpool, width = 2.2, dash = "dot"))
+
+fig <- fig |>
+  plotly::add_annotations(x = 0.02, y = 0.93, xref = "paper", yref = "paper",
+    text = paste0("<b>KS-Test Frankfurt:</b> p ", fmt_p(ksA$p.value)),
+    showarrow = FALSE, font = list(size = 16, color = colA, family = "Arial"),
+    xanchor = "left") |>
+  plotly::add_annotations(x = 0.02, y = 0.83, xref = "paper", yref = "paper",
+    text = paste0("<b>KS-Test Offenbach:</b> p ", fmt_p(ksB$p.value)),
+    showarrow = FALSE, font = list(size = 16, color = colB, family = "Arial"),
+    xanchor = "left") 
+  # plotly::add_annotations(x = 0.02, y = 0.73, xref = "paper", yref = "paper",
+  #   text = paste0("<b>KS-Test Gesamtnachfrage:</b> p ", fmt_p(kspool$p.value)),
+  #   showarrow = FALSE, font = list(size = 16, color = colpool, family = "Arial"),
+  #   xanchor = "left")
+
+fig |> plotly::layout(
+  xaxis = list(title = "Tägliche Nachfrage (Sushi-Boxen)", fixedrange = FALSE,
+               tickformat = ",.0f", range = c(-100, 800), font = list(size = 14)),
+  yaxis = list(title = "F(d)", fixedrange = TRUE,
+               range = c(-0.05, 1.08), tickformat = ".0%", font = list(size = 14)),
+  legend = list(orientation = "h", y = -0.28, font = list(size = 18)),
+  plot_bgcolor  = "transparent", paper_bgcolor = "transparent",
+  margin = list(l = 55, r = 15, t = 10, b = 90),
+  height = 390, width = 750
+)
+```
+
+:::
+::: {.column width="46%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Datenbasis:** Simulierte tägliche Nachfrage über 250 Tage
+[(set.seed(616), Details siehe R-Code)]{.smaller}
+
+
+- **ECDF** (durchgezogen) = empirische Verteilung
+- **Normalverteilung** (gepunktet) = parametrisches Modell
+:::
+
+::: {.fragment .fade-up}
+
+```{r}
+#| label: sushifresh-sim-fit-table
+#| echo: false
+#| warning: false
+#| message: false
+
+fitdf <- data.frame(
+  Standort = c("Frankfurt", "Offenbach"),
+  mu       = round(c(muA, muB)),
+  sigma    = round(c(sigA, sigB)),
+  KS_p     = c(round(ksA$p.value, 3), round(ksB$p.value, 3)),
+  SB_95    = round(c(quantile(dA, 0.95) , quantile(dB, 0.95))),
+  pSB_95    = round(c( qnorm(.95, muA, sigA), qnorm(.95, muB, sigB)))
+)
+
+kableExtra::kbl(fitdf,
+    col.names = c("Filiale", "μ̂", "σ̂", "KS p-Wert", "emp. SB (α=95%)","param. SB"),
+    align = c("l", "r", "r", "r", "r","r"), escape = FALSE,
+    format.args = list(big.mark = ",")) |>
+  kableExtra::kable_styling(
+    bootstrap_options = c("condensed", "striped"),
+    full_width = TRUE, font_size = 18) |>
+  kableExtra::row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  #kableExtra::row_spec(3, bold = TRUE, background = "#E8F4F1") |>
+  kableExtra::column_spec(5, bold = TRUE, color = "#02818a")
+```
+
+:::
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Die gemeinsamen Feiertags-Spitzen erzeugen in **beiden** Filialen eine rechtsschiefe, deutlich von der Normalverteilung abweichende Verteilung (KS-Test: p < 0,01 für beide) — der empirische Sicherheitsbestand fällt entsprechend niedriger aus als der parametrische.
+:::
+:::
+
+
+---
+
+## Lagerbestandspooling {#slide-pooling-normal-intro}
+::: slide-subtitle
+Normalverteilte Nachfrage – Sicherheitsbestand für zwei Standorte
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+Seien $D_1 \sim \mathcal{N}(\mu_1, \sigma_1^2)$ und $D_2 \sim \mathcal{N}(\mu_2, \sigma_2^2)$ die **normalverteilten Nachfragen** an zwei Standorten mit Korrelation $\rho = \text{Cor}(D_1, D_2)$.
+
+Der Sicherheitsbestand am Standort $i$ bei $\alpha$-Servicegrad beträgt: $sb_i = z_\alpha \cdot \sigma_i$, sodass in Summe: $sb_{dez} = z_\alpha \cdot (\sigma_1 + \sigma_2)$
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Zentrales Lager: Verteilung der Gesamtnachfrage
+
+Die aggregierte Nachfrage $D_0 = D_1 + D_2$ ist ebenfalls normalverteilt:
+
+$$D_0 \sim \mathcal{N}\!\left(\mu_1 + \mu_2,\; \sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2\right)$$
+
+Damit gilt für den zentralen Sicherheitsbestand:
+
+$$sb_{zen} = z_\alpha \cdot \sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2}$$
+:::
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.fragment .fade-up}
+::: smaller-text
+**Vergleich dezentral vs. zentral**
+
+| Konfiguration | Sicherheitsbestand |
+|---|---|
+| Dezentral (2 Lager) | $z_\alpha \cdot (\sigma_1 + \sigma_2)$ |
+| Zentral ($\rho = -1$) | $z_\alpha \cdot \|\sigma_1 - \sigma_2\|$ |
+| Zentral ($\rho = 0$) | $z_\alpha \cdot \sqrt{\sigma_1^2 + \sigma_2^2}$ |
+| Zentral ($\rho = +1$) | $z_\alpha \cdot (\sigma_1 + \sigma_2)$ |
+$\rightarrow$ $\|\sigma_1 - \sigma_2\| \leq \sqrt{\sigma_1^2 + \sigma_2^2} \leq \sigma_1 + \sigma_2$
+$\rightarrow$ **Pooling lohnt sich, solange $\rho < 1$**
+:::
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Je **kleiner** die Korrelation $\rho$, desto größer das Einsparungspotenzial durch zentrales Pooling. (**Risikoausgleichseffekt**)
+:::
+:::
+
+---
+
+## Kernergebnis {#slide-sushifresh-kernergebnis}
+::: slide-subtitle
+Sicherheitsbestand für alle sechs SushiFresh-Filialen ($\alpha = 95\%$)
+:::
+
+```{r sushifresh-kernergebnis-berechnung}
+#| echo: false
+#| warning: false
+#| message: false
+
+sf_mu    <- c(120, 150, 280, 90, 110, 95)
+sf_sigma <- c(25, 30, 55, 20, 24, 22)
+z_sf     <- qnorm(0.95)
+
+sb_dez_sf <- z_sf * sum(sf_sigma)                     # dezentral: Summe der Einzel-SB
+sb_zen_sf <- z_sf * sqrt(sum(sf_sigma^2))              # zentral: Wurzel aus Varianzsumme (rho=0)
+einspar_sf <- round((1 - sb_zen_sf / sb_dez_sf) * 100, 1)
+
+# Idealisierter Vergleich: 6 identische Filialen mit Durchschnitts-Sigma
+sigma_mean_sf <- mean(sf_sigma)
+ideal_sf <- pooling_safety_stock(n = 6, sigma = sigma_mean_sf, z = z_sf)
+```
+
+::: columns
+::: {.column width="55%"}
+
+::: {.callout-note appearance="simple"}
+## Mit `qnorm()` verifiziert
+
+- $z_{0{,}95} =$ `r round(z_sf,3)`
+- **Dezentral:** $sb_{dez}=z_\alpha\sum\sigma_i=$ `r round(sb_dez_sf,1)` Boxen
+- **Zentral (gepoolt, unabhängig):** $sb_{zen}=z_\alpha\sqrt{\sum\sigma_i^2}=$ `r round(sb_zen_sf,1)` Boxen
+- **Einsparung durch Konsolidierung:** `r einspar_sf` %
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+**Gegenprobe** `pooling_safety_stock()`: für 6 *identische* Filialen mit $\bar\sigma=$ `r round(sigma_mean_sf,1)` ergäbe sich eine Einsparung von `r round(ideal_sf$savings_pct)` % — **mehr** als die tatsächlichen `r einspar_sf` %. Der dominante, volatile Standort Frankfurt ($\sigma=55$) schmälert den relativen Pooling-Vorteil gegenüber dem idealisierten Fall gleich großer Standorte.
+:::
+:::
+
+:::
+::: {.column width="43%"}
+
+```{r sushifresh-kernergebnis-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.6
+
+plot_ly() |>
+  add_trace(
+    x = c("Dezentral", "Zentral (Wiesbaden-Erbenheim)"),
+    y = c(sb_dez_sf, sb_zen_sf),
+    type = "bar",
+    marker = list(color = c("#E9C46A", cols$top),
+                  line = list(color = c("#B8951A", "#01696f"), width = 1)),
+    text = paste0(round(c(sb_dez_sf, sb_zen_sf), 1), " Boxen"),
+    textposition = "outside",
+    textfont = list(size = 14, family = "Arial", color = "#1F2933")
+  ) |>
+  layout(
+    xaxis = list(title = "", fixedrange = TRUE),
+    yaxis = list(title = "Sicherheitsbestand (Boxen)", fixedrange = TRUE,
+                 range = c(0, sb_dez_sf * 1.25)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 20, t = 20, b = 40),
+    height = 300, width = 420
+  )
+```
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+**56,0 % weniger Sicherheitsbestand** durch die Zentralisierung auf Wiesbaden-Erbenheim — bei identischem Servicegrad.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Lagerbestandspooling {#slide-pooling-zeitreihen}
+::: slide-subtitle
+Empirische Illustration 
+:::
+
+
+```{r pooling-sim-data}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(MASS)
+
+set.seed(43)
+n    <- 12
+mu1  <- 120; mu2 <- 150   # Wiesbaden, Mainz
+sig1 <- 25;  sig2 <- 30
+rhos <- c(-0.8, 0.0, 0.8)
+
+# Hilfsfunktion: bivariates Sample erzeugen
+gen_biv <- function(rho, n, mu1, mu2, sig1, sig2) {
+  Sigma <- matrix(c(sig1^2, rho*sig1*sig2,
+                    rho*sig1*sig2, sig2^2), 2, 2)
+  raw   <- mvrnorm(n, mu = c(mu1, mu2), Sigma = Sigma)
+  raw   <- round(raw)
+  data.frame(t = 1:n, D1 = raw[,1], D2 = raw[,2])
+}
+
+# Hilfsfunktion: scatter plot
+make_scatter_fig <- function(df, rho_label, col_pt, height = 300, width= 300) {
+  rho_emp <- round(cor(df$D1, df$D2), 2)
+  fig <- plot_ly() 
+  
+  fig <- fig |> add_trace(
+    data = df,
+    x = ~D1, y = ~D2,
+    type = "scatter", mode = "markers+text",
+    text = ~paste0("t=", t),
+    textposition = "top right",
+    textfont = list(size = 10, color = "#6B7280"),
+    marker = list(size = 12, color = col_pt, opacity = 0.85,
+                  line = list(color = "white", width = 1.5)),
+    hovertemplate = "t=%{text}<br>D₁=%{x}<br>D₂=%{y}<extra></extra>"
+  )
+  # Regressionslinie
+  fit   <- lm(D2 ~ D1, data = df)
+  x_seq <- seq(min(df$D1)-5, max(df$D1)+5, length.out = 40)
+  y_fit <- predict(fit, newdata = data.frame(D1 = x_seq))
+  fig <- fig |>
+    add_trace(x = x_seq, y = as.numeric(y_fit),
+              type = "scatter", mode = "lines",
+              name = "Regressionsgerade",
+              showlegend = FALSE,
+              line = list(color = "#6B7280", width = 1.5, dash = "dot"))
+  fig |> layout(
+    title  = list(
+      # text = paste0("<b>ρ = ", rho_label,
+      #               "</b>  (empirisch: ", rho_emp, ")"),
+      font = list(size = 13, color = "#1F2933", family = "Arial"),
+      x = 0.04, xanchor = "left"),
+    xaxis  = list(title = "D₁", fixedrange = TRUE,
+                  range = c(min(df$D1)-10, max(df$D1)+15)),
+    yaxis  = list(title = "D₂", fixedrange = TRUE,
+                  range = c(min(df$D2)-10, max(df$D2)+15)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 45, r = 10, t = 40, b = 50),
+    height = height, width = width 
+  )
+}
+
+# Hilfsfunktion: Time series plot
+make_ts_fig <- function(df, rho_label, col1 = "red", col2 = "blue", col0 ="green", height = 300, width = 300) {
+  df$D0 <- df$D1 + df$D2
+  fig <- plot_ly(df, x = ~t)
+  fig <- fig |>
+    add_trace(y = ~D1, type = "scatter", mode = "lines+markers",
+              name = "D₁", line = list(color = col1, width = 2),
+              marker = list(color = col1, size = 7)) |>
+    add_trace(y = ~D2, type = "scatter", mode = "lines+markers",
+              name = "D₂", line = list(color = col2, width = 2, dash = "dash"),
+              marker = list(color = col2, size = 7, symbol = "square")) |>
+    add_trace(y = ~D0, type = "scatter", mode = "lines+markers",
+              name = "D₀ = D₁+D₂",
+              line = list(color = col0, width = 2.5),
+              marker = list(color = col0, size = 8, symbol = "diamond"))
+  fig |> layout(
+    # title  = list(text = paste0("<b>ρ = ", rho_label, "</b>"),
+    #               font = list(size = 14, color = "#1F2933", family = "Arial"),
+    #               x = 0.04, xanchor = "left"),
+    xaxis  = list(title = "Periode t", dtick = 2, fixedrange = TRUE),
+    yaxis  = list(title = "Nachfrage (Boxen)", fixedrange = TRUE,
+                  range = c(0, 420)),
+    legend = list(orientation = "h", y = +0.95, font = list(size = 12)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 45, r = 10, t = 35, b = 65),
+    height = height, width = width 
+  )
+}
+
+sim_data <- lapply(rhos, gen_biv,
+                   n = n, mu1 = mu1, mu2 = mu2, sig1 = sig1, sig2 = sig2)
+names(sim_data) <- paste0("rho_", gsub("\\.", "", rhos))
+
+# Tatsächliche Korrelationen
+rho_actual <- sapply(sim_data, function(df) round(cor(df$D1, df$D2), 2))
+```
+
+
+::: {.small-text}
+
+:::: columns
+
+::: {.column width="32%"}
+**negative Korrelation** $\rho = -0.8$ 
+```{r pooling-zeitreihen-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+gen.wid <- 380
+gen.hei <- 260
+
+make_ts_fig(sim_data$`rho_-08`, "-0.8", height = gen.hei, width = gen.wid)
+
+```
+
+```{r pooling-scatter-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_scatter_fig(df = sim_data$`rho_-08`, "-0.8", cols$top, height = gen.hei, width = gen.wid)
+
+```
+
+:::
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**keine Korrelation** $\rho = 0$ 
+```{r pooling-zeitreihen-plot2}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_ts_fig(sim_data$rho_0, "0", height = gen.hei, width = gen.wid)
+
+```
+
+```{r pooling-scatter-plot2}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_scatter_fig(df = sim_data$rho_0, "0", cols$top, height = gen.hei, width = gen.wid)
+
+```
+:::
+:::
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**positive Korrelation** $\rho = +0.8$ 
+```{r pooling-zeitreihen-plot3}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_ts_fig(sim_data$rho_08, "+0.8", height = gen.hei, width = gen.wid)
+
+```
+
+```{r pooling-scatter-plot3}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_scatter_fig(df = sim_data$rho_08, "+0.8", cols$top, height = gen.hei, width = gen.wid)
+
+```
+:::
+:::
+::::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+Bei **negativer Korrelation** dämpfen sich die Schwankungen von $D_0$ gegenseitig — die Gesamtnachfrage ist **stabiler** als die Einzelnachfragen. Bei **positiver Korrelation** verstärken sie sich.
+:::
+:::
+
+---
+
+## Lagerbestandspooling {#slide-pooling-sb-vergleich}
+::: slide-subtitle
+Sicherheitsbestand in Abhängigkeit der Korrelation $\rho$
+:::
+
+```{r pooling-sb-berechnung}
+#| echo: false
+#| warning: false
+#| message: false
+
+alpha_sl <- 0.95
+z_alpha  <- qnorm(alpha_sl)
+
+# Theoretische Werte fuer die Filialen Wiesbaden (sigma1=25) und Mainz (sigma2=30)
+rho_seq  <- seq(-1, 1, by = 0.01)
+sig1 <- 25; sig2 <- 30
+
+sb_dez <- z_alpha * (sig1 + sig2)         # konstant
+sb_zen <- z_alpha * sqrt(sig1^2 + sig2^2 + 2 * rho_seq * sig1 * sig2)
+einspar <- round((1 - sb_zen / sb_dez) * 100, 1)
+
+df_sb <- data.frame(rho = rho_seq, sb_dez = sb_dez,
+                    sb_zen = sb_zen, einspar = einspar)
+
+# Markierpunkte für rho = -0.8, 0, +0.8
+rho_marks <- c(-0.8, 0.0, 0.8)
+mark_df   <- data.frame(
+  rho     = rho_marks,
+  sb_zen  = z_alpha * sqrt(sig1^2 + sig2^2 + 2*rho_marks*sig1*sig2),
+  einspar = round((1 - z_alpha * sqrt(sig1^2 + sig2^2 +
+              2*rho_marks*sig1*sig2) / sb_dez) * 100, 1)
+)
+```
+
+::: columns
+::: {.column width="55%"}
+
+```{r pooling-sb-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.5
+
+fig_sb <- plot_ly()
+
+# Dezentraler SB (Referenzlinie)
+fig_sb <- fig_sb |>
+  add_trace(x = df_sb$rho, y = df_sb$sb_dez,
+            type = "scatter", mode = "lines",
+            name = "sb<sub>dez</sub> (Summe)",
+            line = list(color = "#6B7280", width = 2, dash = "dash"))
+
+# Zentraler SB
+fig_sb <- fig_sb |>
+  add_trace(x = df_sb$rho, y = df_sb$sb_zen,
+            type = "scatter", mode = "lines",
+            name = "sb<sub>zen</sub>(ρ)",
+            line = list(color = cols$top, width = 3))
+
+# Einspar-Fläche
+fig_sb <- fig_sb |>
+  add_trace(x = df_sb$rho, y = df_sb$sb_zen,
+            type = "scatter", mode = "lines",
+            fill = "tonexty", fillcolor = "rgba(45,158,142,0.15)",
+            line = list(color = "transparent"),
+            showlegend = FALSE, hoverinfo = "skip")
+
+# Markierungspunkte
+farben_marks <- c("#E76F51", cols$mid, "#E9C46A")
+for (i in seq_along(rho_marks)) {
+  fig_sb <- fig_sb |>
+    add_trace(x = mark_df$rho[i], y = mark_df$sb_zen[i],
+              type = "scatter", mode = "markers",
+              name = paste0("ρ = ", rho_marks[i]),
+              marker = list(size = 13, color = farben_marks[i],
+                            line = list(color = "white", width = 2))) |>
+    add_annotations(
+      x = mark_df$rho[i],
+      y = mark_df$sb_zen[i] - 3.5,
+      xref = "x", yref = "y",
+      text = paste0("<b>", round(mark_df$sb_zen[i], 1),
+                    "<br>(−", mark_df$einspar[i], "%)</b>"),
+      showarrow = FALSE,
+      font = list(size = 12, color = farben_marks[i], family = "Arial"),
+      xanchor = "center"
+    )
+}
+
+fig_sb |> layout(
+  xaxis  = list(title = "Korrelation ρ", fixedrange = TRUE,
+                tickvals = seq(-1, 1, 0.25)),
+  yaxis  = list(title = "Sicherheitsbestand sb",
+                fixedrange = TRUE, range = c(0, sb_dez * 1.08)),
+  legend = list(orientation = "h", y = -0.22, font = list(size = 12)),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 15, t = 15, b = 70),
+  height = 400, width = 700
+)
+```
+
+:::
+::: {.column width="43%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Drei Szenarien (Frankfurt $\sigma_1=25$, Offenbach $\sigma_2=30$, $\alpha = 95\%$)
+
+| $\rho$ | $sb_{zen}$ | Einsparung |
+|:---:|---:|---:|
+| $-0.8$ | `r round(mark_df$sb_zen[1],1)` | `r mark_df$einspar[1]` % |
+| $\;\;\;0$ | `r round(mark_df$sb_zen[2],1)` | `r mark_df$einspar[2]` % |
+| $+0.8$ | `r round(mark_df$sb_zen[3],1)` | `r mark_df$einspar[3]` % |
+| $(+1)$ | `r round(sb_dez,1)` | 0 % |
+
+$sb_{dez} = z_\alpha \cdot (\sigma_1 + \sigma_2) =$ `r round(sb_dez,1)`
+:::
+:::
+
+
+:::
+:::
+
+::: {.small-text}
+:::: columns
+::: {.column width="49%"}
+
+::: {.fragment .fade-up}
+::::: {.callout-warning appearance="simple"}
+## Zentralitätsgewinn wenn $\sigma_1 \neq \sigma_2$
+
+$$1-\frac{sb_{zen}}{sb_{dez}} = 1-\frac{\sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2}}{\sigma_1 + \sigma_2}$$
+:::::
+::: 
+:::
+
+::: {.column width="49%"}
+
+::: {.fragment .fade-up}
+::::: {.callout-warning appearance="simple"}
+## Zentralitätsgewinn wenn $\sigma_1 = \sigma_2$
+
+$$1-\frac{sb_{zen}}{sb_{dez}} = 1-\sqrt{\frac{1+\rho}{2}}$$
+:::::
+:::
+:::
+::::
+:::
+
+---
+
+## Lagerbestandspooling {#slide-pooling-realdata}
+::: slide-subtitle
+Simulierte Tagesnachfrage: Frankfurt & Offenbach
+:::
+
+```{r pooling-real-data-prep}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Simulierte Tagesnachfrage aus dem vorigen Abschnitt wiederverwenden
+# (Frankfurt/Offenbach, set.seed(616), inkl. gemeinsamer Feiertags-Spitzen)
+dA_r <- dA
+dB_r <- dB
+n_r  <- min(length(dA_r), length(dB_r))
+dA_r <- dA_r[seq_len(n_r)]
+dB_r <- dB_r[seq_len(n_r)]
+dPool_r <- dA_r + dB_r
+
+muA_r  <- mean(dA_r);  sigA_r  <- sd(dA_r)
+muB_r  <- mean(dB_r);  sigB_r  <- sd(dB_r)
+muP_r  <- mean(dPool_r); sigP_r <- sd(dPool_r)
+rho_r  <- cor(dA_r, dB_r)
+
+alpha_r <- 0.95
+z_r     <- qnorm(alpha_r)
+
+# Empirische Sicherheitsbestände
+SB_A_emp  <- quantile(dA_r,    alpha_r) - muA_r
+SB_B_emp  <- quantile(dB_r,    alpha_r) - muB_r
+SB_dez_emp <- SB_A_emp + SB_B_emp
+SB_zen_emp <- quantile(dPool_r, alpha_r) - muP_r
+
+# Parametrische Sicherheitsbestände (Normalverteilung)
+SB_A_par   <- z_r * sigA_r
+SB_B_par   <- z_r * sigB_r
+SB_dez_par <- SB_A_par + SB_B_par
+SB_zen_par <- z_r * sqrt(sigA_r^2 + sigB_r^2 + 2 * rho_r * sigA_r * sigB_r)
+
+einspar_emp <- round((1 - SB_zen_emp / SB_dez_emp) * 100, 1)
+einspar_par <- round((1 - SB_zen_par / SB_dez_par) * 100, 1)
+
+eA_r    <- make_ecdf_xy(dA_r)
+eB_r    <- make_ecdf_xy(dB_r)
+ePool_r <- make_ecdf_xy(dPool_r)
+```
+
+:::: columns
+::: {.column width="50%"}
+
+```{r pooling-real-ts}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.6
+
+df_ts <- data.frame(
+  t  = seq_len(n_r),
+  D1 = dA_r,
+  D2 = dB_r,
+  D0 = dPool_r
+)
+
+fig_ts <- plot_ly(df_ts, x = ~t)
+
+fig_ts <- fig_ts |>
+  add_trace(y = ~D1, type = "scatter", mode = "lines",
+            name = "Frankfurt",
+            line   = list(color = cols$top, width = 1.6)) |>
+  add_trace(y = ~D2, type = "scatter", mode = "lines",
+            name = "Offenbach",
+            line   = list(color = cols$mid, width = 1.6, dash = "dash")) |>
+  add_trace(y = ~D0, type = "scatter", mode = "lines",
+            name = "D₀ = Frankfurt + Offenbach",
+            line   = list(color = cols$dash, width = 2)) |>
+  layout(
+    xaxis  = list(title = "Tag", fixedrange = TRUE),
+    yaxis  = list(title = "Absatz (Boxen)", fixedrange = TRUE),
+    legend = list(orientation = "h", x= 0.1, y = 0.88, font = list(size = 14)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 10, t = 10, b = 70),
+    height = 240, width = 680
+  )
+
+fig_ts
+```
+
+::: {.fragment .fade-up}
+```{r pooling-real-ecdf}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.6
+
+xg_A    <- seq(min(dA_r)    - 200, max(dA_r)    + 200, length.out = 300)
+xg_B    <- seq(min(dB_r)    - 200, max(dB_r)    + 200, length.out = 300)
+xg_Pool <- seq(min(dPool_r) - 300, max(dPool_r) + 300, length.out = 300)
+
+col_A_r    <- cols$top
+col_B_r    <- cols$mid
+col_Pool_r <- cols$dash
+
+plot_ly() |>
+  # ECDF Frankfurt
+  add_trace(x = eA_r$x, y = eA_r$y, type = "scatter", mode = "lines+markers",
+            name = "ECDF Frankfurt",
+            line = list(color = col_A_r, width = 2.2),
+            marker = list(color = col_A_r, size = 6,
+                          line = list(color = "white", width = 1))) |>
+  # Normalverteilung Frankfurt
+  add_trace(x = xg_A, y = pnorm(xg_A, muA_r, sigA_r),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muA_r), ", ", round(sigA_r), "\u00b2)"),
+            line = list(color = col_A_r, width = 2, dash = "dot")) |>
+  # ECDF Offenbach
+  add_trace(x = eB_r$x, y = eB_r$y, type = "scatter", mode = "lines+markers",
+            name = "ECDF Offenbach",
+            line = list(color = col_B_r, width = 2.2, dash = "dash"),
+            marker = list(color = col_B_r, size = 6, symbol = "square",
+                          line = list(color = "white", width = 1))) |>
+  # Normalverteilung Offenbach
+  add_trace(x = xg_B, y = pnorm(xg_B, muB_r, sigB_r),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muB_r), ", ", round(sigB_r), "\u00b2)"),
+            line = list(color = col_B_r, width = 2, dash = "dot")) |>
+  # ECDF Gesamtnachfrage (Pool)
+  add_trace(x = ePool_r$x, y = ePool_r$y, type = "scatter", mode = "lines+markers",
+            name = "ECDF D\u2080 (Pool)",
+            line = list(color = col_Pool_r, width = 2.2),
+            marker = list(color = col_Pool_r, size = 6, symbol = "diamond",
+                          line = list(color = "white", width = 1))) |>
+  # Normalverteilung Pool
+  add_trace(x = xg_Pool, y = pnorm(xg_Pool, muP_r, sigP_r),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muP_r), ", ", round(sigP_r), "\u00b2)"),
+            line = list(color = col_Pool_r, width = 2, dash = "dot")) |>
+  
+  layout(
+    xaxis  = list(title = "Tägl. Nachfrage (Boxen)", fixedrange = FALSE,
+                  tickformat = ",.0f"),
+    yaxis  = list(title = "F(d)", fixedrange = TRUE,
+                  range = c(-0.05, 1.08), tickformat = ".0%"),
+    legend = list(orientation = "h", x = .1, y = 0.38, font = list(size = 11)),
+    plot_bgcolor  = "transparent", paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 10, t = 5, b = 75), height = 240, width = 660
+  )
+```
+:::
+
+::: {.fragment .fade-up}
+```{r pooling-real-scatter}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.5
+
+fit_r   <- lm(dB_r ~ dA_r)
+x_seq_r <- seq(min(dA_r) - 5, max(dA_r) + 5, length.out = 80)
+y_fit_r <- predict(fit_r, newdata = data.frame(dA_r = x_seq_r))
+
+fig_sc <- plot_ly() |>
+  add_trace(
+    x = dA_r, y = dB_r,
+    type = "scatter", mode = "markers",
+    name = "Beobachtungen",
+    marker = list(size = 9, color = cols$top, opacity = 0.8,
+                  line = list(color = "white", width = 1.2)),
+    hovertemplate = "Frankfurt: %{x}<br>Offenbach: %{y}<extra></extra>"
+  ) |>
+  add_trace(
+    x = x_seq_r, y = as.numeric(y_fit_r),
+    type = "scatter", mode = "lines",
+    name = "Regressionsgerade",
+    line = list(color = "#6B7280", width = 1.6, dash = "dot"),
+    hoverinfo = "skip"
+  ) |>
+  add_annotations(
+    x = 0.97, y = 0.95, xref = "paper", yref = "paper",
+    text = paste0("<b>ρ̂ = ", round(rho_r, 2), "</b>"),
+    showarrow = FALSE,
+    font = list(size = 16, color = "#1F2933", family = "Arial"),
+    xanchor = "right"
+  ) |>
+  layout(
+    xaxis  = list(title = "tägl. Absatz Frankfurt", fixedrange = TRUE),
+    yaxis  = list(title = "Absatz Offenbach", fixedrange = TRUE),
+    legend = list(orientation = "h", x = .1, y = 0.88, font = list(size = 14)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 10, t = 10, b = 70),
+    height = 240, width = 680
+  )
+
+fig_sc
+```
+:::
+
+:::
+
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+
+```{r pooling-real-sb-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+sb_df <- data.frame(
+  Kennzahl = c(
+    "μ̂", "σ̂",
+    "SB dezentral (emp.)", "SB zentral (emp.)", "Einsparung (emp.)",
+    "SB dezentral (norm.)", "SB zentral (norm.)", "Einsparung (norm.)"
+  ),
+  Frankfurt = c(round(muA_r, 1), round(sigA_r, 1),
+            round(SB_A_emp, 1), "—", "—",
+            round(SB_A_par, 1), "—", "—"),
+  Offenbach = c(round(muB_r, 1), round(sigB_r, 1),
+            round(SB_B_emp, 1), "—", "—",
+            round(SB_B_par, 1), "—", "—"),
+  Pool  = c(round(muP_r, 1), round(sigP_r, 1),
+            round(SB_dez_emp, 1), round(SB_zen_emp, 1),
+            paste0(einspar_emp, " %"),
+            round(SB_dez_par, 1), round(SB_zen_par, 1),
+            paste0(einspar_par, " %"))
+)
+
+kbl(sb_df,
+    col.names = c("Kennzahl", "Frankfurt", "Offenbach", "Gesamt / Pool"),
+    align = c("l", "r", "r", "r"),
+    escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"),
+                full_width = TRUE, font_size = 18) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(1:2, background = "#F8F9FA") |>
+  row_spec(3:5, background = "#E8F4F1") |>
+  row_spec(6:8, background = "#FFF3CD") |>
+  row_spec(c(5, 8), bold = TRUE)
+```
+
+:::
+
+::: {.fragment .fade-up}
+
+```{r pooling-real-sb-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.0
+
+kategorien <- c("Empirisch", "Normalverteilung")
+sb_dez_vals <- c(round(SB_dez_emp, 1), round(SB_dez_par, 1))
+sb_zen_vals <- c(round(SB_zen_emp, 1), round(SB_zen_par, 1))
+
+fig_bar <- plot_ly() |>
+  add_trace(
+    x = kategorien, y = sb_dez_vals,
+    type = "bar", name = "Dezentral (SB₁ + SB₂)",
+    marker = list(color = "#E9C46A",
+                  line = list(color = "#B8951A", width = 1)),
+    text  = round(sb_dez_vals, 1), textposition = "outside",
+    textfont = list(size = 13, family = "Arial", color = "#1F2933")
+  ) |>
+  add_trace(
+    x = kategorien, y = sb_zen_vals,
+    type = "bar", name = "Zentral (Pooling)",
+    marker = list(color = cols$top,
+                  line = list(color = "#01696f", width = 1)),
+    text  = round(sb_zen_vals, 1), textposition = "outside",
+    textfont = list(size = 13, family = "Arial", color = "#1F2933")
+  ) |>
+  layout(
+    barmode = "group",
+    xaxis   = list(title = "", fixedrange = TRUE),
+    yaxis   = list(title = "Sicherheitsbestand (Stück)",
+                   fixedrange = TRUE,
+                   range = c(0, max(sb_dez_vals) * 1.25)),
+    legend  = list(orientation = "h", y = -0.28, font = list(size = 11)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 20, t = 20, b = 70),
+    height = 270, width = 680
+  )
+
+fig_bar
+```
+
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+Korrelation $\hat{\rho} =$ `r round(rho_r, 2)` $\rightarrow$ Pooling-Einsparung empirisch: **`r einspar_emp` %**, parametrisch: **`r einspar_par` %**
+:::
+:::
+
+:::
+::::
+
+
+## Exkurs: Normalverteilung {#slide-exkurs-normal-intro}
+::: slide-subtitle
+Wahrscheinlichkeitsdichtefunktion & Verteilungsfunktion
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+## Formale Definition
+
+**Dichtefunktion** $f(x)$ gibt die relative Häufigkeit an, mit der ein Wert $x$ auftritt und **Verteilungsfunktion** $F(x)$ ist die kumulierte Wahrscheinlichkeit:
+
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}}\,\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right) \qquad F(x) = P(X \leq x) = \int_{-\infty}^{x} f(t)\,dt$$
+
+:::
+
+
+:::: columns
+::: {.column width="50%"}
+
+```{r exkurs-normal-pdf-cdf}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.8
+
+mu_ex    <- 0
+sig_ex   <- 1
+x_ex     <- seq(-4, 4, length.out = 400)
+y_pdf_ex <- dnorm(x_ex, mu_ex, sig_ex)
+y_cdf_ex <- pnorm(x_ex, mu_ex, sig_ex)
+
+# Schraffurfläche: μ ± σ
+x_shade <- seq(-1, 1, length.out = 200)
+y_shade <- dnorm(x_shade, mu_ex, sig_ex)
+
+plot_ly() |>
+  # ── PDF ──────────────────────────────────────────────────────────
+  add_trace(x = x_ex, y = y_pdf_ex, type = "scatter", mode = "lines",
+            name = "f(x) — Dichte",
+            line = list(color = cols$top, width = 2.8),
+            yaxis = "y") |>
+  # Schraffur μ ± σ (ca. 68%)
+  add_trace(
+    x = c(x_shade, rev(x_shade)),
+    y = c(rep(0, 200), rev(y_shade)),
+    type = "scatter", mode = "none",
+    fill = "toself",
+    fillcolor = "rgba(1,105,111,0.18)",
+    name = "\u00b11\u03c3 \u2248 68\u202f%",
+    yaxis = "y", showlegend = TRUE) |>
+  # CDF auf zweiter y-Achse
+  add_trace(x = x_ex, y = y_cdf_ex, type = "scatter", mode = "lines",
+            name = "F(x) — Verteilungsfunktion",
+            line = list(color = cols$dash, width = 2.4, dash = "dash"),
+            yaxis = "y2") |>
+  # Quantil-Markierung: F(1) ≈ 0.841
+  add_segments(x = 1, xend = 1, y = 0, yend = 1,
+               line = list(color = cols$mid, width = 1.4, dash = "dot"),
+               yaxis = "y2", showlegend = FALSE) |>
+  add_annotations(x = 1.08, y = 0.84, yref = "y2",
+    text = "<b>F(1) ≈ 0,841</b>",
+    showarrow = FALSE, xanchor = "left",
+    font = list(size = 12, color = cols$mid, family = "Arial")) |>
+  layout(
+    xaxis  = list(title = "x", fixedrange = TRUE,
+                  tickvals = list(-3,-2,-1,0,1,2,3),
+                  ticktext = list("μ−3σ","μ−2σ","μ−σ","μ","μ+σ","μ+2σ","μ+3σ")),
+    yaxis  = list(title = "f(x) — Dichtefunktion", fixedrange = TRUE,
+                  range = c(0, 0.46), side = "left"),
+    yaxis2 = list(title = "F(x) — Verteilungsfunktion", overlaying = "y",
+                  side = "right", range = c(0, 1.05),
+                  tickformat = ".0%", fixedrange = TRUE),
+    legend = list(orientation = "h", y = -0.28, font = list(size = 11)),
+    plot_bgcolor  = "transparent", paper_bgcolor = "transparent",
+    margin = list(l = 55, r = 65, t = 5, b = 70), height = 420, width = 680
+  )
+```
+
+:::
+
+::: {.column width="50%"}
+
+
+::: {.callout-tip appearance="minimal" icon=false}
+**Symmetrie-Eigenschaft und 68–95–99,7-Regel::**
+
+$$F(-z) = 1 - F(z)$$
+
+| Wertebereich | Wahrscheinlichkeit |
+|:--------|:--------:|
+| $\mu \pm 1\sigma$ | ≈ 68,3 % |
+| $\mu \pm 2\sigma$ | ≈ 95,4 % |
+| $\mu \pm 3\sigma$ | ≈ 99,7 % |
+
+:::
+
+:::
+::::
+
+---
+
+## Exkurs: Standardnormalverteilung {#slide-exkurs-stdnorm}
+::: slide-subtitle
+z-Transformation & Standardisierung
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**z-Transformation** überführt jede Normalverteilung $X \sim \mathcal{N}(\mu, \sigma^2)$ in die **Standardnormalverteilung** $Z \sim \mathcal{N}(0, 1)$:
+
+$$Z = \frac{X - \mu}{\sigma} \quad \Rightarrow P(X \leq x) = P\!\left(Z \leq \frac{x-\mu}{\sigma}\right) = \Phi(z)$$
+$\rightarrow$ alle $\mathcal{N}(\mu, \sigma^2)$ lassen sich auf *eine* Tabelle zurückführen — die **Standard-Normalverteilungstabelle** $\Phi(z)$
+:::
+
+:::: columns
+::: {.column width="52%"}
+
+```{r exkurs-stdnorm-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.8
+
+z_seq    <- seq(-4, 4, length.out = 400)
+y_z_pdf  <- dnorm(z_seq)
+y_z_cdf  <- pnorm(z_seq)
+
+# Schraffuren
+make_shade <- function(a, b) {
+  xs <- seq(a, b, length.out = 150)
+  list(x = c(xs, rev(xs)), y = c(rep(0, 150), rev(dnorm(xs))))
+}
+sh1 <- make_shade(-1.96, 1.96)   # 95%
+sh2 <- make_shade(min(z_seq), -1.96)
+sh3 <- make_shade( 1.96,  max(z_seq))
+
+plot_ly() |>
+  add_trace(x = sh1$x, y = sh1$y, type = "scatter", mode = "none",
+            fill = "toself", fillcolor = "rgba(1,105,111,0.20)",
+            name = "95\u202f%  (±1,96)", showlegend = TRUE) |>
+  add_trace(x = sh2$x, y = sh2$y, type = "scatter", mode = "none",
+            fill = "toself", fillcolor = "rgba(193,58,46,0.20)",
+            name = "Ablehnungsbereich", showlegend = TRUE) |>
+  add_trace(x = sh3$x, y = sh3$y, type = "scatter", mode = "none",
+            fill = "toself", fillcolor = "rgba(193,58,46,0.20)",
+            showlegend = FALSE) |>
+  add_trace(x = z_seq, y = y_z_pdf, type = "scatter", mode = "lines",
+            name = "φ(z) — Standarddichte",
+            line = list(color = cols$top, width = 2.8)) |>
+  # Vertikale Markierungen ± 1.96
+  add_segments(x = 1.96,  xend = 1.96,  y = 0, yend = dnorm(1.96),
+               line = list(color = cols$mid, dash = "dot", width = 1.4),
+               showlegend = FALSE) |>
+  add_segments(x = -1.96, xend = -1.96, y = 0, yend = dnorm(1.96),
+               line = list(color = cols$mid, dash = "dot", width = 1.4),
+               showlegend = FALSE) |>
+  add_annotations(x = 2.05,  y = 0.08, text = "<b>z = 1,96</b>",
+    showarrow = FALSE, xanchor = "left",
+    font = list(size = 11, color = cols$mid, family = "Arial")) |>
+  add_annotations(x = -2.05, y = 0.08, text = "<b>z = −1,96</b>",
+    showarrow = FALSE, xanchor = "right",
+    font = list(size = 11, color = cols$mid, family = "Arial")) |>
+  layout(
+    xaxis  = list(title = "z = (x − μ) / σ", fixedrange = TRUE,
+                  tickvals = list(-3,-2,-1,0,1,2,3)),
+    yaxis  = list(title = "φ(z)", fixedrange = TRUE, range = c(0, 0.44)),
+    legend = list(orientation = "h", y = -0.28, font = list(size = 11)),
+    plot_bgcolor  = "transparent", paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 15, t = 5, b = 70), height = 420, width = 680
+  )
+```
+
+:::
+
+::: {.column width="48%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Wichtige Quantile der $\mathcal{N}(0,1)$:**
+
+| Servicegrad $\alpha$ | $z_\alpha = \Phi^{-1}(\alpha)$ |
+|:--------------------:|:------------------------------:|
+| 90,0 % | 1,282 |
+| 95,0 % | 1,645 |
+| 97,5 % | 1,960 |
+| 99,0 % | 2,326 |
+| 99,9 % | 3,090 |
+
+:::
+
+:::
+::::
+
+---
+
+## Exkurs: Quantils-/Verteilungstabelle {#slide-exkurs-ztable}
+::: slide-subtitle
+Ablesen von $\Phi(z)$ und Umkehrung $z_\alpha = \Phi^{-1}(\alpha)$
+:::
+
+:::: columns
+::: {.column width="58%"}
+
+```{r exkurs-ztable}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Interaktive z-Tabelle (Zeilen: z ganzzahlig + eine Dezimalstelle,
+#                         Spalten: zweite Dezimalstelle 0.00 … 0.09)
+z_rows <- seq(0.0, 3.0, by = 0.1)
+z_cols <- seq(0.00, 0.09, by = 0.01)
+
+z_mat <- outer(z_rows, z_cols, function(a, b) {
+  sprintf("%.4f", pnorm(a + b))
+})
+
+df_ztab <- as.data.frame(z_mat)
+colnames(df_ztab) <- sprintf("+%.2f", z_cols)
+rownames(df_ztab) <- sprintf("%.1f", z_rows)
+
+# Highlight-Zeilen: z = 1.6 (≈ 95%) und z = 2.3 (≈ 99%)
+highlight_rows <- which(rownames(df_ztab) %in% c("1.6", "2.3"))
+
+kbl(df_ztab,
+    caption = "Φ(z) — Standardnormalverteilung (z ≥ 0)",
+    align = "r", escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed", "striped", "hover"),
+                full_width = TRUE, font_size = 12) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(highlight_rows,
+           background = "#E8F4F1", bold = TRUE) |>
+  column_spec(6,  bold = TRUE, color = "#01696f") |>   # Spalte +0.04 (→ 1.645)
+  column_spec(4,  bold = TRUE, color = "#8B6914")       # Spalte +0.02 (→ 2.326)
+```
+
+:::
+
+::: {.column width="42%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Ablesen der Tabelle:**  
+Gesucht: $P(X \leq x)$ für $X \sim \mathcal{N}(\mu, \sigma^2)$
+
+1. Berechne $z = (x - \mu)/\sigma$  
+2. Zeile = erste Dezimalstelle von $z$  
+3. Spalte = zweite Dezimalstelle von $z$  
+4. Tabellenwert = $\Phi(z)$
+:::
+
+::: {.callout-tip appearance="minimal" icon=false}
+**Beispiel Lagerbestand:**  
+$D \sim \mathcal{N}(500, 80^2)$, Servicegrad $\alpha = 95\,\%$
+
+$$z_{0{,}95} = \Phi^{-1}(0{,}95) = 1{,}645$$
+
+$$\Rightarrow\; \text{SB} = z_\alpha \cdot \sigma = 1{,}645 \cdot 80 \approx \mathbf{132\;\text{Stück}}$$
+:::
+
+
+:::
+::::

@@ -1,0 +1,12 @@
+id,name,city,country,longitude,latitude,demand_mwh
+C1,Volkswagen Wolfsburg,Wolfsburg,DE,10.7796,52.4338,45000
+C2,Volkswagen Hannover,Hannover,DE,9.6846,52.4236,15000
+C3,Volkswagen Emden,Emden,DE,7.2070,53.3687,18000
+C4,Volkswagen Osnabrück,Osnabrück,DE,8.0472,52.2736,12000
+C5,Mercedes-Benz Bremen,Bremen,DE,8.8072,53.0793,35000
+C6,Ford Köln,Köln,DE,6.8996,50.9570,30000
+C7,Opel Rüsselsheim,Rüsselsheim,DE,8.4196,49.9896,25000
+C8,Volvo Cars Gent,Gent,BE,3.7499,51.0645,19000
+C9,Volvo Trucks Gent,Gent,BE,3.7330,51.0615,17000
+C10,Toyota Motor Europe,Zaventem,BE,4.4600,50.8870,40000
+C11,VDL Nedcar,Born,NL,5.8106,51.0315,15000

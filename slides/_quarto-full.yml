@@ -1,0 +1,6 @@
+project:
+  output-dir: _output
+  execute-dir: project
+  
+  render:
+    - scm-komplett.qmd

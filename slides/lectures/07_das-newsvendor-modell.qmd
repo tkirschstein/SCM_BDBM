@@ -1,0 +1,1297 @@
+
+## Unsicherheit in Supply Chains 
+
+- Pooling
+- **Newsvendor-Modell**
+- Bullwhip-Effekt
+
+```{r}
+#| include: false
+
+source("../R/scm_functions.R")
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(plotly)
+library(tidyverse)
+
+# Beispielparameter -------------------------------------------------------
+
+mu <- 1000
+sigma <- 200
+p <- 20
+c <- 8
+v <- 2
+g <- 0
+
+underage_cost <- p - c + g
+overage_cost <- c - v
+critical_ratio <- underage_cost / (underage_cost + overage_cost)
+q_star <- qnorm(critical_ratio, mean = mu, sd = sigma)
+
+# Lokale Hilfsfunktion für die Visualisierung ----------------------------
+
+plot_newsvendor_distribution <- function(
+    mean_demand,
+    sd_demand,
+    order_quantity,
+    critical_ratio = NULL,
+    title = "Newsvendor-Modell: Nachfrage und Bestellmenge"
+) {
+  stopifnot(
+    is.finite(mean_demand),
+    is.finite(sd_demand),
+    sd_demand > 0,
+    is.finite(order_quantity)
+  )
+
+  x_min <- min(0, mean_demand - 4 * sd_demand)
+  x_max <- max(order_quantity, mean_demand + 4 * sd_demand)
+
+  demand <- tibble(
+    demand = seq(x_min, x_max, length.out = 1000),
+    density = dnorm(demand, mean = mean_demand, sd = sd_demand)
+  )
+
+  left_area <- demand |> filter(demand <= order_quantity)
+  right_area <- demand |> filter(demand >= order_quantity)
+
+  ggplot(demand, aes(x = demand, y = density)) +
+    geom_area(
+      data = left_area,
+      fill = "#00843D",
+      alpha = 0.25
+    ) +
+    geom_area(
+      data = right_area,
+      fill = "#E85D04",
+      alpha = 0.20
+    ) +
+    geom_line(
+      linewidth = 1.1,
+      colour = "#1F2937"
+    ) +
+    geom_vline(
+      xintercept = mean_demand,
+      linetype = "dashed",
+      colour = "#6B7280"
+    ) +
+    geom_vline(
+      xintercept = order_quantity,
+      linewidth = 1.2,
+      colour = "#00843D"
+    ) +
+    annotate(
+      "text",
+      x = order_quantity,
+      y = max(demand$density) * 0.95,
+      label = paste0(
+        "Q* = ",
+        format(
+          round(order_quantity, 0),
+          big.mark = ".",
+          scientific = FALSE
+        )
+      ),
+      hjust = -0.05,
+      colour = "#00843D",
+      fontface = "bold"
+    ) +
+    labs(
+      title = title,
+      subtitle = if (is.null(critical_ratio)) {
+        NULL
+      } else {
+        paste0(
+          "Kritische Fraktil: ",
+          number(
+            critical_ratio,
+            accuracy = 0.001,
+            decimal.mark = ","
+          )
+        )
+      },
+      x = "Nachfrage",
+      y = "Dichte"
+    ) +
+    theme_minimal(base_size = 18) +
+    theme(
+      plot.title = element_text(face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+```
+
+------------------------------------------------------------------------------
+
+## Lernziele {#newsvendor-learning-objectives}
+
+Nach dieser Einheit können Sie …
+
+- das **Newsvendor-Problem** als einmalige Bestellentscheidung bei
+  unsicherer Nachfrage einordnen,
+- Über- und Unterdeckungskosten bestimmen,
+- die kritische Fraktilregel herleiten und interpretieren,
+- eine optimale Bestellmenge bei gegebener Nachfrageverteilung
+  berechnen,
+- den Einfluss zentraler Modellparameter auf die Bestellentscheidung
+  erklären.
+
+
+**Literatur zur Vertiefung**
+
+- **Einführung Newsvendor:** [@thonemann2023operations, Kapitel 5].
+- **Einperiodige Bestandsmodelle und Critical-Fractile-Logik:** [@cachon2024matching, Kapitel 13].
+- **Newsvendor-Modelle im Kontext des Inventory Managements:** [@silver2017inventory, Kapitel 9].
+
+
+------------------------------------------------------------------------------
+
+## Fallbeispiel {#newsvendor-fallbeispiel-intro}
+::: slide-subtitle
+Sushi-Boxen im Supermarkt
+:::
+
+Ein Supermarkt bezieht täglich frisch produzierte Sushi-Boxen von der
+**SushiFresh GmbH**, einem regionalen Sushi-Hersteller im Rhein-Main-Gebiet.
+
+```{r}
+#| fig-height: 2
+#| fig-width: 15
+#| out-width: 100%
+#| fig-align: center
+#| fig-alt: "Interaktiver zeitlicher Ablauf der täglichen Sushi-Box-Entscheidung"
+
+library(plotly)
+library(tibble)
+
+timeline <- tibble(
+  zeitpunkt = c(0, 6, 24, 30),
+  label = c(
+    "Morgens, 7 Uhr<br>Sushi-Boxen füllen",
+    "8 Uhr<br>Verkaufsbeginn Supermarkt",
+    "19 Uhr<br>Abholung der Restware",
+    "20 Uhr<br>Restware verwerten"
+  ),
+  tooltip = c(
+    "<b>7 Uhr</b><br>Sushi-Boxen werden frisch vorbereitet.",
+    "<b>8 Uhr</b><br>Der Verkauf im Supermarkt beginnt.",
+    "<b>19 Uhr</b><br>Nicht verkaufte Boxen werden abgeholt.",
+    "<b>20 Uhr</b><br>Restbestand wird rabattiert, gespendet oder entsorgt."
+  )
+)
+
+plot_ly(
+  data = timeline,
+  x = ~zeitpunkt,
+  y = ~rep(0, nrow(timeline)),
+  type = "scatter",
+  mode = "markers",
+  marker = list(
+    size = 18,
+    color = "#00843D",
+    line = list(
+      color = "white",
+      width = 2
+    )
+  ),
+  text = ~tooltip,
+  hoverinfo = "text",
+  showlegend = FALSE
+) |>
+  add_segments(
+    x = 0,
+    xend = 30.5,
+    y = 0,
+    yend = 0,
+    line = list(
+      color = "#6B7280",
+      width = 2
+    ),
+    inherit = FALSE,
+    hoverinfo = "none",
+    showlegend = FALSE
+  ) |>
+  add_segments(
+    x = 6,
+    xend = 24,
+    y = 0,
+    yend = 0,
+    line = list(
+      color = "#00843D",
+      width = 5
+    ),
+    inherit = FALSE,
+    hoverinfo = "none",
+    showlegend = FALSE
+  ) |>
+  add_annotations(
+    x = timeline$zeitpunkt,
+    y = 0,
+    text = timeline$label,
+    showarrow = FALSE,
+    yshift = -65,
+    font = list(
+      size = 18,
+      color = "#1F2937"
+    ),
+    align = "center"
+  ) |>
+  add_annotations(
+    x = 15,
+    y = 0,
+    text = "Verkaufszeitraum",
+    showarrow = FALSE,
+    yshift = 35,
+    font = list(
+      size = 18,
+      color = "#00843D"
+    )
+  ) |>
+  layout(
+    margin = list(
+      l = 10,
+      r = 10,
+      t = 20,
+      b = 80
+    ),
+    xaxis = list(
+      range = c(-5, 35),
+      visible = FALSE,
+      fixedrange = TRUE
+    ),
+    yaxis = list(
+      range = c(-.5, .75),
+      visible = FALSE,
+      fixedrange = TRUE
+    ),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "#00843D",
+      font = list(
+        size = 16,
+        color = "#1F2937"
+      )
+    ),
+    width = 1500,
+    height = 150
+  ) |>
+  config(
+    displayModeBar = FALSE,
+    responsive = TRUE
+  )
+```
+
+- Die Boxen werden morgens vorbereitet und vor Ladenöffnung geliefert.
+- Die Nachfrage ist bis zum Abend unsicher. Nachlieferungen tagsüber
+  sind ausgeschlossen.
+- Nicht verkaufte Sushi-Boxen dürfen am Folgetag nicht mehr regulär
+  verkauft werden.
+
+::: {.fragment .fade-up}
+> **Entscheidungsfrage:** Wie viele Sushi-Boxen sollte der Lieferant
+> vorbereiten?
+:::
+
+
+------------------------------------------------------------------------------
+
+## Fallbeispiel {#newsvendor-fallbeispiel-parameters}
+::: slide-subtitle
+Kosten- und Erlösstruktur
+:::
+
+Für eine Sushi-Box gelten die folgenden, vereinfachten Werte:
+
+| Größe | Bedeutung | Wert |
+|-------------------|----------------------|----:|
+| Verkaufspreis $p$ | Erlös je verkaufter Sushi-Box | 10 EUR |
+| Herstell- und Lieferkosten $c$ | Kosten je vorbereiteter Sushi-Box | 5 EUR |
+| Restwert $v$ | Erlös bei Abendrabatt bzw. Verwertung | 2 EUR |
+
+**typischerweise gilt allgemein: $p > c > v$**
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+$\rightarrow$ **Deckungsbeitrag pro verkaufte Sushi-Box**: $c^u=p-c = 10-5=5$ €
+:::
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+$\rightarrow$ **Verwertungsverlust pro nicht verkaufte Sushi-Box**: $c^o=c-v=5-2=3$ €
+:::
+
+------------------------------------------------------------------------------
+
+## Fallbeispiel {#newsvendor-fallbeispiel-perspectives}
+::: slide-subtitle
+Zwei möglische Situation aus Sicht des Lieferanten
+:::
+
+::::: columns
+::: {.column width="50%"}
+**Zu viele Boxen:** 
+
+::: incremental
+- weniger Nachfrage $D$ als produzierte Sushi-Boxen $q$ $\rightarrow$ Überbestand $q-D$
+- verkaufte Menge: $\min(D,q) = D$
+- Deckungsbeitrag aus Verkauf: $D \cdot c^u$
+- zusätzliche Kosten der Verwertung: $(q-D) \cdot c^o$
+:::
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+**Gesamtdeckungsbeitrag:** $P(D,q)=  D \cdot c^u - (q - D) \cdot c^o$
+:::
+
+:::
+
+::: {.column width="50%"}
+::: {.fragment .fade-up}
+**Zu wenige Boxen:** 
+
+::: incremental
+- mehr Nachfrage $D$ als produzierte Sushi-Boxen $q$ $\rightarrow$ Fehlmenge $D-q$
+- verkaufte Menge: $\min(D,q) = q$
+- gesamter Deckungsbeitrag: $q \cdot c^u$
+- Opportunitätskosten aus entgangenem Deckungsbeitrag: $(D-q) \cdot c^u$
+:::
+
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+**Gesamtdeckungsbeitrag:** $P(D,q) = q \cdot c^u$
+:::
+:::
+:::
+:::::
+
+------------------------------------------------------------------------------
+
+## Fallbeispiel {#newsvendor-fallbesipiel-data}
+::: slide-subtitle
+Mögliche Nachfrage & Produktionsmenge
+:::
+
+Als vereinfachtes Miniaturbeispiel (z. B. für eine kleine Filiale oder
+einen Testverkauf) schätzt SushiFresh aus Verkaufshistorie, Wochentag,
+Wetterprognose und aktuellen Aktionen zunächst vier mögliche
+Nachfrageszenarien:
+
+| Nachfrage $D$ | Wahrscheinlichkeit $P(D=d)$ | Kumulierte Wahrscheinlichkeit $F(d)$ |
+|----------:|-------------------:|-----------------------:|
+| 30 Sushi-Boxen | 0,20 | 0,20 |
+| 40 Sushi-Boxen | 0,35 | 0,55 |
+| 50 Sushi-Boxen | 0,30 | 0,85 |
+| 60 Sushi-Boxen | 0,15 | 1,00 |
+
+> Welche Menge sollte der Lieferant morgens vorbereiten: 30, 40, 50 oder
+> 60 Sushi-Boxen?
+
+------------------------------------------------------------------------------
+
+## Fallbeispiel {#newsvendor-fallbesipiel-lsg}
+::: slide-subtitle
+Erwartetes Ergebnis 
+:::
+
+
+::::: columns
+::: {.column width="55%"}
+
+**Setze $q=40$ Sushi-Boxen**
+
+::: {.smaller-text}
+| Nachfrage $D$ | Wahrsch. $P(D=d)$ | Überbestand $q-D$ |  Fehlmenge $q-D$ |  Deckungs-\n beitrag $P$ |
+|------:|------:|------:|-----:|------:|
+| 30 Sushi-Boxen | 0,20 | 10 |  0 | 120 €
+| 40 Sushi-Boxen | 0,35 | 0  |  0 | 200 €
+| 50 Sushi-Boxen | 0,30 | 0  | 10 | 200 €
+| 60 Sushi-Boxen | 0,15 | 0  | 20 | 200 €
+:::
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+**erwarteter Gesamtdeckungsbeitrag:** $\begin{align} E(P|q=40)= & 0.2 \cdot 120 + 0.35 \cdot 200 + \\
+& 0.30 \cdot 200 + 0.15 \cdot 200= 184 \end{align}$
+:::
+
+:::
+
+
+::: {.column width="45%"}
+
+::: {.fragment .fade-up}
+**$E(P|q)$ für alle $q$**
+
+```{r}
+#| fig-height: 4.75
+#| fig-width: 5
+#| out-width: 100%
+#| fig-align: center
+#| fig-alt: "Erwarteter Deckungsbeitrag für unterschiedliche Bestellmengen von Sushi-Boxen"
+
+# Nachfrageverteilung aus dem Sushi-Fallbeispiel
+demand <- c(30, 40, 50, 60)
+probability <- c(0.20, 0.35, 0.30, 0.15)
+
+# Parameter des Fallbeispiels
+p <- 10  # Verkaufspreis je Sushi-Box
+c <- 5  # Herstell- und Lieferkosten je Sushi-Box
+v <- 2  # Restwert je nicht verkaufter Sushi-Box
+
+# Erwarteter Deckungsbeitrag bzw. erwarteter Periodengewinn
+expected_profit <- function(order_quantity) {
+  realised_profit <-
+    p * pmin(order_quantity, demand) +
+    v * pmax(order_quantity - demand, 0) -
+    c * order_quantity 
+    #(p-c) * pmax(demand - order_quantity, 0)
+
+  sum(probability * realised_profit)
+}
+
+profit_table <- tibble(
+  bestellmenge = demand,
+  erwarteter_deckungsbeitrag = sapply(demand, expected_profit)
+) |>
+  mutate(
+    optimal = erwarteter_deckungsbeitrag == max(erwarteter_deckungsbeitrag),
+    hover_text = paste0(
+      "<b>Bestellmenge: ", bestellmenge, " Sushi-Boxen</b>",
+      "<br>Erwarteter Deckungsbeitrag: ",
+      number(
+        erwarteter_deckungsbeitrag,
+        accuracy = 0.01,
+        decimal.mark = ",",
+        big.mark = "."
+      ),
+      " EUR",
+      ifelse(
+        optimal,
+        "<br><span style='color:#E85D04'><b>Optimale Bestellmenge</b></span>",
+        ""
+      )
+    )
+  )
+
+optimal_row <- profit_table |>
+  filter(optimal)
+
+plot_ly(
+  data = profit_table,
+  x = ~bestellmenge,
+  y = ~erwarteter_deckungsbeitrag,
+  type = "scatter",
+  mode = "lines+markers",
+  text = ~hover_text,
+  hoverinfo = "text",
+  line = list(
+    color = "#00843D",
+    width = 4
+  ),
+  marker = list(
+    color = "#00843D",
+    size = 13,
+    line = list(
+      color = "white",
+      width = 2
+    )
+  ),
+  showlegend = FALSE
+) |>
+  add_markers(
+    data = optimal_row,
+    x = ~bestellmenge,
+    y = ~erwarteter_deckungsbeitrag,
+    text = ~hover_text,
+    hoverinfo = "text",
+    marker = list(
+      color = "#E85D04",
+      size = 19,
+      line = list(
+        color = "white",
+        width = 3
+      )
+    ),
+    inherit = FALSE,
+    showlegend = FALSE
+  ) |>
+  add_annotations(
+    x = optimal_row$bestellmenge,
+    y = optimal_row$erwarteter_deckungsbeitrag,
+    text = paste0(
+      "<b>Optimum:</b> ",
+      optimal_row$bestellmenge,
+      " Boxen"
+    ),
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 55,
+    ay = -45,
+    font = list(
+      size = 17,
+      color = "#E85D04"
+    ),
+    arrowcolor = "#E85D04",
+    bgcolor = "rgba(255,255,255,0.9)",
+    bordercolor = "#E85D04",
+    borderwidth = 1
+  ) |>
+  layout(
+    margin = list(
+      l = 80,
+      r = 25,
+      t = 25,
+      b = 70
+    ),
+    xaxis = list(
+      title = list(
+        text = "Bestellmenge q"
+      ),
+      tickmode = "array",
+      tickvals = profit_table$bestellmenge,
+      ticktext = profit_table$bestellmenge,
+      fixedrange = TRUE,
+      zeroline = FALSE
+    ),
+    yaxis = list(
+      title = list(
+        text = "Erwarteter Deckungsbeitrag E(P(Q)) in €"
+      ),
+      tickprefix = "",
+      ticksuffix = " EUR",
+      separatethousands = TRUE,
+      fixedrange = TRUE,
+      zeroline = FALSE
+    ),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "#00843D",
+      font = list(
+        size = 16,
+        color = "#1F2937"
+      )
+    ),
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor = "rgba(0,0,0,0)",
+    width = 600,
+    height = 450
+  ) |>
+  config(
+    displayModeBar = FALSE,
+    responsive = TRUE
+  )
+```
+:::
+
+::: {.fragment .fade-up}
+$\rightarrow$ maximaler erwarteter Deckungsbeitrag bei $q=50$ mit `r round(expected_profit(50),2)` € pro Tag
+:::
+
+:::
+
+:::::
+
+------------------------------------------------------------------------------
+
+## Newsvendormodell {#newsvendor-objective}
+::: slide-subtitle
+Herleitung der Zielfunktion
+::: 
+
+::::: columns
+::: {.column width="50%"}
+**Überdeckung** $q > D$
+
+$$P(D,q) = D \cdot c^u - (q-D)^+\cdot c^o$$
+
+$$\Downarrow$$
+:::
+
+::: {.column width="50%"}
+**Unterdeckung** $q < D$
+
+$$P(D,q) = q \cdot c^u$$
+
+$$\Downarrow$$
+:::
+:::::
+
+::: {.small-text}
+
+::: {.fragment .fade-up}
+$$\begin{align} P(D,q) =& \min(D,q) \cdot c^u - (q-D)^+ \cdot c^o \\
+= & (D-(D-q)^+) \cdot c^u - (q-D)^+ \cdot c^o \\
+= & \underset{\text{Deckungsbeitrag}}{D \cdot c^u} - \underset{\text{ Fehlmengenkosten}}{(D-q)^+ \cdot c^u} - \underset{\text{Überbestandskosten}}{(q-D)^+ \cdot c^o}
+\end{align}
+$$
+wobei $(q-D)^+ = \max(0,q-D)$, $(D-q)^+ = \max(0,D-q)$ und $\min(D,q) = D - (D-q)^+$ 
+:::
+:::
+
+------------------------------------------------------------------------------
+
+## Newsvendor-Modell {#newsvendor-formal-model}
+::: slide-subtitle
+Formales Modell
+::: 
+
+::: {.callout-note }
+## Problembeschreibung 
+
+Suche die Bestellmenge $q$, die den erwarteten Profit maximiert oder die erwarteten Kosten minimiert:
+$$ \underset{q}{\max} E(P(q)) = \mu \cdot c^u - E((D-q)^+) \cdot c^u - E((q-D)^+) \cdot c^o \; \Leftrightarrow \; \underset{q}{\min} E(C(q)) =  E((D-q)^+) \cdot c^u + E((q-D)^+) \cdot c^o $$
+$\rightarrow$ minimiere das gewichtete Mittel aus erwarteter Fehlmenge $E((D-q)^+)$ und erwartetem Überbestand $E((q-D)^+)$
+:::
+
+
+::: {.columns}
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+
+**Diskrete Nachfrage** [(vgl. vorige Folie)](#newsvendor-fallbesipiel-lsg)
+
+```{r newsvendor-discrete-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 7
+#| fig-height: 3.5
+
+# Werte aus der Folie „Fallbeispiel Mögliche Nachfrage & Produktionsmenge“
+d_disc <- c(30, 40, 50, 60)
+p_disc <- c(0.20, 0.35, 0.30, 0.15)
+
+stopifnot(length(d_disc) == length(p_disc), abs(sum(p_disc) - 1) < 1e-10)
+
+loss_disc <- function(q) {
+  sum(p_disc * pmax(d_disc - q, 0))
+}
+
+sales_disc <- function(q) {
+  sum(p_disc * pmax(q - d_disc,0))
+}
+
+df_exp_disc <- data.frame(
+  q = d_disc,
+  expected_loss = vapply(d_disc, loss_disc, numeric(1)),
+  expected_sales = vapply(d_disc, sales_disc, numeric(1))
+)
+
+plot_ly(
+  df_exp_disc,
+  x = ~q,
+  y = ~expected_loss,
+  type = "scatter",
+  mode = "lines+markers",
+  name = "E[(D - q)<sup>+</sup>] - erw. Fehlmenge",
+  line = list(color = "#D55E00", width = 3),
+  marker = list(color = "#D55E00", size = 10),
+  hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Fehlmenge = %{y:.2f}<extra></extra>"
+) |>
+  add_lines(
+    y = ~expected_sales,
+    name = "E[(q-D)<sup>+</sup>] - erw. Überbestand",
+    line = list(color = "#0072B2", width = 3),
+    marker = list(color = "#0072B2", size = 10),
+    hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Überbestand = %{y:.2f}<extra></extra>"
+  ) |>
+  add_lines(
+    y = p_disc,
+    x = d_disc,
+    name = "Dichte f(D)",
+    mode = "lines+markers",
+    yaxis = "y2",
+    line = list(color = "#15a202", width = 1, dash = "dash"),
+    marker = list(color = "#15a202", size = 5),
+    hovertemplate = paste0(
+      "Nachfrage = %{x:.0f}",
+      "<br>Dichte f(D) = %{y:.2f}",
+      "<extra></extra>")
+  ) |>
+  layout(
+    xaxis = list(title = "Bestellmenge q"),
+    yaxis = list(title = "Erwartete Menge", rangemode = "tozero"),
+    yaxis2 = list(
+      title = "Dichte f(D)",
+      overlaying = "y",
+      side = "right",
+      rangemode = "tozero",
+      showgrid = FALSE,
+      zeroline = FALSE,
+      tickfont = list(color = "#15A202"),
+      titlefont = list(color = "#15A202")
+    ),
+    margin = list(l = 70, r = 70, t = 45, b = 45),
+    legend = list(orientation = "h", x = 0.5, y = 0.85),
+    width = 650,
+  height = 320
+  )
+
+
+```
+:::
+:::
+
+::: {.column width="50%"}
+::: {.fragment .fade-up}
+**Kontinuierliche Nachfrage (Filiale Frankfurt)** $D \sim N(280,55^2)$
+
+```{r newsvendor-continuous-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 7
+#| fig-height: 3.5
+
+mu <- 280
+sigma <- 55
+q_show_cont <- 280
+
+q_grid_cont <- seq(mu - 4 * sigma, mu + 4 * sigma, length.out = 500)
+
+# Für D ~ N(mu, sigma²):
+# E[(D-q)+] = sigma * phi(z) + (mu-q) * [1-Phi(z)], z=(q-mu)/sigma
+loss_norm <- Vectorize(function(s, mu = 0, sigma = 1){
+  integrate(function(y) (y-s)*dnorm(y, mean=mu, sd = sigma), lower = s, upper=Inf)$value
+})
+
+# E[(q-D)+]
+sales_norm <- Vectorize(function(s, mu = 0, sigma = 1){
+  integrate(function(y) (s-y)*dnorm(y, mean=mu, sd = sigma), lower = -Inf, upper=s)$value
+})
+
+df_exp_cont <- data.frame(
+  q = q_grid_cont,
+  density = dnorm(q_grid_cont, mean = mu, sd = sigma),
+  expected_loss = loss_norm(q_grid_cont, mu, sigma),
+  expected_sales = sales_norm(q_grid_cont, mu, sigma)
+)
+
+plot_ly(
+  df_exp_cont,
+  x = ~q,
+  y = ~expected_loss,
+  type = "scatter",
+  mode = "lines",
+  name = "E(D - q)<sup>+</sup> - erw. Fehlmenge",
+  line = list(color = "#D55E00", width = 3),
+  hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Fehlmenge = %{y:.1f}<extra></extra>"
+) |>
+  add_lines(
+    y = ~expected_sales,
+    name = "E(q - D)<sup>+</sup> - erw. Überbestand",
+    line = list(color = "#0072B2", width = 3),
+    hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Überbestand = %{y:.1f}<extra></extra>"
+  ) |>
+  add_lines(
+    y = ~density,
+    name = "Dichte f(D)",
+    yaxis = "y2",
+    line = list(color = "#15a202", width = 1, dash = "dash"),
+    hovertemplate = paste0(
+      "Nachfrage = %{x:.1f}",
+      "<br>Dichte f(D) = %{y:.4f}",
+      "<extra></extra>"
+    )
+  ) |>
+  layout(
+    xaxis = list(title = "Bestellmenge q"),
+    yaxis = list(title = "erwartete Menge", rangemode = "tozero"),
+    yaxis2 = list(
+      title = "Dichte f(D)",
+      overlaying = "y",
+      side = "right",
+      rangemode = "tozero",
+      showgrid = FALSE,
+      zeroline = FALSE,
+      tickfont = list(color = "#15A202"),
+      titlefont = list(color = "#15A202")
+    ),
+    margin = list(l = 70, r = 70, t = 45, b = 45),
+    legend = list(orientation = "h", x = 0.5, y = 0.85),
+    width = 650,
+  height = 320
+  )
+
+```
+:::
+:::
+:::
+
+
+------------------------------------------------------------------------------
+
+## Newsvendor-Modell {#newsvendor-formal-solution}
+::: slide-subtitle
+Formale Lösung
+::: 
+
+::: {.callout-note appearance="minimal" icon=false}
+Die optimale Bestellmenge $q^*$ ist, wo die Anstiege der erwarteten Fehlmengenkosten $E((D-q)^+) \cdot c^u$ und der Überbestandskosten $E((q-D)^+)\cdot c^o$ gleich sind:
+$$ \left(1 - F(q^*)\right) \cdot c^u \overset{!}{=} F(q^*) \cdot c^o \quad \Longrightarrow \quad q^* = F^{-1} \left( \frac{c^u}{c^o + c^u} \right)$$
+:::
+
+
+::: {.small-text}
+::: {.columns}
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+
+**Diskrete Nachfrage** [(Verteilungsparameter vgl. vorige Folie)](#newsvendor-fallbesipiel-lsg) mit $c^u = 5$ und $c^o=3$
+
+```{r newsvendor-discrete-plot2}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 7
+#| fig-height: 3.5
+
+# Werte aus der Folie „Fallbeispiel Mögliche Nachfrage & Produktionsmenge“
+d_disc <- c(30, 40, 50, 60)
+p_disc <- c(0.20, 0.35, 0.30, 0.15)
+cu = 5
+co = 3
+
+df_exp_disc$cost <- cu * df_exp_disc$expected_loss + co * df_exp_disc$expected_sales
+
+q.star <- df_exp_disc$q[which.min(df_exp_disc$cost)]
+
+plot_ly(
+  df_exp_disc,
+  x = ~q,
+  y = ~expected_loss*cu,
+  type = "scatter",
+  mode = "lines+markers",
+  name = "E[(D - q)<sup>+</sup>] - erw. Fehlmengenkosten",
+  line = list(color = "#D55E00", width = 3),
+  marker = list(color = "#D55E00", size = 10),
+  hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Fehlmengenkosten = %{y:.2f}<extra></extra>"
+) |>
+  add_lines(
+    y = ~expected_sales*co,
+    name = "E[(q-D)<sup>+</sup>] - erw. Überbestandskosten",
+    line = list(color = "#0072B2", width = 3),
+    marker = list(color = "#0072B2", size = 10),
+    hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Überbestandskosten = %{y:.2f}<extra></extra>"
+  ) |>
+  add_lines(
+    y = ~cost,
+    name = "E(P(D)) - erw. Gesamtkosten",
+    mode = "lines+markers",
+    line = list(color = "#15a202", width = 3),
+    marker = list(color = "#15a202", size = 10),
+    hovertemplate = paste0(
+      "Nachfrage = %{x:.0f}",
+      "<br>Dichte f(D) = %{y:.2f}",
+      "<extra></extra>")
+  ) |>
+  add_lines(
+    y = c(0,max(df_exp_disc$cost)),
+    x = c(q.star,q.star),
+    name = "opt. Bestellmenge",
+    mode = "lines",
+    line = list(color = "#00000050", width = 2, dash = "dot"),
+    hovertemplate = "opt. Bestellmenge q* = %{x:.0f}"
+  )|>
+  layout(
+    xaxis = list(title = "Bestellmenge q"),
+    yaxis = list(title = "Erwartete Kosten", rangemode = "tozero"),
+    margin = list(l = 70, r = 70, t = 15, b = 45),
+    legend = list(orientation = "h", x = 0.3, y = 0.95),
+    width = 650,
+  height = 320
+  )
+
+
+```
+:::
+:::
+
+::: {.column width="50%"}
+::: {.fragment .fade-up}
+**Kontinuierliche Nachfrage (Filiale Frankfurt)** $D \sim N(280,55^2)$ mit $c^u = 5$ und $c^o=3$
+
+```{r newsvendor-continuous-plot2}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 7
+#| fig-height: 3.5
+
+
+df_exp_cont$cost <- cu * df_exp_cont$expected_loss + co * df_exp_cont$expected_sales
+
+q.star <- df_exp_cont$q[which.min(df_exp_cont$cost)]
+
+plot_ly(
+  df_exp_cont,
+  x = ~q,
+  y = ~expected_loss*cu,
+  type = "scatter",
+  mode = "lines",
+  name = "c<sup>u</sup> &#183; E(D - q)<sup>+</sup> - erw. Fehlmengenkosten",
+  line = list(color = "#D55E00", width = 3),
+  hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Fehlmengenkosten = %{y:.1f}<extra></extra>"
+) |>
+  add_lines(
+    y = ~expected_sales*co,
+    name = "c<sup>o</sup> &#183; E(q - D)<sup>+</sup> - erw. Überbestandskosten",
+    line = list(color = "#0072B2", width = 3),
+    hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Überbestandskosten = %{y:.1f}<extra></extra>"
+  ) |>
+  add_lines(
+    y = ~cost,
+    name = "E(C(D)) - erw. Gesamtkosten",
+    mode = "lines+markers",
+    line = list(color = "#15a202", width = 3),
+    hovertemplate = paste0(
+      "Nachfrage = %{x:.0f}",
+      "<br>Dichte f(D) = %{y:.2f}",
+      "<extra></extra>")
+  ) |>
+  add_lines(
+    y = c(0,max(df_exp_cont$cost)),
+    x = c(q.star,q.star),
+    name = "opt. Bestellmenge",
+    mode = "lines",
+    line = list(color = "#00000050", width = 2, dash = "dot"),
+    hovertemplate = "opt. Bestellmenge q* = %{x:.0f}"
+  ) |> 
+  layout(
+    xaxis = list(title = "Bestellmenge q"),
+    yaxis = list(title = "erwartete Menge", rangemode = "tozero"),
+    margin = list(l = 50, r = 20, t = 15, b = 45),
+    legend = list(orientation = "h", x = 0.5, y = 0.85),
+    width = 650,
+  height = 320
+  )
+
+```
+:::
+:::
+:::
+::: 
+
+------------------------------------------------------------------------------
+
+## Newsvendor-Modell {#newsvendor-critical-ratio}
+::: slide-subtitle
+Kritisches Verhältnis
+::: 
+
+::: callout-important
+## kritisches Verhältnis (critical ratio)
+
+Die optimale Bestellmenge ist das Nachfragequantil, dessen kumulierte Wahrscheinlichkeit dem Verhältnis von Fehlmengen- zu
+Gesamtkosten entspricht. Das kritische Verhältnis entscheidet also über die Risikobereitschaft 
+
+$$ CR = \frac{c^u}{c^o + c^u}$$ 
+:::
+
+::: {.small-text}
+::: {.columns}
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**Fall 1: $c^u < c^o$**
+
+::: incremental
+- Fehlmengenkosten sind kleiner als Überbestandskosten 
+- Überbestände sollten vermieden werden 
+- $\rightarrow$ opt. Bestellmenge $q^*$ **kleiner** als Median der Nachfrageverteilung
+:::
+
+:::
+:::
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**Fall 2: $c^u = c^o$**
+
+::: incremental
+- Fehlmengenkosten = Überbestandskosten 
+- Fehlmengen und Überbestände gleich bedeutend 
+- $\rightarrow$ opt. Bestellmenge $q^*$ **gleicht** dem Median der Nachfrageverteilung
+:::
+
+:::
+:::
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**Fall 3: $c^u > c^o$**
+
+::: incremental
+- Fehlmengenkosten sind größer als Überbestandskosten 
+- Fehlmengen sollten vermieden werden
+- $\rightarrow$ opt. Bestellmenge $q^*$ **größer** als Median der Nachfrageverteilung
+:::
+:::
+:::
+
+:::
+::: 
+
+------------------------------------------------------------------------------
+
+## Newsvendor-Modell {#newsvendor-normal-distribution}
+::: slide-subtitle
+Optimale Lösung bei Normalverteilung
+::: 
+
+::: {.callout-note}
+## Normalverteilte Nachfrage
+
+Im Falle normalverteilter Nachfrage mit $D \sim (\mu,\sigma^2)$ kann die optimale Bestellmenge durch Transformation zur Standardnormalverteilung berechnet werden. Für optimale Bestellmenge und Kosten gilt
+$$z^* = \Phi^{-1} \left( \frac{c^u}{c^o + c^u} \right) \qquad q^*=\mu + \sigma \cdot z^* \qquad E(C(q^*))=(c^u+c^o)\cdot \sigma \cdot \varphi\left( z^* \right) $$
+:::
+
+**Fallbeispiel** Filiale Frankfurt mit $N(280,55^2)$
+
+
+::: {.small-text}
+::: {.columns}
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**Fall 1: $c^u=1 < 5=c^o$**
+
+
+```{r newsvendor-continuous-plot2a}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 5
+#| fig-height: 3.25
+
+cu <- 1
+co <- 5
+df_exp_cont$cost <- cu * df_exp_cont$expected_loss + co * df_exp_cont$expected_sales
+
+q.star <- df_exp_cont$q[which.min(df_exp_cont$cost)]
+
+plot_ly(
+  df_exp_cont,
+  x = ~q,
+  y = ~expected_loss*cu,
+  type = "scatter",
+  mode = "lines",
+  name = "c<sup>u</sup> &#183; E(D - q)<sup>+</sup> - erw. Fehlmengenkosten",
+  line = list(color = "#D55E00", width = 3),
+  hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Fehlmengenkosten = %{y:.1f}<extra></extra>"
+) |>
+  add_lines(
+    y = ~expected_sales*co,
+    name = "c<sup>o</sup> &#183; E(q - D)<sup>+</sup> - erw. Überbestandskosten",
+    line = list(color = "#0072B2", width = 3),
+    hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Überbestandskosten = %{y:.1f}<extra></extra>"
+  ) |>
+  add_lines(
+    y = ~cost,
+    name = "E(C(D)) - erw. Gesamtkosten",
+    mode = "lines+markers",
+    line = list(color = "#15a202", width = 3),
+    hovertemplate = paste0(
+      "Nachfrage = %{x:.0f}",
+      "<br>Dichte f(D) = %{y:.2f}",
+      "<extra></extra>")
+  ) |>
+  add_lines(
+    y = c(0,max(df_exp_cont$cost)),
+    x = c(q.star,q.star),
+    name = "opt. Bestellmenge",
+    mode = "lines",
+    line = list(color = "#00000050", width = 2, dash = "dot"),
+    hovertemplate = "opt. Bestellmenge q* = %{x:.0f}"
+  ) |> 
+  layout(
+    xaxis = list(title = "Bestellmenge q"),
+    yaxis = list(title = "erwartete Menge", rangemode = "tozero"),
+    margin = list(l = 50, r = 20, t = 15, b = 45),
+    legend = list(orientation = "h", x = 0.5, y = 0.85),
+    width = 500,
+  height = 300
+  )
+
+```
+
+$q^* = 280 + 55 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu/(cu+co)),1)`
+:::
+:::
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**Fall 2: $c^u = 3 = c^o$**
+
+
+```{r newsvendor-continuous-plot2b}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 3
+#| fig-height: 3.25
+
+cu <- 3
+co <- 3
+df_exp_cont$cost <- cu * df_exp_cont$expected_loss + co * df_exp_cont$expected_sales
+
+q.star <- df_exp_cont$q[which.min(df_exp_cont$cost)]
+
+plot_ly(
+  df_exp_cont,
+  x = ~q,
+  y = ~expected_loss*cu,
+  type = "scatter",
+  mode = "lines",
+  name = "c<sup>u</sup> &#183; E(D - q)<sup>+</sup> - erw. Fehlmengenkosten",
+  line = list(color = "#D55E00", width = 3),
+  hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Fehlmengenkosten = %{y:.1f}<extra></extra>"
+) |>
+  add_lines(
+    y = ~expected_sales*co,
+    name = "c<sup>o</sup> &#183; E(q - D)<sup>+</sup> - erw. Überbestandskosten",
+    line = list(color = "#0072B2", width = 3),
+    hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Überbestandskosten = %{y:.1f}<extra></extra>"
+  ) |>
+  add_lines(
+    y = ~cost,
+    name = "E(C(D)) - erw. Gesamtkosten",
+    mode = "lines+markers",
+    line = list(color = "#15a202", width = 3),
+    hovertemplate = paste0(
+      "Nachfrage = %{x:.0f}",
+      "<br>Dichte f(D) = %{y:.2f}",
+      "<extra></extra>")
+  ) |>
+  add_lines(
+    y = c(0,max(df_exp_cont$cost)),
+    x = c(q.star,q.star),
+    name = "opt. Bestellmenge",
+    mode = "lines",
+    line = list(color = "#00000050", width = 2, dash = "dot"),
+    hovertemplate = "opt. Bestellmenge q* = %{x:.0f}"
+  ) |> 
+  layout(
+    xaxis = list(title = "Bestellmenge q"),
+    yaxis = list(title = "erwartete Menge", rangemode = "tozero"),
+    margin = list(l = 50, r = 20, t = 15, b = 45),
+    legend = list(orientation = "h", x = 0.5, y = 0.85),
+    width = 500,
+  height = 300
+  )
+
+```
+$q^* = 280 + 55 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu/(cu+co)),1)`
+:::
+:::
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**Fall 3: $c^u=5 > 1=c^o$**
+
+
+```{r newsvendor-continuous-plot2c}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 3
+#| fig-height: 3.25
+
+cu <- 5
+co <- 1
+df_exp_cont$cost <- cu * df_exp_cont$expected_loss + co * df_exp_cont$expected_sales
+
+q.star <- df_exp_cont$q[which.min(df_exp_cont$cost)]
+
+plot_ly(
+  df_exp_cont,
+  x = ~q,
+  y = ~expected_loss*cu,
+  type = "scatter",
+  mode = "lines",
+  name = "c<sup>u</sup> &#183; E(D - q)<sup>+</sup> - erw. Fehlmengenkosten",
+  line = list(color = "#D55E00", width = 3),
+  hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Fehlmengenkosten = %{y:.1f}<extra></extra>"
+) |>
+  add_lines(
+    y = ~expected_sales*co,
+    name = "c<sup>o</sup> &#183; E(q - D)<sup>+</sup> - erw. Überbestandskosten",
+    line = list(color = "#0072B2", width = 3),
+    hovertemplate = "Bestellmenge q = %{x:.1f}<br>erw. Überbestandskosten = %{y:.1f}<extra></extra>"
+  ) |>
+  add_lines(
+    y = ~cost,
+    name = "E(C(D)) - erw. Gesamtkosten",
+    mode = "lines+markers",
+    line = list(color = "#15a202", width = 3),
+    hovertemplate = paste0(
+      "Nachfrage = %{x:.0f}",
+      "<br>Dichte f(D) = %{y:.2f}",
+      "<extra></extra>")
+  ) |>
+  add_lines(
+    y = c(0,max(df_exp_cont$cost)),
+    x = c(q.star,q.star),
+    name = "opt. Bestellmenge",
+    mode = "lines",
+    line = list(color = "#00000050", width = 2, dash = "dot"),
+    hovertemplate = "opt. Bestellmenge q* = %{x:.0f}"
+  ) |> 
+  layout(
+    xaxis = list(title = "Bestellmenge q"),
+    yaxis = list(title = "erwartete Menge", rangemode = "tozero"),
+    margin = list(l = 50, r = 20, t = 15, b = 45),
+    legend = list(orientation = "h", x = 0.5, y = 0.85),
+    width = 500,
+  height = 300
+  )
+
+```
+$q^* = 280 + 55 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu/(cu+co)),1)`
+:::
+:::
+
+:::
+::: 
+
+
+------------------------------------------------------------------------------
+
+## Newsvendor-Modell {#newsvendor-formal-applications}
+::: slide-subtitle
+Typische Anwendungen
+::: 
+
+::: {.callout-note}
+## Voraussetzungen
+
+Das Newsvendor wird besonders häufig verwendet, wenn keine Bedarfsglättung durch Lagerhaltung möglich ist und die Fehlmengenkosten gut bestimmbar sind
+:::
+
+Typische Anwendungsbereich sind z.B. bei 
+
+- Saison- und Aktionsartikel
+- Frischwaren mit kurzer Haltbarkeit
+- Tickets für Veranstaltungen oder Verkehrsmittel
+- ...
+
+::: {.fragment .fade-up}
+::: {.callout-important}
+Darüber hinaus ist es die Basis für die Berechnung kostenoptimaler Sicherheitsbestände in Lagerhaltungssystemen.
+:::
+:::

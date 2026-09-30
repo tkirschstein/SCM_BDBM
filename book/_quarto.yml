@@ -1,0 +1,56 @@
+project:
+  type: book
+  output-dir: ../docs/book
+  execute-dir: project
+
+book:
+  title: "Supply Chain Management"
+  subtitle: "Begleitendes Lehrbuch zur Vorlesung"
+  author: "Prof. Dr. Thomas Kirschstein"
+  date: last-modified
+  description: "Kursbegleitender Reader zur Vorlesung Supply Chain Management, Wintersemester 26/27"
+  page-footer: "Supply Chain Management — Lehrbuch"
+  chapters:
+    - index.qmd
+    - chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd
+    - chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.qmd
+    - chapters/03_ziele-zielkonflikte-und-logistikkosten.qmd
+    - chapters/09_nachhaltigkeit-im-supply-chain-management.qmd
+    - chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.qmd
+    - chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.qmd
+    - chapters/06_unsicherheit-in-supply-chains-pooling.qmd
+    - chapters/07_das-newsvendor-modell.qmd
+    - chapters/08_der-bullwhip-effekt-und-das-beergame.qmd
+    - references.qmd
+
+lang: de
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    code-link: true
+    fig-align: center
+    highlight-style: github
+    css: custom.css
+  pdf:
+    documentclass: scrbook
+    papersize: a4
+    fontsize: 11pt
+    geometry: margin=2.5cm
+    lang: de
+    toc: true
+    number-sections: true
+    prefer-html: true
+
+execute:
+  echo: true
+  warning: false
+  message: false
+  freeze: auto
+
+bibliography: ../literature/!references.bib

@@ -1,0 +1,115 @@
+---
+title: "Fallstudie 1: Strategische Gestaltung von Supply Chains"
+subtitle: "Werner & Mertz und die Marke Frosch – Kreislaufwirtschaft als Wettbewerbsstrategie"
+author: "Supply Chain Management – Gruppenarbeit"
+lang: de
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    embed-resources: true
+---
+
+::: {.callout-note}
+## Steckbrief
+
+| | |
+|---|---|
+| **Thema** | Strategische Gestaltung von Supply Chains, Strategic Fit, Nachhaltigkeit |
+| **Vorlesungsbezug** | Kapitel 1–3 der Vorlesungsmaterialien (Grundbegriffe, Strategic Fit, Ziele und Zielkonflikte, Nachhaltigkeit im SCM) |
+| **Typ** | Qualitative Fallstudie (Recherche und Argumentation, kein Datensatz erforderlich) |
+| **Gruppengröße** | 3–6 Personen |
+| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz als PDF |
+:::
+
+# Lernziele
+
+Nach Bearbeitung der Fallstudie können Sie
+
+- die Supply Chain eines realen Unternehmens als Netzwerk (fokales Unternehmen, Tier-n-Lieferanten, Kunden, Rückflüsse) modellieren,
+- Produkte und Märkte einordnen und die daraus folgende SC-Strategien ableiten,
+- den **Strategic Fit** zwischen Wettbewerbsstrategie und SC-Strategie anhand der SC-Treiber begründet beurteilen,
+- Zielkonflikte zwischen Kosten, Service und Nachhaltigkeit identifizieren und
+- eine Kreislauf-Supply-Chain (Closed-Loop) mit ihren spezifischen Risiken analysieren.
+
+# Ausgangslage
+
+Die **Werner & Mertz GmbH** mit Sitz in Mainz ist ein Familienunternehmen, das 1867 als Wachswarenfabrik gegründet wurde und heute in fünfter Generation von Reinhard Schneider geführt wird. Bekannt wurde das Unternehmen zunächst mit der Schuhcreme **Erdal**. Seit 1986 vertreibt Werner & Mertz unter der Marke **Frosch** ökologisch positionierte Wasch-, Putz- und Reinigungsmittel. Frosch ist inzwischen die umsatzstärkste Marke des Unternehmens. Produziert wird im Wesentlichen in Mainz-Mombach und im österreichischen Hallein. Der Umsatz lag zuletzt bei rund einer halben Milliarde Euro (2024: ca. 611 Mio. €), beschäftigt sind gut 1.000 Mitarbeitende.
+
+Frosch konkurriert im Drogerie- und Lebensmitteleinzelhandel mit globalen Konzernen wie Henkel, Procter & Gamble oder Unilever und mit den Handelsmarken von dm, Rossmann, Aldi oder Lidl. Das Unternehmen setzt dabei konsequent auf Umweltverträglichkeit als Differenzierungsmerkmal:
+
+- **Recyclat-Initiative (seit 2012):** Gemeinsam mit Partnern aus Entsorgung, Recycling und Verpackungsherstellung (u. a. ALPLA, NABU, Fraunhofer-Institute) gewinnt Werner & Mertz Kunststoff aus dem Gelben Sack zurück und verarbeitet ihn zu neuen Flaschen. Der Anteil an Gelber-Sack-Material in den PET-Flaschen wurde schrittweise erhöht (2014: 20 %, 2021: 50 %, 2023: 75 %) und erreichte 2025 100 %. Im Juni 2025 feierte das Unternehmen die milliardste rPET-Flasche aus Recyclingmaterial. Inzwischen gibt es auch HDPE-Flaschen, Verschlüsse, Sprühköpfe und Standbodenbeutel aus Rezyklat.
+- **Zertifizierungen und Auszeichnungen:** Werner & Mertz ist seit 2003 EMAS-validiert, viele Frosch-Produkte sind *Cradle to Cradle Certified*. Außerdem erhielt das Unternehmen mehrere Deutsche Verpackungspreise und Deutsche Nachhaltigkeitspreise, und Reinhard Schneider wurde 2019 mit dem Deutschen Umweltpreis ausgezeichnet.
+- **Rohstoffe:** Tenside sollen verstärkt aus europäischen Pflanzen (z. B. Raps, Oliven, Leinsamen) statt aus tropischem Palm- oder Palmkernöl gewonnen werden.
+
+Die Geschäftsführung steht vor der Frage, **wie die Supply Chain in den nächsten fünf bis zehn Jahren weiterentwickelt werden soll**. Folgende Entwicklungen sind zu berücksichtigen:
+
+1. Die EU-Verpackungsverordnung (PPWR) schreibt verbindliche Mindestrezyklatanteile vor. Dadurch steigt die Nachfrage nach hochwertigem Post-Consumer-Rezyklat europaweit, während das Angebot aus dem Gelben Sack begrenzt ist.
+2. Neuware (Virgin-PET) ist bei niedrigem Ölpreis oft günstiger als hochwertiges Rezyklat. Dadurch entsteht ein Kostennachteil gegenüber Wettbewerbern, die weniger konsequent vorgehen.
+3. Der Handel baut eigene »grüne« Handelsmarken auf, und die Preissensibilität der Konsumentinnen und Konsumenten schwankt mit der Konjunktur.
+4. Die Internationalisierung (u. a. Frankreich, Italien, Spanien, Nordamerika) wirft die Frage auf, ob weiterhin zentral aus Mainz/Hallein geliefert oder regional produziert bzw. abgefüllt werden soll.
+
+::: {.callout-important}
+## Hinweis zur Recherche
+Die Angaben oben sind ein Ausgangspunkt. Recherchieren Sie selbst aktuelle Informationen, z. B. Nachhaltigkeitsberichte, die Unternehmenswebsite, Presseartikel und Fachliteratur zur Kreislaufwirtschaft. Geben Sie alle Quellen an. Wo Informationen fehlen, treffen Sie **plausible, explizit gekennzeichnete Annahmen**.
+:::
+
+# Aufgaben
+
+## Teil A – Die Supply Chain von Frosch verstehen
+
+**A1. Netzwerkmodell.** Skizzieren Sie die Supply Chain eines typischen Frosch-Produkts, z. B. des Frosch Essig-Reinigers in der 500-ml-Flasche, von den Rohstoffen bis zum Endkunden. Berücksichtigen Sie die Tier-Struktur (Tenside, Duftstoffe, Flaschen, Etiketten), die Distributionsstufen (Zentrallager des Handels, Filialen, Online-Handel) und den **Rückfluss** der Verpackungen (Haushalt → Gelber Sack → Sortierung → Recycling → Flaschenherstellung). Kennzeichnen Sie Material-, Informations- und Finanzflüsse. Handelt es sich um eine fokale oder eine polyzentrische Supply Chain?
+
+**A2. Produkt- und Nachfragecharakteristik.** Ordnen Sie typische Produkte des Frosch-Sortiments in das Strategic-Fit-Konzept ein und charakterisieren Sie die implizite Nachfrageunsicherheit anhand der Kriterien aus der Vorlesung. Unterscheiden sich einzelne Produktgruppen, z. B. Basisreiniger, Sondereditionen oder Nachfüllbeutel?
+
+## Teil B – Strategic Fit
+
+**B1. Wettbewerbsstrategie und SC-Treiber.** Beschreiben Sie die Wettbewerbsstrategie von Frosch (z. B. nach Porter). Analysieren Sie anschließend für die sechs SC-Treiber, wie Werner & Mertz sie heute (vermutlich) ausgestaltet und ob dies eher effizient oder reaktionsfähig ist:
+
+| SC-Treiber | Ausgestaltung bei Frosch | effizient ↔ reaktionsfähig | Begründung |
+|---|---|---|---|
+| Anlagen/Standorte | | | |
+| Lagerbestand | | | |
+| Transport | | | |
+| Information | | | |
+| Beschaffung | | | |
+| Preisgestaltung | | | |
+
+**B2. Beurteilung.** Positionieren Sie Frosch im Strategic-Fit-Diagramm (implizite Unsicherheit vs. Reaktionsfähigkeit). In welchen Marktsegmenten liegt ein Strategic Fit vor? Welche Rolle spielt die Beschaffungsseite (**Supply Uncertainty** bei Rezyklat)?
+
+## Teil C – Zielkonflikte und Nachhaltigkeit
+
+**C1. Zielkonflikte.** Identifizieren Sie mindestens **zwei konkrete Zielkonflikte** der Supply Chain und veranschaulichen Sie einen davon qualitativ als Pareto-Front. Beispiele sind Rezyklatanteil ↔ Materialkosten und Verfügbarkeit oder zentrale Produktion ↔ Transportemissionen und Lieferzeit in Auslandsmärkten.
+
+**C2. Closed-Loop-Supply-Chain.** Analysieren Sie die Rückführungskette: Wer sind die Akteure (Duales System, Sortierer, Recycler), welche Risiken bestehen (Menge, Qualität, Preis, Regulierung), und warum hat Werner & Mertz in die Initiative investiert, statt Rezyklat einfach am Markt zu kaufen (Make-or-Buy, vertikale Kooperation)?
+
+**C3. Nachhaltigkeitsstrategie.** Ordnen Sie die Nachhaltigkeitsstrategie von Werner & Mertz in die Matrix aus der Vorlesung ein (defensiv, offensiv, …). Welche Planungsaufgaben aus Kapitel 3 werden besonders adressiert?
+
+## Teil D – Empfehlung und Reflexion
+
+**D1. Strategische Empfehlung.** Wählen Sie **eine** der folgenden Optionen und bewerten Sie sie anhand der SC-Treiber, des Strategic Fit, der Zielkonflikte und der Risiken:
+
+1. **Rückwärtsintegration:** Beteiligung an bzw. Aufbau einer eigenen Sortier- oder Recyclinganlage zur Sicherung der Rezyklatversorgung.
+2. **Regionalisierung:** Aufbau einer Abfüllung in Südeuropa oder Nordamerika statt zentraler Belieferung aus Mainz und Hallein.
+3. **Nachfüllsysteme und Konzentrate:** Umstellung wesentlicher Teile des Sortiments auf Konzentrate und Nachfüllbeutel.
+
+Formulieren Sie eine klare Handlungsempfehlung mit Begründung.
+
+**D2. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+
+1. Ihre Analyse beruht weitgehend auf öffentlichen Informationen und Annahmen. Wie belastbar sind Ihre Aussagen, und welche internen Daten würden Sie benötigen, um sie abzusichern?
+2. Wo stößt das Strategic-Fit-Konzept an Grenzen, wenn Nachhaltigkeit und Beschaffungsunsicherheit im Zentrum stehen?
+3. Ist Nachhaltigkeit bei Frosch Teil der Wettbewerbsstrategie oder eine Restriktion für die SC-Strategie? Was folgt daraus für Unternehmen, die Nachhaltigkeit »nur« wegen Regulierung umsetzen?
+4. Welche Rolle spielen Werte und Eigentümerstruktur (Familienunternehmen) für SC-Entscheidungen, die sich kurzfristig ökonomisch nicht rechnen?
+5. Welche Erkenntnisse lassen sich auf internationale Märkte übertragen, in denen es kein vergleichbares Sammelsystem wie den Gelben Sack gibt?
+
+
+# Literatur und Quellen (Einstieg)
+
+- Werner & Mertz: Recyclat-Initiative, <https://werner-mertz.de/en/recyclate-initiative/>
+- Fisher, M. L. (1997): What Is the Right Supply Chain for Your Product? *Harvard Business Review* 75(2), 105–116.
+- Chopra, S.; Meindl, P.: *Supply Chain Management – Strategy, Planning, and Operation*, Kapitel 1–3.
+- Porter, M. E. (1985): *Competitive Advantage*. New York: Free Press.
+- Reader zur Vorlesung, Kapitel 1–3.

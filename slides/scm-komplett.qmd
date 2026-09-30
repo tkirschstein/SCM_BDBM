@@ -1,0 +1,50 @@
+---
+title: "Supply Chain Management"
+subtitle: "Wintersemester 26/27"
+author: "Thomas Kirschstein"
+
+execute:
+  cache: false
+
+format:
+  revealjs:
+    slide-number: c/t
+    chalkboard: true
+    css: styles.css
+---
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+library(quarto)
+library(readr)
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+
+
+source("../R/scm_functions.R")
+```
+
+
+
+{{< include lectures/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd >}}
+
+{{< include lectures/02_wertschoepfung-strategische-fertigung-und-strategic-fit.qmd >}}
+
+{{< include lectures/03_ziele-zielkonflikte-und-logistikkosten.qmd >}}
+
+{{< include lectures/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.qmd >}}
+
+{{< include lectures/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.qmd >}}
+
+{{< include lectures/06_unsicherheit-in-supply-chains-pooling.qmd >}}
+
+{{< include lectures/07_das-newsvendor-modell.qmd >}}
+
+{{< include lectures/08_der-bullwhip-effekt-und-das-beergame.qmd >}}

@@ -1,0 +1,16 @@
+project:
+  output-dir: ../docs/slides
+  execute-dir: project
+
+resource-path:
+    - .
+
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: true
+    css: styles.css
+
+bibliography: ../literature/!references.bib
+
+citeproc: true

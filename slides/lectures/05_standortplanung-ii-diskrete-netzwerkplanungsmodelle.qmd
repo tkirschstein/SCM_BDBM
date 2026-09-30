@@ -1,0 +1,2067 @@
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden
+source("../R/scm_functions.R")
+
+library(tidyverse)
+library(leaflet)
+library(readxl)
+library(dplyr)
+library(plotly)
+library(knitr)
+library(kableExtra)
+library(DiagrammeR)
+library(osrm)
+
+
+```
+
+---
+
+## Strategische Gestaltung von Supply Chains {#slide-92}
+
+- Multikriterielle  Standortplanung
+- Kontinuierliche Standortplanung
+- **Diskrete Standortplanung**
+
+---
+
+## Lernziele {#learning-objectives-location-discrete}
+
+Nach dieser Einheit können Sie …
+
+- diskrete Standort- und Netzwerkplanungsprobleme **formulieren**,
+- Transport-, Umschlags- und Standortentscheidungen in einem Netzwerk **modellieren**,
+- zentrale Entscheidungsvariablen, Zielfunktionen und Nebenbedingungen **interpretieren**,
+- Ergebnisse diskreter Netzwerkmodelle für strategische Standortentscheidungen **bewerten**.
+
+**Literatur zur Vertiefung**
+
+- **Transport-, Umschlags- und Netzwerkmodelle:** [@guenther2012produktion, Kapitel 4].
+- **Diskrete Standortmodelle, Algorithmen und Anwendungen:** Kapitel 1–4 in [@daskin2013network].
+- **Theorie und Anwendungen der Standortplanung:** [@drezner2002facility].
+
+---
+
+## Planung von Distributionsnetzen {#slide-93}
+::: slide-subtitle
+Einordnung
+:::
+
+::: r-stretch
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "100%"
+#| fig-height: 1.1
+
+top_boxes <- data.frame(
+  label = c("Beschaffung", "Produktion", "Distribution", "Absatz"),
+  x0 = c(0.00, 2.00, 4.00, 6.00),
+  x1 = c(2.00, 4.00, 6.00, 8.00),
+  y0 = 9.25,
+  y1 = 9.75
+)
+
+
+shapes <- c(
+  lapply(seq_len(nrow(top_boxes)), function(i) {
+    shape_path(
+      chevron_path(top_boxes$x0[i], top_boxes$x1[i], top_boxes$y0[i], top_boxes$y1[i]),
+      fill = cols$top
+    )
+  })
+)
+
+
+fig <- plot_ly()
+
+fig <- fig %>%
+  add_text(
+    x = mid(top_boxes$x0, top_boxes$x1),
+    y = mid(top_boxes$y0, top_boxes$y1),
+    text = top_boxes$label,
+    textfont = list(size = 18, color = "white", family = "Arial"),
+    hoverinfo = "skip", showlegend = FALSE
+  )  %>%
+  layout(
+    xaxis = list(visible = FALSE, range = c(0, 8), fixedrange = T),
+    yaxis = list(visible = FALSE, range = c(9.1, 9.8), fixedrange = T),
+    plot_bgcolor = cols$bg,
+    paper_bgcolor = cols$bg,
+    margin = list(l = 10, r = 10, t = 10, b = 10),
+    shapes = shapes,
+    width = 1500,
+    height = 100
+  )
+
+fig
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "90%"
+#| fig-height: 5.5
+
+
+grViz("
+digraph network {
+
+  graph [
+    rankdir = LR,
+    bgcolor = 'transparent',
+    nodesep = 0.35,
+    ranksep = 0.75,
+    splines = line
+  ]
+
+  node [
+    shape = box,
+    style = filled,
+    fillcolor = '#DCEAF0',
+    color = '#4B5563',
+    fontname = Arial,
+    fontsize = 16,
+    width = 0.55,
+    height = 0.38,
+    fixedsize = true
+  ]
+
+  edge [
+    color = '#4B4B4B',
+    penwidth = 1.3,
+    arrowsize = 0.8
+  ]
+
+  subgraph cluster_beschaffung {
+    label = ''
+    style = filled
+    fillcolor = '#F3E7AE'
+    color = '#183A43'
+    penwidth = 2
+
+    { rank = same; '7A'; '7B'; '7C'; '7D'; '7E' }
+    { rank = same; '6A'; '6B'; '6C'; '6D' }
+  }
+
+  { rank = same; '5A'; '5B'; '5C' }
+  { rank = same; '4A'; '4B'; '4C' }
+  { rank = same; '3A'; '3B'; '3C' }
+  { rank = same; '2A'; '2B'; '2C'; '2D' }
+  { rank = same; '1A'; '1B'; '1C'; '1D'; '1E' }
+
+  '7A' -> '6A'
+  '7B' -> '6A'
+  '7B' -> '6B'
+  '7C' -> '6B'
+  '7C' -> '6C'
+  '7D' -> '6C'
+  '7D' -> '6D'
+  '7E' -> '6D'
+
+  '6A' -> '5A'
+  '6B' -> '5A'
+  '6B' -> '5B'
+  '6C' -> '5B'
+  '6C' -> '5C'
+  '6D' -> '5C'
+
+  '5A' -> '4A'
+  '5B' -> '4A'
+  '5B' -> '4B'
+  '5C' -> '4B'
+  '5C' -> '4C'
+
+  '4A' -> '4B'
+  '4B' -> '4C'
+
+  '4A' -> '3A'
+  '4A' -> '3B'
+  '4A' -> '3C'
+  '4B' -> '3B'
+  '4B' -> '3C'
+  '4C' -> '3C'
+
+  '3A' -> '2A'
+  '3A' -> '2B'
+  '3B' -> '2B'
+  '3B' -> '2C'
+  '3C' -> '2C'
+  '3C' -> '2D'
+
+  '2B' -> '2A'
+
+  '2A' -> '1A'
+  '2A' -> '1B'
+  '2B' -> '1C'
+  '2C' -> '1C'
+  '2D' -> '1D'
+  '2D' -> '1E'
+}
+")
+```
+:::
+
+$\rightarrow$ Wähle konkrete Standorte im Netzwerk aus $\rightarrow$ in der Regel begrenzte Betrachtung der SC
+
+
+
+
+---
+
+## Fallstudie – SushiFresh GmbH {#slide-cs1}
+::: slide-subtitle
+Ausgangslage
+:::
+
+::: columns
+::: {.column width="48%"}
+
+```{r karte+data}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "100%"
+#| fig-height: 6.5
+
+# Filialen (Nachfrageknoten): sechs Supermarkt-Filialen im Rhein-Main-Gebiet
+werke <- data.frame(
+  ID     = paste0("C",1:6),
+  Ort    = c("Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim",
+             "Darmstadt", "Offenbach"),
+  Lon    = c(8.2398, 8.2711, 8.6821, 8.4116, 8.6512, 8.7761),
+  Lat    = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
+  Bedarf = c(120, 150, 280, 90, 110, 95)
+)
+
+
+
+standorte <- data.frame(
+  ID       = c("S1","S2","S3", "S4", "S5"),
+  Standort = c("Wiesbaden-Erbenheim","Mainz-Hechtsheim","Raunheim","Höchst", "Isenburg"),
+  Lon      = c(8.2999, 8.2831, 8.4650, 8.54218, 8.7072),
+  Lat      = c(50.0632, 49.9698, 50.0000, 50.11146, 50.0543),
+  Kosten   = c(180, 210, 260, 240, 200)/5
+)
+
+
+
+# Kandidatenstandorte fuer Produktion/Distribution (aus Kapitel 4)
+lager_data <- standorte
+
+# Haversine-Distanzen (aus scm_functions.R) exemplarisch zur Filiale Frankfurt
+lager_data$dist_frankfurt <- mapply(
+  haversine,
+  lager_data$Lat, lager_data$Lon,
+  MoreArgs = list(lat2 = 50.1109, lon2 = 8.6821)
+)
+
+# Leaflet-Karte
+map <- leaflet(options = leafletOptions(zoomControl = TRUE)) %>%
+  addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
+  setView(lng = 8.5, lat = 50.02, zoom = 10) %>%
+
+  # Filialen (blau)
+  addAwesomeMarkers(
+    data        = werke,
+    lng         = ~Lon,
+    lat         = ~Lat,
+    label       = ~Ort,
+    icon        = awesomeIcons(
+      icon        = "shopping-cart",
+      library     = "fa",
+      markerColor = "blue",
+      iconColor   = "white"
+    ),
+    group = "Filialen"
+  ) %>%
+
+  # Kandidatenstandorte (grün)
+  addAwesomeMarkers(
+    data        = lager_data,
+    lng         = ~Lon,
+    lat         = ~Lat,
+    label       = ~Standort,
+    icon        = awesomeIcons(
+      icon        = "home",
+      library     = "fa",
+      markerColor = "green",
+      iconColor   = "white"
+    ),
+    group = "Kandidatenstandorte"
+  ) %>%
+
+  addLayersControl(
+    overlayGroups = c("Filialen", "Kandidatenstandorte"),
+    options       = layersControlOptions(collapsed = FALSE)
+  ) %>%
+  addLegend(
+    position = "bottomleft",
+    colors   = c("#2A7ACA", "#3DB843"),
+    labels   = c("Filiale (Nachfrage)", "Kandidatenstandort"),
+    title    = "Legende"
+  )
+
+map
+```
+
+:::
+::: {.column width="48%"}
+
+::: {.small-text}
+
+::: {.callout-note appearance="simple"}
+## Problemstellung
+Die **SushiFresh GmbH** beliefert täglich sechs Supermarkt-Filialen im Rhein-Main-Gebiet mit frisch produzierten Sushi-Boxen. In Kapitel 4 wurde bereits eine **qualitative Standortvorauswahl per AHP** durchgeführt (Ergebnis: Mainz-Hechtsheim knapp vorn) sowie eine **kontinuierliche Standortoptimierung** (Center of Gravity/Weiszfeld). Nun stellt sich die Frage: Hält dieses Ergebnis auch einer  kostenbasierten Prüfung stand?
+:::
+
+::: {.callout-tip appearance="simple"}
+## Rückblick Kapitel 4
+- **AHP-Bewertung:** Raunheim knapp vorn
+- **Center of Gravity / Weiszfeld:** Optimalpunkt mitten im Rhein-Main-Gebiet, nahe Raunheim
+- **Offene Frage:** Bestätigt eine Kostenoptimierung (Fixkosten + Transport) dieses Bild?
+:::
+:::
+
+:::
+:::
+
+---
+
+## Fallstudie – SushiFresh GmbH {#slide-cs2}
+::: slide-subtitle
+Entscheidungssituation
+:::
+
+::: {.callout-note appearance="simple"}
+## Entscheidungssituation
+
+SushiFresh muss entscheiden, welcher der drei Kandidatenstandorte für Produktion und Distribution ausgebaut wird und welche Filiale von welchem Standort versorgt werden soll. Das Unternehmen möchte die Entscheidung so treffen, dass die jährlichen Gesamtkosten aus Fixkosten und Transport minimiert werden. Folgende Informationen sind bekannt:
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: small-text
+**Kandidatenstandorte und jährliche Fixkosten**
+
+```{r lager-tabelle}
+#| echo: false
+#| warning: false
+#| message: false
+
+kbl(standorte,
+    col.names = c("ID","Standort","Längengrad","Breitengrad",
+                  "Fixkosten/Jahr (1000 €)"),
+    align = c("c","l","r","r","r")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 20) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+**Transportdistanzen in km**
+
+```{r dist-tabelle}
+#| echo: false
+#| warning: false
+#| message: false
+ 
+##########################################
+# Für direkte Berechnung via OSM
+# matrix_result <- osrmTable(
+#   src = standorte[, c("Lon", "Lat")],
+#   dst = werke[, c("Lon", "Lat")],
+#   measure = "distance" # Can be "duration", "distance", or c("duration", "distance")
+# )
+# 
+# dist_mat <- matrix(matrix_result$distances/1000,
+#   nrow = nrow(standorte), byrow = TRUE,
+#   dimnames = list(standorte$ID, werke$ID)
+# )
+##########################################
+
+dist_mat <- matrix(
+  c(
+    0.12348,	0.41478,	0.47474,	0.55152,	0.85996,	0.18220,
+    0.09206,	0.51490,	0.59168,	0.88578,	0.73856,	0.78004,
+  	0.48168,	0.27202,	0.17036,	0.54650,	0.44772,	0.12592,
+  	0.61176,	0.66708,	0.89392,	0.33502,	0.68526,	0.74242,
+  	0.50226,	0.87512,	0.90576,	0.60740,	0.32042,	0.11400),
+  nrow = nrow(standorte), byrow = TRUE,dimnames = list(standorte$ID, werke$ID))/.02
+
+
+df_dist <- as.data.frame(dist_mat)
+
+kbl(df_dist,
+    col.names = c(paste0("C",1:6)),
+    align = c( rep("r",6)),
+    escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 20) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+:::
+
+:::
+::: {.column width="50%"}
+
+::: small-text
+**Filialen und tägliche Nachfrage**
+
+```{r werke-tabelle}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+
+kbl(werke,
+    col.names = c("ID","Filiale",
+                  "Längengrad","Breitengrad",
+                  "Nachfrage $\\mu$ (Boxen/Tag)"),
+    align = c("c","l","l","r","r","r"),
+    escape = FALSE,
+    format.args = list(big.mark = "\u202f")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 20) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white", width = "1em") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+:::
+
+:::
+:::
+
+<!-- ## Fallstudie - SushiFresh GmbH -->
+<!-- ::: slide-subtitle -->
+<!-- Aufgabe -->
+<!-- ::: -->
+
+<!-- ::: {.callout-note appearance="simple"} -->
+<!-- ## Zielformulierung -->
+
+<!-- Sie wurden von der Geschäftsführung beauftragt, eine Entscheidungsvorlage dafür zu erarbeiten, wie die Produktion und Distribution der Sushi-Boxen organisiert werden sollte. Die Vorlage soll eine Zuordnung der Filialen zu Versorgungsstandorten enthalten. Auf Basis dieser Zuordnung erwartet die Geschäftsführung eine Abschätzung der jährlichen Gesamtkosten, die aus Ihrem Vorschlag resultieren würden – und eine Einordnung, ob dies die AHP-Empfehlung aus Kapitel 4 (Raunheim) bestätigt. -->
+<!-- ::: -->
+
+<!-- ::: {.fragment .fade-up} -->
+<!-- ### Aufgaben -->
+
+<!-- 1. Formulieren Sie einen Ansatz zur Berechnung der jährlichen Gesamtkosten. -->
+<!-- 2. Formulieren Sie einen Ansatz zur Berechnung der Transportkosten für die Distribution der Sushi-Boxen. -->
+<!-- 3. Nutzen Sie dazu den gegebenen Transportkostensatz von 0,02 €/(Box·km). -->
+<!-- 4. Finden Sie eine Zuordnung der Filialen zu den Kandidatenstandorten und ermitteln Sie die Gesamtkosten Ihrer Lösung. -->
+<!-- ::: -->
+
+---
+
+## Warehouse Location Problem {#slide-wlp-1}
+::: slide-subtitle
+Problembeschreibung
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**Problemstellung**
+
+Gegeben sei eine Menge an **Kundenstandorten** und eine Menge (potentieller) **Lagerhausstandorte**. Jeder Kundenstandort hat eine **Warennachfrage** (z.B. in Stück pro Monat/Jahr), die von den Lagerhäusern beliefert warden muss. Der Transport der Waren verursacht entfernungsabhängige **Transportkosten**. Die Eröffnung eines Lagerhauses verursacht **Einrichtungskosten**.
+
+Es ist zu entscheiden, an welchen Standorten Lagerhäuser eingerichtet werden sollen und welche Kunden diese versorgen sollen.
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.smaller-text}
+::: {.fragment .fade-up}
+**Notation**
+
+- Menge der Lagerhäuser $i \in I$
+- Menge der Kundenstandorte $j \in J$
+- Transportverbindungen $E \subseteq I \times J$
+- Eröffnungskosten an Lagerstandort $i$: $f_i$
+- Transportkosten (z.B. in €/Monat) Standort $i$ zu Kunde $j$: $c_{ij}$
+- Nachfrage von Kunde $j$: $a_j$
+:::
+:::
+:::
+
+::: {.column width="42%"}
+::: {.fragment .fade-up}
+
+```{r wlp-graph}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "90%"
+#| fig-height: 5
+
+# --- Koordinaten (normiert 0..1) ---
+lager_nodes <- data.frame(
+  id  = c("W1","W2","W3"),
+  lbl = c("1","2","3"),
+  fi  = c("f<sub>1</sub>", "...", "f<sub>3</sub>"),
+  x   = 0.20,
+  y   = c(0.15, 0.50, 0.85)
+)
+
+kunden_nodes <- data.frame(
+  id  = c("A","B","C","D"),
+  lbl = c("A","B","C","D"),
+  aj  = c("a<sub>A</sub>", "", "...", "a<sub>D</sub>"),
+  x   = 0.75,
+  y   = c(0.85, 0.60, 0.35, 0.10)
+)
+
+lxy <- setNames(lager_nodes[, c("x","y")],   c("x","y")); rownames(lxy) <- lager_nodes$id
+kxy <- setNames(kunden_nodes[, c("x","y")],  c("x","y")); rownames(kxy) <- kunden_nodes$id
+
+# Knotenradius in Plot-Koordinaten (angepasst an fig-Größe)
+r <- 0.058   # <-- ggf. leicht anpassen wenn Größe ändert
+
+edges <- data.frame(
+  from = c("W3","W3","W2","W2","W2","W1"),
+  to   = c("A", "B", "B", "C", "D", "D"),
+  lbl  = c("c<sub>1A</sub>","","","","","c<sub>3D</sub>"),
+  stringsAsFactors = FALSE
+)
+
+fig <- plot_ly(type = "scatter", mode = "markers")
+
+# Kanten: Endpunkte auf Rand der Knoten verschieben
+for (i in seq_len(nrow(edges))) {
+  x0 <- lxy[edges$from[i], "x"];  y0 <- lxy[edges$from[i], "y"]
+  x1 <- kxy[edges$to[i],   "x"];  y1 <- kxy[edges$to[i],   "y"]
+
+  dx <- x1 - x0;  dy <- y1 - y0
+  d  <- sqrt(dx^2 + dy^2)
+
+  # Startpunkt: r vom Lager-Mittelpunkt entfernt Richtung Kunde
+  ax <- x0 + r * dx / d
+  ay <- y0 + r * dy / d
+  # Endpunkt:   r vom Kunden-Mittelpunkt entfernt Richtung Lager
+  ex <- x1 - r * dx / d
+  ey <- y1 - r * dy / d
+
+  fig <- fig %>% add_annotations(
+    x = ex, y = ey, ax = ax, ay = ay,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+    arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
+  )
+
+  # Kanten-Label mittig
+  if (nchar(edges$lbl[i]) > 0) {
+    fig <- fig %>% add_annotations(
+      x = (ax + ex) / 2 + 0.02, y = (ay + ey) / 2 + 0.025,
+      xref = "x", yref = "y",
+      text = edges$lbl[i], showarrow = FALSE,
+      font = list(size = 13, color = "#1F2933", family = "Arial")
+    )
+  }
+}
+
+# Lager-Knoten (Hexagon)
+fig <- fig %>% add_trace(
+  x = lager_nodes$x, y = lager_nodes$y, text = lager_nodes$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "hexagon", size = 40,
+                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
+  textfont = list(size = 16, color = "#1F2933", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# f_i links
+fig <- fig %>% add_annotations(
+  x = lager_nodes$x - 0.10, y = lager_nodes$y,
+  xref = "x", yref = "y",
+  text = lager_nodes$fi, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "right"
+)
+
+# Kunden-Knoten (Circle)
+fig <- fig %>% add_trace(
+  x = kunden_nodes$x, y = kunden_nodes$y, text = kunden_nodes$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "circle", size = 40,
+                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
+  textfont = list(size = 16, color = "white", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# a_j rechts
+fig <- fig %>% add_annotations(
+  x = kunden_nodes$x + 0.08, y = kunden_nodes$y,
+  xref = "x", yref = "y",
+  text = kunden_nodes$aj, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "left"
+)
+
+# Set-Labels
+fig <- fig %>% add_annotations(
+  x = c(0.20, 0.75), y = c(1.00, 1.00),
+  xref = "x", yref = "y",
+  text = c("<b>Set <i>I</i></b>", "<b>Set <i>J</i></b>"),
+  showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial")
+)
+
+fig <- fig %>% layout(
+  xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
+  yaxis = list(visible = FALSE, range = c(-0.05, 1.08), fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 40, r = 40, t = 10, b = 10),
+  height = 380,
+  width = 650
+)
+
+fig
+```
+:::
+:::
+:::
+
+
+---
+
+## Warehouse Location Problem {#slide-wlp-model}
+::: slide-subtitle
+Mathematisches Modell
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.callout-tip appearance="simple" icon=false}
+#### Gemischt-ganzzahliges lineares Optimierungsmodell
+Minimiere die Gesamtkosten aus Transport und Standorteröffnung
+
+$$\min \rightarrow \sum_{i \in I} y_i \cdot f_i + \sum_{(i,j) \in E} x_{ij} \cdot c_{ij}$$
+:::
+
+::: {.smaller-text}
+
+**Nebenbedingungen**
+$$
+\begin{align}
+  \sum_{(i,j) \in E} x_{ij} &= a_j          & \forall j \in J      &\quad\rightarrow \text{Nachfrage befriedigen} \\
+  x_{ij}                    &\leq y_i \cdot a_j & \forall (i,j) \in E &\quad\rightarrow \text{nur Transporte von eröffneten Standorten} \\
+  x_{ij}                    &\geq 0          & \forall (i,j) \in E &\quad\rightarrow \text{Transportmengen nicht negativ} \\
+  y_i                       &\in \{0,1\}     & \forall i \in I     &\quad\rightarrow \text{Standort wird eröffnet oder nicht}
+\end{align}
+$$
+:::
+
+:::
+::: {.column width="43%"}
+
+```{r wlp-graph2}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5
+
+# --- Koordinaten (normiert 0..1) ---
+lager <- data.frame(
+  id  = c("W1","W2","W3"),
+  lbl = c("1","2","3"),
+  fi  = c("f<sub>1</sub>", "...", "f<sub>3</sub>"),
+  x   = 0.20,
+  y   = c(0.15, 0.50, 0.85)
+)
+
+kunden <- data.frame(
+  id  = c("A","B","C","D"),
+  lbl = c("A","B","C","D"),
+  aj  = c("a<sub>A</sub>", "", "...", "a<sub>D</sub>"),
+  x   = 0.75,
+  y   = c(0.85, 0.60, 0.35, 0.10)
+)
+
+lxy <- setNames(lager[, c("x","y")],   c("x","y")); rownames(lxy) <- lager$id
+kxy <- setNames(kunden[, c("x","y")],  c("x","y")); rownames(kxy) <- kunden$id
+
+# Knotenradius in Plot-Koordinaten (angepasst an fig-Größe)
+r <- 0.058   # <-- ggf. leicht anpassen wenn Größe ändert
+
+edges <- data.frame(
+  from = c("W3","W3","W2","W2","W2","W1"),
+  to   = c("A", "B", "B", "C", "D", "D"),
+  lbl  = c("c<sub>1A</sub>","","","","","c<sub>3D</sub>"),
+  stringsAsFactors = FALSE
+)
+
+fig <- plot_ly(type = "scatter", mode = "markers")
+
+# Kanten: Endpunkte auf Rand der Knoten verschieben
+for (i in seq_len(nrow(edges))) {
+  x0 <- lxy[edges$from[i], "x"];  y0 <- lxy[edges$from[i], "y"]
+  x1 <- kxy[edges$to[i],   "x"];  y1 <- kxy[edges$to[i],   "y"]
+
+  dx <- x1 - x0;  dy <- y1 - y0
+  d  <- sqrt(dx^2 + dy^2)
+
+  # Startpunkt: r vom Lager-Mittelpunkt entfernt Richtung Kunde
+  ax <- x0 + r * dx / d
+  ay <- y0 + r * dy / d
+  # Endpunkt:   r vom Kunden-Mittelpunkt entfernt Richtung Lager
+  ex <- x1 - r * dx / d
+  ey <- y1 - r * dy / d
+
+  fig <- fig %>% add_annotations(
+    x = ex, y = ey, ax = ax, ay = ay,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+    arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
+  )
+
+  # Kanten-Label mittig
+  if (nchar(edges$lbl[i]) > 0) {
+    fig <- fig %>% add_annotations(
+      x = (ax + ex) / 2 + 0.02, y = (ay + ey) / 2 + 0.025,
+      xref = "x", yref = "y",
+      text = edges$lbl[i], showarrow = FALSE,
+      font = list(size = 13, color = "#1F2933", family = "Arial")
+    )
+  }
+}
+
+# Lager-Knoten (Hexagon)
+fig <- fig %>% add_trace(
+  x = lager$x, y = lager$y, text = lager$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "hexagon", size = 40,
+                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
+  textfont = list(size = 16, color = "#1F2933", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# f_i links
+fig <- fig %>% add_annotations(
+  x = lager$x - 0.10, y = lager$y,
+  xref = "x", yref = "y",
+  text = lager$fi, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "right"
+)
+
+# Kunden-Knoten (Circle)
+fig <- fig %>% add_trace(
+  x = kunden$x, y = kunden$y, text = kunden$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "circle", size = 40,
+                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
+  textfont = list(size = 16, color = "white", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# a_j rechts
+fig <- fig %>% add_annotations(
+  x = kunden$x + 0.08, y = kunden$y,
+  xref = "x", yref = "y",
+  text = kunden$aj, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "left"
+)
+
+# Set-Labels
+fig <- fig %>% add_annotations(
+  x = c(0.20, 0.75), y = c(1.00, 1.00),
+  xref = "x", yref = "y",
+  text = c("<b>Set <i>I</i></b>", "<b>Set <i>J</i></b>"),
+  showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial")
+)
+
+fig <- fig %>% layout(
+  xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
+  yaxis = list(visible = FALSE, range = c(-0.05, 1.08), fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 40, r = 40, t = 10, b = 10),
+  height = 380,
+  width = 650
+)
+
+fig
+```
+
+:::
+:::
+
+---
+
+## Warehouse Location Problem {#slide-wlp-example}
+::: slide-subtitle
+Fallbeispiel
+:::
+
+```{r wlp-example-data}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Problemdaten: 3 Kandidatenstandorte, 6 Filialen (SushiFresh GmbH)
+wlp_lager <- data.frame(
+  ID      = standorte$ID,
+  fi      = standorte$Kosten*1000,   # Fixkosten (EUR/Jahr)
+  stringsAsFactors = FALSE
+)
+
+wlp_kunden <- data.frame(
+  ID  = werke$ID,
+  aj  = werke$Bedarf*1000,   # Nachfrage (Boxen/Jahr)
+  stringsAsFactors = FALSE
+)
+
+# Transportkosten cij (EUR je Box, aus Distanz x 0,02 EUR/(Box*km))
+wlp_cij <-df_dist*.02
+```
+
+::: columns
+::: {.column width="38%"}
+
+::: small-text
+**Standorte – Fixkosten $f_i$ (€/Jahr)**
+
+```{r}
+#| echo: false
+kbl(wlp_lager,
+    col.names = c("Standort i", "f_i (€)"),
+    align = c("c","r"), escape = FALSE,
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 24) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+**Filialen – Nachfrage $a_j$ (Boxen/Jahr)**
+
+```{r}
+#| echo: false
+kbl(wlp_kunden,
+    col.names = c("Filiale j", "a_j"),
+    align = c("c","r"), escape = FALSE,
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 24) |>
+  column_spec(1, bold = TRUE, background = "#2D9E8E", color = "white") |>
+  row_spec(0, background = "#2D9E8E", color = "white", bold = TRUE)
+```
+:::
+
+:::
+::: {.column width="59%"}
+
+::: small-text
+**Transportkosten $c_{ij}$ (€/Box)**
+
+```{r}
+#| echo: false
+kbl(round(as.data.frame(wlp_cij), 3),
+    align = rep("r", 6), escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 24) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+:::
+
+:::
+:::
+
+---
+
+## Warehouse Location Problem {#slide-wlp-ompr}
+::: slide-subtitle
+Implementierung mit R/OMPR
+:::
+
+::: columns
+::: {.column width="55%"}
+
+```{r wlp-ompr-code}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+#| code-line-numbers: true
+
+library(ompr)
+library(ompr.roi)
+library(ROI.plugin.glpk)
+
+# Problemdaten
+n_I <- 5; n_J <- 6
+f   <- c(36000, 42000, 52000, 48000, 40000)
+a   <- c(120000, 150000, 280000, 90000, 110000, 95000)
+c_ij <- matrix(
+  c(
+    0.12348,	0.41478,	0.47474,	0.55152,	0.85996,	0.18220,
+    0.09206,	0.51490,	0.59168,	0.88578,	0.73856,	0.78004,
+  	0.48168,	0.27202,	0.17036,	0.54650,	0.44772,	0.12592,
+  	0.61176,	0.66708,	0.89392,	0.33502,	0.68526,	0.74242,
+  	0.50226,	0.87512,	0.90576,	0.60740,	0.32042,	0.11400),
+  nrow = n_I, byrow = TRUE)
+
+# MILP-Modell
+model <- MIPModel() |>
+  # Variablen
+  add_variable(y[i], i = 1:n_I, type = "binary") |>
+  add_variable(x[i,j], i = 1:n_I, j = 1:n_J,
+               type = "continuous", lb = 0) |>
+  # Zielfunktion
+  set_objective(
+    sum_expr(f[i] * y[i], i = 1:n_I) +
+    sum_expr(c_ij[i,j] * x[i,j],
+             i = 1:n_I, j = 1:n_J),
+    sense = "min") |>
+  # NB1: Nachfrage vollständig befriedigen
+  add_constraint(
+    sum_expr(x[i,j], i = 1:n_I) == a[j],
+    j = 1:n_J) |>
+  # NB2: Transport nur von eröffneten Lagern
+  add_constraint(
+    x[i,j] <= y[i] * a[j],
+    i = 1:n_I, j = 1:n_J)
+
+result <- solve_model(model,
+           with_ROI(solver = "glpk", verbose = FALSE))
+```
+
+:::
+::: {.column width="42%"}
+
+::: {.callout-note appearance="simple"}
+## OMPR – Workflow
+
+1. `MIPModel()` → leeres Modell
+2. `add_variable()` → Entscheidungsvariablen
+3. `set_objective()` → Zielfunktion
+4. `add_constraint()` → Nebenbedingungen
+5. `solve_model()` → Solver aufrufen
+6. `get_solution()` → Lösung extrahieren
+:::
+
+```{r wlp-ompr-result}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+# Optimale Lösung extrahieren
+y_sol <- get_solution(result, y[i])
+x_sol <- get_solution(result, x[i,j])
+
+# Geöffnete Lager
+offene_lager <- y_sol$i[y_sol$value > 0.5]
+
+# Optimaler Zielfunktionswert
+obj_val <- objective_value(result)
+```
+
+
+:::
+:::
+
+---
+
+## Warehouse Location Problem  {#slide-wlp-solution}
+::: slide-subtitle
+Fallbeispiel – Optimale Lösung
+:::
+
+::: columns
+::: {.column width="48%"}
+
+```{r wlp-solution-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Zuordnungstabelle aufbereiten
+zuordnung <- x_sol |>
+  dplyr::filter(value > 0.001) |>
+  dplyr::mutate(
+    Lager  = paste0("S", i),
+    Kunde  = paste0("C", j),
+    Menge  = value,
+    Kosten = round(c_ij[cbind(i, j)] * value, 1)
+  ) |>
+  dplyr::select(Lager, Kunde, Menge, Kosten)
+
+kbl(zuordnung,
+    col.names = c("Standort $i$","Filiale $j$",
+                  "Menge $x_{ij}$ (Boxen)","Transportkosten (€)"),
+    align = c("c","c","r","r"), escape = F,
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 24) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  column_spec(2, bold = TRUE, background = "#2D9E8E", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+```{r wlp-cost-breakdown}
+#| echo: false
+#| warning: false
+#| message: false
+
+eroeffnung  <- sum(f[offene_lager])
+transport   <- sum(zuordnung$Kosten)
+
+kosten_df <- data.frame(
+  Kostenart = c("Fixkosten", "Transportkosten", "Gesamtkosten Z*"),
+  Wert      = c(eroeffnung, transport, round(obj_val, 1))
+)
+
+kbl(kosten_df,
+    col.names = c("Kostenart", "€/Jahr"),
+    align = c("l","r"),
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("condensed"),
+                full_width = TRUE, font_size = 24) |>
+  row_spec(3, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+:::
+::: {.column width="50%"}
+
+```{r wlp-solution-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5.5
+
+lager_pos <- data.frame(
+  id = paste0("S", 1:nrow(standorte)),
+  x  = 0.18,
+  y  =  seq(0.04 , 0.9, length.out = nrow(standorte)), #c(0.15, 0.50, 0.85),
+  open = (1:nrow(standorte)) %in% offene_lager
+)
+
+kunden_pos <- data.frame(
+  id = paste0("C", 1:6),
+  x  = 0.80,
+  y  = c(0.92, 0.74, 0.56, 0.38, 0.20, 0.04)
+)
+
+lxy2 <- setNames(lager_pos[, c("x","y")], c("x","y"))
+rownames(lxy2) <- lager_pos$id
+kxy2 <- setNames(kunden_pos[, c("x","y")], c("x","y"))
+rownames(kxy2) <- kunden_pos$id
+
+r2 <- 0.048
+
+fig2 <- plot_ly(type = "scatter", mode = "markers")
+
+# Aktive Kanten
+active_edges <- x_sol |> dplyr::filter(value > 0.001) |>
+  dplyr::mutate(from = paste0("S", i), to = paste0("C", j))
+
+# Alle möglichen Kanten (dünn, grau)
+for (ii in 1:nrow(standorte)) for (jj in 1:nrow(werke)) {
+  wi <- paste0("S", ii); cj <- paste0("C", jj)
+  x0 <- lxy2[wi,"x"]; y0 <- lxy2[wi,"y"]
+  x1 <- kxy2[cj,"x"]; y1 <- kxy2[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0 + r2*dx/dd; ay <- y0 + r2*dy/dd
+  ex <- x1 - r2*dx/dd; ey <- y1 - r2*dy/dd
+  fig2 <- fig2 %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,
+    xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=0,arrowsize=0.8,
+    arrowwidth=0.8,arrowcolor="#D0D5DD",text="")
+}
+
+# Aktive Kanten (fett, farbig)
+for (k in seq_len(nrow(active_edges))) {
+  wi <- active_edges$from[k]; cj <- active_edges$to[k]
+  x0 <- lxy2[wi,"x"]; y0 <- lxy2[wi,"y"]
+  x1 <- kxy2[cj,"x"]; y1 <- kxy2[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0 + r2*dx/dd; ay <- y0 + r2*dy/dd
+  ex <- x1 - r2*dx/dd; ey <- y1 - r2*dy/dd
+  fig2 <- fig2 %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,
+    xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=2,arrowsize=1,
+    arrowwidth=2.2,arrowcolor="#01696f",text="")
+  mx <- (ax+ex)/2 + 0.025; my <- (ay+ey)/2 + 0.03
+  fig2 <- fig2 %>% add_annotations(
+    x=mx,y=my,xref="x",yref="y",
+    text=paste0("x=",active_edges$value[k]),
+    showarrow=FALSE,
+    font=list(size=11,color="#01696f",family="Arial"))
+}
+
+# Lagerpunkte
+lager_col <- ifelse(lager_pos$open, "#BFDBF7", "#E8E8E8")
+lager_brd <- ifelse(lager_pos$open, "#4B5563", "#B0B0B0")
+fig2 <- fig2 %>% add_trace(
+  x=lager_pos$x, y=lager_pos$y, text=lager_pos$id,
+  mode="markers+text",
+  marker=list(symbol="hexagon",size=38,
+              color=lager_col,
+              line=list(color=lager_brd,width=2)),
+  textfont=list(size=14,color="#1F2933",family="Arial"),
+  textposition="middle center",
+  hoverinfo="skip",showlegend=FALSE)
+
+# Öffnungs-Label
+fig2 <- fig2 %>% add_annotations(
+  x=lager_pos$x - 0.09, y=lager_pos$y,
+  xref="x",yref="y",
+  text=ifelse(lager_pos$open,
+              paste0("f=",f[1:3],"✓"),
+              paste0("f=",f[1:3])),
+  showarrow=FALSE,
+  font=list(size=11,
+            color=ifelse(lager_pos$open,"#01696f","#9CA3AF"),
+            family="Arial"),
+  xanchor="right")
+
+# Kundenpunkte
+fig2 <- fig2 %>% add_trace(
+  x=kunden_pos$x, y=kunden_pos$y, text=kunden_pos$id,
+  mode="markers+text",
+  marker=list(symbol="circle",size=38,
+              color="#2D9E8E",line=list(color="#2F3E46",width=1.5)),
+  textfont=list(size=14,color="white",family="Arial"),
+  textposition="middle center",
+  hoverinfo="skip",showlegend=FALSE)
+
+fig2 <- fig2 %>% add_annotations(
+  x=kunden_pos$x+0.07, y=kunden_pos$y,
+  xref="x",yref="y",
+  text=paste0("a=",a),
+  showarrow=FALSE,
+  font=list(size=11,color="#1F2933",family="Arial"),
+  xanchor="left")
+
+fig2 <- fig2 %>% layout(
+  xaxis=list(visible=FALSE,range=c(0,1),fixedrange=TRUE),
+  yaxis=list(visible=FALSE,range=c(-0.05,1.05),fixedrange=TRUE),
+  plot_bgcolor="transparent",
+  paper_bgcolor="transparent",
+  margin=list(l=40,r=20,t=10,b=10),
+  height=420,
+  width = 700)
+
+fig2
+```
+
+:::
+:::
+
+---
+
+## Warehouse Location Problem {#slide-heuristics-intro}
+::: slide-subtitle
+Heuristische Lösungsverfahren - Grundideen
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.callout-warning appearance="simple"}
+## Warum Heuristiken?
+
+Das WLP ist **NP-schwer**: exakte Solver (MILP) finden zwar optimale Lösungen, aber die Rechenzeit wächst exponentiell mit $|I|$ und $|J|$. Für große Praxisinstanzen sind **konstruktive Heuristiken** oft der einzig praktikable Ansatz.
+:::
+
+:::: {.fragment .fade-up}
+::: {.small-text}
+**Grundidee**
+
+- start mit einer zulässigen Lösung und versuche diese schrittweise zu verbessern
+- Jeder Schritt: **greedy** – wähle die Änderung mit der größten Kostenreduktion
+- Abbruch, wenn keine weitere Verbesserung möglich
+- Kunden werden stets dem **günstigsten offenen Lager** zugeordnet
+:::
+::::
+
+:::
+::: {.column width="42%"}
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Zwei klassische Ansätze**
+
+| Methode | Ausgangspunkt | Richtung |
+|---|---|---|
+| **Add-Heuristik** | Keine Lager offen | Schrittweise hinzufügen |
+| **Drop-Heuristik** | Alle Lager offen | Schrittweise schließen |
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Grundideen Add/Drop - graphisch**
+:::
+```{r heuristic-overview-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5
+
+# Kostenkurve Add- vs. Drop-Verlauf (reale Werte des SushiFresh-Fallbeispiels,
+# T€/Jahr)
+fig_h <- plot_ly()
+
+# Add-Kurve: startet leer, oeffnet direkt S1 (Wiesbaden-Erbenheim) -> Optimum
+fig_h <- fig_h %>% add_trace(
+  x = c(1, 2), y = c(269, 262),
+  type = "scatter", mode = "lines+markers",
+  name = "Add-Heuristik",
+  line   = list(color = "#01696f", width = 2.5),
+  marker = list(color = "#01696f", size = 10)
+)
+
+# Drop-Kurve: startet mit allen 3 Standorten offen, schliesst Raunheim, dann
+# Mainz-Hechtsheim -> selbes Optimum
+fig_h <- fig_h %>% add_trace(
+  x = c(5,4,3, 2), y = c(388, 340 ,300, 262),
+  type = "scatter", mode = "lines+markers",
+  name = "Drop-Heuristik",
+  line   = list(color = "#da7101", width = 2.5, dash = "dash"),
+  marker = list(color = "#da7101", size = 10)
+)
+
+# Optimum
+fig_h <- fig_h %>% add_trace(
+  x = c(1), y = c(262),
+  type = "scatter", mode = "lines",
+  name = "Optimum (Z* = 262)",
+  line = list(color = "#a12c7b", width = 1.5, dash = "dot")
+)
+
+fig_h <- fig_h %>% layout(
+  xaxis = list(title = "Anzahl offener Standorte", dtick = 1,
+               range = c(0.5, 5.5)),
+  yaxis = list(title = "Gesamtkosten (T€/Jahr)",
+               range = c(250, 760)),
+  legend = list(orientation = "h", y = -0.2),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 10, b = 60),
+  height = 340
+)
+
+fig_h
+```
+:::
+
+:::
+:::
+
+---
+
+## Warehouse Location Problem {#slide-add-heuristic}
+::: slide-subtitle
+Add-Heuristik
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Idee:** Starte ohne geöffnetes Lager. Füge in jedem Schritt dasjenige Lager $i^*$ hinzu, das die Gesamtkosten am stärksten **reduziert**.
+:::
+
+::: {.fragment .fade-up}
+
+**Algorithmus**
+
+::: {.smaller-text}
+
+**Initialisierung:** $S \leftarrow \emptyset$
+
+**Wiederhole:**
+
+1. Berechne für jedes noch nicht geöffnete Lager $i \notin S$ den Kostenbeitrag:
+$$\Delta_i = Z(S) - Z(S \cup \{i\})$$
+
+2. Wähle $i^* = \arg\max_{i \notin S} \Delta_i$
+
+3. **Falls** $\Delta_{i^*} > 0$: öffne $i^*$, setze $S \leftarrow S \cup \{i^*\}$
+
+4. **Sonst:** Abbruch
+
+**Zuordnungsregel:** Jeder Kunde $j$ wird dem günstigsten offenen Lager zugeordnet:
+$\sigma(j) = \arg\min_{i \in S} c_{ij}$
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Kostenberechnung
+
+$$Z(S) = \underbrace{\sum_{i \in S} f_i}_{\text{Eröffnung}} + \underbrace{\sum_{j \in J} \min_{i \in S} c_{ij} \cdot a_j}_{\text{Transport}}$$
+
+- **Eigenschaft:** 
+  - Greedy, nicht garantiert optimal
+  - Transportkosten sinken von Schritt zu Schritt
+  - neues Lager wird eröffnet, wenn Eröffnungskosten < Transportkosteneinsparungen
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Abbruchbedingung
+
+Die Heuristik stoppt, sobald **kein** weiteres Lager die Gesamtkosten senkt.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Warehouse Location Problem {#slide-drop-heuristic}
+::: slide-subtitle
+Drop-Heuristik
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Idee:** Starte mit **allen** Lagern geöffnet. Schließe in jedem Schritt dasjenige Lager $i^*$, dessen Schließung die Gesamtkosten am stärksten **reduziert**.
+:::
+
+::: {.fragment .fade-up}
+**Algorithmus**
+
+::: {.smaller-text}
+**Initialisierung:** $S \leftarrow I$
+
+**Wiederhole:**
+
+1. Berechne für jedes noch geöffnete Lager $i \in S$ den Kostenbeitrag:
+$$\Delta_i = Z(S) - Z(S \setminus \{i\})$$
+
+2. Wähle $i^* = \arg\max_{i \in S} \Delta_i$
+
+3. **Falls** $\Delta_{i^*} > 0$: schließe $i^*$, setze $S \leftarrow S \setminus \{i^*\}$
+
+4. **Sonst:** Abbruch
+
+**Zuordnungsregel:** $\sigma(j) = \arg\min_{i \in S} c_{ij}$
+:::
+:::
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Vergleich mit Add-Heuristik
+
+| Merkmal | Add | Drop |
+|---|---|---|
+| **Start** | $S = \emptyset$ | $S = I$ |
+| **Richtung** | aufbauend | abbauend |
+| **Startkosten** | $\infty$ (kein Lager) | $\sum_i f_i + \ldots$ |
+| **Laufzeit** | $\mathcal{O}(|I|^2 \cdot |J|)$ | $\mathcal{O}(|I|^2 \cdot |J|)$ |
+| **Tendenz** | wenige Lager | mehr Lager |
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Wichtig
+
+Beide Heuristiken sind **nicht garantiert optimal**. Sie liefern zulässige Lösungen, die Lösungsqualität hängt stark von der Kostenstruktur der Instanz ab.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Warehouse Location Problem {#slide-add-example}
+::: slide-subtitle
+Add-Heuristik – Fallbeispiel
+:::
+
+```{r add-heuristic-compute}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Problemdaten (identisch zu slide-wlp-example)
+n_I  <- nrow(standorte); n_J <- nrow(werke)
+f_h  <- standorte$Kosten*1000 # c(180000, 210000, 260000)
+a_h  <- werke$Bedarf*1000 # c(43800, 54750, 102200, 32850, 40150, 34675)
+c_h  <- c_ij
+#   matrix(
+#   c(0.092044, 0.146448, 0.555583, 0.227330, 0.657125, 0.683408,
+#     0.248882, 0.069319, 0.650567, 0.189390, 0.569494, 0.757793,
+#     0.365663, 0.277179, 0.396128, 0.079272, 0.388659, 0.492523),
+#   nrow = n_I, byrow = TRUE,
+#   dimnames = list(paste0("S", 1:n_I), paste0("C", 1:n_J))
+# )
+
+total_cost_h <- function(S) {
+  if (length(S) == 0) return(Inf)
+  sum(f_h[S]) + sum(sapply(1:n_J, function(j) min(c_h[S, j]) * a_h[j]))
+}
+
+best_assign <- function(S) {
+  sapply(1:n_J, function(j) S[which.min(c_h[S, j])])
+}
+
+# Add-Heuristik durchführen
+S_add_h  <- integer(0)
+rem_h    <- 1:n_I
+add_log  <- list()
+
+repeat {
+  cur_cost  <- total_cost_h(S_add_h)
+  cand_cost <- sapply(rem_h, function(i) total_cost_h(c(S_add_h, i)))
+  gains     <- cur_cost - cand_cost
+  # Auswahl über die resultierenden Gesamtkosten (robust auch wenn
+  # cur_cost = Inf ist, d.h. im allerersten Schritt: dort sind alle
+  # Differenzen zu Inf gleich "Inf" und which.max(gains) waere nur
+  # Zufall der Reihenfolge in rem_h)
+  best_idx  <- which.min(cand_cost)
+  best_gain <- gains[best_idx]
+  best_i    <- rem_h[best_idx]
+  if (is.finite(best_gain) && best_gain <= 0) break
+  S_add_h  <- c(S_add_h, best_i)
+  rem_h    <- setdiff(rem_h, best_i)
+  asgn     <- best_assign(S_add_h)
+  fix_cost <- sum(f_h[S_add_h])
+  tr_cost  <- total_cost_h(S_add_h) - fix_cost
+  add_log[[length(add_log)+1]] <- list(
+    step      = length(add_log)+1,
+    added     = best_i,
+    open      = S_add_h,
+    gain      = best_gain,
+    fix       = fix_cost,
+    transp    = tr_cost,
+    total     = total_cost_h(S_add_h),
+    assign    = asgn
+  )
+}
+```
+
+::: columns
+::: {.column width="52%"}
+
+::: small-text
+
+```{r add-steps-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+add_df <- do.call(rbind, lapply(add_log, function(s) {
+  data.frame(
+    Schritt    = s$step,
+    Aktion     = paste0("+S", s$added),
+    Offen      = paste0("{", paste0("S", sort(s$open), collapse=", "), "}"),
+    Fix        = s$fix,
+    Transport  = round(s$transp, 1),
+    Gesamt     = round(s$total, 1),
+    Zuordnung  = paste0(paste0("C", 1:n_J, "→S", s$assign), collapse=", ")
+  )
+}))
+
+kbl(add_df[, c("Schritt","Aktion","Offen","Fix","Transport","Gesamt")],
+    col.names = c("Schritt","Aktion","Offene Standorte",
+                  "Fixkosten (€)","Transport (€)","Gesamt (€)"),
+    align = c("c","c","l","r","r","r"),
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 24) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  column_spec(2, bold = TRUE, color = "#01696f") |>
+  column_spec(6, bold = TRUE) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+**Filialzuordnung je Schritt:**
+
+```{r add-assign-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+assign_df <- do.call(rbind, lapply(add_log, function(s) {
+  row <- c(Schritt = s$step,
+           setNames(paste0("S", s$assign), paste0("C", 1:n_J)))
+  as.data.frame(t(row), stringsAsFactors = FALSE)
+}))
+
+kbl(assign_df,
+    col.names = c("Schritt", paste0("C", 1:n_J)),
+    align = c("c", rep("c", n_J))) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 24) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+::: {.callout-tip appearance="simple"}
+**Ergebnis Add-Heuristik:** Standort $\{`r paste0("S", sort(S_add_h), collapse=", ")`\}$ geöffnet, $Z_\text{Add} = `r format(round(total_cost_h(S_add_h), 1), big.mark=" ")`$ €/Jahr
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+```{r add-solution-plot}
+#| cache: false
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5.5
+
+final_open_add <- S_add_h
+final_asgn_add <- best_assign(final_open_add)
+
+lp_add <- data.frame(
+  id = paste0("S", 1:nrow(standorte)),
+  x  = 0.18,
+  y  =  seq(0.04 , 0.9, length.out = nrow(standorte)), #c(0.15, 0.50, 0.85),
+  open = seq_len(n_I) %in% final_open_add
+)
+kp_add <- data.frame(
+  id = paste0("C", 1:n_J),
+  x  = 0.80,
+  y  = c(0.92, 0.74, 0.56, 0.38, 0.20, 0.04)
+)
+lxy_a <- setNames(lp_add[, c("x","y")], c("x","y")); rownames(lxy_a) <- lp_add$id
+kxy_a <- setNames(kp_add[, c("x","y")], c("x","y")); rownames(kxy_a) <- kp_add$id
+r_a <- 0.048
+
+fig_a <- plot_ly(type = "scatter", mode = "markers")
+
+for (ii in 1:n_I) for (jj in 1:n_J) {
+  wi <- paste0("S", ii); cj <- paste0("C", jj)
+  x0 <- lxy_a[wi,"x"]; y0 <- lxy_a[wi,"y"]
+  x1 <- kxy_a[cj,"x"]; y1 <- kxy_a[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0+r_a*dx/dd; ay <- y0+r_a*dy/dd
+  ex <- x1-r_a*dx/dd; ey <- y1-r_a*dy/dd
+  fig_a <- fig_a %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=0,arrowsize=0.8,arrowwidth=0.8,
+    arrowcolor="#D0D5DD",text="")
+}
+
+for (jj in 1:n_J) {
+  wi <- paste0("S", final_asgn_add[jj]); cj <- paste0("C", jj)
+  x0 <- lxy_a[wi,"x"]; y0 <- lxy_a[wi,"y"]
+  x1 <- kxy_a[cj,"x"]; y1 <- kxy_a[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0+r_a*dx/dd; ay <- y0+r_a*dy/dd
+  ex <- x1-r_a*dx/dd; ey <- y1-r_a*dy/dd
+  fig_a <- fig_a %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=2,arrowsize=1,arrowwidth=2.2,
+    arrowcolor="#01696f",text="")
+}
+
+lc <- ifelse(lp_add$open, "#BFDBF7", "#E8E8E8")
+lb <- ifelse(lp_add$open, "#4B5563", "#B0B0B0")
+fig_a <- fig_a %>% add_trace(
+  x=lp_add$x, y=lp_add$y, text=lp_add$id,
+  mode="markers+text",
+  marker=list(symbol="hexagon",size=38,color=lc,line=list(color=lb,width=2)),
+  textfont=list(size=14,color="#1F2933",family="Arial"),
+  textposition="middle center",hoverinfo="skip",showlegend=FALSE)
+fig_a <- fig_a %>% add_annotations(
+  x=lp_add$x-0.09, y=lp_add$y, xref="x",yref="y",
+  text=ifelse(lp_add$open, paste0("f=",round(f_h/1000),"T€ ✓"), paste0("f=",round(f_h/1000),"T€")),
+  showarrow=FALSE,
+  font=list(size=11,color=ifelse(lp_add$open,"#01696f","#9CA3AF"),family="Arial"),
+  xanchor="right")
+fig_a <- fig_a %>% add_trace(
+  x=kp_add$x, y=kp_add$y, text=kp_add$id,
+  mode="markers+text",
+  marker=list(symbol="circle",size=38,color="#2D9E8E",
+              line=list(color="#2F3E46",width=1.5)),
+  textfont=list(size=14,color="white",family="Arial"),
+  textposition="middle center",hoverinfo="skip",showlegend=FALSE)
+fig_a <- fig_a %>% add_annotations(
+  x=kp_add$x+0.07, y=kp_add$y, xref="x",yref="y",
+  text=paste0("μ=",c(120,150,280,90,110,95)),
+  showarrow=FALSE,font=list(size=11,color="#1F2933",family="Arial"),
+  xanchor="left")
+fig_a <- fig_a %>% layout(
+  xaxis=list(visible=FALSE,range=c(0,1),fixedrange=TRUE),
+  yaxis=list(visible=FALSE,range=c(-0.05,1.05),fixedrange=TRUE),
+  plot_bgcolor="transparent",paper_bgcolor="transparent",
+  margin=list(l=40,r=20,t=10,b=10),height=420, width = 650)
+fig_a
+```
+
+:::
+:::
+
+---
+
+## Warehouse Location Problem {#slide-drop-example}
+::: slide-subtitle
+Drop-Heuristik – Fallbeispiel
+:::
+
+```{r drop-heuristic-compute}
+#| echo: false
+#| warning: false
+#| message: false
+
+S_drop_h  <- 1:n_I
+drop_log  <- list()
+
+# Startzeile
+fix0   <- sum(f_h[S_drop_h])
+tr0    <- total_cost_h(S_drop_h) - fix0
+drop_log[[1]] <- list(
+  step    = 0,
+  removed = NA,
+  open    = S_drop_h,
+  gain    = NA,
+  fix     = fix0,
+  transp  = tr0,
+  total   = total_cost_h(S_drop_h),
+  assign  = best_assign(S_drop_h)
+)
+
+repeat {
+  if (length(S_drop_h) <= 1) break
+  cur_cost <- total_cost_h(S_drop_h)
+  gains <- sapply(S_drop_h, function(i)
+    cur_cost - total_cost_h(setdiff(S_drop_h, i)))
+  best_idx  <- which.max(gains)
+  best_gain <- gains[best_idx]
+  best_i    <- S_drop_h[best_idx]
+  if (best_gain <= 0) break
+  S_drop_h <- setdiff(S_drop_h, best_i)
+  fix_cost <- sum(f_h[S_drop_h])
+  tr_cost  <- total_cost_h(S_drop_h) - fix_cost
+  asgn     <- best_assign(S_drop_h)
+  drop_log[[length(drop_log)+1]] <- list(
+    step    = length(drop_log),
+    removed = best_i,
+    open    = S_drop_h,
+    gain    = best_gain,
+    fix     = fix_cost,
+    transp  = tr_cost,
+    total   = total_cost_h(S_drop_h),
+    assign  = asgn
+  )
+}
+```
+
+::: columns
+::: {.column width="52%"}
+
+::: small-text
+
+```{r drop-steps-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+drop_df <- do.call(rbind, lapply(drop_log, function(s) {
+  data.frame(
+    Schritt   = s$step,
+    Aktion    = ifelse(is.na(s$removed), "Start",
+                       paste0("-S", s$removed)),
+    Offen     = paste0("{", paste0("S", sort(s$open), collapse=", "), "}"),
+    Fix       = s$fix,
+    Transport = round(s$transp, 1),
+    Gesamt    = round(s$total, 1)
+  )
+}))
+
+kbl(drop_df,
+    col.names = c("Schritt","Aktion","Offene Standorte",
+                  "Fixkosten (€)","Transport (€)","Gesamt (€)"),
+    align = c("c","c","l","r","r","r"),
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 24) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  column_spec(2, bold = TRUE, color = "#da7101") |>
+  column_spec(6, bold = TRUE) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(1, italic = TRUE, color = "#6B7280")
+```
+
+**Filialzuordnung je Schritt:**
+
+```{r drop-assign-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+assign_drop_df <- do.call(rbind, lapply(drop_log, function(s) {
+  row <- c(Schritt = s$step,
+           setNames(paste0("S", s$assign), paste0("C", 1:n_J)))
+  as.data.frame(t(row), stringsAsFactors = FALSE)
+}))
+
+kbl(assign_drop_df,
+    col.names = c("Schritt", paste0("C", 1:n_J)),
+    align = c("c", rep("c", n_J))) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 24) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(1, italic = TRUE, color = "#6B7280")
+```
+
+::: {.callout-tip appearance="simple"}
+**Ergebnis Drop-Heuristik:** Standort $\{`r paste0("S", sort(S_drop_h), collapse=", ")`\}$ geöffnet, $Z_\text{Drop} = `r format(round(total_cost_h(S_drop_h), 1), big.mark=" ")`$ €/Jahr — **identisch zum Ergebnis der Add-Heuristik!**
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+```{r drop-solution-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5.5
+
+final_open_drop <- S_drop_h
+final_asgn_drop <- best_assign(final_open_drop)
+
+lp_drop <- data.frame(
+  id = paste0("S", 1:nrow(standorte)),
+  x  = 0.18,
+  y  =  seq(0.04 , 0.9, length.out = nrow(standorte)), #c(0.15, 0.50, 0.85),
+  open = seq_len(n_I) %in% final_open_drop
+)
+kp_drop <- data.frame(
+  id = paste0("C", 1:n_J),
+  x  = 0.80,
+  y  = c(0.92, 0.74, 0.56, 0.38, 0.20, 0.04)
+)
+lxy_d <- setNames(lp_drop[, c("x","y")], c("x","y")); rownames(lxy_d) <- lp_drop$id
+kxy_d <- setNames(kp_drop[, c("x","y")], c("x","y")); rownames(kxy_d) <- kp_drop$id
+r_d <- 0.048
+
+fig_d <- plot_ly(type = "scatter", mode = "markers")
+
+for (ii in 1:n_I) for (jj in 1:n_J) {
+  wi <- paste0("S", ii); cj <- paste0("C", jj)
+  x0 <- lxy_d[wi,"x"]; y0 <- lxy_d[wi,"y"]
+  x1 <- kxy_d[cj,"x"]; y1 <- kxy_d[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0+r_d*dx/dd; ay <- y0+r_d*dy/dd
+  ex <- x1-r_d*dx/dd; ey <- y1-r_d*dy/dd
+  fig_d <- fig_d %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=0,arrowsize=0.8,arrowwidth=0.8,
+    arrowcolor="#D0D5DD",text="")
+}
+
+for (jj in 1:n_J) {
+  wi <- paste0("S", final_asgn_drop[jj]); cj <- paste0("C", jj)
+  x0 <- lxy_d[wi,"x"]; y0 <- lxy_d[wi,"y"]
+  x1 <- kxy_d[cj,"x"]; y1 <- kxy_d[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0+r_d*dx/dd; ay <- y0+r_d*dy/dd
+  ex <- x1-r_d*dx/dd; ey <- y1-r_d*dy/dd
+  fig_d <- fig_d %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=2,arrowsize=1,arrowwidth=2.2,
+    arrowcolor="#da7101",text="")
+}
+
+lc_d <- ifelse(lp_drop$open, "#BFDBF7", "#E8E8E8")
+lb_d <- ifelse(lp_drop$open, "#4B5563", "#B0B0B0")
+fig_d <- fig_d %>% add_trace(
+  x=lp_drop$x, y=lp_drop$y, text=lp_drop$id,
+  mode="markers+text",
+  marker=list(symbol="hexagon",size=38,color=lc_d,line=list(color=lb_d,width=2)),
+  textfont=list(size=14,color="#1F2933",family="Arial"),
+  textposition="middle center",hoverinfo="skip",showlegend=FALSE)
+fig_d <- fig_d %>% add_annotations(
+  x=lp_drop$x-0.09, y=lp_drop$y, xref="x",yref="y",
+  text=ifelse(lp_drop$open, paste0("f=",round(f_h/1000),"T€ ✓"), paste0("f=",round(f_h/1000),"T€")),
+  showarrow=FALSE,
+  font=list(size=11,color=ifelse(lp_drop$open,"#da7101","#9CA3AF"),family="Arial"),
+  xanchor="right")
+fig_d <- fig_d %>% add_trace(
+  x=kp_drop$x, y=kp_drop$y, text=kp_drop$id,
+  mode="markers+text",
+  marker=list(symbol="circle",size=38,color="#2D9E8E",
+              line=list(color="#2F3E46",width=1.5)),
+  textfont=list(size=14,color="white",family="Arial"),
+  textposition="middle center",hoverinfo="skip",showlegend=FALSE)
+fig_d <- fig_d %>% add_annotations(
+  x=kp_drop$x+0.07, y=kp_drop$y, xref="x",yref="y",
+  text=paste0("μ=",c(120,150,280,90,110,95)),
+  showarrow=FALSE,font=list(size=11,color="#1F2933",family="Arial"),
+  xanchor="left")
+fig_d <- fig_d %>% layout(
+  xaxis=list(visible=FALSE,range=c(0,1),fixedrange=TRUE),
+  yaxis=list(visible=FALSE,range=c(-0.05,1.05),fixedrange=TRUE),
+  plot_bgcolor="transparent",paper_bgcolor="transparent",
+  margin=list(l=40,r=20,t=10,b=10),height=420, width = 650)
+fig_d
+```
+
+:::
+:::
+
+---
+
+## Warehouse Location Problem {#slide-heuristic-comparison}
+::: slide-subtitle
+Lösungsvergleich 
+:::
+
+```{r comparison-compute}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Alle Lösungsdaten zusammenführen
+cost_opt_val  <- total_cost_h(offene_lager) 
+cost_add_val  <- total_cost_h(S_add_h)
+cost_drop_val <- total_cost_h(S_drop_h)
+
+fix_opt  <- sum(f_h[c(1)])
+tr_opt   <- cost_opt_val  - fix_opt
+fix_add  <- sum(f_h[S_add_h])
+tr_add   <- cost_add_val  - fix_add
+fix_drop <- sum(f_h[S_drop_h])
+tr_drop  <- cost_drop_val - fix_drop
+
+asgn_opt  <- best_assign(c(1))
+asgn_add  <- best_assign(S_add_h)
+asgn_drop <- best_assign(S_drop_h)
+
+gap_add  <- round((cost_add_val  / cost_opt_val - 1) * 100, 2)
+gap_drop <- round((cost_drop_val / cost_opt_val - 1) * 100, 2)
+```
+
+::: columns
+::: {.column width="50%"}
+
+```{r comparison-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+comp_df <- data.frame(
+  Kennzahl = c(
+    "Geöffnete Standorte",
+    "Anzahl Standorte",
+    "Fixkosten (€)",
+    "Transportkosten (€)",
+    "Gesamtkosten Z (€)",
+    "Gap zum Optimum (%)"
+  ),
+  Optimum = c(
+    paste0("S", sort(offene_lager), collapse=", "),
+    length(offene_lager),
+    fix_opt,
+    round(tr_opt, 1),
+    round(cost_opt_val, 1),
+    "–"
+  ),
+  Add = c(
+    paste0("S", sort(S_add_h), collapse=", "),
+    length(S_add_h),
+    fix_add,
+    round(tr_add, 1),
+    round(cost_add_val, 1),
+    paste0(gap_add, " %")
+  ),
+  Drop = c(
+    paste0("S", sort(S_drop_h), collapse=", "),
+    length(S_drop_h),
+    fix_drop,
+    round(tr_drop, 1),
+    round(cost_drop_val, 1),
+    paste0(gap_drop, " %")
+  )
+)
+
+kbl(comp_df,
+    col.names = c("Kennzahl", "Optimum (MILP)", "Add-Heuristik", "Drop-Heuristik"),
+    align = c("l","c","c","c"), escape = FALSE,
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 24) |>
+  column_spec(1, bold = FALSE) |>
+  column_spec(2, bold = TRUE, background = "#a12c7b", color = "white") |>
+  column_spec(3, background = "#E8F4F1") |>
+  column_spec(4, background = "#FEF3E2") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(5, bold = TRUE)
+```
+
+::: {.callout-note appearance="simple"}
+In diesem Fallbeispiel finden **Add-Heuristik und Drop-Heuristik unabhängig voneinander** dieselbe, **nachweislich optimale Lösung** ($Z = `r format(round(cost_add_val,1), big.mark=" ")`$ €/Jahr, nur Standort S1 = Wiesbaden-Erbenheim). Das ist keine Selbstverständlichkeit, zeigt hier aber den eindeutigen Kostenvorteil dieses Standorts.
+:::
+
+:::
+::: {.column width="48%"}
+
+**Kostenvergleich**
+
+```{r comparison-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.5
+
+methoden  <- c("Optimum (MILP)", "Add-Heuristik", "Drop-Heuristik")
+fix_vals  <- round(c(fix_opt,  fix_add,  fix_drop) / 1000, 1)
+tr_vals   <- round(c(tr_opt, tr_add, tr_drop) / 1000, 1)
+farben_fix <- c("#a12c7b", "#01696f", "#da7101")
+farben_tr  <- c("#d163a7", "#4f98a3", "#fdab43")
+
+fig_bar <- plot_ly()
+
+fig_bar <- fig_bar %>% add_trace(
+  x = methoden, y = fix_vals, type = "bar", name = "Fixkosten",
+  marker = list(color = farben_fix),
+  text = paste0(fix_vals, " T€"), textposition = "inside",
+  insidetextanchor = "middle",
+  textfont = list(color = "white", size = 13, family = "Arial")
+)
+
+fig_bar <- fig_bar %>% add_trace(
+  x = methoden, y = tr_vals, type = "bar", name = "Transportkosten",
+  marker = list(color = farben_tr),
+  text = paste0(tr_vals, " T€"), textposition = "inside",
+  insidetextanchor = "middle",
+  textfont = list(color = "white", size = 13, family = "Arial")
+)
+
+# Gesamtkosten-Label oben
+total_vals <- fix_vals + tr_vals
+fig_bar <- fig_bar %>% add_annotations(
+  x = methoden, y = total_vals + 12,
+  text = paste0("<b>", total_vals, " T€</b>"),
+  showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial")
+)
+
+fig_bar <- fig_bar %>% layout(
+  barmode = "stack",
+  xaxis   = list(title = ""),
+  yaxis   = list(title = "Kosten (T€/Jahr)", range = c(0, max(total_vals) * 1.15)),
+  legend  = list(orientation = "h", y = -0.18),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 30, b = 60),
+  height = 380, width = 650
+)
+
+fig_bar
+```
+
+:::
+:::
+
+---
+
+## Qualitative vs. quantitative Standortbewertung {#slide-ahp-vs-wlp}
+::: slide-subtitle
+Diskussion
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-warning appearance="simple"}
+## Widerspruch zu Kapitel 4?
+
+Die **AHP-Analyse** aus Kapitel 4 favorisierte knapp **Mainz-Hechtsheim**. Die **quantitative WLP-Analyse** dieses Kapitels favorisiert **Wiesbaden-Erbenheim** und **Raunheim**. Wie passt das zusammen?
+:::
+
+::: {.fragment .fade-up}
+```{r ahp-vs-wlp-tabelle}
+#| echo: false
+#| warning: false
+#| message: false
+
+vergleich_ahp <- data.frame(
+  Standort = c("Raunheim", "Wiesbaden-Erbenheim"),
+  Fixkosten = c(260000, 180000),
+  Transport = c(round(.wlp_cost(3, f_h, c_h, a_h)$transport, 1),
+                round(.wlp_cost(1, f_h, c_h, a_h)$transport, 1))
+) |>
+  dplyr::mutate(Gesamt = Fixkosten + Transport)
+
+kbl(vergleich_ahp,
+    col.names = c("Standort (Einzelbetrieb)", "Fixkosten (€)",
+                  "Transport (€/Jahr)", "Gesamt (€/Jahr)"),
+    align = c("l","r","r","r"),
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 22) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+:::
+
+::: {.fragment .fade-up}
+Raunheim und Wiesbaden-Erbenheim sind transportkostengünstiger, die Einsparungen kompensieren die höheren Fixkosten.
+:::
+
+:::
+::: {.column width="44%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Fazit
+
+- **AHP (Kapitel 4):** gut für erste **Vorauswahl** unter schwer quantifizierbaren, weichen Kriterien
+- **WLP (Kapitel 5):** liefert die belastbare **Kostenentscheidung**, sobald harte Zahlen vorliegen
+- Beide Verfahren **ergänzen** sich – keines ersetzt das andere
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Entscheidung SushiFresh
+
+Konsolidierung des Produktionsstandorts auf **Wiesbaden-Erbenheim**. Diese Entscheidung wird in Kapitel 6 (Pooling) und Kapitel 8 (Bullwhip-Effekt) wieder aufgegriffen.
+:::
+:::
+
+:::
+:::

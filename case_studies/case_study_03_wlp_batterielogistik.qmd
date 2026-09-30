@@ -1,0 +1,185 @@
+---
+title: "Fallstudie 3: Diskrete Standort- und Netzwerkplanung"
+subtitle: "Batterielogistik für die Automobilindustrie in Norddeutschland und Benelux"
+author: "Supply Chain Management – Gruppenarbeit"
+lang: de
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    embed-resources: true
+    code-fold: show
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-note}
+## Steckbrief
+
+| | |
+|---|---|
+| **Thema** | Netzwerkdesign mit dem Warehouse Location Problem (WLP) |
+| **Vorlesungsbezug** | Kapitel 5 des Readers: unkapazitiertes und kapazitiertes WLP als MILP, Add-/Drop-Heuristik |
+| **Typ** | Datenbasierte Fallstudie: realistische Werks- und Standortkoordinaten, Mengen und Kosten realitätsnah geschätzt |
+| **Gruppengröße** | 3–6 Personen |
+| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+:::
+
+# Lernziele
+
+Nach Bearbeitung der Fallstudie können Sie
+
+- aus Geodaten eine Transportkostenmatrix  aufbauen,
+- ein **unkapazitiertes (UFLP) und ein kapazitiertes WLP (CFLP)** als gemischt-ganzzahliges lineares Programm formulieren und in R lösen,
+- Konstruktions- und Verbesserungsheuristiken (Add, Drop) anwenden und ihre Lösungsqualität gegenüber dem Optimum bewerten,
+- für ein gegebenes Netz die Belieferung als **Transportproblem** planen ,
+- Netzwerkentscheidungen unter unsicheren Zukunftsszenarien robust gestalten.
+
+# Ausgangslage
+
+Die **NordCell Logistics GmbH** (fiktiv) ist ein auf Gefahrgut spezialisierter Kontraktlogistiker. Sie hat den Zuschlag erhalten, Lithium-Ionen-Batteriemodule für zehn Fahrzeugwerke in Norddeutschland, NRW, Hessen und Benelux zu lagern, zu sequenzieren und *just in sequence* anzuliefern. Die Module kommen aus zwei Quellen:
+
+- **Importe aus Asien** über den Containerhafen **Hamburg** (60 % der Menge),
+- die **Zellfabrik in Salzgitter** (40 % der Menge).
+
+Lithium-Ionen-Batterien sind Gefahrgut der Klasse 9 (UN 3480/3481). Die Lager benötigen daher Brandabschnitte, Sprinkler- und Löschwasserrückhaltesysteme, eine Quarantänezone für beschädigte Module und behördliche Genehmigungen, was die **Fixkosten** eines Standorts erheblich erhöht. NordCell hat acht potenzielle Lagerstandorte in Gewerbe- und Logistikparks identifiziert und muss entscheiden,
+
+1. **welche Lager eröffnet/umgerüstet werden** (strategische Entscheidung, Vertragslaufzeit 7-12 Jahre),
+2. **welches Werk aus welchem Lager beliefert wird** (taktische Planung, jährlich),
+3. wie robust dieses Netz gegenüber der unsicheren Hochlaufentwicklung der Elektromobilität ist.
+
+# Daten
+
+Die Werksstandorte orientieren sich an realen Fahrzeugwerken. Die **Mengen und Kosten sind fiktiv**, aber in ihrer Größenordnung realitätsnah (1 MWh ≈ 6–7 t Batteriemodule inklusive Verpackung).
+
+## Werke (Senken) und Jahresbedarf
+
+```{r}
+#| label: daten-werke
+werke <- data.frame(
+  id    = 1:10,
+  werk  = c("VW Wolfsburg", "VW Hannover", "VW Emden", "VW Osnabrück",
+            "Mercedes-Benz Bremen", "Ford Köln", "Opel Rüsselsheim",
+            "Volvo Cars Gent", "Volvo Trucks Gent", "VDL Nedcar Born"),
+  lat   = c(52.432, 52.380, 53.365, 52.279, 53.075, 50.950, 49.993, 51.054, 51.040, 51.030),
+  lon   = c(10.787,  9.746,  7.213,  8.047,  8.808,  6.900,  8.422,  3.717,  3.730,  5.867),
+  d2027 = c(28000, 22000, 18500, 12000, 25000, 20000, 15000, 30000, 14000, 11000),
+  d2030 = c(42000, 26000, 28000, 12000, 31000, 27000, 21000, 36000, 17000,  6000)
+)
+knitr::kable(werke, format.args = list(big.mark = ".", decimal.mark = ","),
+             col.names = c("#", "Werk", "Breite", "Länge",
+                           "Bedarf 2027 [MWh/a]", "Szenario 2030 [MWh/a]"))
+```
+
+## Quellen
+
+```{r}
+#| label: daten-quellen
+quellen <- data.frame(
+  quelle = c("Hafen Hamburg", "Zellfabrik Salzgitter"),
+  lat    = c(53.540, 52.160),
+  lon    = c( 9.970, 10.400),
+  anteil = c(0.60, 0.40)
+)
+knitr::kable(quellen, col.names = c("Quelle", "Breite", "Länge", "Mengenanteil"))
+```
+
+## Standortkandidaten
+
+```{r}
+#| label: daten-lager
+lager <- data.frame(
+  id   = 1:8,
+  ort  = c("Gütersloh", "Düren", "Dorsten/Marl", "Peine", "Langenhagen",
+           "Venlo (NL)", "Bremen GVZ", "Gent Hafen (BE)"),
+  lat  = c(51.906, 50.804, 51.660, 52.320, 52.438, 51.370, 53.050, 51.100),
+  lon  = c( 8.383,  6.493,  6.965, 10.230,  9.737,  6.170,  8.700,  3.780),
+  fix  = c(2400, 2600, 2500, 2300, 2700, 2800, 2600, 3000),   # T€/Jahr
+  kap  = c(90, 110, 80, 70, 100, 120, 90, 80) * 1000           # MWh/Jahr
+)
+knitr::kable(lager, format.args = list(big.mark = ".", decimal.mark = ","),
+             col.names = c("#", "Standort", "Breite", "Länge",
+                           "Fixkosten [T€/a]", "Kapazität [MWh/a]"))
+```
+
+
+# Aufgaben
+
+## Teil A – Datenaufbereitung
+
+**A1.** Ermitteln Sie Transportkostensätze für dei Batteriesysteme (in €/MWh$\cdot$km). Welche Annahmen liegen dabei zu grunde?
+
+**A2.** Stellen Sie Quellen, Lagerkandidaten und Werke auf einer Karte dar und berechnen Sie die Transportdistanzen, Transportkostenmatrix $c_{ij}$ (€/MWh) sowie die jährlichen Transportkosten. Vergleichen Sie für zwei Relationen die Haversine-Distanz × 1,2 mit der Straßendistanz eines Routenplaners.
+
+## Teil B – Unkapazitiertes WLP (Bedarf 2027)
+
+**B1.** Lösen Sie das Problem mit der **Add- oder Drop-Heuristik** (`add_heuristic_wlp()`, `drop_heuristic_wlp()`) und exakt mit `ompr` + GLPK. Wie weit liegt die Heuristik vom Optimum entfernt?
+
+**B2.** Adaptieren Sie das MILP und bestimmen Sie die optimalen Gesamtkosten bei fest vorgegebener Anzahl offener Lager ($\sum_i y_i = k$, $k = 1, \dots, 4$). Welche Standorte werden jeweils eröffnet und welche Gesamtkosten ergeben sich?
+
+## Teil C – Kapazitiertes WLP und Transportproblem
+
+**C1.** Erweitern Sie das Modell um die Lagerkapazitäten (CFLP). Wie ändert sich die Lösung? 
+
+**C2.** Fixieren Sie die Lagerentscheidung aus C1 und lösen Sie das **Umladeproblem** für 2027. D. h. bestimmen Sie die transportkosten-optimalen Liefermengen von Quellen -> Lager -> Werke. 
+
+## Teil D – Szenarien, Empfehlung und Reflexion
+
+**D1. Szenario 2030.** Lösen Sie das CFLP für das Szenario 2030. Ist das Netz aus 2027 noch zulässig bzw. optimal? Bestimmen Sie ein Netz, das für **beide Szenarien** gut ist, z. B. durch Minimierung der erwarteten Kosten (50 % / 50 %) oder des maximalen Bedauerns (*Minimax-Regret*).
+
+**D2. Sensitivität.** Untersuchen Sie eine weitere Sensitivität: CO₂-Preis von 150 €/t, Wegfall der Zellfabrik Salzgitter oder Schließung des Werks VDL Nedcar Born.
+
+**D3. Empfehlung.** Formulieren Sie eine Netzempfehlung für NordCell mit Kosten, Standorten, Risiken und Ausbauoptionen.
+
+**D4. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+
+1. Die Kostenfunktion ist in der Nähe des Optimums flach. Was bedeutet das für die Aussagekraft des Optimums, und welche Rolle sollten qualitative Kriterien (vgl. Fallstudie 2) bei der endgültigen Auswahl spielen?
+2. Welche Modellannahme halten Sie für die kritischste (Luftlinie × Umwegfaktor, lineare Transportkosten, deterministische Nachfrage, geschätzte Fixkosten), und wie könnte sie Ihre Empfehlung verändern?
+3. Wann würden Sie in der Praxis eine Heuristik statt eines exakten Verfahrens einsetzen?
+4. Welche nicht modellierten Faktoren könnten die Entscheidung kippen, z. B. Genehmigungsverfahren für Gefahrgutlager, Arbeitsmarkt oder grenzüberschreitende Regulierung zwischen Deutschland, den Niederlanden und Belgien?
+5. Wie würden Sie das Ergebnis einer Geschäftsführung ohne Optimierungskenntnisse vermitteln, damit sie dem Modell vertraut, ohne es blind zu übernehmen?
+
+# Anhang: R-Startercode
+
+```{r}
+#| label: starter
+#| eval: false
+source("../R/scm_functions.R")   # haversine(), add_heuristic_wlp(), drop_heuristic_wlp(), vogels_approximation()
+library(ompr); library(ompr.roi); library(ROI.plugin.glpk); library(dplyr)
+
+uf <- 1.2
+# Inbound-Kosten je MWh für jedes Lager (gewichtet über die Quellen)
+c_in <- sapply(seq_len(nrow(lager)), function(i)
+  sum(quellen$anteil * 0.25 * uf *
+        haversine(lager$lat[i], lager$lon[i], quellen$lat, quellen$lon)))
+
+# Outbound-Kosten je MWh (Lager x Werk)
+c_out <- outer(seq_len(nrow(lager)), seq_len(nrow(werke)), Vectorize(function(i, j)
+  0.45 * uf * haversine(lager$lat[i], lager$lon[i], werke$lat[j], werke$lon[j])))
+
+C <- c_in + c_out                       # €/MWh, Matrix 8 x 10
+dimnames(C) <- list(lager$ort, werke$werk)
+
+# Unkapazitiertes WLP (Kosten in T€)
+d  <- werke$d2027
+f  <- lager$fix
+nI <- nrow(lager); nJ <- nrow(werke)
+
+m <- MIPModel() |>
+  add_variable(y[i], i = 1:nI, type = "binary") |>
+  add_variable(x[i, j], i = 1:nI, j = 1:nJ, type = "continuous", lb = 0, ub = 1) |>
+  set_objective(sum_over(f[i] * y[i], i = 1:nI) +
+                sum_over(C[i, j] * d[j] / 1000 * x[i, j], i = 1:nI, j = 1:nJ), "min") |>
+  add_constraint(sum_over(x[i, j], i = 1:nI) == 1, j = 1:nJ) |>
+  add_constraint(x[i, j] <= y[i], i = 1:nI, j = 1:nJ)
+
+res <- solve_model(m, with_ROI(solver = "glpk"))
+objective_value(res)
+get_solution(res, y[i]) |> filter(value > 0.5)
+
+# CFLP: zusätzlich  sum_j d[j] * x[i,j] <= kap[i] * y[i]
+```

@@ -1,0 +1,64 @@
+# Vorwort {.unnumbered}
+
+Dieses Lehrbuch begleitet die Vorlesung **Supply Chain Management (SCM)** und vertieft die Inhalte der Vorlesungsfolien (`slides/`) in ausführlicher, textbasierter Form. Es ist als **Reader zum Selbststudium** gedacht: Während die Folien in der Vorlesung als visuelle Gedächtnisstütze dienen, erläutert dieses Buch dieselben Modelle, Verfahren und Fallbeispiele in vollständigen Sätzen, mit hergeleiteten Formeln und lauffähigem, kommentiertem R-Code.
+
+**Dieser Reader ist primär KI-generiert und bedarf der weiteren Korrektur. Etwaige Fehler können an thomas.kirschstein@hs-rm.de gemeldet werden.**
+
+## Aufbau des Buches
+
+Die Kapitel folgen den Vorlesungseinheiten, die sich in drei Blöcke gliedern: **Grundlagen des Supply Chain Managements**, **strategische Gestaltung von Supply Chains** und **Unsicherheits- und Risikomanagement in Supply Chains**.
+
+1. **Einführung und Grundbegriffe des Supply Chain Managements** — Was ist eine Supply Chain? Flüsse, Akteure, Strukturen, SCM-Gewinn und doppelte Marginalisierung.
+2. **Wertschöpfung, strategische Fertigung und Strategic Fit** — Wertschöpfungsprozess, Entkopplungspunkt, Make-or-Buy, implizierte Unsicherheit, Strategic Fit.
+3. **Ziele, Zielkonflikte und Logistikkosten** — Zielsystem des SCM, das Tetraeder der Zielkonflikte, Kostenarten sowie die Einführung der Fallstudie **SushiFresh GmbH**.
+4. **Nachhaltigkeit im Supply Chain Management** — Vertiefung der Nachhaltigkeitsinhalte aus Einheit 3: ökologischer Strategic Fit, ökologische SCM-Strategien, Kreislaufwirtschaft und Circular Supply Chains.
+5. **Standortplanung I** — Qualitative Verfahren (Nutzwertanalyse, AHP) und kontinuierliche Verfahren (Center of Gravity, Weiszfeld-Algorithmus).
+6. **Standortplanung II** — Diskrete Netzwerkplanungsmodelle: Transportproblem, Warehouse-Location-Problem, Heuristiken und exakte Verfahren.
+7. **Unsicherheit in Supply Chains und Pooling** — Nachfrageunsicherheit, Kapazitäts- und Lagerbestandspooling, Sicherheitsbestände, das Quadratwurzelgesetz des Pooling.
+8. **Das Newsvendor-Modell** — Optimale Bestellmengen unter Unsicherheit, kritische Verhältniszahl, Servicegrad.
+9. **Der Bullwhip-Effekt und das Beergame** — Verstärkung von Nachfrageschwankungen entlang der Kette, Ursachen und Gegenmaßnahmen.
+
+Ab Kapitel [-@sec-logistikkosten] begleitet ein durchgängiges Fallbeispiel den Reader: Die fiktive **SushiFresh GmbH** produziert frische Sushi-Boxen für Supermärkte im Rhein-Main-Gebiet. An ihr werden – wie in der Vorlesung – Standortwahl, Netzwerkdesign, Sicherheitsbestände, Produktionsmengen und der Bullwhip-Effekt durchgerechnet.
+
+Jedes Kapitel folgt derselben Struktur:
+
+- **Lernziele** zu Beginn, damit klar ist, welche Kompetenzen erworben werden sollen.
+- **Konzeptionelle Erläuterungen** mit Beispielen aus der Praxis.
+- **Theorie-Vertiefungen** (violett hinterlegt), die theoretische Hintergründe, Herleitungen und Bezüge zur Fachliteratur ausführlicher darstellen als die Folien.
+- **Fallstudien-Boxen** (gelb hinterlegt) zur SushiFresh GmbH.
+- **Mathematische Herleitungen** in nachvollziehbaren Schritten.
+- **Kommentierter R-Code**, der die Modelle direkt berechnet und visualisiert — jeder Code-Block ist lauffähig und so kommentiert, dass auch Studierende ohne Vorerfahrung in R den Ablauf nachvollziehen können. Neben den fachlichen Inhalten werden dabei grundlegende R-Konzepte (Vektoren, Funktionen, Datenrahmen, das `tidyverse`, Pipes `|>`, Visualisierung mit `ggplot2`) Schritt für Schritt eingeführt.
+- **Kontrollfragen** am Kapitelende zur Selbstüberprüfung.
+
+## Voraussetzungen
+
+- Grundlagen der linearen Algebra und Wahrscheinlichkeitsrechnung.
+- Keine R-Vorkenntnisse notwendig — die Grundlagen werden im Buch eingeführt.
+- Grundlagen der Mikroökonomie sind hilfreich, aber nicht zwingend erforderlich.
+
+## Software
+
+Der gesamte R-Code dieses Buches verwendet die folgenden Pakete:
+
+```r
+install.packages(c(
+  "tidyverse",       # Datenmanipulation (dplyr, tidyr) und Visualisierung (ggplot2)
+  "plotly",          # interaktive Grafiken
+  "knitr",           # Einbettung von R-Code in Quarto-Dokumente
+  "kableExtra",      # formatierte Tabellen
+  "sf",              # Verarbeitung von Geodaten
+  "leaflet",         # interaktive Karten
+  "ompr", "ompr.roi", "ROI.plugin.glpk",  # algebraische Optimierungsmodelle (MILP)
+  "scales"           # Achsen- und Zahlenformatierung in ggplot2
+))
+```
+
+Alle Beispielfunktionen (z. B. für Center of Gravity, das Newsvendor-Modell oder die Add-/Drop-Heuristik) sind zusätzlich in `R/scm_functions.R` gebündelt und werden im Buch an den passenden Stellen referenziert.
+
+## Literaturempfehlungen
+
+Als Hauptlehrbuch dient:
+
+> Chopra, S., & Meindl, P. *Supply Chain Management: Strategy, Planning, and Operation*. Pearson.
+
+Ergänzend werden im Text u. a. herangezogen: Thonemann, Günther & Tempelmeier  sowie Cachon & Terwich (vollständige Angaben siehe [Literaturverzeichnis](references.qmd)).

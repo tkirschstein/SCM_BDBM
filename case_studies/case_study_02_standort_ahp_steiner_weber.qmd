@@ -1,0 +1,211 @@
+---
+title: "Fallstudie 2: Qualitative und kontinuierliche Standortplanung"
+subtitle: "Ein Distributionshub für Lateinamerika – AHP und Steiner-Weber-Modell"
+author: "Supply Chain Management – Gruppenarbeit"
+lang: de
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    embed-resources: true
+    code-fold: show
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-note}
+## Steckbrief
+
+| | |
+|---|---|
+| **Thema** | Standortwahl für einen internationalen Distributionshub |
+| **Vorlesungsbezug** | Kapitel 4 des Readers: Nutzwertanalyse, AHP, Steiner-Weber-Modell (Center of Gravity, Weiszfeld) |
+| **Typ** | Datenbasierte Fallstudie: Prognosedaten und Kostenparameter (vorgegeben) + frei verfügbare Länderindikatoren (eigene Recherche) |
+| **Gruppengröße** | 3–6 Personen |
+| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+:::
+
+# Lernziele
+
+Nach Bearbeitung der Fallstudie können Sie
+
+- ein mehrstufiges Standortbewertungsmodell aufbauen, das Mindestanforderungen (K.-o.-Kriterien), gewichtete Kriterien und eine Sensitivitätsanalyse umfasst,
+- Kriteriengewichte mit dem **Analytic Hierarchy Process (AHP)** herleiten und die Konsistenz der Urteile prüfen,
+- qualitative Kriterien mit frei verfügbaren Indikatoren (z. B. Weltbank-Daten) operationalisieren,
+- den nachfrageoptimalen Standort mit dem **Steiner-Weber-Modell** auf realen Koordinaten bestimmen und seine Grenzen kritisch reflektieren,
+- quantitative und qualitative Bewertungen zu einer begründeten Standortempfehlung verbinden.
+
+# Ausgangslage
+
+Die **Luminé Cosmetics GmbH** (fiktiv) ist ein mittelständischer Hersteller von Farbkosmetik mit Sitz in Hessen. Das Sortiment umfasst Lippenstifte, Mascara, Lidschatten und Nagellack und zeichnet sich durch viele Varianten, kurze Produktlebenszyklen und niedrige Stückpreise aus. Der Vertrieb ins Ausland läuft über **Distributoren**, die die Ware heute *ab Werk* (EXW) im zentralen Distributionszentrum in Hessen abholen. Transport, Verzollung und Weiterverteilung liegen damit vollständig beim Distributor.
+
+Lateinamerika ist der am schnellsten wachsende Absatzmarkt. Die Distributoren klagen jedoch über lange Lieferzeiten (Seefracht ab Europa plus Konsolidierung plus Verzollung: 6–10 Wochen), hohe Sicherheitsbestände und landesspezifische Etikettierungspflichten. Die Geschäftsführung prüft daher, ob ein **regionaler Distributionshub in Lateinamerika** aufgebaut werden soll. Der Hub soll Warenströme aus Europa bündeln, länderspezifisch etikettieren (Labeling) und die Distributoren der Region beliefern.
+
+
+::: {.callout-tip}
+## Leitfrage
+*Sollte Luminé einen regionalen Hub in Lateinamerika errichten, und wenn ja, an welchem Standort?*
+:::
+
+# Daten
+
+## Absatzprognose nach Ländern
+
+Die Prognose des Vertriebs (in Mio. Verkaufseinheiten pro Jahr) ist nach Zielmärkten aufgeschlüsselt. Als Koordinaten dient jeweils der wichtigste Distributionsstandort (in der Regel die größte Stadt bzw. der Sitz des Distributors).
+
+```{r}
+#| label: daten-maerkte
+maerkte <- data.frame(
+  land  = c("Mexiko", "Peru", "Chile", "Kolumbien", "Ecuador", "Guatemala",
+            "Dominikanische Rep.", "Costa Rica", "Panama", "Bolivien", "Uruguay"),
+  stadt = c("Mexiko-Stadt", "Lima", "Santiago", "Bogotá", "Guayaquil",
+            "Guatemala-Stadt", "Santo Domingo", "San José", "Panama-Stadt",
+            "La Paz", "Montevideo"),
+  lat   = c(19.43, -12.05, -33.45,  4.71,  -2.17, 14.63, 18.49,  9.93,  8.98, -16.50, -34.90),
+  lon   = c(-99.13, -77.04, -70.67, -74.07, -79.92, -90.51, -69.93, -84.08, -79.52, -68.15, -56.16),
+  p2027 = c(8.0, 5.0, 4.5, 4.0, 2.5, 1.0, 0.9, 0.8, 0.7, 0.5, 0.5),
+  p2029 = c(18.0, 11.0, 10.0, 9.5, 6.0, 2.2, 2.0, 1.8, 1.5, 1.2, 1.1),
+  p2032 = c(30.0, 19.0, 17.0, 16.0, 10.0, 4.0, 3.5, 3.0, 2.5, 2.0, 2.0)
+)
+knitr::kable(maerkte, digits = 2,
+             col.names = c("Land", "Stadt", "Breite", "Länge",
+                           "2027", "2029", "2032"),
+             caption = "Absatzprognose in Mio. Einheiten/Jahr")
+```
+
+## Standortalternativen
+
+Vorausgewählt wurden fünf Hafenstandorte, die jeweils über eine Freihandels- bzw. Sonderwirtschaftszone verfügen. Hinzu kommt der Status quo, also die zentrale Versorgung aus Deutschland. Die Kostenangaben sind Richtwerte, die ein Logistikberater für einen 3PL-Betrieb auf Basis von Angeboten geschätzt hat.
+
+```{r}
+#| label: daten-hubs
+hubs <- data.frame(
+  hub   = c("Colón", "Cartagena", "Puerto Limón/Moín", "Veracruz", "Callao"),
+  land  = c("Panama", "Kolumbien", "Costa Rica", "Mexiko", "Peru"),
+  zone  = c("Zona Libre de Colón", "Zona Franca Cartagena",
+            "Zona Franca Limón", "Recinto Fiscalizado Estratégico", "ZED Callao (in Aufbau)"),
+  lat   = c(9.36, 10.39, 10.00, 19.17, -12.05),
+  lon   = c(-79.90, -75.51, -83.03, -96.13, -77.15),
+  fix_musd     = c(2.4, 1.9, 1.7, 2.1, 1.8),  # Fixkosten Hub (Mio. USD/Jahr)
+  handling_usd = c(0.050, 0.045, 0.048, 0.042, 0.046),  # Handling inkl. Labeling je Einheit
+  see_tage     = c(18, 17, 19, 20, 28)   # Seefracht-Transitzeit ab Rotterdam/Hamburg (Tage)
+)
+knitr::kable(hubs, digits = 3,
+             col.names = c("Hub", "Land", "Zone", "Breite", "Länge",
+                           "Fixkosten [Mio. USD/a]", "Handling [USD/Einh.]",
+                           "Seefracht [Tage]"))
+```
+
+**Weitere Kostenparameter (Richtwerte):**
+
+- Seefracht Europa → Hub: ca. 2.800 USD je 40'-Container, ca. 40.000 Einheiten je Container (für alle Häfen der Karibikküste gleich; Callao +35 %).
+- Weiterverteilung Hub → Markt (Feeder-Schiff/Lkw, inkl. Zollabwicklung): **0,03 USD je 1.000 Einheiten und km** (Luftlinie, Haversine-Distanz) zuzüglich 25 % Umwegfaktor.
+- Unterstellen Sie für die Wirtschaftlichkeitsbetrachtung Direktverschiffung je Land mit durchschnittlich 45 % Containerauslastung (Kleinmengen, LCL-Zuschläge) und ein Handling in Deutschland von 0,08 USD/Einheit, ohne länderspezifisches Labeling vor Ort.
+- **Status quo**: Die Distributoren tragen die Transportkosten. Allerdings gewährt Luminé Cosmetics den Distributoren einen Rabatt auf den Abverkaufspreis, dessen Höhe von Land zu Land unterschiedlich ist. Dabei gilt je weiter das Land/der Markt von Deutschland entfernt ist, desto größer der Rabatt. Gehen Sie davon aus, dass der Rabatt bei 5 % für mittelamerikanische Länder und 10 % für südamerikanische Länder beträgt. Der durchschnittliche Warenwert beträgt 1 €/Einheit.
+
+## Aussagen aus Experteninterviews
+
+Im Vorfeld wurden Gespräche mit internen und externen Fachleuten geführt. Die folgenden (fiktiven) Aussagen sollen Ihnen als Grundlage für die AHP-Paarvergleiche dienen:
+
+> **Leiter Supply Chain:** »Ohne klaren Kostenvorteil bekommen wir keinen Hub genehmigt. Aber die Lieferzeit ist für unsere Distributoren fast genauso wichtig – bei Trendfarben verlieren wir sonst die Saison.«
+
+> **Head of International Sales:** »Für mich zählt, wo das Volumen der Zukunft liegt. Mexiko, Peru und Chile sind die Wachstumstreiber. Ein Hub, der diese Märkte nicht schnell erreicht, bringt uns wenig.«
+
+> **Regulatory Affairs:** »Unterschätzen Sie nicht die Registrierung und Kennzeichnung. Ein Hub in einer Freihandelszone mit Re-Export-Erfahrung spart uns enorm viel Aufwand – das ist aber eher Voraussetzung als Differenzierungsmerkmal.«
+
+> **Externer 3PL-Berater:** »Politische Stabilität ist ein Filter: Wenn ein Land nicht stabil ist, investiert man dort keinen Hub, egal wie gut der Hafen ist. Unter den stabilen Ländern ist sie dann aber nicht mehr so entscheidend wie Infrastruktur und Kosten.«
+
+> **CFO:** »Wir haben mit einem Hub im Nahen Osten gute Erfahrungen gemacht – aber dort stimmte auch die Hafen- und 3PL-Infrastruktur. Das ist für mich das zweitwichtigste Kriterium nach den Kosten.«
+
+## Frei verfügbare Länderindikatoren (eigene Recherche)
+
+Zur Operationalisierung der qualitativen Kriterien nutzen Sie **reale, frei verfügbare Daten**, zum Beispiel:
+
+| Kriterium | Mögliche Indikatoren | Quelle |
+|---|---|---|
+| Logistische Leistungsfähigkeit | Logistics Performance Index (LPI) 2023, Gesamt- und Teilscores | Weltbank, <https://lpi.worldbank.org> |
+| Politische und wirtschaftliche Stabilität | Worldwide Governance Indicators: *Political Stability and Absence of Violence*, *Rule of Law* | Weltbank, <https://www.worldbank.org/en/publication/worldwide-governance-indicators> |
+| Hafenleistung | Containerumschlag (TEU) der wichtigsten Häfen | CEPAL/ECLAC Port Activity Report |
+| Regulatorik | Zollabwicklung (LPI-Teilscore *Customs*), Regeln der Freihandelszone | LPI, Websites der Freizonen |
+| Marktgeschwindigkeit | Transitzeiten, Anzahl direkter Liniendienste | Fahrpläne der Reedereien, Tabelle oben |
+
+# Aufgaben
+
+## Teil A – Bewertungsmodell und Mindestanforderungen
+
+**A1.** Definieren Sie ein hierarchisches Zielsystem mit **fünf bis sieben Kriterien** und ordnen Sie jedes Kriterium einer Ebene zu: Mindestanforderung (K.-o.-Kriterium), gewichtetes Bewertungskriterium oder Risiko- bzw. Sensitivitätsfaktor. 
+
+**A2.** Legen Sie für die Mindestanforderungen Kriterien/Messgrößen und legen Sie Schwellenwerte fest (z. B. »WGI Political Stability > −0,5«), recherchieren Sie die Werte für die fünf Hub-Länder und sortieren Sie Alternativen gegebenenfalls aus.
+
+## Teil B – Kriteriengewichtung mit AHP
+
+**B1.** Leiten Sie aus den Experteninterviews eine Paarvergleichsmatrix der gewichteten Kriterien auf der AHP-Skala ab. Dokumentieren Sie, auf welche Aussage Sie sich bei jedem Vergleich stützen.
+
+**B2.** Berechnen Sie den Prioritätsvektor sowie Konsistenzindex (CI) und Konsistenzverhältnis (CR). Ist Ihre Matrix hinreichend konsistent (CR < 0,1)? Falls nicht, passen Sie die inkonsistentesten Urteile begründet an.
+
+## Teil C – Steiner-Weber-Modell
+
+**C1.** Bestimmen Sie den nachfragegewichteten optimalen Standort für die Prognosen **2027 und 2032**: zuerst den Schwerpunkt (Center of Gravity), dann das Optimum mit dem **Weiszfeld-Algorithmus**. Rechnen Sie die geografischen Koordinaten vorher in ein metrisches Koordinatensystem um (siehe Startercode) und begründen Sie, warum das notwendig ist.
+
+**C2.** Stellen Sie Märkte, Hub-Kandidaten und optimale Punkte auf einer Karte dar. Berechnen Sie für jeden Hub-Kandidaten die **gewichtete Distanz** zu allen Märkten und die jährlichen Weiterverteilungskosten. Wie groß ist der »Preis« der Beschränkung auf reale Hafenstandorte gegenüber dem kontinuierlichen Optimum?
+
+**C3.** Wählen Sie einen Standort aus und bestimmen Sie die erwarteten Distributionskosten. Ergibt sich eine Verbesserung im Vergleich zum Status quo?
+
+## Teil D – Empfehlung und Reflexion
+
+**D1. Gesamtbewertung.** Bewerten Sie die verbleibenden Hub-Kandidaten und den **Status quo** auf allen gewichteten Kriterien (Punktbewertung 1–5 auf Basis der recherchierten Indikatoren und Ihrer Ergebnisse aus Teil C) und berechnen Sie die Gesamtbewertung.
+
+**D2. Sensitivität.** Prüfen Sie die Robustheit Ihrer Rangfolge in mindestens zwei Szenarien: Variation des Kostengewichts um ± 50 %, Wegfall des mexikanischen Marktes (Belieferung über das Joint Venture vor Ort) oder Eintritt der Prognose 2032 zu nur 60 %.
+
+**D3. Empfehlung.** Formulieren Sie eine Standortempfehlung für die Geschäftsführung mit den wesentlichen Risiken.
+
+**D4. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+
+1. Wie stark hängt Ihr Ergebnis von den subjektiven Paarvergleichen ab? Hätte eine andere Gruppe mit denselben Interviews eine andere Empfehlung abgeleitet, und wäre das ein Problem?
+2. Was sagt ein Steiner-Weber-Optimum aus, das im Meer oder in den Anden liegt? In welchen Situationen ist ein kontinuierliches Modell trotzdem nützlich?
+3. Welche Kriterien ließen sich gut, welche kaum mit öffentlichen Indikatoren messen? Wie beeinflusst diese Asymmetrie das Ergebnis?
+4. K.-o.-Kriterien schließen aus, eine gewichtete Summe gleicht aus. Welche Kriterien sollten Ihrer Meinung nach nicht kompensierbar sein, und warum?
+5. Wie würden die Vertriebsleitung in Lateinamerika und die Zentrale in Deutschland die Kriterien vermutlich unterschiedlich gewichten? Wie sollte ein international tätiges Unternehmen mit solchen Perspektivunterschieden umgehen?
+
+# Anhang: R-Startercode
+
+Die Funktionen `ahp_priority_vector()`, `ahp_consistency()`, `center_of_gravity()`, `weiszfeld()` und `haversine()` stehen in `R/scm_functions.R` zur Verfügung.
+
+```{r}
+#| label: starter
+#| eval: false
+source("../R/scm_functions.R")
+
+# --- AHP: Beispielmatrix (Kriterien K1..K3) – durch eigene Urteile ersetzen
+A <- matrix(c(1,   2,   3,
+              1/2, 1,   2,
+              1/3, 1/2, 1), nrow = 3, byrow = TRUE)
+w <- ahp_priority_vector(A)
+ahp_consistency(A, w)
+
+# --- Projektion in km (äquidistant, Referenzbreite phi0)
+R_erde <- 6371
+phi0   <- mean(maerkte$lat) * pi / 180
+proj <- function(lat, lon) data.frame(
+  x = R_erde * lon * pi / 180 * cos(phi0),
+  y = R_erde * lat * pi / 180)
+
+coords <- cbind(proj(maerkte$lat, maerkte$lon), demand = maerkte$p2032)
+cog <- center_of_gravity(coords)
+ws  <- weiszfeld(coords, max_iter = 500)
+
+# Rückprojektion in Breite/Länge
+c(lat = ws$y / R_erde * 180 / pi,
+  lon = ws$x / (R_erde * cos(phi0)) * 180 / pi)
+
+# --- Gewichtete Haversine-Distanz je Hub (Mio. Einheiten * km)
+wd <- sapply(seq_len(nrow(hubs)), function(h)
+  sum(maerkte$p2032 * haversine(hubs$lat[h], hubs$lon[h],
+                                maerkte$lat, maerkte$lon)))
+names(wd) <- hubs$hub
+wd
+```

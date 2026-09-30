@@ -1,0 +1,422 @@
+# Nachhaltigkeit im Supply Chain Management {#sec-nachhaltigkeit}
+
+```{r ch9-setup}
+#| include: false
+
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+
+# Funktionen und Farbpalette aus scm_functions.R einbinden (Objekt `cols`)
+source("../R/scm_functions.R")
+```
+
+::: {.lernziele}
+**Lernziele**
+
+- Nachhaltigkeit im Supply Chain Management anhand der Brundtland-Definition und der Triple Bottom Line (ökonomisch, ökologisch, sozial) einordnen
+- den Zusammenhang zwischen Nachhaltigkeitszielen und dem Tetraeder der Zielkonflikte aus Kapitel [-@sec-logistikkosten] erläutern und eigene Trade-off-Beispiele nennen
+- Unternehmen anhand ökologischer Betroffenheit und Ökologieorientierung im Strategic-Fit-Raster positionieren
+- die Hierarchie ökologischer SCM-Strategien – Handlungsregeln, Grundstrategien (Suffizienz, Effizienz, Konsistenz), Grundprinzipien und Konzepte – unterscheiden und mit Praxisbeispielen verknüpfen
+- die Abfallhierarchie und das Konzept der Kreislaufwirtschaft erklären sowie lineare, reverse und zirkuläre Supply Chains voneinander abgrenzen
+- die Gestaltungsfelder Circular Product Design, Sustainable Logistics und Circular Production benennen und Beispiele zuordnen
+- Emissionsdaten in R mit `readr` importieren, mit `dplyr` zu einem Index normalisieren und mit `ggplot2::geom_col()` als gestapeltes Balkendiagramm vergleichend visualisieren
+- die Normstrategien der Circular Supply Chain (Produktkomplexität × Kundenpräferenzdynamik) auf konkrete Produkte anwenden
+:::
+
+## Eine fünfte Dimension des Zielsystems
+
+In Kapitel [-@sec-logistikkosten] haben wir das Zielsystem der Logistik als **Tetraeder** dargestellt: Qualität, Geschwindigkeit, Kosten und Flexibilität/Resilienz bilden vier Eckpunkte, zwischen denen sich jedes Logistiksystem positionieren muss, weil eine Verbesserung an einer Ecke fast immer zulasten mindestens einer anderen geht. Diese Betrachtung war bewusst auf die *klassischen* Leistungsdimensionen der Logistik beschränkt – jene Größen also, an denen sich Supply Chains seit Jahrzehnten in erster Linie messen lassen.
+
+Seit einigen Jahren tritt diesem Zielsystem eine weitere, eigenständige Dimension zur Seite, die sich nicht bruchlos in eine der vier Tetraeder-Ecken einordnen lässt und die deshalb in diesem Kapitel gesondert behandelt wird: die **Nachhaltigkeit**. Nachhaltigkeit ist dabei kein "fünfter Eckpunkt", der lediglich neben die anderen vier tritt, sondern eine Querschnittsdimension, die auf *jede* der vier ursprünglichen Ecken zurückwirkt – auf die Kosten (z. B. durch CO2-Bepreisung oder Investitionen in emissionsarme Fahrzeuge), auf die Geschwindigkeit (z. B. wenn eine emissionsärmere Bahnverbindung länger braucht als der LKW), auf die Qualität (z. B. durch Anforderungen an recycelte Materialien) und auf die Flexibilität (z. B. wenn Rücknahmesysteme zusätzliche Kapazitäten binden). Wer Nachhaltigkeit im Supply Chain Management ernst nimmt, muss deshalb denselben Abwägungslogiken folgen, die wir bereits für den klassischen Tetraeder kennengelernt haben – nur dass nun eine zusätzliche, oft schwer monetarisierbare Zielgröße in die Abwägung eingeht.
+
+Dieses Kapitel nimmt sich dieser Dimension an. Es vertieft die Nachhaltigkeitsinhalte der Vorlesungseinheit "Ziele, Zielkonflikte und Logistikkosten" und schließt deshalb unmittelbar an Kapitel [-@sec-logistikkosten] an. Wir klären zunächst, was unter Nachhaltigkeit im SCM-Kontext überhaupt zu verstehen ist, ordnen anschließend ein, wie Unternehmen strategisch auf ökologische Anforderungen reagieren können, systematisieren die Vielzahl ökologischer SCM-Strategien in einer Hierarchie, wenden uns der Kreislaufwirtschaft als zentralem Gestaltungsprinzip zu und untersuchen abschließend anhand einer eigenen R-Rechnung, wie sich der zentrale Zielkonflikt zwischen Nachhaltigkeit und den klassischen Logistikzielen an einem konkreten Beispiel – der Verkehrsträgerwahl – quantifizieren lässt.
+
+## Was heißt Nachhaltigkeit im Supply Chain Management?
+
+Der Begriff "Nachhaltigkeit" wird heute so inflationär verwendet, dass eine saubere Definition unerlässlich ist, bevor wir ihn auf Supply Chains anwenden. Die bis heute einflussreichste Definition stammt aus dem 1987 veröffentlichten Brundtland-Bericht der Vereinten Nationen:
+
+::: {.definition}
+**Definition: Nachhaltigkeit**
+
+Ein Gesellschaftssystem wird als **nachhaltig** bezeichnet, wenn es intra- als intergenerativ gerecht angesehen werden kann. Gerecht heißt, "die Bedürfnisse der Gegenwart befriedigt, ohne zu riskieren, dass künftige Generationen ihre eigenen Bedürfnisse nicht befriedigen können" [@hauff1987zukunft].
+:::
+
+Zwei Aspekte dieser Definition verdienen besondere Beachtung. Erstens ist von **intragenerativer** Gerechtigkeit die Rede – also Gerechtigkeit *innerhalb* der heute lebenden Generation, etwa zwischen Industrie- und Entwicklungsländern oder zwischen verschiedenen Bevölkerungsgruppen. Zweitens ist von **intergenerativer** Gerechtigkeit die Rede – Gerechtigkeit *zwischen* heutigen und zukünftigen Generationen. Nachhaltigkeit ist damit von vornherein kein rein ökologisches, sondern ein explizit auch soziales und ökonomisches Konzept: Ressourcen dürfen heute nicht so verbraucht werden, dass künftige Generationen ihre eigenen Bedürfnisse nicht mehr befriedigen können, und diese Einschränkung gilt gleichermaßen für natürliche wie für soziale und wirtschaftliche "Ressourcen".
+
+Aus dieser Doppelung ökonomischer, ökologischer und sozialer Aspekte entwickelte sich das im Nachhaltigkeitsmanagement am weitesten verbreitete Ordnungsschema: die **Triple Bottom Line** [@baumast2013nachhaltigkeitsmanagement]. Sie unterscheidet drei gleichrangige Zieldimensionen, deren gemeinsame Erfüllung – nicht die einseitige Maximierung einer einzelnen Dimension – als nachhaltig gilt:
+
+- die **ökonomische Dimension**: dauerhafte Wettbewerbsfähigkeit, Wirtschaftlichkeit und Wertschöpfung – letztlich die klassischen Ziele, die wir in Kapitel [-@sec-logistikkosten] bereits ausführlich behandelt haben,
+- die **ökologische Dimension**: Schonung natürlicher Ressourcen, Vermeidung und Verminderung von Emissionen sowie Erhalt der Funktionsfähigkeit von Ökosystemen,
+- die **soziale Dimension**: menschenwürdige Arbeitsbedingungen entlang der gesamten Supply Chain, Gesundheitsschutz, Chancengleichheit und gesellschaftliche Teilhabe.
+
+Für das Supply Chain Management lässt sich daraus eine handhabbare Arbeitsdefinition ableiten, an der sich dieses Kapitel orientiert:
+
+::: {.definition}
+**Definition: Sustainable Supply Chain Management**
+
+**Sustainable Supply Chain Management (Sustainable SCM)** bezeichnet die Planung, Ausführung und Kontrolle von Geschäftsprozessen unter Berücksichtigung ökonomischer, ökologischer und sozialer Ziele, um die langfristige Wettbewerbsfähigkeit der Supply Chain sicherzustellen [@bouchery2016sustainable].
+:::
+
+Bemerkenswert an dieser Definition ist, dass sie Nachhaltigkeit **nicht** als Gegensatz zur Wettbewerbsfähigkeit formuliert, sondern als deren Voraussetzung: Eine Supply Chain, die ihre ökologischen und sozialen Wirkungen ignoriert, riskiert Reputationsschäden, regulatorische Eingriffe, steigende Rohstoffpreise und den Verlust von Marktzugängen – und damit letztlich genau jene ökonomische Wettbewerbsfähigkeit, die sie durch die Vernachlässigung von Nachhaltigkeit eigentlich schützen wollte. Nachhaltigkeit und klassische SCM-Ziele stehen also in einem doppelten Verhältnis: kurzfristig häufig im Zielkonflikt (mehr Nachhaltigkeit kostet in der Regel zunächst Geld oder Zeit), langfristig aber komplementär (fehlende Nachhaltigkeit gefährdet die Wettbewerbsfähigkeit selbst).
+
+## Der ökologische Strategic Fit: wie Unternehmen auf ökologische Anforderungen reagieren
+
+Nicht jedes Unternehmen ist in gleichem Maße von ökologischen Fragestellungen betroffen, und nicht jedes Unternehmen reagiert auf eine gegebene Betroffenheit gleich offensiv. Um diese Beobachtung zu systematisieren, lässt sich – analog zum Strategic-Fit-Konzept aus Kapitel [-@sec-strategic-fit] – ein zweidimensionales Raster aufspannen [@guenther2008oekologieorientiertes]:
+
+- die **ökologische Betroffenheit** eines Unternehmens (niedrig bis hoch): Wie stark hängt der Geschäftserfolg von natürlichen Ressourcen, Emissionsauflagen oder ökologischen Reputationsrisiken ab?
+- die **Ökologieorientierung** des Unternehmens (niedrig bis hoch): Wie aktiv positioniert sich das Unternehmen strategisch zu ökologischen Themen?
+
+Aus der Kombination beider Dimensionen ergeben sich vier idealtypische Positionierungen, die die folgende Tabelle zusammenfasst:
+
+```{r ch9-strategic-fit}
+tibble(
+  Typ = c("Ökologieignoranz", "Ökologieresistenz", "Ökologieadaption", "Ökologieoffensive"),
+  Betroffenheit = c("niedrig", "hoch", "hoch", "niedrig"),
+  Ökologieorientierung = c("niedrig", "niedrig", "hoch", "hoch"),
+  Reaktionsmuster = c(
+    "Ökologische Themen werden als strategisch nachrangig behandelt.",
+    "Nur regulatorische Mindestanpassung; Investitionen werden verzögert, teils Lobbyismus gegen strengere Vorgaben.",
+    "Aktive Anpassung an ökologische Anforderungen zur Sicherung von Resilienz und Wettbewerbsfähigkeit.",
+    "Nachhaltigkeit wird aktiv als Innovations- und Wettbewerbschance genutzt."
+  ),
+  Beispiele = c(
+    "Volkswagen (Diesel-Skandal, verzögerte E-Strategie)",
+    "SKW Piesteritz (Chemieindustrie)",
+    "EON (Ausbau erneuerbarer Erzeugung); Stegra (grüner Stahl)",
+    "Patagonia (Reparaturservice, Kreislaufansätze); IKEA (erneuerbare Energien, nachhaltige Materialien)"
+  )
+) |>
+  kable(align = "lllll",
+        caption = "Vier Positionierungen im Raster aus ökologischer Betroffenheit und Ökologieorientierung") |>
+  kable_styling(font_size = 12)
+```
+
+Die Achsen sind dabei so zu lesen, dass die obere Hälfte des Rasters (hohe Betroffenheit) Unternehmen umfasst, die sich ökologischen Anforderungen kaum entziehen können – sie reagieren entweder abwehrend (Resistenz) oder anpassend (Adaption). In der unteren Hälfte (geringe Betroffenheit) besteht dagegen ein Wahlrecht: Man kann ökologische Themen ignorieren oder sie offensiv als Differenzierungsmerkmal nutzen, obwohl kein unmittelbarer Druck besteht. Die vier Positionierungen zeigen damit, dass Betroffenheit allein noch keine Strategie determiniert: SKW Piesteritz und EON sind beide durch ihre Branche hoch von ökologischen Fragen betroffen, reagieren darauf aber sehr unterschiedlich – das eine Unternehmen minimalistisch-abwartend (Ökologieresistenz), das andere durch aktive Transformation des eigenen Geschäftsmodells (Ökologieadaption). Für das Supply Chain Management folgt daraus eine wichtige Konsequenz: Die eigene Positionierung im Raster beeinflusst unmittelbar, welche der im Folgenden vorgestellten Strategien überhaupt ernsthaft in Betracht gezogen werden – ein ökologieoffensives Unternehmen wird eher bereit sein, in Circular-Product-Design oder Remanufacturing zu investieren, als ein ökologieresistentes.
+
+## Von Handlungsregeln zu Konzepten: eine Hierarchie ökologischer SCM-Strategien
+
+Die Praxis kennt eine kaum überschaubare Vielzahl einzelner Maßnahmen, mit denen Unternehmen auf ökologische Anforderungen reagieren – von der Tourenoptimierung über Recyclingquoten bis zum Carsharing. Um in dieser Vielfalt Orientierung zu schaffen, lässt sich ein **vierstufiges Hierarchiemodell** ökologieorientierten Wirtschaftens aufspannen, das von sehr allgemeinen Handlungsregeln bis zu konkreten, unmittelbar umsetzbaren Konzepten reicht [@dyckhoff2008nachhaltige]. Die Logik dieser Hierarchie ist deduktiv: Handlungsregeln begründen Grundstrategien, Grundstrategien werden über Grundprinzipien operationalisiert, und Grundprinzipien münden schließlich in konkrete Konzepte, die sich in einzelnen Unternehmen tatsächlich umsetzen lassen.
+
+Auf der obersten Ebene stehen vier **Handlungsregeln**, die formulieren, unter welchen Bedingungen wirtschaftliches Handeln als ökologisch tragfähig gelten kann: die Gesunderhaltung ökologischer Systeme (z. B. IKEAs zertifizierte Holzbeschaffung), die Beachtung der Aufnahmefähigkeit ökologischer Systeme (z. B. Emissionsmonitoring in Chemieparks, das sich an Belastungsgrenzen orientiert), die ausgewogene Nutzung regenerierbarer Ressourcen (z. B. Fangquoten in der Fischerei, die sich am Reproduktionsvermögen der Bestände orientieren) sowie die ausgewogene Nutzung nicht-regenerierbarer Ressourcen (z. B. Aluminium-Recycling zur Schonung von Primärrohstoffen). Diese vier Regeln übersetzen die abstrakte Brundtland-Definition in konkrete Anforderungen an den Umgang mit natürlichen Systemen.
+
+Aus diesen Handlungsregeln lassen sich drei **Grundstrategien** ableiten, die häufig auch als "die drei großen S" der Umweltstrategie bezeichnet werden: **Suffizienz** zielt auf einen geringeren absoluten Ressourcenverbrauch durch weniger, langsameren oder bedarfsgerechteren Konsum – etwa wenn Patagonia gezielt Reparaturen statt Neukäufe bewirbt oder wenn Sharing-Modelle die gemeinschaftliche statt individuelle Nutzung von Produkten fördern. **Effizienz** bedeutet, mit weniger Energie- und Materialeinsatz dieselbe oder eine höhere Leistung zu erzielen – etwa durch Tourenoptimierung in der Logistik oder die LED-Umrüstung von Filialnetzen, die bei gleicher Beleuchtungsleistung deutlich weniger Strom benötigt. **Konsistenz** schließlich versucht, Stoff- und Energieströme von vornherein naturverträglich zu gestalten, etwa durch geschlossene Materialkreisläufe (Interface bei Teppichfliesen) oder den Ersatz fossiler durch erneuerbare Energieträger. Wichtig ist der Unterschied zwischen diesen drei Strategien: Suffizienz reduziert den Verbrauch absolut, Effizienz reduziert ihn relativ zur erbrachten Leistung, und Konsistenz verändert die Art der eingesetzten Stoff- und Energieströme, ohne notwendigerweise deren Menge zu reduzieren.
+
+Auf der dritten Ebene stehen vier **Grundprinzipien**, die beschreiben, *wie* Unternehmen die Grundstrategien organisatorisch umsetzen. Das **Verantwortungsprinzip** verlangt, dass Verursacher ökologischer Wirkungen auch Verantwortung für deren Folgen übernehmen – etwa im Rahmen einer erweiterten Herstellerverantwortung für Verpackungen oder einer systematischen CO2-Bilanzierung, die Emissionen der eigenen Wertschöpfung zurechnet. Das **Kooperationsprinzip** geht davon aus, dass sich ökologische Probleme durch Zusammenarbeit besser lösen lassen als durch isoliertes Einzelhandeln, etwa in Form von Brancheninitiativen für nachhaltige Lieferketten oder industrieller Symbiose, bei der die Abwärme oder Nebenprodukte eines Werks von einem anderen genutzt werden. Das **Kreislaufprinzip** fordert, Materialien möglichst lange im Umlauf zu halten – ein Prinzip, dem wir uns im nächsten Abschnitt ausführlich widmen. Und das **Prinzip der Funktionsorientierung** rückt nicht das physische Produkt, sondern die gewünschte Funktion in den Mittelpunkt: Carsharing verkauft Mobilität statt Fahrzeugeigentum, "Licht als Dienstleistung" verkauft Beleuchtung statt Lampenbestand.
+
+Auf der untersten, konkretesten Ebene stehen schließlich vier **Konzepte**, mit denen Unternehmen die Grundprinzipien im Tagesgeschäft umsetzen: **Entstofflichung** ersetzt materielle Prozesse durch digitale Lösungen (digitale statt gedruckte Rechnungen, Streaming statt physischer Datenträger); **Energieeffizienzsteigerung** erbringt dieselbe Leistung mit weniger Energieeinsatz (Wärmerückgewinnung in der Produktion); **Entflechtung** löst problematische Kopplungen zwischen Wirtschaftswachstum und Ressourcenverbrauch (Homeoffice statt Pendelverkehr, regionale statt globale Beschaffung); und **Entschleunigung** setzt auf langsamere, langlebigere Nutzungsmuster (Slow Fashion statt kurzer Kollektionszyklen, Bahn statt Flug bei Geschäftsreisen). Die folgende Tabelle fasst diese vierstufige Hierarchie mit je einem Praxisbeispiel zusammen.
+
+```{r ch9-strategien-tabelle}
+tibble(
+  Ebene = c(
+    rep("Handlungsregel", 4),
+    rep("Grundstrategie", 3),
+    rep("Grundprinzip", 4),
+    rep("Konzept", 4)
+  ),
+  Bezeichnung = c(
+    "Gesunderhaltung ökologischer Systeme",
+    "Beachtung der Aufnahmefähigkeit",
+    "Nutzung regenerierbarer Ressourcen",
+    "Nutzung nicht-regenerierbarer Ressourcen",
+    "Suffizienz", "Effizienz", "Konsistenz",
+    "Verantwortungsprinzip", "Kooperationsprinzip",
+    "Kreislaufprinzip", "Funktionsorientierung",
+    "Entstofflichung", "Energieeffizienzsteigerung",
+    "Entflechtung", "Entschleunigung"
+  ),
+  Beispiel = c(
+    "IKEA: zertifizierte/recycelte Holzbeschaffung",
+    "Chemiepark mit kontinuierlichem Emissionsmonitoring",
+    "Fangquoten in der Fischerei",
+    "Aluminium-Recycling in der Verpackungswirtschaft",
+    "Patagonia: Reparaturservice statt Neukauf",
+    "DHL: Tourenoptimierung",
+    "Interface: Kreislauffähige Teppichfliesen",
+    "Erweiterte Herstellerverantwortung für Verpackungen",
+    "Brancheninitiativen für nachhaltige Lieferketten",
+    "Renault: Remanufacturing von Autoteilen",
+    "Carsharing statt Fahrzeugbesitz",
+    "Digitale statt gedruckte Rechnungen",
+    "Wärmerückgewinnung in der Produktion",
+    "Homeoffice statt Pendelverkehr",
+    "Bahn statt Flug bei Geschäftsreisen"
+  )
+) |>
+  select(-Ebene) |>
+  kable(align = "ll",
+        col.names = c("Bezeichnung", "Beispiel"),
+        caption = "Vierstufige Hierarchie ökologischer SCM-Strategien: von der Handlungsregel zum Konzept") |>
+  kable_styling(font_size = 12) |>
+  pack_rows("Handlungsregeln", 1, 4) |>
+  pack_rows("Grundstrategien", 5, 7) |>
+  pack_rows("Grundprinzipien", 8, 11) |>
+  pack_rows("Konzepte", 12, 15)
+```
+
+## Planungsaufgaben im Sustainable Supply Chain Management
+
+Nachhaltigkeit verändert nicht nur die Zielgrößen, sondern auch die **Planungsaufgaben** entlang der Supply Chain. @stindt2017 ordnet diese – analog zur Supply Chain Planning Matrix aus Kapitel [-@sec-standort-1] – nach Planungsebene und Prozess. Auf der **strategischen** Ebene geht es um die Gestaltung eines Netzwerks, das neben den Vorwärts- auch Rückflüsse (Rücknahme, Aufbereitung, Recycling) aufnehmen kann, um die Auswahl von Lieferanten nach ökologischen und sozialen Kriterien sowie um die kreislauffähige Gestaltung von Produkten. Auf der **taktischen** Ebene werden Kapazitäten für Rückführung und Aufbereitung dimensioniert, Transportmodi unter Emissionsgesichtspunkten gewählt und Emissionsbudgets auf Standorte und Perioden verteilt. Auf der **operativen** Ebene schließlich geht es um emissionsarme Tourenplanung, die Steuerung von Rückläufern und die Vermeidung von Verderb und Abfall im Tagesgeschäft.
+
+Stindts zentrale These ist, dass Nachhaltigkeit nicht als zusätzliches, nachgelagertes Planungsmodul "aufgesetzt" werden kann, sondern in die bestehenden Planungsaufgaben **integriert** werden muss: Jedes der in diesem Reader behandelten Modelle – Standortplanung, Transportproblem, Bestandsplanung – lässt sich um ökologische Zielgrößen oder Nebenbedingungen erweitern, wie es in Kapitel [-@sec-logistikkosten] mit CO₂-Preisen und Emissionsbudgets bereits angedeutet wurde.
+
+## Von der linearen zur zirkulären Supply Chain
+
+Unter den vier Grundprinzipien des vorigen Abschnitts verdient das **Kreislaufprinzip** eine vertiefte Betrachtung, weil es die Struktur ganzer Supply Chains verändert – nicht nur einzelne Prozesse innerhalb einer unveränderten Kettenlogik. Um diese strukturelle Veränderung zu verstehen, lohnt sich zunächst ein Blick auf die **Abfallhierarchie** der Ellen MacArthur Foundation, die die grundsätzlich verfügbaren Umgangsformen mit Materialien und Produkten am Ende ihres Lebenszyklus nach ökologischer Vorzugswürdigkeit ordnet:
+
+```{r ch9-abfallhierarchie}
+tibble(
+  Rang = 1:6,
+  Stufe = c("Prevent", "Reduce", "Reuse", "Recycling", "Energy Recovery", "Disposal"),
+  Bedeutung = c(
+    "Entstehung von Abfall von vornherein vermeiden (z. B. durch Suffizienz oder Funktionsorientierung)",
+    "Menge des eingesetzten Materials verringern (Effizienz)",
+    "Produkte oder Komponenten ohne erneute Bearbeitung weiterverwenden",
+    "Material stofflich aufbereiten und erneut als Rohstoff einsetzen",
+    "Nicht mehr verwertbares Material energetisch nutzen (z. B. Verbrennung mit Wärmegewinnung)",
+    "Endgültige, möglichst schadstoffarme Beseitigung (letzte Option)"
+  )
+) |>
+  kable(align = "cll",
+        caption = "Abfallhierarchie: von der Vermeidung (höchste Priorität) bis zur Beseitigung (niedrigste Priorität)")
+```
+
+Die Hierarchie ist bewusst als Rangfolge zu lesen: Je weiter oben eine Option steht, desto stärker bleibt der ökonomische und ökologische Wert eines Materials erhalten, und desto geringer ist der zusätzliche Ressourcen- und Energieeinsatz, der zu seiner erneuten Nutzung nötig ist. **Recycling** steht dabei bewusst erst an vierter Stelle: Häufig wird Recycling in der öffentlichen Debatte mit Nachhaltigkeit gleichgesetzt, tatsächlich ist es aus ökologischer Sicht aber nur die drittbeste verfügbare Option, weil auch das Recycling selbst Energie und Prozesse benötigt und ein Teil der ursprünglich im Produkt gebundenen Wertschöpfung verloren geht.
+
+Genau diese Rangfolge liegt dem Konzept der **Kreislaufwirtschaft** (*Circular Economy*) zugrunde: Statt Materialien nach einmaliger Nutzung zu entsorgen, sollen sie so lange wie möglich auf möglichst hoher Hierarchiestufe im Wirtschaftskreislauf gehalten werden. Für die Supply-Chain-Gestaltung lassen sich daraus drei grundlegend verschiedene Kettentypen unterscheiden [@dyckhoff1998grundzuege; @chopra2025supply]:
+
+::: {.definition}
+**Definition: lineare, reverse und zirkuläre Supply Chain**
+
+Eine **lineare Supply Chain** folgt dem klassischen Fluss Rohstoffgewinnung → Produktion → Distribution → Nutzung → Entsorgung, ohne dass Materialien nach der Nutzungsphase in die Kette zurückfließen.
+
+Eine **reverse Supply Chain** (Reverse Logistics) ergänzt diesen linearen Fluss um einen Rückfluss von Produkten, Komponenten oder Verpackungen vom Endkunden zurück zu vorgelagerten Stufen – etwa zur Reparatur, zum Recycling oder zur fachgerechten Entsorgung.
+
+Eine **zirkuläre Supply Chain** (Circular Supply Chain) geht noch einen Schritt weiter: Sie ist von vornherein so gestaltet, dass zurückgeführte Materialien und Produkte wieder vollwertig in den Produktions- und Nutzungskreislauf eingespeist werden, sodass Primärressourcen möglichst vollständig durch im System zirkulierende Sekundärressourcen ersetzt werden.
+:::
+
+Der Unterschied zwischen reverser und zirkulärer Supply Chain ist mehr als semantisch: Eine reverse Logistik kann rein defensiv motiviert sein (gesetzliche Rücknahmepflicht, Garantieabwicklung), während eine zirkuläre Supply Chain die Rückführung bereits im Produkt- und Prozessdesign antizipiert und damit von Anfang an höhere Stufen der Abfallhierarchie – Wiederverwendung und Remanufacturing statt bloßem Recycling – erreichbar macht.
+
+## Gestaltungsfelder eines nachhaltigen und zirkulären Supply Chain Managements
+
+Um Kreislaufwirtschaft entlang einer Supply Chain tatsächlich umzusetzen, müssen mehrere Gestaltungsfelder gleichzeitig adressiert werden, die sich grob drei Bereichen zuordnen lassen:
+
+- **Circular Product Design**: Bereits bei der Produktentwicklung wird über die spätere Kreislauffähigkeit entschieden – durch Konstruktionsentscheidungen, die spätere **Recyclingfähigkeit** ermöglichen (z. B. sortenreine statt verklebte Materialverbunde), durch Gestaltung für **Wiederverwendung** (z. B. modulare Bauweise, die einen Austausch einzelner Komponenten statt des Gesamtprodukts erlaubt) und durch den gezielten Einsatz von **Recycled Content**, also bereits wiederverwertetem Material als Ausgangsstoff für Neuprodukte.
+- **Sustainable Logistics**: Die physische Distribution selbst wird ökologisch optimiert – durch **Gewichtsreduktion** von Produkten und Verpackungen (weniger Gewicht bedeutet weniger Energieeinsatz je Transport), durch **Distanzreduktion** (regionale statt globale Beschaffungs- und Distributionsnetze) und durch **Transportvermeidung** im engeren Sinne (Bündelung von Sendungen, höhere Auslastung, Substitution physischer durch digitale Prozesse).
+- **Circular Production**: Auch die Produktion selbst wird kreislauforientiert gestaltet – durch den Einsatz **erneuerbarer Energie**, durch die **Verwendung von Produktionsabfällen** als Input für andere Prozesse (industrielle Symbiose) und durch die **Kreislaufführung von Betriebs- und Hilfsstoffen** (z. B. Kühl- oder Prozesswasser), die nicht nach einmaligem Gebrauch entsorgt, sondern aufbereitet und wiederverwendet werden.
+
+Der mittlere dieser drei Bereiche – Sustainable Logistics – betrifft unmittelbar eine Entscheidung, die uns bereits aus früheren Kapiteln vertraut ist: die **Wahl des Verkehrsträgers**. Wie stark sich diese Wahl auf die CO2-Bilanz einer Sendung auswirkt, arbeiten wir im folgenden Abschnitt mit einer eigenen R-Rechnung heraus.
+
+## Nachhaltige Verkehrsträgerwahl: eine Rechenübung in R
+
+Unterschiedliche Verkehrsträger – LKW, Bahn, Binnenschiff, Seeschiff, Flugzeug – unterscheiden sich massiv in ihrer CO2-Effizienz je transportierter Gütermenge. Die gebräuchliche Bezugsgröße hierfür ist die **Tonnenkilometer** (tkm): die Beförderung einer Tonne Ladung über einen Kilometer Strecke. Die CO2-Emission einer konkreten Sendung lässt sich dann näherungsweise als
+
+$$
+E \;=\; d \cdot m \cdot f
+$$
+
+berechnen, wobei $d$ die zurückgelegte Distanz in Kilometern, $m$ die transportierte Masse in Tonnen und $f$ den **Emissionsfaktor** des jeweiligen Verkehrsträgers in Gramm CO2 je Tonnenkilometer (g CO2/tkm) bezeichnet. Genau mit dieser Formel arbeiten wir in den folgenden drei R-Exkursen, die zugleich drei R-Techniken einführen, die in den vorangegangenen Kapiteln noch nicht vorkamen: den Import tabellarischer Daten mit `readr`, die Bildung eines Index mit `dplyr` sowie die Konstruktion eines gestapelten Balkendiagramms mit `ggplot2::geom_col()`.
+
+::: {.r-exkurs}
+**R-Exkurs: Emissionsdaten importieren mit `readr`**
+
+Bislang haben wir in diesem Buch Daten fast ausschließlich direkt als Vektor oder `tibble` im R-Code angelegt. In der Praxis liegen Daten – etwa Emissionsfaktoren aus einer Umweltdatenbank – jedoch meist als **Textdatei** vor, typischerweise im CSV-Format (*comma-separated values*). Das `tidyverse`-Paket `readr` stellt dafür die Funktion `read_csv()` bereit, die eine CSV-Datei (oder, wie hier zu Demonstrationszwecken, einen CSV-formatierten Text) einliest und dabei automatisch sinnvolle Spaltentypen erkennt – Zahlen werden als `double`, Text als `character` importiert, ohne dass man dies von Hand angeben müsste.
+
+Damit `read_csv()` eine Zeichenkette als **Dateninhalt** und nicht als **Dateipfad** interpretiert, wird sie mit der Basis-R-Funktion `I()` ("as is") gekennzeichnet:
+
+```{r ch9-emission-import}
+# CO2-Emissionsfaktoren ausgewaehlter Verkehrstraeger in g CO2 je Tonnenkilometer.
+# Es handelt sich um gerundete, groessenordnungsmaessig realistische
+# Richtwerte aus der einschlaegigen Verkehrs- und Logistikliteratur, die
+# hier zu Illustrationszwecken verwendet werden.
+emissionsdaten_text <- "Verkehrstraeger,Emissionsfaktor_g_tkm,Kategorie
+LKW,62,Strasse
+Bahn,22,Schiene
+Binnenschiff,31,Wasser
+Seeschiff,8,Wasser
+Flugzeug,602,Luft"
+
+# read_csv() liest den (literalen) Text ein und erkennt automatisch,
+# dass die zweite Spalte numerisch ist -- I() verhindert, dass der
+# String faelschlich als Dateipfad interpretiert wird
+emissionsfaktoren <- read_csv(I(emissionsdaten_text), show_col_types = FALSE)
+
+emissionsfaktoren |>
+  arrange(Emissionsfaktor_g_tkm) |>
+  kable(col.names = c("Verkehrsträger", "g CO₂ / tkm", "Kategorie"),
+        align = "lrl",
+        caption = "CO2-Emissionsfaktoren ausgewählter Verkehrsträger (Richtwerte)")
+```
+
+Schon diese sortierte Tabelle macht den zentralen Zielkonflikt der nachhaltigen Verkehrsträgerwahl sichtbar: Das **Seeschiff** ist je Tonnenkilometer mit Abstand am emissionsärmsten, gefolgt von Bahn und Binnenschiff; der **LKW** liegt deutlich höher, und das **Flugzeug** verursacht je Tonnenkilometer knapp das Zehnfache der Emissionen eines LKW. Gleichzeitig sind es gerade die emissionsärmeren Verkehrsträger – Schiff und Bahn –, die typischerweise langsamer und weniger flexibel sind als der LKW. Genau hier zeigt sich die eingangs beschriebene Rückwirkung der Nachhaltigkeitsdimension auf die klassischen Tetraeder-Ecken Geschwindigkeit und Flexibilität.
+:::
+
+::: {.r-exkurs}
+**R-Exkurs: Normalisierung und Indexbildung**
+
+Absolute Emissionsfaktoren sind schwer intuitiv einzuordnen ("Ist 31 g CO2/tkm viel oder wenig?"). In der Praxis werden Kennzahlen deshalb häufig **normalisiert**, also auf eine gemeinsame Bezugsgröße umgerechnet – hier auf den sparsamsten verfügbaren Verkehrsträger, der als Index-Basiswert 100 erhält. Mit `dplyr::mutate()` lässt sich ein solcher Index in einer einzigen Codezeile berechnen, weil `min()` innerhalb von `mutate()` automatisch über die gesamte Spalte gebildet und anschließend elementweise auf jede Zeile angewendet wird:
+
+```{r ch9-emissionsindex}
+# Emissionsindex: Emissionsfaktor jedes Verkehrstraegers im Verhaeltnis
+# zum sparsamsten Verkehrstraeger (dieser erhaelt den Indexwert 100) --
+# min() wird einmalig ueber die ganze Spalte gebildet und dann in jeder
+# Zeile fuer die Division verwendet
+emissionsfaktoren <- emissionsfaktoren |>
+  mutate(Emissionsindex = round(Emissionsfaktor_g_tkm / min(Emissionsfaktor_g_tkm) * 100, 0))
+
+emissionsfaktoren |>
+  arrange(Emissionsindex) |>
+  kable(col.names = c("Verkehrsträger", "g CO₂ / tkm", "Kategorie", "Index (Seeschiff = 100)"),
+        align = "lrlr",
+        caption = "Emissionsindex der Verkehrsträger relativ zum Seeschiff")
+```
+
+Der Index liest sich unmittelbar anschaulicher als die Rohwerte: Der LKW emittiert danach fast achtmal, das Flugzeug rund 75-mal so viel CO2 je Tonnenkilometer wie das Seeschiff. Dieselbe Normalisierungslogik – ein Wert wird durch einen Referenzwert geteilt und mit 100 multipliziert – begegnet einem in der Praxis regelmäßig, etwa bei Preisindizes, Konjunkturindikatoren oder eben Nachhaltigkeitskennzahlen wie der CO2-Intensität je Umsatzeinheit.
+:::
+
+Die reinen Emissionsfaktoren sagen allerdings noch nichts über eine *konkrete* Sendung aus, weil eine reale Transportkette meist mehrere Verkehrsträger kombiniert. Betrachten wir eine Sendung von 20 Tonnen Ladung, die über insgesamt rund 800 Kilometer transportiert werden muss, und vergleichen drei Szenarien: (A) durchgängiger LKW-Transport, (B) Bahntransport mit LKW-Vor- und -Nachlauf zu den Terminals sowie (C) Binnenschifftransport, ebenfalls mit LKW-Vor- und -Nachlauf.
+
+```{r ch9-szenarien}
+ladung_t <- 20 # Tonnen Ladung je Sendung, in allen Szenarien identisch
+
+szenarien <- tibble(
+  Szenario = c(
+    "A: Nur LKW",
+    "B: Bahn kombiniert", "B: Bahn kombiniert", "B: Bahn kombiniert",
+    "C: Binnenschiff kombiniert", "C: Binnenschiff kombiniert", "C: Binnenschiff kombiniert"
+  ),
+  Streckenabschnitt = c(
+    "Hauptlauf",
+    "Vorlauf", "Hauptlauf", "Nachlauf",
+    "Vorlauf", "Hauptlauf", "Nachlauf"
+  ),
+  Verkehrstraeger = c(
+    "LKW",
+    "LKW", "Bahn", "LKW",
+    "LKW", "Binnenschiff", "LKW"
+  ),
+  Distanz_km = c(800, 40, 700, 60, 30, 750, 20)
+)
+
+# Emissionsfaktoren je Verkehrstraeger per left_join anfuegen und
+# Emissionen je Streckenabschnitt berechnen (g -> kg durch /1000)
+szenarien <- szenarien |>
+  left_join(emissionsfaktoren, by = "Verkehrstraeger") |>
+  mutate(Emission_kg = Distanz_km * ladung_t * Emissionsfaktor_g_tkm / 1000)
+
+szenarien |>
+  select(Szenario, Streckenabschnitt, Verkehrstraeger, Distanz_km, Emission_kg) |>
+  kable(digits = 1, align = "llrrr",
+        caption = "Emissionen je Streckenabschnitt und Szenario (Ladung: 20 t)")
+```
+
+::: {.r-exkurs}
+**R-Exkurs: ein gestapeltes Balkendiagramm mit `geom_col()`**
+
+Um die drei Szenarien nicht nur tabellarisch, sondern auch grafisch zu vergleichen, bietet sich ein **gestapeltes Balkendiagramm** an: ein Balken je Szenario, dessen Segmente die Emissionen der einzelnen Streckenabschnitte zeigen. In `ggplot2` erzeugt `geom_col()` – anders als `geom_bar()`, das Häufigkeiten *zählt* – Balken aus bereits vorliegenden `y`-Werten; das Argument `fill =` weist jedem Streckenabschnitt eine eigene Füllfarbe zu, und `ggplot2` stapelt die Segmente automatisch übereinander, sobald mehrere Zeilen denselben `x`-Wert teilen:
+
+```{r ch9-stacked-bar}
+#| fig-cap: "CO2-Emissionen dreier Transportszenarien für eine 20-Tonnen-Sendung über rund 800 km"
+#| fig-width: 7.5
+#| fig-height: 4.5
+
+szenarien |>
+  ggplot(aes(x = Szenario, y = Emission_kg, fill = Verkehrstraeger)) +
+  geom_col(color = "white", linewidth = 0.3) +
+  scale_fill_manual(values = c(
+    "LKW"          = cols$atp,
+    "Bahn"         = cols$top,
+    "Binnenschiff" = cols$mid
+  )) +
+  labs(x = NULL, y = "Emissionen (kg CO2)", fill = "Verkehrsträger") +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(size = 9))
+```
+
+Die Stapelung macht auf einen Blick zweierlei sichtbar: erstens, wie stark die **Gesamthöhe** der Balken zwischen den Szenarien variiert, und zweitens, welchen **Anteil** die einzelnen Streckenabschnitte an dieser Gesamtsumme haben – im Szenario B etwa dominiert der Bahn-Hauptlauf die Emissionen, während die LKW-Vor- und -Nachläufe nur kleine Segmente beisteuern.
+:::
+
+Die Rechnung bestätigt eindrucksvoll, was der Emissionsindex bereits andeutete: Szenario A (ausschließlich LKW) verursacht rund 992 kg CO2, Szenario C (Binnenschiff kombiniert) rund 527 kg und Szenario B (Bahn kombiniert) mit rund 432 kg CO2 nur etwa 44 % der Emissionen von Szenario A – obwohl in allen drei Szenarien dieselbe Menge über dieselbe Gesamtstrecke transportiert wird. Der kombinierte Verkehr spart also allein durch die Wahl des Hauptlauf-Verkehrsträgers deutlich CO2 ein. Diese Einsparung ist jedoch nicht kostenlos: Der Umschlag zwischen LKW und Bahn bzw. Binnenschiff an den Terminals kostet Zeit und Geld, die Transitzeit steigt, und die Flexibilität sinkt, weil Bahn- und Schiffsverbindungen seltener und unflexibler getaktet sind als der LKW. Genau dieser Trade-off zwischen Nachhaltigkeit einerseits und Geschwindigkeit, Flexibilität und mitunter auch Kosten andererseits ist es, den wir im letzten inhaltlichen Abschnitt dieses Kapitels noch einmal explizit in den Rahmen des Tetraeders aus Kapitel [-@sec-logistikkosten] einordnen.
+
+## Normstrategien der Circular Supply Chain
+
+Kreislauforientierte Produktgestaltung lässt sich nicht für jedes Produkt nach demselben Muster betreiben – ein Smartphone erfordert eine andere Kreislaufstrategie als eine Verpackung. Um die passende Normstrategie zu bestimmen, lässt sich ein zweidimensionales Raster aus **Produktkomplexität** (niedrig bis hoch) und **Dynamik der Kundenpräferenzen** (statisch bis dynamisch) aufspannen. Die Kombination beider Dimensionen ergibt vier Normstrategien:
+
+```{r ch9-normstrategien}
+tibble(
+  Quadrant = c(
+    "niedrige Komplexität / dynamische Präferenzen",
+    "hohe Komplexität / dynamische Präferenzen",
+    "niedrige Komplexität / statische Präferenzen",
+    "hohe Komplexität / statische Präferenzen"
+  ),
+  Normstrategie = c(
+    "Design for Recycling",
+    "Design for Remanufacture & Reuse",
+    "Design for Recycled Content",
+    "Design for Repair & Durability"
+  ),
+  Begründung = c(
+    "Kurzlebige, trendabhängige Produkte lohnen sich kaum für Wiederaufbereitung; sortenreine Materialtrennung für stoffliches Recycling ist die effizienteste Kreislaufoption.",
+    "Hoher Materialwert und hohe Fertigungskomplexität rechtfertigen die aufwendigere Wiederaufbereitung ganzer Komponenten oder Geräte, trotz wechselnder Kundenwünsche.",
+    "Einfache, standardisierte Produkte mit stabiler Nachfrage eignen sich gut dafür, bereits im Herstellungsprozess einen hohen Anteil recycelten Materials einzusetzen.",
+    "Bei komplexen, aber langlebig nachgefragten Produkten zahlt sich eine auf Reparierbarkeit und lange Nutzungsdauer ausgelegte Konstruktion besonders aus."
+  ),
+  Beispielprodukte = c(
+    "Bekleidung, Möbel",
+    "Smartphones, Computer",
+    "Verpackungen, Stahl",
+    "Autos, Haushaltsgeräte"
+  )
+) |>
+  kable(align = "llll",
+        caption = "Normstrategien der Circular Supply Chain nach Produktkomplexität und Präferenzdynamik") |>
+  kable_styling(font_size = 12)
+```
+
+Die Tabelle macht deutlich, dass "Kreislaufwirtschaft" kein einheitliches Rezept ist, sondern je nach Produktkategorie sehr unterschiedliche Schwerpunkte setzt. Bei Verpackungen und Stahl – niedrige Komplexität, stabile Nachfrage – steht die Erhöhung des Recycled-Content-Anteils im Vordergrund, weil sich hierfür standardisierte, planbare Materialkreisläufe etablieren lassen. Bei Smartphones und Computern dagegen, wo sowohl der Materialwert als auch die Fertigungskomplexität hoch sind, lohnt sich Remanufacturing – die Wiederaufbereitung ganzer Baugruppen oder Geräte für einen erneuten Verkauf –, obwohl sich die Kundenpräferenzen (neue Funktionen, neues Design) laufend ändern. Bei Autos und Haushaltsgeräten schließlich, die zwar komplex, aber vergleichsweise stabil nachgefragt werden, zahlt sich eine von vornherein auf Reparierbarkeit ausgelegte Konstruktion aus – ein Prinzip, das unmittelbar an das Renault-Beispiel aus der Strategien-Hierarchie weiter oben anknüpft.
+
+## Fallstudie: Nachhaltigkeit bei SushiFresh
+
+::: {.fallstudie}
+**Fallstudie: Ökologische Zielkonflikte der SushiFresh GmbH**
+
+Die in Kapitel [-@sec-logistikkosten] eingeführte SushiFresh GmbH bietet ein anschauliches Beispiel für die Nachhaltigkeitsfragen eines Frischeproduzenten. Drei Handlungsfelder stehen im Vordergrund:
+
+- **Lebensmittelabfälle:** Jede am Abend unverkaufte Box ist nicht nur ein wirtschaftlicher Verlust (Überdeckungskosten $c^o$ im Newsvendor-Modell, Kapitel [-@sec-newsvendor]), sondern auch ein ökologischer: Mit dem Fisch werden Fangressourcen, Kühlenergie und Transportleistung vernichtet. Wer die Umweltwirkung unverkaufter Ware monetär bewertet, erhöht faktisch $c^o$ – das kritische Verhältnis sinkt, und die optimale Produktionsmenge geht zurück. Nachhaltigkeit verschiebt hier also unmittelbar eine operative Entscheidung. Nach der Abfallhierarchie sollte Restware zudem möglichst weit oben verwertet werden (Abendrabatt vor Spende vor Entsorgung).
+- **Kühlkette und Transporte:** Die tägliche, gekühlte Auslieferung in kleinen Mengen ist emissionsintensiv. Die Standortentscheidung (Kapitel [-@sec-standort-1] und [-@sec-standort-2]) beeinflusst die gefahrenen Kilometer; die Bündelung auf eine Zentralküche senkt Bestände und Verderb (Kapitel [-@sec-unsicherheit-pooling]), verlängert aber tendenziell die Wege. Hier zeigt sich der Zielkonflikt zwischen den Konzepten *Effizienz* (Bündelung) und *Entflechtung* (regionale, kurze Wege).
+- **Beschaffung von Fisch:** Lachs und Thunfisch sind regenerierbare, aber übernutzungsgefährdete Ressourcen. Die Handlungsregel der ausgewogenen Nutzung regenerierbarer Ressourcen (Fangquoten, zertifizierte Fischerei) wird damit zum Kriterium der Lieferantenauswahl – ein Beispiel für das Kooperationsprinzip mit dem Großhändler Nord-Fisch (Kapitel [-@sec-bullwhip]).
+
+Im Raster aus Betroffenheit und Ökologieorientierung ist SushiFresh als Lebensmittelhersteller mit verderblicher Ware und kritischem Rohstoff stark betroffen. Eine Positionierung als *Ökologieadaption* – etwa durch konsequente Abfallvermeidung, zertifizierten Fisch und Mehrwegverpackungen – passt zudem zur Qualitäts- und Frischepositionierung des Unternehmens.
+:::
+
+## Zielkonflikte zwischen Nachhaltigkeit und klassischen Logistikzielen
+
+Damit lässt sich der Bogen zurück zum Tetraeder aus Kapitel [-@sec-logistikkosten] schließen. Die Verkehrsträgerrechnung im vorigen Abschnitt hat exemplarisch gezeigt, dass sich Nachhaltigkeitsziele selten isoliert verfolgen lassen, sondern fast immer mit mindestens einer der vier klassischen Tetraeder-Ecken in Spannung stehen:
+
+- **Nachhaltigkeit versus Geschwindigkeit**: Der emissionsärmere kombinierte Verkehr (Bahn, Binnenschiff) ist in aller Regel langsamer als der reine LKW-Transport, weil Umschlagsvorgänge und geringere Taktdichten zusätzliche Zeit kosten.
+- **Nachhaltigkeit versus Flexibilität/Resilienz**: Kreislauforientierte Lieferketten benötigen funktionierende Rückführlogistik, zusätzliche Kapazitäten für Rücknahme, Sortierung und Wiederaufbereitung sowie stabile Partnerschaften mit Entsorgern und Recyclern – all das reduziert kurzfristig die Fähigkeit, flexibel auf veränderte Nachfrage zu reagieren.
+- **Nachhaltigkeit versus Kosten**: Recycelte Materialien, erneuerbare Energie oder aufwendigere, reparaturfreundliche Konstruktionen sind häufig – zumindest kurzfristig – teurer als ihre konventionellen Alternativen, auch wenn sich dies langfristig durch geringere Rohstoff-, Entsorgungs- oder Regulierungskosten wieder relativieren kann.
+- **Nachhaltigkeit versus Qualität** (im engeren Sinn der Produktleistung): Recycled Content oder Leichtbau zur Gewichtsreduktion können – wenn nicht sorgfältig konstruiert – zu Zielkonflikten mit Haltbarkeit oder Leistungsfähigkeit eines Produkts führen.
+
+Diese Beobachtung bedeutet nicht, dass Nachhaltigkeit den anderen Zielen grundsätzlich unterlegen wäre – sie folgt vielmehr genau der Logik, die wir bereits für den klassischen Tetraeder kennengelernt haben: Ein Zielkonflikt lässt sich nicht auflösen, sondern nur durch eine bewusste, situationsabhängige Abwägung handhaben. Für die Verkehrsträgerwahl kann das etwa heißen, den emissionsintensiven, aber schnellen LKW für zeitkritische Teilstrecken zu reservieren und den emissionsärmeren, aber langsameren kombinierten Verkehr für planbare Hauptläufe zu nutzen – eine Lösung, die kein Extrempunkt des Tetraeders ist, sondern ein bewusst gewähltes Profil irgendwo im Inneren. Genau darin liegt die zentrale Botschaft dieses Kapitels und zugleich dieses Buches insgesamt: Supply Chain Management bedeutet nicht, ein einzelnes Ziel zu maximieren, sondern tragfähige Kompromisse zwischen mehreren, teils gegenläufigen Zielen – heute ausdrücklich einschließlich der Nachhaltigkeit – zu gestalten.
+
+## Zusammenfassung
+
+Dieses Kapitel hat Nachhaltigkeit als eigenständige, querschnittsartige Dimension des Zielsystems im Supply Chain Management eingeführt. Ausgehend von der Brundtland-Definition und der Triple Bottom Line wurde deutlich, dass Nachhaltigkeit im SCM-Kontext ökonomische, ökologische und soziale Ziele gemeinsam adressiert, ohne die klassischen Logistikziele zu ersetzen. Das Raster aus ökologischer Betroffenheit und Ökologieorientierung hat gezeigt, dass Unternehmen selbst bei ähnlicher Betroffenheit sehr unterschiedlich – resistent, adaptiv oder offensiv – auf ökologische Anforderungen reagieren können. Die vierstufige Hierarchie aus Handlungsregeln, Grundstrategien (Suffizienz, Effizienz, Konsistenz), Grundprinzipien und Konzepten hat systematisiert, wie sich diese Reaktionen konkret operationalisieren lassen. Über die Abfallhierarchie und die Unterscheidung linearer, reverser und zirkulärer Supply Chains sind wir zur Kreislaufwirtschaft als zentralem Gestaltungsprinzip vorgestoßen und haben deren drei Gestaltungsfelder – Circular Product Design, Sustainable Logistics, Circular Production – sowie die passenden Normstrategien je nach Produktkomplexität und Präferenzdynamik kennengelernt. Eine eigene R-Rechnung zur Verkehrsträgerwahl hat schließlich exemplarisch quantifiziert, welches CO2-Einsparpotenzial in einer nachhaltigeren Transportmittelwahl steckt – und zugleich, dass dieses Potenzial nicht kostenlos zu haben ist, sondern denselben Abwägungslogiken folgt, die dieses Buch von Kapitel [-@sec-logistikkosten] bis hierher durchgängig begleitet haben: Supply Chain Management als Management von Zielkonflikten.
+
+::: {.kontrollfragen}
+**Kontrollfragen**
+
+1. Erläutern Sie die Brundtland-Definition von Nachhaltigkeit und benennen Sie die drei Dimensionen der Triple Bottom Line.
+2. Inwiefern ist Nachhaltigkeit eine "Querschnittsdimension" des Tetraeders der Zielkonflikte aus Kapitel [-@sec-logistikkosten], statt einer fünften, gleichrangigen Ecke?
+3. Unterscheiden Sie die vier Positionierungen im Raster aus ökologischer Betroffenheit und Ökologieorientierung und ordnen Sie je ein Beispielunternehmen zu.
+4. Beschreiben Sie die vierstufige Hierarchie ökologischer SCM-Strategien und erläutern Sie den Unterschied zwischen Suffizienz, Effizienz und Konsistenz an je einem Beispiel.
+5. Warum steht Recycling in der Abfallhierarchie erst an vierter Stelle, obwohl es in der öffentlichen Wahrnehmung oft mit Nachhaltigkeit gleichgesetzt wird?
+6. Worin unterscheidet sich eine zirkuläre von einer rein reversen Supply Chain?
+7. Erklären Sie anhand der R-Rechnung zur Verkehrsträgerwahl, warum ein kombinierter Bahntransport trotz geringerer Emissionen nicht in jedem Fall die "bessere" Wahl ist.
+8. Welche Normstrategie der Circular Supply Chain würden Sie für ein Produkt mit hoher Fertigungskomplexität und stabiler, wenig trendabhängiger Nachfrage wählen, und warum?
+:::

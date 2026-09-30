@@ -1,0 +1,21 @@
+subtitle: "Supply Chain Management"
+author: "Prof. Dr. Thomas Kirschstein"
+
+
+format:
+  revealjs:
+    logo: "../images/hsrm-logo.png"
+    css: "../styles.css"
+    slide-number: true
+    footer: "Supply Chain Management"
+    chalkboard: true
+    smaller: false
+    scrollable: false
+    auto-stretch: true
+    width: 1600
+    height: 900
+    margin: 0.04
+    html-math-method: mathjax
+  pdf:
+    pdf-engine: xelatex
+  

@@ -1,0 +1,125 @@
+/* Farbpalette passend zu den Vorlesungsfolien (siehe R/scm_functions.R -> cols) */
+:root {
+  --scm-top: #0B6E4F;
+  --scm-strat: #2D6A4F;
+  --scm-mid: #52B788;
+  --scm-atp: #D97B29;
+  --scm-border: #2F3E46;
+  --scm-text: #1F2933;
+  --scm-muted: #6B7280;
+}
+
+h1, h2, h3, h4 {
+  color: var(--scm-text);
+}
+
+h1.title, .quarto-title h1 {
+  color: var(--scm-top);
+}
+
+a {
+  color: var(--scm-strat);
+}
+
+a:hover {
+  color: var(--scm-atp);
+}
+
+/* Lernziele-Box zu Kapitelbeginn */
+.lernziele {
+  background: #f0f7f4;
+  border-left: 5px solid var(--scm-top);
+  border-radius: 4px;
+  padding: 0.9em 1.2em;
+  margin: 1.2em 0;
+}
+
+.lernziele > p:first-child {
+  margin-top: 0;
+  font-weight: 700;
+  color: var(--scm-top);
+}
+
+.lernziele ul {
+  margin-bottom: 0;
+}
+
+/* Kontrollfragen-Box am Kapitelende */
+.kontrollfragen {
+  background: #fdf3ea;
+  border-left: 5px solid var(--scm-atp);
+  border-radius: 4px;
+  padding: 0.9em 1.2em;
+  margin: 1.5em 0;
+}
+
+.kontrollfragen > p:first-child {
+  margin-top: 0;
+  font-weight: 700;
+  color: var(--scm-atp);
+}
+
+.kontrollfragen ol,
+.kontrollfragen ul {
+  margin-bottom: 0;
+}
+
+/* Merksatz / Definitions-Box */
+.definition {
+  background: #f4f6f7;
+  border: 1px solid var(--scm-border);
+  border-radius: 4px;
+  padding: 0.8em 1.1em;
+  margin: 1.2em 0;
+}
+
+.definition > p:first-child {
+  margin-top: 0;
+  font-weight: 700;
+}
+
+/* R-Exkurs-Box: kurze Erklärungen von R-Grundlagen */
+.r-exkurs {
+  background: #eef2fb;
+  border-left: 5px solid var(--scm-mid);
+  border-radius: 4px;
+  padding: 0.8em 1.1em;
+  margin: 1.2em 0;
+  font-size: 0.95em;
+}
+
+.r-exkurs > p:first-child {
+  margin-top: 0;
+  font-weight: 700;
+  color: var(--scm-strat);
+}
+
+/* Fallstudien-Box: durchgängiges Fallbeispiel SushiFresh GmbH */
+.fallstudie {
+  background: #fff8e6;
+  border-left: 5px solid #E9C46A;
+  border-radius: 4px;
+  padding: 0.9em 1.2em;
+  margin: 1.2em 0;
+}
+
+.fallstudie > p:first-child {
+  margin-top: 0;
+  font-weight: 700;
+  color: #8a6a00;
+}
+
+/* Theorie-Vertiefung: formale Hintergründe, Herleitungen, Einordnung */
+.vertiefung {
+  background: #f7f4fb;
+  border-left: 5px solid #7a5ea8;
+  border-radius: 4px;
+  padding: 0.9em 1.2em;
+  margin: 1.2em 0;
+}
+
+.vertiefung > p:first-child {
+  margin-top: 0;
+  font-weight: 700;
+  color: #5b3f8a;
+}
