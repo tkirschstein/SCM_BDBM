@@ -1,0 +1,1158 @@
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden
+source("../R/scm_functions.R")
+
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(kableExtra)
+
+knitr::opts_chunk$set(fig.width = 9.5, fig.height = 6.3)
+
+# ── Straßennetz aus Einheit 10 ───────────────────────────────────────────────
+tsp_nodes <- data.frame(
+  ID   = c("R", "MH", "WK", "FK", "C1", "C2", "C3", "C4", "C5", "C6"),
+  Name = c("Raunheim", "Mönchhof-Dreieck", "Wiesbadener Kreuz",
+           "Frankfurter Kreuz", "Wiesbaden", "Mainz", "Frankfurt",
+           "Rüsselsheim", "Darmstadt", "Offenbach"),
+  Typ  = c("Küche", "Knoten", "Knoten", "Knoten", rep("Filiale", 6)),
+  Lon  = c(8.4650, 8.4950, 8.3720, 8.5985, 8.2398, 8.2711, 8.6821, 8.4116,
+           8.6512, 8.7761),
+  Lat  = c(50.0000, 50.0350, 50.0620, 50.0535, 50.0782, 50.0000, 50.1109,
+           49.9904, 49.8728, 50.0956)
+)
+tsp_nodes$x <- tsp_nodes$Lon * 111.32 * cos(50 * pi / 180)
+tsp_nodes$y <- tsp_nodes$Lat * 111.32
+
+tsp_edges <- data.frame(
+  from = c("R",  "R",  "R",  "MH", "MH", "MH", "WK", "WK", "C1", "C2",
+           "C4", "FK", "FK", "FK", "C3", "C5"),
+  to   = c("MH", "C4", "C3", "WK", "FK", "C4", "C1", "C2", "C2", "C4",
+           "C5", "C3", "C5", "C6", "C6", "C6"),
+  km   = c(5, 6, 33, 13, 10, 10, 8, 15, 14, 16, 33, 13, 29, 12, 10, 24)
+)
+W <- matrix(0, nrow(tsp_nodes), nrow(tsp_nodes),
+            dimnames = list(tsp_nodes$ID, tsp_nodes$ID))
+W[cbind(tsp_edges$from, tsp_edges$to)] <- tsp_edges$km
+W[cbind(tsp_edges$to, tsp_edges$from)] <- tsp_edges$km
+
+dijkstra <- function(W, start) {
+  ids <- rownames(W)
+  d <- setNames(rep(Inf, nrow(W)), ids)
+  perm <- setNames(rep(FALSE, nrow(W)), ids)
+  d[start] <- 0
+  while (!all(perm)) {
+    v <- names(which.min(ifelse(perm, Inf, d)))
+    perm[v] <- TRUE
+    for (w in ids[W[v, ] > 0 & !perm]) d[w] <- min(d[w], d[v] + W[v, w])
+  }
+  d
+}
+
+# Distanzmatrix Zentralküche + Filialen (Ergebnis Einheit 10)
+stops <- c("R", paste0("C", 1:6))
+D <- t(sapply(stops, function(s) dijkstra(W, s)[stops]))
+dimnames(D) <- list(stops, stops)
+stop_names <- setNames(tsp_nodes$Name, tsp_nodes$ID)[stops]
+
+# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
+fmt <- function(x, d = 1) formatC(x, format = "f", digits = d,
+                                   big.mark = ".", decimal.mark = ",")
+
+kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
+                   col1_bg = "#2F3E46") {
+  out <- kbl(df, ...) |>
+    kable_styling(bootstrap_options = c("condensed", "striped"),
+                  full_width = TRUE, font_size = font_size) |>
+    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+  if (first_col) out <- out |>
+    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
+  out
+}
+
+tour_length <- function(tour, D) {
+  sum(D[cbind(tour, c(tour[-1], tour[1]))])
+}
+tour_str <- function(tour) paste(c(tour, tour[1]), collapse = " → ")
+
+# Tourgrafik: Linien = Fahrtabschnitte (Länge = Netzdistanz)
+tsp_plot <- function(tour = NULL, star = FALSE, highlight = NULL,
+                     new_edges = NULL, height = 560, width = 860,
+                     edge_labels = TRUE) {
+  nd <- tsp_nodes[tsp_nodes$ID %in% stops, ]
+  xy <- split(nd[, c("x", "y")], nd$ID)
+  fig <- plot_ly(type = "scatter", mode = "markers")
+  # Straßennetz im Hintergrund
+  for (e in seq_len(nrow(tsp_edges))) {
+    a <- tsp_nodes[tsp_nodes$ID == tsp_edges$from[e], ]
+    b <- tsp_nodes[tsp_nodes$ID == tsp_edges$to[e], ]
+    fig <- fig |> add_segments(x = a$x, xend = b$x, y = a$y, yend = b$y,
+                               line = list(color = "#E5E7EB", width = 2),
+                               hoverinfo = "skip", showlegend = FALSE)
+  }
+  segs <- NULL
+  if (star) segs <- data.frame(a = "R", b = stops[-1])
+  if (!is.null(tour)) segs <- data.frame(a = tour, b = c(tour[-1], tour[1]))
+  if (!is.null(segs)) for (k in seq_len(nrow(segs))) {
+    a <- segs$a[k]; b <- segs$b[k]
+    key <- paste(sort(c(a, b)), collapse = "-")
+    col <- if (!is.null(highlight) && key %in% highlight) "#C00000" else
+      if (!is.null(new_edges) && key %in% new_edges) "#D97B29" else "#0B6E4F"
+    dash <- if (!is.null(highlight) && key %in% highlight) "dot" else "solid"
+    fig <- fig |> add_segments(
+      x = xy[[a]]$x, xend = xy[[b]]$x, y = xy[[a]]$y, yend = xy[[b]]$y,
+      line = list(color = col, width = 4, dash = dash),
+      hoverinfo = "skip", showlegend = FALSE)
+    if (edge_labels) fig <- fig |> add_annotations(
+      x = (xy[[a]]$x + xy[[b]]$x) / 2, y = (xy[[a]]$y + xy[[b]]$y) / 2,
+      text = paste0("<b>", D[a, b], "</b>"), showarrow = FALSE,
+      bgcolor = "white", font = list(size = 13, color = col))
+  }
+  fig |>
+    add_trace(x = nd$x, y = nd$y, text = nd$ID, mode = "markers+text",
+              marker = list(symbol = ifelse(nd$Typ == "Küche", "hexagon", "circle"),
+                            size = 42,
+                            color = ifelse(nd$Typ == "Küche", "#BFDBF7", "#2D9E8E"),
+                            line = list(color = "#2F3E46", width = 1.5)),
+              textfont = list(size = 14,
+                              color = ifelse(nd$Typ == "Küche", "#1F2933", "white")),
+              hovertext = nd$Name, hoverinfo = "text", showlegend = FALSE) |>
+    add_annotations(x = nd$x, y = nd$y - 2.7, text = nd$Name, showarrow = FALSE,
+                    font = list(size = 11, color = "#4B5563")) |>
+    layout(xaxis = list(visible = FALSE, fixedrange = TRUE,
+                        range = range(tsp_nodes$x) + c(-4, 4)),
+           yaxis = list(visible = FALSE, fixedrange = TRUE,
+                        range = range(tsp_nodes$y) + c(-4.5, 4)),
+           plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+           margin = list(l = 5, r = 5, t = 5, b = 5),
+           height = height, width = width)
+}
+
+# ── Verfahren (identisch zu den gezeigten R-Folien) ──────────────────────────
+nearest_neighbor <- function(D, start = 1) {
+  tour <- start
+  while (length(tour) < nrow(D)) {
+    offen <- setdiff(seq_len(nrow(D)), tour)
+    letzte <- tail(tour, 1)
+    tour <- c(tour, offen[which.min(D[letzte, offen])])
+  }
+  rownames(D)[tour]
+}
+
+two_opt <- function(tour, D) {
+  n <- length(tour); log <- list()
+  repeat {
+    best <- 0
+    for (i in 1:(n - 1)) for (k in (i + 1):n) {
+      a <- tour[i]; b <- tour[i + 1]
+      c <- tour[k]; d <- tour[k %% n + 1]
+      if (b == c || a == d) next          # benachbarte Kanten
+      delta <- D[a, b] + D[c, d] - D[a, c] - D[b, d]
+      if (delta > best) { best <- delta; bi <- i; bk <- k }
+    }
+    if (best <= 0) break                  # lokales Optimum
+    log[[length(log) + 1]] <- list(tour = tour, i = bi, k = bk, gain = best)
+    tour <- c(tour[1:bi], rev(tour[(bi + 1):bk]),
+              if (bk < n) tour[(bk + 1):n])
+  }
+  list(tour = tour, log = log)
+}
+
+# Ergebnisse
+tour_nn  <- nearest_neighbor(D, start = 1)
+len_nn   <- tour_length(tour_nn, D)
+res_2opt <- two_opt(tour_nn, D)
+tour_2o  <- res_2opt$tour
+len_2o   <- tour_length(tour_2o, D)
+len_star <- 2 * sum(D["R", -1])
+
+# Exakte Lösung durch vollständige Enumeration (n = 7 → 360 Touren)
+perms <- function(v) if (length(v) <= 1) list(v) else
+  do.call(c, lapply(seq_along(v), function(i)
+    lapply(perms(v[-i]), function(p) c(v[i], p))))
+alle_touren <- lapply(perms(stops[-1]), function(p) c("R", p))
+alle_len    <- sapply(alle_touren, tour_length, D = D)
+tour_opt    <- alle_touren[[which.min(alle_len)]]
+len_opt     <- min(alle_len)
+
+# Savings-Verfahren (Clarke & Wright, parallele Variante)
+savings_cw <- function(D, q, cap, depot = "R") {
+  kunden <- names(q)
+  touren <- as.list(kunden)                       # Start: Pendeltouren
+  s <- subset(expand.grid(i = kunden, j = kunden, stringsAsFactors = FALSE),
+              i < j)
+  s$s <- D[depot, s$i] + D[depot, s$j] - D[cbind(s$i, s$j)]
+  s <- s[order(-s$s), ]
+  for (r in seq_len(nrow(s))) {
+    i <- s$i[r]; j <- s$j[r]
+    ti <- which(sapply(touren, function(t) i %in% t))
+    tj <- which(sapply(touren, function(t) j %in% t))
+    if (ti == tj) next
+    A <- touren[[ti]]; B <- touren[[tj]]
+    if (sum(q[c(A, B)]) > cap) next
+    if (tail(A, 1) == i && B[1] == j) new <- c(A, B)
+    else if (A[1] == i && tail(B, 1) == j) new <- c(B, A)
+    else if (tail(A, 1) == i && tail(B, 1) == j) new <- c(A, rev(B))
+    else if (A[1] == i && B[1] == j) new <- c(rev(A), B)
+    else next                                     # i oder j innen → nicht verknüpfbar
+    touren[[ti]] <- new; touren <- touren[-tj]
+  }
+  list(touren = touren, savings = s)
+}
+q_norm  <- c(C1 = 120, C2 = 150, C3 = 280, C4 = 90, C5 = 110, C6 = 95)
+vrp     <- savings_cw(D, q_norm, cap = 500)
+vrp_len <- sapply(vrp$touren, function(t) tour_length(c("R", t), D))
+```
+
+## Transport- und Tourenplanung {#tsp-outline}
+
+- Transportplanung
+- Kürzeste Wege
+- **Tourenplanung**
+
+---
+
+## Lernziele {#tsp-learning-objectives}
+
+Nach dieser Einheit können Sie …
+
+- das **Traveling Salesman Problem (TSP)** als Grundproblem der Tourenplanung **beschreiben** und **formulieren**,
+- die **Komplexität** des TSP **einschätzen** und den Einsatz von Heuristiken **begründen**,
+- Touren mit dem **Nearest-Neighbor-Verfahren** **konstruieren** und mit **2-opt** **verbessern**,
+- heuristische Lösungen im Vergleich zur Optimallösung **bewerten** und Erweiterungen zum **Vehicle Routing Problem** **einordnen**.
+
+**Literatur zur Vertiefung**
+
+- **Rundreise- und Tourenplanung:** [@domschke2010rundreisen].
+- **TSP – Geschichte, Modelle, exakte Verfahren:** [@applegate2006traveling].
+- **Vehicle Routing Problems:** [@toth2014vehicle].
+
+---
+
+## Fallstudie – SushiFresh GmbH {#tsp-cs1}
+::: slide-subtitle
+Pendelverkehr oder Rundtour?
+:::
+
+::: columns
+::: {.column width="52%"}
+
+```{r tsp-star-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+tsp_plot(star = TRUE, height = 560, width = 860)
+```
+
+:::
+::: {.column width="46%"}
+
+::: {.small-text}
+::: {.callout-note appearance="simple"}
+## Ausgangslage
+Im Normalbetrieb liefert ein **Kühltransporter** (Kapazität 900 Boxen) jeden Morgen `r 845` Boxen aus Raunheim an die sechs Filialen. Der Fahrer fährt bisher jede Filiale **einzeln** an und kehrt danach zur Küche zurück (**Pendelverkehr**).
+:::
+
+::: {.fragment .fade-up}
+Täglich gefahrene Strecke: $2 \cdot \sum_j d_{Rj} =$ **`r len_star` km**
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Idee
+Da alle Boxen auf einmal in den Transporter passen, kann er die Filialen in **einer Rundtour** nacheinander anfahren.
+
+**Frage:** In welcher Reihenfolge ist die Tour am kürzesten?
+:::
+:::
+
+::: {.fragment .fade-up}
+Die Distanzen $d_{ij}$ stammen aus der **Distanzmatrix** von Einheit 10 (kürzeste Wege im Straßennetz).
+:::
+:::
+
+:::
+:::
+
+---
+
+## Traveling Salesman Problem {#tsp-problem}
+::: slide-subtitle
+Problembeschreibung
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**Problemstellung**
+
+Gegeben sind $n$ Orte (ein **Depot** und $n-1$ Kunden) und die Entfernungen $d_{ij}$ zwischen allen Paaren. Gesucht ist eine **Rundreise**, die jeden Ort **genau einmal** besucht, zum Ausgangspunkt zurückkehrt und **minimale Gesamtlänge** hat.
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.smaller-text}
+::: {.fragment .fade-up}
+**Begriffe**
+
+- **Tour** (Hamiltonkreis): Reihenfolge $(v_1, v_2, \ldots, v_n, v_1)$
+- **symmetrisches TSP**: $d_{ij} = d_{ji}$ (SushiFresh)
+- **asymmetrisches TSP**: $d_{ij} \neq d_{ji}$ (Einbahnstraßen, Stadtverkehr)
+- **metrisches TSP**: Dreiecksungleichung gilt, z. B. bei Distanzen aus kürzesten Wegen
+
+**Abgrenzung**
+
+- **Kürzeste Wege**: Wie komme ich von $i$ nach $j$?
+- **TSP**: In welcher **Reihenfolge** besuche ich alle Orte?
+:::
+:::
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: small-text
+**Distanzmatrix $d_{ij}$ (km) aus Einheit 10**
+
+```{r tsp-dist}
+#| echo: false
+
+kbl_sf(as.data.frame(D) |> rownames_to_column("von"),
+       align = c("c", rep("r", 7)), font_size = 24)
+```
+:::
+:::
+
+:::
+:::
+
+---
+
+## Traveling Salesman Problem {#tsp-model}
+::: slide-subtitle
+Mathematisches Modell
+:::
+
+::: columns
+::: {.column width="56%"}
+
+::: {.callout-tip appearance="simple" icon=false}
+#### Binäres Optimierungsmodell [@dantzig1954solution]
+$x_{ij} = 1$, falls direkt von $i$ nach $j$ gefahren wird
+
+$$\min \rightarrow \sum_{i} \sum_{j \neq i} d_{ij} \cdot x_{ij}$$
+:::
+
+::: {.smaller-text}
+**Nebenbedingungen**
+$$
+\begin{align}
+  \sum_{j \neq i} x_{ij} &= 1 && \forall i \\
+  \sum_{i \neq j} x_{ij} &= 1 && \forall j \\
+  \sum_{i \in S} \sum_{j \in S} x_{ij} &\leq |S| - 1 && \forall S \subset V,\ 2 \leq |S| < n \\
+  x_{ij} &\in \{0,1\} && \forall i \neq j
+\end{align}
+$$
+:::
+
+:::
+::: {.column width="41%"}
+
+::: {.fragment .fade-up}
+```{r tsp-subtour}
+#| echo: false
+#| fig-height: 3.2
+#| warning: false
+#| message: false
+
+subtour <- c("R", "C4", "C2", "C1")
+subtour2 <- c("C3", "C6", "C5")
+p <- tsp_plot(tour = subtour, height = 300, width = 520, edge_labels = FALSE)
+nd <- tsp_nodes
+for (k in seq_along(subtour2)) {
+  a <- nd[nd$ID == subtour2[k], ]
+  b <- nd[nd$ID == subtour2[k %% 3 + 1], ]
+  p <- p |> add_segments(x = a$x, xend = b$x, y = a$y, yend = b$y,
+                         line = list(color = "#D97B29", width = 4),
+                         hoverinfo = "skip", showlegend = FALSE)
+}
+p
+```
+
+::: {.smaller-text}
+Zeilen 1–2: jeden Ort genau einmal **verlassen** und **erreichen**. Zeile 3: **keine Kurzzyklen**.
+
+Ohne die dritte Bedingung wären **zwei getrennte Kreise** zulässig: Jeder Ort hat genau einen Vorgänger und Nachfolger, aber die Filialen C3, C5, C6 sind nicht mit der Küche verbunden.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Traveling Salesman Problem {#tsp-complexity}
+::: slide-subtitle
+Warum nicht einfach alle Touren ausprobieren?
+:::
+
+::: columns
+::: {.column width="45%"}
+
+::: small-text
+```{r tsp-complexity-tab}
+#| echo: false
+
+nn_vals <- c(5, 7, 10, 15, 20, 30, 50)
+sci <- function(x) {
+  e <- floor(log10(x)); m <- x / 10^e
+  paste0(formatC(m, format = "f", digits = 1, decimal.mark = ","),
+         " · 10<sup>", e, "</sup>")
+}
+zeit <- function(sek) {
+  if (sek < 1) return("< 1 Sekunde")
+  if (sek < 60) return(paste0(round(sek), " Sekunden"))
+  if (sek < 3600) return(paste0(round(sek / 60), " Minuten"))
+  if (sek < 86400) return(paste0(round(sek / 3600), " Stunden"))
+  jahre <- sek / 3.156e7
+  if (jahre < 1) return(paste0(round(sek / 86400), " Tage"))
+  if (jahre < 1000) return(paste0(formatC(jahre, format = "f", digits = 1,
+                                          decimal.mark = ","), " Jahre"))
+  paste0(sci(jahre), " Jahre")
+}
+touren_n <- factorial(nn_vals - 1) / 2
+kompl <- data.frame(
+  n = nn_vals,
+  Touren = ifelse(touren_n < 1e6,
+                  formatC(touren_n, format = "d", big.mark = "."),
+                  sapply(touren_n, sci)),
+  Zeit = sapply(touren_n / 1e9, zeit)   # 1 Mrd. Touren pro Sekunde
+)
+
+kbl_sf(kompl, col.names = c("Orte n", "Touren (n−1)!/2",
+                            "Rechenzeit bei 10⁹ Touren/s"),
+       align = c("c", "r", "r"), font_size = 24, escape = FALSE)
+```
+:::
+
+:::
+::: {.column width="52%"}
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Kombinatorische Explosion
+Das TSP ist **NP-schwer**: Es ist kein Verfahren bekannt, das jede Instanz in polynomieller Zeit optimal löst. Für SushiFresh ($n = 7$) gibt es nur `r length(alle_touren) / 2` verschiedene Touren, ein Paketdienst mit 150 Stopps pro Fahrzeug hat dagegen unvorstellbar viele.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Lösungsansätze
+- **Eröffnungsverfahren** konstruieren eine Tour: Nearest Neighbor, Einfügeverfahren, Savings
+- **Verbesserungsverfahren** verändern eine Tour lokal: **2-opt**, Or-opt, 3-opt
+- **Metaheuristiken** (z. B. Simulated Annealing) und **exakte Verfahren** (Branch-and-Cut) für anspruchsvolle Fälle
+:::
+:::
+
+:::
+:::
+
+---
+
+## Nearest-Neighbor-Verfahren {#tsp-nn}
+::: slide-subtitle
+Idee und Algorithmus
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Idee:** Fahre vom aktuellen Ort immer zum **nächstgelegenen noch nicht besuchten** Ort. Sind alle besucht, kehre zum Depot zurück.
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Algorithmus**
+
+**Initialisierung:** Tour $T = (v_1)$ mit Startort (Depot) $v_1$
+
+**Wiederhole**, bis alle Orte in $T$ enthalten sind:
+
+1. Sei $v$ der letzte Ort in $T$.
+2. Wähle $w^* = \arg\min_{w \notin T} d_{vw}$.
+3. Hänge $w^*$ an $T$ an.
+
+**Abschluss:** Kante vom letzten Ort zurück zu $v_1$
+:::
+:::
+
+:::
+::: {.column width="45%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Eigenschaften
+- sehr einfach und schnell: $\mathcal{O}(n^2)$
+- entspricht der Intuition vieler Fahrer
+- **greedy**: Jede Entscheidung ist lokal gut, aber sie berücksichtigt nicht, was danach kommt
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Typische Schwäche
+Die letzten Orte liegen oft **verstreut**. Am Ende werden lange Wege und der Rückweg zum Depot „erzwungen“.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Nearest-Neighbor-Verfahren {#tsp-nn-example}
+::: slide-subtitle
+Fallbeispiel – Start in Raunheim
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: small-text
+```{r tsp-nn-steps}
+#| echo: false
+
+nn_steps <- lapply(1:(length(tour_nn) - 1), function(k) {
+  v <- tour_nn[k]; offen <- setdiff(stops, tour_nn[1:k])
+  cand <- sort(setNames(D[v, offen], offen))
+  data.frame(
+    Schritt = k, von = v,
+    Kandidaten = paste0(names(cand), ": ", cand, collapse = ", "),
+    Wahl = tour_nn[k + 1], km = D[v, tour_nn[k + 1]]
+  )
+})
+nn_df <- do.call(rbind, nn_steps) |>
+  bind_rows(data.frame(Schritt = length(tour_nn), von = tail(tour_nn, 1),
+                       Kandidaten = "Rückkehr zum Depot", Wahl = "R",
+                       km = D[tail(tour_nn, 1), "R"])) |>
+  mutate(kum = cumsum(km))
+rownames(nn_df) <- NULL
+
+kbl_sf(nn_df, col.names = c("#", "von", "offene Orte: d (km)", "nach", "km", "Σ km"),
+       align = c("c", "c", "l", "c", "r", "r"), font_size = 20) |>
+  row_spec(c(4, 7), color = "#C00000", bold = TRUE)
+```
+:::
+
+::: {.fragment .fade-up}
+::: {.small-text}
+**NN-Tour:** `r tour_str(tour_nn)` mit **`r len_nn` km**, gegenüber `r len_star` km im Pendelverkehr.
+:::
+:::
+
+:::
+::: {.column width="48%"}
+
+```{r tsp-nn-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+tsp_plot(tour = tour_nn, height = 540, width = 800)
+```
+
+:::
+:::
+
+---
+
+## Nearest-Neighbor-Verfahren {#tsp-nn-weak}
+::: slide-subtitle
+Kritische Würdigung
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.callout-warning appearance="simple"}
+## Was ist schiefgelaufen?
+- In Schritt 4 springt die Tour von **Wiesbaden** quer durch das Gebiet nach **Offenbach** (`r D["C1","C6"]` km), weil Offenbach 1 km näher liegt als Frankfurt.
+- Danach geht es zurück nach **Frankfurt** und wieder nach Süden nach **Darmstadt**.
+- Die Tour **kreuzt sich selbst**, und der Rückweg von Darmstadt (`r D["C5","R"]` km) ist lang.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Merkregel
+In einer optimalen Tour eines **euklidischen** TSP gibt es **keine Kreuzungen**. Kreuzungen sind ein deutliches Zeichen für Verbesserungspotenzial.
+:::
+:::
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: small-text
+**NN-Tourlänge je nach Startort**
+
+```{r tsp-nn-starts}
+#| echo: false
+
+starts <- data.frame(
+  Start = stops,
+  Tour  = sapply(seq_along(stops), function(s) {
+    t <- nearest_neighbor(D, s)
+    i <- which(t == "R"); t <- c(t[i:length(t)], t[seq_len(i - 1)])
+    tour_str(t)
+  }),
+  km = sapply(seq_along(stops), function(s)
+    tour_length(nearest_neighbor(D, s), D))
+)
+kbl_sf(starts, col.names = c("Start", "Tour (ab Depot gelesen)", "km"),
+       align = c("c", "l", "r"), font_size = 20) |>
+  row_spec(which.min(starts$km), bold = TRUE, background = "#D8F3DC")
+```
+
+Eine einfache Verbesserung: NN von **jedem** Startort aus rechnen und die beste Tour wählen.
+:::
+:::
+
+:::
+:::
+
+---
+
+## 2-opt-Verfahren {#tsp-2opt-idea}
+::: slide-subtitle
+Idee: zwei Kanten austauschen [@croes1958method]
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Idee:** Entferne **zwei nicht benachbarte Kanten** $(a,b)$ und $(c,d)$ aus der Tour und verbinde die Teilstücke neu über $(a,c)$ und $(b,d)$. Das Teilstück zwischen $b$ und $c$ wird dabei **in umgekehrter Richtung** durchlaufen.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ersparnis eines 2-opt-Zugs
+$$\Delta = \underbrace{d_{ab} + d_{cd}}_{\text{entfernt}} - \underbrace{d_{ac} + d_{bd}}_{\text{hinzugefügt}}$$
+Der Zug lohnt sich, wenn $\Delta > 0$.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+Bei $n$ Orten gibt es $n(n-3)/2$ mögliche 2-opt-Züge, bei SushiFresh also `r 7 * 4 / 2`.
+:::
+:::
+
+:::
+::: {.column width="49%"}
+
+```{r tsp-2opt-schema}
+#| echo: false
+#| warning: false
+#| message: false
+
+pts <- data.frame(id = c("a", "b", "c", "d", "e", "f"),
+                  x = c(0, 1, 1, 0, -0.6, -0.6), y = c(1, 0, 1, 0, 0.3, 0.7))
+seg <- function(p, a, b, col, dash = "solid")
+  add_segments(p, x = pts$x[pts$id == a], xend = pts$x[pts$id == b],
+               y = pts$y[pts$id == a], yend = pts$y[pts$id == b],
+               line = list(color = col, width = 4, dash = dash),
+               hoverinfo = "skip", showlegend = FALSE)
+mk <- function(p, ttl) p |>
+  add_trace(data = pts, x = ~x, y = ~y, text = ~id, mode = "markers+text",
+            marker = list(size = 34, color = "#2D9E8E",
+                          line = list(color = "#2F3E46", width = 1.5)),
+            textfont = list(color = "white", size = 15),
+            hoverinfo = "skip", showlegend = FALSE) |>
+  add_annotations(x = 0.2, y = 1.35, text = ttl, showarrow = FALSE,
+                  font = list(size = 15)) |>
+  layout(xaxis = list(visible = FALSE, range = c(-0.9, 1.3)),
+         yaxis = list(visible = FALSE, range = c(-0.2, 1.45)))
+
+p1 <- plot_ly(type = "scatter", mode = "markers") |>
+  seg("a", "b", "#C00000", "dot") |> seg("c", "d", "#C00000", "dot") |>
+  seg("b", "c", "#0B6E4F") |> seg("d", "e", "#0B6E4F") |>
+  seg("e", "f", "#0B6E4F") |> seg("f", "a", "#0B6E4F") |>
+  mk("<b>vorher</b>: (a,b) und (c,d) kreuzen sich")
+p2 <- plot_ly(type = "scatter", mode = "markers") |>
+  seg("a", "c", "#D97B29") |> seg("b", "d", "#D97B29") |>
+  seg("b", "c", "#0B6E4F") |> seg("d", "e", "#0B6E4F") |>
+  seg("e", "f", "#0B6E4F") |> seg("f", "a", "#0B6E4F") |>
+  mk("<b>nachher</b>: (a,c) und (b,d)")
+subplot(p1, p2, nrows = 2, margin = 0.06) |>
+  layout(height = 600, width = 600, showlegend = FALSE,
+         plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+         margin = list(l = 5, r = 5, t = 5, b = 5))
+```
+
+:::
+:::
+
+---
+
+## 2-opt-Verfahren {#tsp-2opt-algo}
+::: slide-subtitle
+Algorithmus
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.smaller-text}
+**Initialisierung:** Starttour $T = (v_1, \ldots, v_n)$, z. B. aus Nearest Neighbor
+
+**Wiederhole:**
+
+1. Berechne für alle Paare nicht benachbarter Kanten $(v_i, v_{i+1})$ und $(v_k, v_{k+1})$ die Ersparnis
+$$\Delta_{ik} = d_{v_i v_{i+1}} + d_{v_k v_{k+1}} - d_{v_i v_k} - d_{v_{i+1} v_{k+1}}$$
+2. Wähle das Paar mit dem **größten** $\Delta_{ik}$ (*best improvement*).
+3. **Falls** $\Delta_{ik} > 0$: kehre die Reihenfolge $v_{i+1}, \ldots, v_k$ um.
+4. **Sonst:** Abbruch, $T$ ist **2-optimal**.
+:::
+
+:::
+::: {.column width="42%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Varianten
+- **first improvement**: den ersten verbessernden Zug sofort ausführen (schneller pro Iteration)
+- **Or-opt**: verschiebt Teilstücke aus 1–3 Orten an eine andere Stelle
+- **3-opt**: tauscht drei Kanten (mächtiger, aber $\mathcal{O}(n^3)$ je Durchlauf)
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Lokales Optimum
+Eine 2-optimale Tour lässt sich durch **keinen** einzelnen 2-opt-Zug verbessern. Sie muss aber **nicht global optimal** sein.
+:::
+:::
+
+:::
+:::
+
+---
+
+## 2-opt-Verfahren {#tsp-2opt-example}
+::: slide-subtitle
+Fallbeispiel – alle Züge für die NN-Tour
+:::
+
+::: columns
+::: {.column width="47%"}
+
+::: small-text
+```{r tsp-2opt-moves}
+#| echo: false
+
+all_moves <- function(tour) {
+  n <- length(tour); out <- list()
+  for (i in 1:(n - 1)) for (k in (i + 1):n) {
+    a <- tour[i]; b <- tour[i + 1]; c <- tour[k]; d <- tour[k %% n + 1]
+    if (b == c || a == d) next
+    out[[length(out) + 1]] <- data.frame(
+      raus = paste0("(", a, ",", b, ") (", c, ",", d, ")"),
+      rein = paste0("(", a, ",", c, ") (", b, ",", d, ")"),
+      alt = D[a, b] + D[c, d], neu = D[a, c] + D[b, d])
+  }
+  do.call(rbind, out) |> mutate(Delta = alt - neu) |> arrange(desc(Delta))
+}
+mv <- all_moves(tour_nn)
+rownames(mv) <- NULL
+
+kbl_sf(mv, col.names = c("entfernte Kanten", "neue Kanten", "alt", "neu", "Δ"),
+       align = c("l", "l", "r", "r", "r"), font_size = 18, first_col = FALSE) |>
+  row_spec(which(mv$Delta > 0), bold = TRUE, background = "#D8F3DC") |>
+  scroll_box(height = "560px")
+```
+:::
+
+:::
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Einziger verbessernder Zug
+Entferne (C1, C6) und (C3, C5), füge (C1, C3) und (C6, C5) ein:
+
+$$\Delta = (`r D["C1","C6"]` + `r D["C3","C5"]`) - (`r D["C1","C3"]` + `r D["C6","C5"]`) = `r res_2opt$log[[1]]$gain`\ \text{km}$$
+
+Das Teilstück C6 → C3 wird umgedreht zu C3 → C6.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.small-text}
+Neue Tour: `r tour_str(tour_2o)` mit **`r len_2o` km**
+:::
+:::
+
+:::
+:::
+
+---
+
+## 2-opt-Verfahren {#tsp-2opt-before-after}
+::: slide-subtitle
+Fallbeispiel – vorher und nachher
+:::
+
+::: columns
+::: {.column width="49%"}
+
+::: {.small-text}
+**Nearest Neighbor: `r len_nn` km**
+:::
+
+```{r tsp-before}
+#| echo: false
+#| fig-height: 4.5
+#| warning: false
+#| message: false
+
+tsp_plot(tour = tour_nn, highlight = c("C1-C6", "C3-C5"),
+         height = 420, width = 700)
+```
+
+:::
+::: {.column width="49%"}
+
+::: {.small-text}
+**nach 2-opt: `r len_2o` km**
+:::
+
+```{r tsp-after}
+#| echo: false
+#| fig-height: 4.5
+#| warning: false
+#| message: false
+
+tsp_plot(tour = tour_2o, new_edges = c("C1-C3", "C5-C6"),
+         height = 420, width = 700)
+```
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+Die Kreuzung ist aufgelöst. Danach findet 2-opt **keinen** weiteren verbessernden Zug: Die Tour ist **2-optimal**.
+:::
+:::
+
+---
+
+## Wie gut ist die Lösung? {#tsp-optimum}
+::: slide-subtitle
+Vergleich mit der Optimallösung
+:::
+
+::: columns
+::: {.column width="50%"}
+
+```{r tsp-compare-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+vgl <- data.frame(
+  Variante = c("Pendelverkehr", "Nearest Neighbor", "NN + 2-opt", "Optimum"),
+  km = c(len_star, len_nn, len_2o, len_opt)
+)
+plot_ly(vgl, x = ~factor(Variante, levels = Variante), y = ~km, type = "bar",
+        marker = list(color = c("#9AA5B1", "#F4A259", "#52B788", "#0B6E4F")),
+        text = ~paste0(km, " km"), textposition = "outside",
+        hoverinfo = "skip") |>
+  layout(xaxis = list(title = ""),
+         yaxis = list(title = "Strecke pro Tag (km)", range = c(0, 1.15 * len_star)),
+         margin = list(l = 70, r = 20, t = 20, b = 40),
+         height = 500, width = 720)
+```
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnis
+- Optimale Tour (Enumeration aller `r length(alle_touren) / 2` Touren): `r tour_str(tour_opt)` mit **`r len_opt` km**
+- NN + 2-opt liegt `r fmt((len_2o / len_opt - 1) * 100)` % über dem Optimum, NN allein `r fmt((len_nn / len_opt - 1) * 100)` %.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Grenze von 2-opt
+Die optimale Tour unterscheidet sich von der 2-opt-Lösung durch das **Verschieben von Rüsselsheim** (C4). Das ist kein 2-opt-Zug, sondern ein **Or-opt-Zug**. 2-opt bleibt im lokalen Optimum stecken.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Wirtschaftlich
+Gegenüber dem Pendelverkehr spart die Tour täglich `r len_star - len_2o` km, bei 300 Liefertagen und 0,80 €/km rund **`r fmt((len_star - len_2o) * 300 * 0.8, 0)` €/Jahr**.
+:::
+:::
+
+:::
+:::
+
+---
+
+## TSP-Heuristiken in R {#tsp-r}
+::: slide-subtitle
+Implementierung
+:::
+
+::: columns
+::: {.column width="48%"}
+
+```{r tsp-r-nn}
+#| echo: true
+#| eval: false
+
+nearest_neighbor <- function(D, start = 1) {
+  tour <- start
+  while (length(tour) < nrow(D)) {
+    offen  <- setdiff(seq_len(nrow(D)), tour)
+    letzte <- tail(tour, 1)
+    naechster <- offen[which.min(D[letzte, offen])]
+    tour <- c(tour, naechster)
+  }
+  rownames(D)[tour]
+}
+
+tour_length <- function(tour, D)
+  sum(D[cbind(tour, c(tour[-1], tour[1]))])
+```
+
+:::
+::: {.column width="50%"}
+
+```{r tsp-r-2opt}
+#| echo: true
+#| eval: false
+
+two_opt <- function(tour, D) {
+  n <- length(tour)
+  repeat {
+    best <- 0
+    for (i in 1:(n - 1)) for (k in (i + 1):n) {
+      a <- tour[i]; b <- tour[i + 1]
+      c <- tour[k]; d <- tour[k %% n + 1]
+      if (b == c || a == d) next
+      delta <- D[a, b] + D[c, d] - D[a, c] - D[b, d]
+      if (delta > best) {
+        best <- delta; bi <- i; bk <- k
+      }
+    }
+    if (best <= 0) break   # 2-optimal
+    tour <- c(tour[1:bi], rev(tour[(bi + 1):bk]),
+              if (bk < n) tour[(bk + 1):n])
+  }
+  tour
+}
+```
+
+:::
+:::
+
+---
+
+## TSP exakt lösen {#tsp-ompr}
+::: slide-subtitle
+MTZ-Formulierung mit `ompr`
+:::
+
+::: columns
+::: {.column width="56%"}
+
+```{r tsp-ompr-code}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+library(ompr); library(ompr.roi)
+library(ROI.plugin.glpk)
+n <- nrow(D)
+
+tsp_model <- MIPModel() |>
+  add_variable(x[i, j], i = 1:n, j = 1:n,
+               type = "binary") |>
+  add_variable(u[i], i = 1:n, lb = 1, ub = n) |>
+  set_objective(sum_expr(D[i, j] * x[i, j],
+                i = 1:n, j = 1:n), "min") |>
+  add_constraint(x[i, i] == 0, i = 1:n) |>
+  add_constraint(sum_expr(x[i, j], j = 1:n) == 1,
+                 i = 1:n) |>
+  add_constraint(sum_expr(x[i, j], i = 1:n) == 1,
+                 j = 1:n) |>
+  # MTZ: Reihenfolgevariablen verhindern Kurzzyklen
+  add_constraint(u[i] - u[j] + 1 <= (n - 1) * (1 - x[i, j]),
+                 i = 2:n, j = 2:n, i != j)
+
+tsp_sol <- solve_model(tsp_model,
+                       with_ROI(solver = "glpk"))
+```
+
+:::
+::: {.column width="41%"}
+
+::: {.callout-note appearance="simple"}
+## MTZ-Bedingungen [@miller1960integer]
+Statt exponentiell vieler Kurzzyklus-Bedingungen erhält jeder Kunde eine **Position** $u_i$ in der Tour. Fährt man von $i$ nach $j$, muss $u_j \geq u_i + 1$ gelten. Ein Kreis ohne Depot ist damit unmöglich.
+:::
+
+```{r tsp-ompr-result}
+#| echo: false
+
+xs <- get_solution(tsp_sol, x[i, j]) |> filter(value > 0.5)
+nxt <- setNames(xs$j, xs$i)
+t_ompr <- 1
+while (length(t_ompr) < n) t_ompr <- c(t_ompr, nxt[as.character(tail(t_ompr, 1))])
+```
+
+::: {.small-text}
+**Ergebnis:** `r tour_str(stops[t_ompr])` mit **`r objective_value(tsp_sol)` km**, identisch zur Enumeration.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Die MTZ-Formulierung ist einfach, aber schwach. Für große Instanzen werden Spezialverfahren eingesetzt (z. B. der Concorde-Solver).
+:::
+:::
+
+:::
+:::
+
+---
+
+## Ausblick: Tourenplanung {#tsp-vrp}
+::: slide-subtitle
+Vom TSP zum Vehicle Routing Problem
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-important appearance="simple"}
+## Neue Flotte
+Der 900-Boxen-Transporter wird durch zwei **Kühlvans à 500 Boxen** ersetzt (Führerscheinklasse B, leichter zu besetzen). Die Tagesmenge von `r sum(q_norm)` Boxen passt nicht mehr in **ein** Fahrzeug.
+:::
+
+::: {.smaller-text}
+**Capacitated VRP (CVRP):** Teile die Kunden so auf **mehrere Touren** auf, dass die Kapazität eingehalten wird und die Gesamtstrecke minimal ist. Das TSP ist der Spezialfall mit einem Fahrzeug ohne Kapazitätsgrenze.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Savings-Verfahren [@clarke1964scheduling]
+Start: jede Filiale in einer eigenen Pendeltour. Verbinde schrittweise Touren mit der größten **Ersparnis** $s_{ij} = d_{Ri} + d_{Rj} - d_{ij}$, solange die Kapazität reicht und $i$, $j$ Tourenden sind.
+:::
+:::
+
+:::
+::: {.column width="49%"}
+
+::: {.fragment .fade-up}
+```{r tsp-vrp-plot}
+#| echo: false
+#| fig-height: 3.7
+#| warning: false
+#| message: false
+
+t1 <- c("R", vrp$touren[[1]]); t2 <- c("R", vrp$touren[[2]])
+p <- tsp_plot(tour = t1, height = 350, width = 600)
+xy <- split(tsp_nodes[, c("x", "y")], tsp_nodes$ID)
+for (k in seq_along(t2)) {
+  a <- t2[k]; b <- t2[k %% length(t2) + 1]
+  p <- p |> add_segments(x = xy[[a]]$x, xend = xy[[b]]$x,
+                         y = xy[[a]]$y, yend = xy[[b]]$y,
+                         line = list(color = "#D97B29", width = 4),
+                         hoverinfo = "skip", showlegend = FALSE) |>
+    add_annotations(x = (xy[[a]]$x + xy[[b]]$x) / 2,
+                    y = (xy[[a]]$y + xy[[b]]$y) / 2,
+                    text = paste0("<b>", D[a, b], "</b>"), showarrow = FALSE,
+                    bgcolor = "white", font = list(size = 13, color = "#D97B29"))
+}
+p
+```
+
+::: {.smaller-text}
+- **Tour West:** `r tour_str(t1)`: `r vrp_len[1]` km, `r sum(q_norm[vrp$touren[[1]]])` Boxen
+- **Tour Ost:** `r tour_str(t2)`: `r vrp_len[2]` km, `r sum(q_norm[vrp$touren[[2]]])` Boxen
+- Gesamt **`r sum(vrp_len)` km** statt `r len_opt` km mit einem Fahrzeug
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Weitere Erweiterungen:** Zeitfenster (Anlieferung vor 8 Uhr), maximale Tourdauer (Kühlkette, Lenkzeiten), heterogene Flotte, mehrere Depots
+:::
+:::
+
+:::
+:::
+
+---
+
+## Kernaussagen {#tsp-summary}
+
+::: {.callout-tip appearance="simple"}
+## Das Wichtigste in Kürze
+
+- Das **TSP** sucht die kürzeste Rundreise durch alle Orte. Es ist **NP-schwer**: Die Zahl der Touren wächst mit $(n-1)!/2$.
+- **Nearest Neighbor** konstruiert schnell eine Tour, neigt aber zu langen Sprüngen am Ende und zu Kreuzungen (SushiFresh: `r len_nn` km).
+- **2-opt** tauscht Kantenpaare, solange sich die Tour verkürzt, und entfernt dabei Kreuzungen (SushiFresh: `r len_2o` km).
+- Das Ergebnis ist ein **lokales Optimum**. Das globale Optimum (`r len_opt` km) erfordert hier einen Or-opt-Zug oder ein exaktes Verfahren.
+- Gegenüber dem **Pendelverkehr** (`r len_star` km) halbiert die Rundtour die Fahrstrecke nahezu.
+:::
+
+---
+
+## Übung {#tsp-exercise}
+
+::: {.exercise-slide}
+::: {.exercise-header}
+Tourenplanung SushiFresh – Neue Filiale in Hofheim
+:::
+
+::: {.columns .exercise-content}
+::: {.column width="55%"}
+SushiFresh gewinnt eine siebte Filiale in **Hofheim am Taunus** (C7). Sie ist über eine 9 km lange Straße mit dem Wiesbadener Kreuz und über eine 12 km lange Straße mit dem Mönchhof-Dreieck verbunden.
+
+- Ergänzen Sie das Netz und berechnen Sie die Entfernungen von C7 zu allen anderen Orten mit `dijkstra()`.
+- Bestimmen Sie von Hand eine Tour mit **Nearest Neighbor** ab Raunheim.
+- Prüfen Sie alle 2-opt-Züge. Welche Tour ergibt sich?
+- Vergleichen Sie mit `two_opt()` und der exakten Lösung mit `ompr`.
+:::
+::: {.column width="42%"}
+```{r tsp-exercise-hint}
+#| echo: true
+#| eval: false
+
+W2 <- rbind(cbind(W, C7 = 0), C7 = 0)
+W2["C7", c("WK", "MH")] <- c(9, 12)
+W2[c("WK", "MH"), "C7"] <- c(9, 12)
+
+stops2 <- c(stops, "C7")
+D2 <- t(sapply(stops2, function(s)
+  dijkstra(W2, s)[stops2]))
+```
+:::
+:::
+:::

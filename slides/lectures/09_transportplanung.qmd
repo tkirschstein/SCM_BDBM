@@ -1,0 +1,1199 @@
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden (u. a. vogels_approximation())
+source("../R/scm_functions.R")
+
+library(tidyverse)
+library(leaflet)
+library(plotly)
+library(knitr)
+library(kableExtra)
+
+# ── Daten des Fallbeispiels ──────────────────────────────────────────────────
+
+# Filialen (Nachfrageknoten), identisch zu Einheit 5
+tp_filialen <- data.frame(
+  ID     = paste0("C", 1:6),
+  Ort    = c("Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim",
+             "Darmstadt", "Offenbach"),
+  Lon    = c(8.2398, 8.2711, 8.6821, 8.4116, 8.6512, 8.7761),
+  Lat    = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
+  mu     = c(120, 150, 280, 90, 110, 95)
+)
+# Adventszeit: Nachfrage + 40 %
+tp_filialen$Dez <- round(tp_filialen$mu * 1.4)
+
+# Küchen (Angebotsknoten): Zentralküche + zwei temporär angemietete Küchen
+tp_kuechen <- data.frame(
+  ID        = c("S3", "S1", "S5"),
+  Standort  = c("Raunheim (Zentralküche)", "Wiesbaden-Erbenheim",
+                "Neu-Isenburg"),
+  Lon       = c(8.4650, 8.2999, 8.7072),
+  Lat       = c(50.0000, 50.0632, 50.0543),
+  Kapazitaet = c(850, 200, 133)
+)
+
+# Transportkosten c_ij in EUR je Box (Zeilen aus der Kostenmatrix von Einheit 5)
+tp_cost <- matrix(
+  c(0.48168, 0.27202, 0.17036, 0.54650, 0.44772, 0.12592,   # S3 Raunheim
+    0.12348, 0.41478, 0.47474, 0.55152, 0.85996, 0.18220,   # S1 WI-Erbenheim
+    0.50226, 0.87512, 0.90576, 0.60740, 0.32042, 0.11400),  # S5 Neu-Isenburg
+  nrow = 3, byrow = TRUE,
+  dimnames = list(tp_kuechen$ID, tp_filialen$ID)
+)
+
+tp_supply <- setNames(tp_kuechen$Kapazitaet, tp_kuechen$ID)
+tp_demand <- setNames(tp_filialen$Dez, tp_filialen$ID)
+
+# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
+
+fmt <- function(x, d = 2) formatC(x, format = "f", digits = d,
+                                   big.mark = ".", decimal.mark = ",")
+
+kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
+                   col1_bg = "#2F3E46") {
+  names(df)[names(df) == "Kueche"] <- "K\u00fcche"
+  out <- kbl(df, ...) |>
+    kable_styling(bootstrap_options = c("condensed", "striped"),
+                  full_width = TRUE, font_size = font_size) |>
+    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+  if (first_col) out <- out |>
+    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
+  out
+}
+
+# Nordwestecken-Regel
+nw_corner <- function(supply, demand) {
+  a <- matrix(0, length(supply), length(demand),
+              dimnames = list(names(supply), names(demand)))
+  i <- 1; j <- 1
+  while (i <= length(supply) && j <= length(demand)) {
+    q <- min(supply[i], demand[j])
+    a[i, j] <- q
+    supply[i] <- supply[i] - q
+    demand[j] <- demand[j] - q
+    if (supply[i] == 0) i <- i + 1 else j <- j + 1
+  }
+  a
+}
+
+# VAM mit Protokoll aller Iterationen (gleiche Logik wie vogels_approximation())
+vam_trace <- function(cost, supply, demand) {
+  m <- nrow(cost); n <- ncol(cost)
+  alloc <- matrix(0, m, n, dimnames = dimnames(cost))
+  sup <- supply; dem <- demand
+  ar <- seq_len(m); ac <- seq_len(n)
+  pen <- function(v) { v <- sort(v); if (length(v) >= 2) v[2] - v[1] else 0 }
+  steps <- list()
+  while (length(ar) > 0 && length(ac) > 0) {
+    rp <- sapply(ar, function(i) pen(cost[i, ac]))
+    cp <- sapply(ac, function(j) pen(cost[ar, j]))
+    if (max(rp) >= max(cp)) {
+      typ <- "Zeile"; i <- ar[which.max(rp)]
+      j <- ac[which.min(cost[i, ac])]; pmax_val <- max(rp)
+    } else {
+      typ <- "Spalte"; j <- ac[which.max(cp)]
+      i <- ar[which.min(cost[ar, j])]; pmax_val <- max(cp)
+    }
+    q <- min(sup[i], dem[j])
+    steps[[length(steps) + 1]] <- list(
+      ar = ar, ac = ac, sup = sup, dem = dem,
+      rp = setNames(rp, rownames(cost)[ar]),
+      cp = setNames(cp, colnames(cost)[ac]),
+      alloc_before = alloc, typ = typ, i = i, j = j, q = q, pmax = pmax_val
+    )
+    alloc[i, j] <- alloc[i, j] + q
+    sup[i] <- sup[i] - q; dem[j] <- dem[j] - q
+    if (sup[i] <= 0) ar <- setdiff(ar, i)
+    if (dem[j] <= 0) ac <- setdiff(ac, j)
+  }
+  list(steps = steps, allocation = alloc, total_cost = sum(alloc * cost))
+}
+
+# Transporttableau einer VAM-Iteration als HTML-Tabelle
+vam_tableau <- function(step, cost, font_size = 20) {
+  m <- nrow(cost); n <- ncol(cost)
+  grey   <- function(x) paste0("<span style='color:#B8BEC6'>", x, "</span>")
+  mark   <- function(x) paste0("<span style='background:#F4A259;padding:2px 6px;",
+                               "border-radius:4px;font-weight:bold'>", x, "</span>")
+  alloc_f <- function(c, a) paste0(sprintf("%.3f", c),
+                                   " <b style='color:#0B6E4F'>[", a, "]</b>")
+  body <- matrix("", m, n)
+  for (i in 1:m) for (j in 1:n) {
+    active <- (i %in% step$ar) && (j %in% step$ac)
+    a <- step$alloc_before[i, j]
+    txt <- if (a > 0) alloc_f(cost[i, j], a) else sprintf("%.3f", cost[i, j])
+    if (!active && a == 0) txt <- grey(txt)
+    if (i == step$i && j == step$j) txt <- mark(paste0(sprintf("%.3f", cost[i, j]),
+                                                        " → ", step$q))
+    body[i, j] <- txt
+  }
+  # Restangebot und Zeilen-Penalties
+  s_col <- sapply(1:m, function(i) if (i %in% step$ar) step$sup[i] else grey(0))
+  rp_col <- sapply(1:m, function(i) {
+    if (!(i %in% step$ar)) return(grey("–"))
+    v <- step$rp[rownames(cost)[i]]
+    txt <- sprintf("%.3f", v)
+    if (step$typ == "Zeile" && i == step$i) txt <- mark(txt)
+    txt
+  })
+  d_row <- sapply(1:n, function(j) if (j %in% step$ac) step$dem[j] else grey(0))
+  cp_row <- sapply(1:n, function(j) {
+    if (!(j %in% step$ac)) return(grey("–"))
+    v <- step$cp[colnames(cost)[j]]
+    txt <- sprintf("%.3f", v)
+    if (step$typ == "Spalte" && j == step$j) txt <- mark(txt)
+    txt
+  })
+  df <- data.frame(
+    rbind(cbind(rownames(cost), body, s_col, rp_col),
+          c("a<sub>j</sub> (Rest)", d_row, "", ""),
+          c("Δ Spalte", cp_row, "", "")),
+    stringsAsFactors = FALSE
+  )
+  names(df) <- c("", colnames(cost), "s<sub>i</sub> (Rest)", "Δ Zeile")
+  rownames(df) <- NULL
+  kbl(df, escape = FALSE, align = c("l", rep("c", n), "c", "c")) |>
+    kable_styling(bootstrap_options = c("condensed"), full_width = TRUE,
+                  font_size = font_size) |>
+    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+    column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+    row_spec(m + 1:2, background = "#EEF2F4", color = "#1F2933")
+}
+
+# Flussdarstellung (bipartiter Graph) einer Allokation
+tp_flow_plot <- function(alloc, cost, title = NULL, height = 470, width = 700) {
+  m <- nrow(alloc); n <- ncol(alloc)
+  kp <- data.frame(id = rownames(alloc), x = 0.18,
+                   y = seq(0.85, 0.15, length.out = m))
+  fp <- data.frame(id = colnames(alloc), x = 0.80,
+                   y = seq(0.95, 0.05, length.out = n))
+  fig <- plot_ly(type = "scatter", mode = "markers")
+  qmax <- max(alloc)
+  for (i in 1:m) for (j in 1:n) {
+    if (alloc[i, j] <= 0) next
+    w <- 1.5 + 9 * alloc[i, j] / qmax
+    fig <- fig |> add_segments(x = kp$x[i], xend = fp$x[j],
+                               y = kp$y[i], yend = fp$y[j],
+                               line = list(color = "#52B788", width = w),
+                               hoverinfo = "text", showlegend = FALSE,
+                               text = paste0(rownames(alloc)[i], " → ",
+                                             colnames(alloc)[j], ": ",
+                                             alloc[i, j], " Boxen"))
+    fig <- fig |> add_annotations(
+      x = kp$x[i] + 0.62 * (fp$x[j] - kp$x[i]),
+      y = kp$y[i] + 0.62 * (fp$y[j] - kp$y[i]),
+      text = paste0("<b>", alloc[i, j], "</b>"), showarrow = FALSE,
+      bgcolor = "white", font = list(size = 13, color = "#0B6E4F"))
+  }
+  fig |>
+    add_trace(x = kp$x, y = kp$y, text = kp$id, mode = "markers+text",
+              marker = list(symbol = "hexagon", size = 44, color = "#BFDBF7",
+                            line = list(color = "#4B5563", width = 1.5)),
+              textfont = list(size = 15, color = "#1F2933"),
+              hoverinfo = "skip", showlegend = FALSE) |>
+    add_trace(x = fp$x, y = fp$y, text = fp$id, mode = "markers+text",
+              marker = list(symbol = "circle", size = 40, color = "#2D9E8E",
+                            line = list(color = "#2F3E46", width = 1.5)),
+              textfont = list(size = 15, color = "white"),
+              hoverinfo = "skip", showlegend = FALSE) |>
+    add_annotations(x = c(0.18, 0.80), y = c(1.06, 1.06),
+                    text = c("<b>Küchen <i>i</i></b>", "<b>Filialen <i>j</i></b>"),
+                    showarrow = FALSE, font = list(size = 14)) |>
+    layout(title = title,
+           xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
+           yaxis = list(visible = FALSE, range = c(-0.03, 1.1), fixedrange = TRUE),
+           plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+           margin = list(l = 10, r = 10, t = 10, b = 10),
+           height = height, width = width)
+}
+
+# ── Lösungen vorab berechnen ─────────────────────────────────────────────────
+tp_nw   <- nw_corner(tp_supply, tp_demand)
+tp_nw_cost <- sum(tp_nw * tp_cost)
+tp_vam  <- vam_trace(tp_cost, tp_supply, tp_demand)
+```
+
+# Transport- und Tourenplanung
+
+## Operative Distributionsplanung {#tp-outline}
+
+- **Transportplanung**
+- Kürzeste Wege
+- Tourenplanung
+
+---
+
+## Operative Distributionsplanung {#tp-einordnung}
+::: slide-subtitle
+Einordnung
+:::
+
+::: {.small-text}
+```{r tp-einordnung}
+#| echo: false
+
+einordnung <- data.frame(
+  Ebene   = c("Standortplanung (Einheiten 4–5)", "Transportplanung",
+              "Kürzeste Wege", "Tourenplanung"),
+  Frage   = c("Wo produzieren/lagern wir?",
+              "Welche Quelle beliefert welche Senke mit welcher Menge?",
+              "Welcher Weg im Straßennetz ist der kürzeste?",
+              "In welcher Reihenfolge fährt ein Fahrzeug seine Kunden an?"),
+  Horizont = c("strategisch (Jahre)", "taktisch/operativ (Wochen, Tage)",
+               "operativ (Stammdaten, täglich)", "operativ (täglich)"),
+  Modell  = c("WLP (MILP)", "Transportproblem (LP)",
+              "Kürzeste-Wege-Problem", "TSP / VRP")
+)
+
+kbl_sf(einordnung,
+       col.names = c("Planungsaufgabe", "Leitfrage", "Horizont", "Modell"),
+       align = c("l", "l", "l", "l"), font_size = 24)
+```
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Roter Faden
+Die Standortfrage für SushiFresh ist beantwortet: Die **Zentralküche Raunheim** beliefert die sechs Filialen. Jetzt geht es um den **täglichen Warenfluss**: Wie wird die Ware verteilt, auf welchen Wegen und in welcher Reihenfolge?
+:::
+:::
+
+---
+
+## Lernziele {#tp-learning-objectives}
+
+Nach dieser Einheit können Sie …
+
+- das klassische **Transportproblem** als lineares Optimierungsmodell **formulieren**,
+- balancierte und unbalancierte Transportprobleme **unterscheiden** und durch Dummy-Knoten **ausgleichen**,
+- Startlösungen mit der **Nordwestecken-Regel** und der **Vogel'schen Approximationsmethode (VAM)** **berechnen**,
+- die Lösungsqualität heuristischer Verfahren im Vergleich zur LP-Optimallösung **beurteilen**.
+
+**Literatur zur Vertiefung**
+
+- **Transport- und Netzwerkmodelle:** [@guenther2012produktion, Kapitel 4].
+- **Transportproblem und Lösungsverfahren (Tableau, VAM, MODI):** [@domschke2007transport].
+- **Ursprung der Vogel'schen Approximationsmethode:** [@reinfeld1958mathematical].
+
+---
+
+## Fallstudie – SushiFresh GmbH {#tp-cs1}
+::: slide-subtitle
+Das Weihnachtsgeschäft
+:::
+
+::: columns
+::: {.column width="48%"}
+
+```{r tp-karte}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "100%"
+#| fig-height: 6.5
+
+leaflet(options = leafletOptions(zoomControl = TRUE)) |>
+  addProviderTiles(providers$OpenStreetMap.Mapnik) |>
+  setView(lng = 8.5, lat = 50.0, zoom = 10) |>
+  addAwesomeMarkers(
+    data = tp_filialen, lng = ~Lon, lat = ~Lat,
+    label = ~paste0(ID, " ", Ort, ": ", Dez, " Boxen/Tag"),
+    icon = awesomeIcons(icon = "shopping-cart", library = "fa",
+                        markerColor = "blue", iconColor = "white")) |>
+  addAwesomeMarkers(
+    data = tp_kuechen, lng = ~Lon, lat = ~Lat,
+    label = ~paste0(ID, " ", Standort, ": ", Kapazitaet, " Boxen/Tag"),
+    icon = awesomeIcons(icon = "cutlery", library = "fa",
+                        markerColor = c("darkgreen", "orange", "orange"),
+                        iconColor = "white")) |>
+  addLegend(position = "bottomleft",
+            colors = c("#2A7ACA", "#2E6B30", "#F0932F"),
+            labels = c("Filiale (Nachfrage)", "Zentralküche", "Mietküche (temporär)"),
+            title = "Legende")
+```
+
+:::
+::: {.column width="48%"}
+
+::: {.small-text}
+
+::: {.callout-note appearance="simple"}
+## Ausgangslage
+Im Normalbetrieb beliefert die **Zentralküche Raunheim** alle sechs Filialen. In der **Adventszeit** steigt die Nachfrage nach Sushi-Boxen um rund **40 %**. Raunheim kann im Schichtbetrieb höchstens **850 Boxen/Tag** produzieren.
+:::
+
+::: {.callout-tip appearance="simple"}
+## Idee der Geschäftsführung
+Für vier Wochen werden zwei **Cateringküchen** an früheren Kandidatenstandorten aus Einheit 5 angemietet: **Wiesbaden-Erbenheim** (200 Boxen/Tag) und **Neu-Isenburg** (133 Boxen/Tag).
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-important appearance="simple"}
+## Entscheidungsproblem
+Die Standorte stehen fest, **keine** Standortentscheidung mehr. Offen ist nur: Welche Küche beliefert welche Filiale mit **wie vielen Boxen**, sodass die täglichen Transportkosten minimal sind?
+:::
+:::
+
+:::
+:::
+:::
+
+---
+
+## Fallstudie – SushiFresh GmbH {#tp-cs2}
+::: slide-subtitle
+Daten
+:::
+
+::: columns
+::: {.column width="44%"}
+
+::: small-text
+**Küchen und Kapazitäten $s_i$ (Boxen/Tag)**
+
+```{r tp-kuechen-tab}
+#| echo: false
+
+kbl_sf(tp_kuechen[, c("ID", "Standort", "Kapazitaet")],
+       col.names = c("ID", "Küche", "Kapazität s_i"),
+       align = c("c", "l", "r"), font_size = 22)
+```
+
+**Filialen und Nachfrage $a_j$ im Dezember (Boxen/Tag)**
+
+```{r tp-filialen-tab}
+#| echo: false
+
+kbl_sf(tp_filialen[, c("ID", "Ort", "mu", "Dez")],
+       col.names = c("ID", "Filiale", "Normal μ_j", "Dezember a_j"),
+       align = c("c", "l", "r", "r"), font_size = 22, col1_bg = "#2D9E8E")
+```
+:::
+
+:::
+::: {.column width="53%"}
+
+::: small-text
+**Transportkosten $c_{ij}$ (€/Box, aus Einheit 5)**
+
+```{r tp-kosten-tab}
+#| echo: false
+
+kbl_sf(as.data.frame(round(tp_cost, 3)) |> rownames_to_column("Kueche"),
+       align = c("c", rep("r", 6)), font_size = 22)
+```
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Bilanz
+Gesamtkapazität $\sum_i s_i =$ `r sum(tp_supply)` Boxen, Gesamtnachfrage $\sum_j a_j =$ `r sum(tp_demand)` Boxen → Angebot und Nachfrage sind **ausgeglichen**.
+:::
+:::
+
+::: {.fragment .fade-up}
+Raunheim allein würde mit 850 Boxen `r sum(tp_demand) - 850` Boxen/Tag zu wenig liefern.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Transportproblem {#tp-problem}
+::: slide-subtitle
+Problembeschreibung
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**Problemstellung**
+
+Gegeben sind $m$ **Quellen** (z. B. Werke, Küchen, Lager) mit **Angebotsmengen** und $n$ **Senken** (z. B. Kunden, Filialen) mit **Nachfragemengen**. Für jede Verbindung fallen **Transportkosten je Einheit** an. Gesucht ist ein **kostenminimaler Transportplan**, der die Nachfrage deckt und die Angebotsmengen nicht überschreitet.
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.smaller-text}
+::: {.fragment .fade-up}
+**Notation**
+
+- Quellen $i \in I$ mit Angebot $s_i$
+- Senken $j \in J$ mit Nachfrage $a_j$
+- Transportkosten je Einheit von $i$ nach $j$: $c_{ij}$
+- Entscheidungsvariable: Transportmenge $x_{ij} \geq 0$
+
+**Unterschied zum WLP (Einheit 5)**
+
+- keine Standortentscheidung $y_i$ – alle Quellen sind „geöffnet“
+- dafür **Kapazitäten** $s_i$ der Quellen
+- keine Fixkosten, nur variable Transportkosten
+:::
+:::
+
+:::
+::: {.column width="45%"}
+
+::: {.fragment .fade-up}
+```{r tp-graph-generic}
+#| echo: false
+#| warning: false
+#| message: false
+
+gen <- matrix(1, 3, 4, dimnames = list(c("1", "2", "3"), c("A", "B", "C", "D")))
+fig <- plot_ly(type = "scatter", mode = "markers")
+qy <- c(0.85, 0.5, 0.15); sy <- c(0.92, 0.64, 0.36, 0.08)
+for (i in 1:3) for (j in 1:4)
+  fig <- fig |> add_segments(x = 0.2, xend = 0.78, y = qy[i], yend = sy[j],
+                             line = list(color = "#9AA5B1", width = 1.2),
+                             hoverinfo = "skip", showlegend = FALSE)
+fig |>
+  add_annotations(x = 0.43, y = 0.87, text = "c<sub>1A</sub>, x<sub>1A</sub>",
+                  showarrow = FALSE, font = list(size = 13)) |>
+  add_trace(x = rep(0.2, 3), y = qy, text = c("1", "2", "3"),
+            mode = "markers+text",
+            marker = list(symbol = "hexagon", size = 40, color = "#BFDBF7",
+                          line = list(color = "#4B5563", width = 1.5)),
+            hoverinfo = "skip", showlegend = FALSE) |>
+  add_trace(x = rep(0.78, 4), y = sy, text = c("A", "B", "C", "D"),
+            mode = "markers+text",
+            marker = list(symbol = "circle", size = 38, color = "#2D9E8E",
+                          line = list(color = "#2F3E46", width = 1.5)),
+            textfont = list(color = "white"), hoverinfo = "skip",
+            showlegend = FALSE) |>
+  add_annotations(x = rep(0.08, 3), y = qy,
+                  text = c("s<sub>1</sub>", "s<sub>2</sub>", "s<sub>3</sub>"),
+                  showarrow = FALSE, font = list(size = 15)) |>
+  add_annotations(x = rep(0.9, 4), y = sy,
+                  text = c("a<sub>A</sub>", "a<sub>B</sub>", "a<sub>C</sub>", "a<sub>D</sub>"),
+                  showarrow = FALSE, font = list(size = 15)) |>
+  add_annotations(x = c(0.2, 0.78), y = c(1.05, 1.05),
+                  text = c("<b>Quellen <i>I</i></b>", "<b>Senken <i>J</i></b>"),
+                  showarrow = FALSE, font = list(size = 14)) |>
+  layout(xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
+         yaxis = list(visible = FALSE, range = c(-0.02, 1.1), fixedrange = TRUE),
+         plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+         margin = list(l = 10, r = 10, t = 10, b = 10),
+         height = 400, width = 620)
+```
+:::
+
+:::
+:::
+
+---
+
+## Transportproblem {#tp-model}
+::: slide-subtitle
+Mathematisches Modell
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.callout-tip appearance="simple" icon=false}
+#### Lineares Optimierungsmodell [@hitchcock1941distribution]
+Minimiere die gesamten Transportkosten
+
+$$\min \rightarrow \sum_{i \in I} \sum_{j \in J} c_{ij} \cdot x_{ij}$$
+:::
+
+::: {.smaller-text}
+**Nebenbedingungen**
+$$
+\begin{align}
+  \sum_{j \in J} x_{ij} &\leq s_i & \forall i \in I &\quad\rightarrow \text{Kapazität nicht überschreiten} \\
+  \sum_{i \in I} x_{ij} &= a_j    & \forall j \in J &\quad\rightarrow \text{Nachfrage decken} \\
+  x_{ij}                &\geq 0   & \forall i, j    &\quad\rightarrow \text{keine negativen Mengen}
+\end{align}
+$$
+:::
+
+:::
+::: {.column width="42%"}
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Eigenschaften
+
+- **Balanciert**, wenn $\sum_i s_i = \sum_j a_j$ → alle Kapazitätsrestriktionen gelten mit „$=$“
+- reines **LP** (keine Binärvariablen) → effizient exakt lösbar
+- ganzzahlige $s_i, a_j$ → **ganzzahlige** Optimallösung (Nebenbedingungsmatrix total unimodular)
+- eine Basislösung hat höchstens $m + n - 1$ positive Transportmengen
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.small-text}
+Für SushiFresh: $m + n - 1 = 3 + 6 - 1 = 8$ genutzte Verbindungen von 18 möglichen.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Transportproblem {#tp-methods}
+::: slide-subtitle
+Lösungsverfahren im Überblick
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="simple"}
+## Eröffnungsverfahren
+Konstruieren eine **zulässige Startlösung** mit höchstens $m+n-1$ Transporten:
+
+- **Nordwestecken-Regel** – ignoriert die Kosten
+- **Matrixminimum-Methode** – beliefert stets die insgesamt günstigste freie Zelle
+- **Vogel'sche Approximationsmethode (VAM)** – berücksichtigt Opportunitätskosten
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.callout-tip appearance="simple"}
+## Verbesserungs- und exakte Verfahren
+
+- **Stepping-Stone-** bzw. **MODI-Methode**: verbessern eine Startlösung schrittweise bis zum Optimum (Tableau-Varianten des Simplex-Verfahrens)
+- **LP-Solver** (z. B. `glpk` über `ompr`): lösen das Modell direkt exakt
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-important appearance="simple"}
+## Warum Eröffnungsverfahren heute noch?
+Sie sind **per Hand nachvollziehbar**, liefern in Sekundenbruchteilen gute Lösungen und dienen als **Startlösung** für Verbesserungsverfahren. Die Logik von VAM – *„Wo wäre ein Fehler am teuersten?“* – ist zudem ein nützliches Denkmuster für Disponenten.
+:::
+:::
+
+---
+
+## Nordwestecken-Regel {#tp-nw}
+::: slide-subtitle
+Kosten werden ignoriert
+:::
+
+::: columns
+::: {.column width="40%"}
+
+::: {.smaller-text}
+**Algorithmus**
+
+1. Starte in der linken oberen Zelle (Zeile 1, Spalte 1).
+2. Transportiere $x_{ij} = \min(\text{Restangebot}_i, \text{Restnachfrage}_j)$.
+3. Ist das Angebot von $i$ erschöpft → eine Zeile nach **unten**, sonst eine Spalte nach **rechts**.
+4. Wiederhole, bis alle Nachfrage gedeckt ist.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Schwäche
+Die Reihenfolge der Zeilen/Spalten bestimmt die Lösung, **nicht** die Kosten.
+:::
+:::
+
+:::
+::: {.column width="57%"}
+
+::: small-text
+**Nordwestecken-Lösung für SushiFresh (Boxen/Tag)**
+
+```{r tp-nw-tab}
+#| echo: false
+
+nw_df <- as.data.frame(tp_nw) |>
+  rownames_to_column("Kueche") |>
+  mutate(across(-Kueche, ~ ifelse(.x > 0,
+                                 paste0("<b>", .x, "</b>"),
+                                 "<span style='color:#B8BEC6'>–</span>")))
+kbl_sf(nw_df, escape = FALSE, align = c("c", rep("c", 6)), font_size = 24)
+```
+
+::: {.fragment .fade-up}
+Transportkosten: **`r fmt(tp_nw_cost)` €/Tag**
+
+Beispiel: Die Filiale Darmstadt (C5) wird komplett aus Wiesbaden-Erbenheim beliefert – mit `r fmt(tp_cost["S1","C5"], 3)` €/Box die teuerste Verbindung der gesamten Matrix.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Vogel'sche Approximationsmethode {#tp-vam-idea}
+::: slide-subtitle
+Idee: Opportunitätskosten
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**Idee:** Beliefere zuerst dort, wo eine **falsche Entscheidung am teuersten** wäre. Maß dafür ist die **Strafkosten-Differenz** (*penalty*) $\Delta$ einer Zeile oder Spalte: die Differenz zwischen der **zweitgünstigsten** und der **günstigsten** noch verfügbaren Zelle.
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Beispiel: Spalte C1 (Filiale Wiesbaden)**
+
+```{r tp-vam-c1}
+#| echo: false
+
+c1 <- data.frame(Kueche = rownames(tp_cost), c = tp_cost[, "C1"]) |>
+  arrange(c)
+rownames(c1) <- NULL
+kbl_sf(c1, col.names = c("Küche", "c_i,C1 (€/Box)"), digits = 3,
+       align = c("c", "r"), font_size = 22)
+```
+
+$\Delta_{C1} = `r sprintf("%.3f", sort(tp_cost[,"C1"])[2])` - `r sprintf("%.3f", sort(tp_cost[,"C1"])[1])` = `r sprintf("%.3f", diff(sort(tp_cost[,"C1"]))[1])`$ €/Box
+:::
+:::
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Interpretation
+Kann Wiesbaden **nicht** aus der günstigsten Küche (S1) beliefert werden, kostet **jede Box** mindestens `r fmt(diff(sort(tp_cost[,"C1"]))[1], 3)` € mehr.
+
+Bei `r tp_demand["C1"]` Boxen/Tag sind das bis zu `r fmt(diff(sort(tp_cost[,"C1"]))[1] * tp_demand["C1"])` € **Opportunitätskosten** pro Tag.
+:::
+:::
+
+::: {.fragment .fade-up}
+→ Zeilen/Spalten mit **großem** $\Delta$ werden **zuerst** bedient.
+:::
+
+:::
+:::
+
+---
+
+## Vogel'sche Approximationsmethode {#tp-vam-algo}
+::: slide-subtitle
+Algorithmus
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.smaller-text}
+**Initialisierung:** Alle Zeilen und Spalten sind aktiv; Restangebot $s_i$, Restnachfrage $a_j$.
+
+**Wiederhole**, solange aktive Zeilen und Spalten existieren:
+
+1. Berechne für jede aktive **Zeile** $i$ und jede aktive **Spalte** $j$ die Strafkosten-Differenz:
+$$\Delta = c_{(2)} - c_{(1)}$$
+(zweitkleinste minus kleinste Kosten unter den aktiven Zellen)
+
+2. Wähle die Zeile oder Spalte mit dem **größten** $\Delta$.
+
+3. Wähle darin die **günstigste** aktive Zelle $(i^*, j^*)$.
+
+4. Transportiere $x_{i^*j^*} = \min(s_{i^*}, a_{j^*})$ und aktualisiere Restangebot und Restnachfrage.
+
+5. **Streiche** die erschöpfte Zeile bzw. Spalte.
+:::
+
+:::
+::: {.column width="42%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Hinweise
+
+- Bei Gleichstand von $\Delta$: beliebige Wahl (z. B. die Zeile/Spalte mit der günstigeren Zelle)
+- Bleibt nur **eine** Zelle in einer Zeile/Spalte, ist $\Delta = 0$ – die Zuordnung ist dann ohnehin erzwungen
+- Nach höchstens $m + n - 1$ Iterationen ist eine **zulässige Lösung** gefunden
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Aber
+VAM ist eine **Heuristik**: gute, aber nicht garantiert optimale Lösungen.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Vogel'sche Approximationsmethode {#tp-vam-it1}
+::: slide-subtitle
+Fallbeispiel – Iteration 1
+:::
+
+::: {.small-text}
+```{r tp-vam-it1-tab}
+#| echo: false
+
+vam_tableau(tp_vam$steps[[1]], tp_cost, font_size = 24)
+```
+:::
+
+::: columns
+::: {.column width="48%"}
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Zeilen:** z. B. Raunheim (S3): günstigste Zellen C6 (`r sprintf("%.3f", tp_cost["S3","C6"])`) und C3 (`r sprintf("%.3f", tp_cost["S3","C3"])`) → $\Delta_{S3} = `r sprintf("%.3f", tp_vam$steps[[1]]$rp["S3"])`$
+
+**Spalten:** z. B. Wiesbaden (C1): $\Delta_{C1} = `r sprintf("%.3f", tp_vam$steps[[1]]$cp["C1"])`$ → **größtes** $\Delta$ im gesamten Tableau
+:::
+:::
+:::
+::: {.column width="48%"}
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Entscheidung
+Günstigste Zelle in Spalte C1: **S1 → C1**. Menge $\min(200, 168) = 168$ Boxen. Nachfrage von C1 ist gedeckt → **Spalte C1 streichen**.
+:::
+:::
+:::
+:::
+
+---
+
+## Vogel'sche Approximationsmethode {#tp-vam-it2}
+::: slide-subtitle
+Fallbeispiel – Iteration 2
+:::
+
+::: {.small-text}
+```{r tp-vam-it2-tab}
+#| echo: false
+
+vam_tableau(tp_vam$steps[[2]], tp_cost, font_size = 24)
+```
+:::
+
+::: columns
+::: {.column width="48%"}
+::: {.fragment .fade-up}
+::: {.smaller-text}
+Durch das Streichen von C1 ändert sich die Strafkosten-Differenz von **S1**: Die günstigste Zelle (C1) fällt weg, neu ist $\Delta_{S1} = `r sprintf("%.3f", tp_vam$steps[[2]]$rp["S1"])`$.
+
+Die Penalties müssen daher **in jeder Iteration neu** berechnet werden.
+:::
+:::
+:::
+::: {.column width="48%"}
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Entscheidung
+Größtes $\Delta$: Spalte **C3** (Frankfurt, $\Delta = `r sprintf("%.3f", tp_vam$steps[[2]]$pmax)`$). Günstigste Zelle: **S3 → C3**, Menge $\min(850, 392) = 392$. Spalte C3 streichen.
+:::
+:::
+:::
+:::
+
+---
+
+## Vogel'sche Approximationsmethode {#tp-vam-it3}
+::: slide-subtitle
+Fallbeispiel – Iteration 3
+:::
+
+::: {.small-text}
+```{r tp-vam-it3-tab}
+#| echo: false
+
+vam_tableau(tp_vam$steps[[3]], tp_cost, font_size = 24)
+```
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Entscheidung
+Erstmals ist eine **Zeile** ausschlaggebend: Wiesbaden-Erbenheim (S1) hat mit $\Delta = `r sprintf("%.3f", tp_vam$steps[[3]]$pmax)`$ das größte Penalty. Die günstigste verbleibende Zelle ist **S1 → C6** (Offenbach). S1 hat nur noch `r tp_vam$steps[[3]]$q` Boxen frei → **Zeile S1 streichen**, C6 bleibt mit Restnachfrage `r tp_vam$steps[[3]]$dem[6] - tp_vam$steps[[3]]$q` aktiv.
+:::
+:::
+
+---
+
+## Vogel'sche Approximationsmethode {#tp-vam-all}
+::: slide-subtitle
+Fallbeispiel – alle Iterationen
+:::
+
+::: columns
+::: {.column width="58%"}
+
+::: {.small-text}
+```{r tp-vam-steps}
+#| echo: false
+
+vam_steps_df <- do.call(rbind, lapply(seq_along(tp_vam$steps), function(k) {
+  s <- tp_vam$steps[[k]]
+  sel <- if (s$typ == "Zeile") rownames(tp_cost)[s$i] else colnames(tp_cost)[s$j]
+  gestr <- c(if (s$sup[s$i] - s$q <= 0) rownames(tp_cost)[s$i],
+             if (s$dem[s$j] - s$q <= 0) colnames(tp_cost)[s$j])
+  data.frame(
+    It     = k,
+    Wahl   = paste0(s$typ, " ", sel),
+    Delta  = sprintf("%.3f", s$pmax),
+    Zelle  = paste0(rownames(tp_cost)[s$i], " → ", colnames(tp_cost)[s$j]),
+    Menge  = s$q,
+    Kosten = fmt(s$q * tp_cost[s$i, s$j]),
+    Gestr  = paste(gestr, collapse = ", ")
+  )
+}))
+
+kbl_sf(vam_steps_df,
+       col.names = c("It.", "max. Δ in", "Δ", "Zelle", "Menge",
+                     "Kosten (€)", "gestrichen"),
+       align = c("c", "l", "r", "c", "r", "r", "c"), font_size = 22)
+```
+:::
+
+:::
+::: {.column width="39%"}
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Beobachtungen
+
+- Genau $m + n - 1 = 8$ Iterationen bzw. Transporte
+- Die **teuren Fehlentscheidungen** (Wiesbaden, Frankfurt) werden zuerst vermieden
+- In der letzten Iteration ist $\Delta = 0$: Die Zuordnung ist durch die Restmengen **erzwungen**
+:::
+:::
+
+:::
+:::
+
+---
+
+## Vogel'sche Approximationsmethode {#tp-vam-result}
+::: slide-subtitle
+Fallbeispiel – Ergebnis
+:::
+
+::: columns
+::: {.column width="47%"}
+
+::: small-text
+**VAM-Transportplan (Boxen/Tag)**
+
+```{r tp-vam-alloc}
+#| echo: false
+
+vam_df <- as.data.frame(tp_vam$allocation) |>
+  rownames_to_column("Kueche") |>
+  mutate(across(-Kueche, ~ ifelse(.x > 0, paste0("<b>", .x, "</b>"),
+                                 "<span style='color:#B8BEC6'>–</span>")))
+kbl_sf(vam_df, escape = FALSE, align = c("c", rep("c", 6)), font_size = 24)
+```
+
+::: {.fragment .fade-up}
+Transportkosten: **`r fmt(tp_vam$total_cost)` €/Tag** gegenüber `r fmt(tp_nw_cost)` €/Tag mit der Nordwestecken-Regel.
+
+Zulässigkeit: Zeilensummen `r paste(rowSums(tp_vam$allocation), collapse = " / ")` = Kapazitäten, Spaltensummen = Nachfrage.
+:::
+:::
+
+:::
+::: {.column width="50%"}
+
+```{r tp-vam-flow}
+#| echo: false
+#| warning: false
+#| message: false
+
+tp_flow_plot(tp_vam$allocation, tp_cost)
+```
+
+:::
+:::
+
+---
+
+## Transportproblem {#tp-r}
+::: slide-subtitle
+Implementierung mit R
+:::
+
+::: columns
+::: {.column width="52%"}
+
+```{r tp-r-code}
+#| echo: true
+#| eval: true
+#| warning: false
+#| message: false
+
+# Heuristik (scm_functions.R)
+vam <- vogels_approximation(tp_cost,
+                            supply = tp_supply,
+                            demand = tp_demand)
+
+# Exakte Lösung als LP mit ompr
+library(ompr); library(ompr.roi)
+library(ROI.plugin.glpk)
+m <- nrow(tp_cost); n <- ncol(tp_cost)
+
+tp_model <- MIPModel() |>
+  add_variable(x[i, j], i = 1:m, j = 1:n,
+               type = "continuous", lb = 0) |>
+  set_objective(
+    sum_expr(tp_cost[i, j] * x[i, j],
+             i = 1:m, j = 1:n), "min") |>
+  # Kapazitäten
+  add_constraint(
+    sum_expr(x[i, j], j = 1:n) <= tp_supply[i],
+    i = 1:m) |>
+  # Nachfrage
+  add_constraint(
+    sum_expr(x[i, j], i = 1:m) == tp_demand[j],
+    j = 1:n)
+
+tp_opt <- solve_model(tp_model, with_ROI(solver = "glpk"))
+```
+
+:::
+::: {.column width="45%"}
+
+::: small-text
+```{r tp-r-compare}
+#| echo: false
+
+tp_opt_val <- objective_value(tp_opt)
+tp_opt_x <- get_solution(tp_opt, x[i, j]) |>
+  filter(value > 1e-6)
+tp_opt_alloc <- matrix(0, m, n, dimnames = dimnames(tp_cost))
+tp_opt_alloc[cbind(tp_opt_x$i, tp_opt_x$j)] <- tp_opt_x$value
+
+vgl <- data.frame(
+  Verfahren = c("Nordwestecke", "VAM", "LP-Optimum"),
+  Kosten    = c(tp_nw_cost, vam$total_cost, tp_opt_val)
+) |>
+  mutate(Abw = (Kosten / tp_opt_val - 1) * 100,
+         Kosten = fmt(Kosten), Abw = paste0(fmt(Abw, 1), " %"))
+
+kbl_sf(vgl, col.names = c("Verfahren", "Kosten (€/Tag)", "Abw. vom Optimum"),
+       align = c("l", "r", "r"), font_size = 24)
+```
+
+::: {.fragment .fade-up}
+**Optimaler Transportplan (Boxen/Tag)**
+
+```{r tp-opt-alloc}
+#| echo: false
+
+opt_df <- as.data.frame(round(tp_opt_alloc)) |>
+  rownames_to_column("Kueche") |>
+  mutate(across(-Kueche, ~ ifelse(.x > 0, paste0("<b>", .x, "</b>"),
+                                 "<span style='color:#B8BEC6'>–</span>")))
+kbl_sf(opt_df, escape = FALSE, align = c("c", rep("c", 6)), font_size = 22)
+```
+:::
+:::
+
+:::
+:::
+
+---
+
+## Transportproblem {#tp-compare}
+::: slide-subtitle
+Vergleich der Lösungen
+:::
+
+::: columns
+::: {.column width="50%"}
+
+```{r tp-compare-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+plot_ly(x = c("Nordwestecke", "VAM", "LP-Optimum"),
+        y = c(tp_nw_cost, tp_vam$total_cost, tp_opt_val),
+        type = "bar",
+        marker = list(color = c("#9AA5B1", "#52B788", "#0B6E4F")),
+        text = paste0(fmt(c(tp_nw_cost, tp_vam$total_cost, tp_opt_val)), " €"),
+        textposition = "outside", hoverinfo = "skip") |>
+  layout(yaxis = list(title = "Transportkosten (€/Tag)",
+                      range = c(0, 1.2 * tp_nw_cost)),
+         xaxis = list(title = ""),
+         margin = list(l = 70, r = 20, t = 20, b = 40),
+         height = 470, width = 680)
+```
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnis
+- VAM liegt nur `r fmt((tp_vam$total_cost / tp_opt_val - 1) * 100, 1)` % über dem Optimum, die Nordwestecke `r fmt((tp_nw_cost / tp_opt_val - 1) * 100, 0)` %.
+- Der Unterschied VAM ↔ Optimum liegt allein in der Aufteilung von **Rüsselsheim (C4)** und **Offenbach (C6)** zwischen Raunheim und Wiesbaden-Erbenheim.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Hochgerechnet
+Über vier Adventswochen (24 Liefertage) spart der optimale Plan gegenüber der Nordwestecke rund **`r fmt(24 * (tp_nw_cost - tp_opt_val), 0)` €**. Gegenüber VAM sind es nur `r fmt(24 * (tp_vam$total_cost - tp_opt_val), 0)` €.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Unbalancierte Transportprobleme {#tp-unbalanced}
+::: slide-subtitle
+Dummy-Quellen und Dummy-Senken
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.smaller-text}
+**Überkapazität** $\sum_i s_i > \sum_j a_j$
+
+- Einführung einer **Dummy-Senke** mit Nachfrage $\sum_i s_i - \sum_j a_j$ und Kosten $c_{i,\text{Dummy}} = 0$
+- Lieferungen an die Dummy-Senke = **ungenutzte Kapazität**
+
+**Unterkapazität** $\sum_i s_i < \sum_j a_j$
+
+- Einführung einer **Dummy-Quelle** mit Angebot $\sum_j a_j - \sum_i s_i$
+- Kosten = **Fehlmengenkosten** (z. B. entgangener Deckungsbeitrag, vgl. Newsvendor)
+- Lieferungen der Dummy-Quelle = **nicht belieferte Nachfrage**
+:::
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: small-text
+**Variante:** Neu-Isenburg bietet 150 statt 133 Boxen/Tag → 17 Boxen Überkapazität
+
+```{r tp-unbalanced}
+#| echo: false
+
+sup_ub <- tp_supply; sup_ub["S5"] <- 150
+vam_ub <- vogels_approximation(tp_cost, sup_ub, tp_demand)
+
+ub_df <- as.data.frame(vam_ub$allocation) |>
+  rownames_to_column("Kueche") |>
+  mutate(across(-Kueche, ~ ifelse(.x > 0, paste0("<b>", .x, "</b>"),
+                                 "<span style='color:#B8BEC6'>–</span>")))
+kbl_sf(ub_df, escape = FALSE, align = c("c", rep("c", 7)), font_size = 22) |>
+  column_spec(8, background = "#FDEBD3")
+```
+
+`vogels_approximation()` ergänzt die Dummy-Spalte automatisch. Kosten: `r fmt(vam_ub$total_cost)` €/Tag.
+:::
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Dummy-Kosten von 0 verändern die Strafkosten-Differenzen. VAM kann daher bei unbalancierten Problemen deutlich schlechter abschneiden. Das LP liefert immer das Optimum.
+:::
+:::
+
+---
+
+## Transportproblem {#tp-limits}
+::: slide-subtitle
+Grenzen des Modells und Ausblick
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-warning appearance="simple"}
+## Annahme 1: Kosten $c_{ij}$ sind gegeben
+Bisher wurden die Transportkosten je Box vorgegeben. In der Praxis müssen sie aus **Entfernungen im Straßennetz** abgeleitet werden.
+
+→ **Kürzeste-Wege-Probleme** (nächste Einheit)
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.callout-warning appearance="simple"}
+## Annahme 2: Kosten sind linear in der Menge
+Das Modell unterstellt **Direktverkehre** (Pendelfahrten) mit Kosten proportional zur Menge. Tatsächlich fährt ein Kühlfahrzeug **mehrere Filialen nacheinander** an, und die Kosten hängen von der **Fahrstrecke** ab.
+
+→ **Tourenplanung / TSP** (übernächste Einheit)
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Weitere Erweiterungen
+Umschlagpunkte (Transshipment), mehrere Produkte, Kapazitäten auf Verbindungen, Mindestmengen je Fahrt (dann MILP).
+:::
+:::
+
+---
+
+## Kernaussagen {#tp-summary}
+
+::: {.callout-tip appearance="simple"}
+## Das Wichtigste in Kürze
+
+- Das **Transportproblem** verteilt Angebotsmengen kostenminimal auf Nachfragemengen. Es ist ein **LP** mit ganzzahligen Optimallösungen.
+- Unbalancierte Probleme werden über **Dummy-Quellen bzw. -Senken** ausgeglichen.
+- Die **Nordwestecken-Regel** ist einfach, ignoriert aber die Kosten.
+- Die **Vogel'sche Approximationsmethode** priorisiert Zeilen/Spalten mit hohen **Opportunitätskosten** und liefert meist Lösungen nahe am Optimum (SushiFresh: +`r fmt((tp_vam$total_cost / tp_opt_val - 1) * 100, 1)` %).
+- Mit `ompr` lässt sich das Transportproblem in wenigen Zeilen **exakt** lösen.
+:::
+
+---
+
+## Übung {#tp-exercise}
+
+::: {.exercise-slide}
+::: {.exercise-header}
+Transportplanung SushiFresh – Ausfall einer Kühlzelle
+:::
+
+::: {.columns .exercise-content}
+::: {.column width="55%"}
+Am 18. Dezember fällt in Raunheim eine Kühlzelle aus. Die Kapazität sinkt für einen Tag auf **700 Boxen**. Die Mietküchen können nicht kurzfristig aufstocken.
+
+- Ist das Transportproblem noch balanciert? Führen Sie gegebenenfalls einen Dummy-Knoten ein.
+- Welche Kosten würden Sie für den Dummy-Knoten ansetzen? Begründen Sie mit einem Deckungsbeitrag von 4,50 €/Box.
+- Lösen Sie das Problem mit VAM (von Hand oder mit `vogels_approximation()`) und mit `ompr`.
+- Welche Filialen erhalten weniger Ware? Ist das aus Kundensicht sinnvoll?
+:::
+::: {.column width="42%"}
+```{r tp-exercise-hint}
+#| echo: true
+#| eval: false
+
+sup_18 <- c(S3 = 700, S1 = 200, S5 = 133)
+cost_18 <- rbind(tp_cost, Dummy = 4.5)
+
+vogels_approximation(cost_18,
+  supply = c(sup_18, Dummy = sum(tp_demand) - sum(sup_18)),
+  demand = tp_demand)
+```
+:::
+:::
+:::

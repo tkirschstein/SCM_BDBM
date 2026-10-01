@@ -1,0 +1,2555 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="12_transportmittel-und-antriebe_files/libs/clipboard/clipboard.min.js"></script>
+<script src="12_transportmittel-und-antriebe_files/libs/quarto-html/tabby.min.js"></script>
+<script src="12_transportmittel-und-antriebe_files/libs/quarto-html/popper.min.js"></script>
+<script src="12_transportmittel-und-antriebe_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="12_transportmittel-und-antriebe_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="12_transportmittel-und-antriebe_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="12_transportmittel-und-antriebe_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.38">
+
+  <meta name="author" content="Prof.&nbsp;Dr.&nbsp;Thomas Kirschstein">
+  <title>transportmittel-und-antriebe</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="12_transportmittel-und-antriebe_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="12_transportmittel-und-antriebe_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+  <link rel="stylesheet" href="12_transportmittel-und-antriebe_files/libs/revealjs/dist/theme/quarto-2740581606dc327e82f18f789b69d8a0.css">
+  <link rel="stylesheet" href="../styles.css">
+  <link href="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script src="12_transportmittel-und-antriebe_files/libs/kePrint-0.0.1/kePrint.js"></script>
+
+  <link href="12_transportmittel-und-antriebe_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+  <link href="12_transportmittel-und-antriebe_files/libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+
+  <script src="12_transportmittel-und-antriebe_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+  <script src="12_transportmittel-und-antriebe_files/libs/plotly-binding-4.12.1/plotly.js"></script>
+
+  <script src="12_transportmittel-und-antriebe_files/libs/typedarray-0.1/typedarray.min.js"></script>
+
+  <script src="12_transportmittel-und-antriebe_files/libs/jquery-3.5.1/jquery.min.js"></script>
+
+  <link href="12_transportmittel-und-antriebe_files/libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+
+  <script src="12_transportmittel-und-antriebe_files/libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+
+  <link href="12_transportmittel-und-antriebe_files/libs/plotly-htmlwidgets-css-2.25.2/plotly-htmlwidgets.css" rel="stylesheet">
+
+  <script src="12_transportmittel-und-antriebe_files/libs/plotly-main-2.25.2/plotly-latest.min.js"></script>
+
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+
+<section id="tm-outline" class="slide level2">
+<h2>Transport- und Tourenplanung</h2>
+<ul>
+<li>Transportplanung</li>
+<li>Kürzeste Wege</li>
+<li>Tourenplanung</li>
+<li><strong>Verkehrsträger, Transportmittel und Antriebe</strong></li>
+</ul>
+</section>
+<section id="tm-learning-objectives" class="slide level2">
+<h2>Lernziele</h2>
+<p>Nach dieser Einheit können Sie …</p>
+<ul>
+<li>Verkehrsträger, Verkehrsmittel und Ladeeinheiten <strong>unterscheiden</strong> und für eine Transportaufgabe <strong>auswählen</strong>,</li>
+<li>konventionelle und alternative <strong>Antriebstechnologien</strong> im Straßengüterverkehr <strong>erläutern</strong>,</li>
+<li>die <strong>Einschränkungen</strong> batterieelektrischer Fahrzeuge, von Lastenrädern und Drohnen für die Transport- und Tourenplanung <strong>ableiten</strong>,</li>
+<li><strong>Transportkostensätze</strong> (€/km, €/h, €/tkm, €/Stopp) aus einer Fahrzeugkostenrechnung <strong>berechnen</strong> und Antriebe über die Gesamtkosten (TCO) <strong>vergleichen</strong>.</li>
+</ul>
+<div class="small-text">
+<p><strong>Literatur zur Vertiefung</strong></p>
+<ul>
+<li><strong>Verkehrsträger und Transportentscheidungen:</strong> <span class="citation" data-cites="chopra2025supply">(<a href="#/tm-exercise" role="doc-biblioref" onclick="">Chopra and Meindl 2025</a>)</span>; <span class="citation" data-cites="guenther2012produktion">(<a href="#/tm-exercise" role="doc-biblioref" onclick="">Günther and Tempelmeier 2012</a>)</span>.</li>
+<li><strong>Elektrische Tourenplanung (E-VRP):</strong> <span class="citation" data-cites="schneider2014electric">(<a href="#/tm-exercise" role="doc-biblioref" onclick=""><strong>schneider2014electric?</strong></a>)</span>.</li>
+<li><strong>Lkw-Drohnen-Kombinationen:</strong> <span class="citation" data-cites="murray2015flying">(<a href="#/tm-exercise" role="doc-biblioref" onclick=""><strong>murray2015flying?</strong></a>)</span>.</li>
+</ul>
+</div>
+</section>
+<section id="tm-cs1" class="slide level2">
+<h2>Fallstudie – SushiFresh GmbH</h2>
+<div class="slide-subtitle">
+<p>Drei Transportentscheidungen</p>
+</div>
+<div class="columns">
+<div class="column" style="width:32%;">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>1. Beschaffung</strong></p>
+</div>
+<div class="callout-content">
+<p>Der Lachs kommt aus <strong>Norwegen</strong> (ca. 1.700 km). Bisher per Kühl-Lkw mit Fähre. Ein Lieferant bietet eine Kombination aus <strong>Lkw und Bahn</strong> an.</p>
+<p><em>Welcher Verkehrsträger passt zu Frischfisch?</em></p>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:32%;">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>2. Fuhrpark</strong></p>
+</div>
+<div class="callout-content">
+<p>Das Leasing des <strong>7,5-t-Diesel-Kühl-Lkw</strong> läuft aus. Alternative: ein <strong>batterieelektrischer</strong> Kühl-Lkw.</p>
+<p><em>Was kostet das, und klappt die Tour aus Einheit 11 überhaupt noch?</em></p>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:32%;">
+<div class="callout callout-important callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>3. Letzte Meile</strong></p>
+</div>
+<div class="callout-content">
+<p>Pilot für einen <strong>Lieferdienst an Endkunden</strong> in Frankfurt. Im Gespräch: E-Transporter, <strong>Lastenrad</strong> oder sogar <strong>Drohne</strong>.</p>
+<p><em>Was ist pro Zustellung am günstigsten?</em></p>
+</div>
+</div>
+</div>
+</div></div>
+<div class="fragment fade-up">
+<div class="small-text">
+<p>Dazu brauchen wir einen Überblick über Verkehrsträger und Antriebe <strong>und</strong> ein Werkzeug zur Berechnung von <strong>Transportkostensätzen</strong>. Die bisher verwendeten Kostensätze (z. B. 0,02 €/(Box·km) aus Einheit 5) werden wir dabei nachrechnen.</p>
+</div>
+</div>
+</section>
+<section id="tm-begriffe" class="slide level2">
+<h2>Begriffe</h2>
+<div class="slide-subtitle">
+<p>Verkehrsträger, Verkehrsmittel, Ladeeinheiten</p>
+</div>
+<div class="columns">
+<div class="column" style="width:32%;">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Verkehrsträger</strong></p>
+</div>
+<div class="callout-content">
+<p>Infrastruktur, auf der Verkehr stattfindet:</p>
+<ul>
+<li>Straße</li>
+<li>Schiene</li>
+<li>Wasser (Binnen-, Seeschifffahrt)</li>
+<li>Luft</li>
+<li>Rohrleitung</li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:32%;">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Verkehrsmittel</strong></p>
+</div>
+<div class="callout-content">
+<p>Fahrzeuge, die Güter bewegen:</p>
+<ul>
+<li>Lastenrad, Transporter, Lkw, Sattelzug</li>
+<li>Güterzug (Ganzzug, Einzelwagen)</li>
+<li>Binnen- und Seeschiff</li>
+<li>Frachtflugzeug, Drohne</li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:32%;">
+<div class="callout callout-important callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Ladeeinheiten</strong></p>
+</div>
+<div class="callout-content">
+<p>Standardisierte Behälter, die zwischen Verkehrsmitteln wechseln:</p>
+<ul>
+<li>Palette, Rollcontainer</li>
+<li>Wechselbrücke, Sattelauflieger</li>
+<li>ISO-Container (TEU/FEU)</li>
+</ul>
+</div>
+</div>
+</div>
+</div></div>
+<div class="fragment fade-up">
+<div class="small-text">
+<p><strong>Unimodal</strong>: ein Verkehrsträger. <strong>Multimodal</strong>: mehrere Verkehrsträger. <strong>Intermodal / kombinierter Verkehr</strong>: mehrere Verkehrsträger mit <strong>derselben Ladeeinheit</strong>, ohne die Ware umzuladen.</p>
+</div>
+</div>
+</section>
+<section id="tm-modes" class="slide level2">
+<h2>Verkehrsträger im Vergleich</h2>
+<div class="slide-subtitle">
+<p>Kennzahlen (Größenordnungen)</p>
+</div>
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 22px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Verkehrsträger</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Typische Einheit</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Geschwindigkeit</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Netz</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">THG (g CO₂e/tkm)</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Typische Güter</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Straße</td>
+<td style="text-align: left;">Sattelzug ~25 t Nutzlast, 33 Paletten</td>
+<td style="text-align: left;">60–80 km/h, Tür-zu-Tür</td>
+<td style="text-align: left;">sehr dicht</td>
+<td style="text-align: right;">~110–120</td>
+<td style="text-align: left;">Stückgut, Frische, Teilladungen</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Schiene</td>
+<td style="text-align: left;">Ganzzug ~1.000–2.000 t (max. 740 m)</td>
+<td style="text-align: left;">netzabhängig, Umschlag nötig</td>
+<td style="text-align: left;">Gleisanschluss nötig</td>
+<td style="text-align: right;">~16–18</td>
+<td style="text-align: left;">Massengut, Container, Autos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Binnenschiff</td>
+<td style="text-align: left;">Großmotorgüterschiff ~2.000–3.000 t</td>
+<td style="text-align: left;">10–20 km/h, wasserstandsabhängig</td>
+<td style="text-align: left;">Wasserstraßen</td>
+<td style="text-align: right;">~31–33</td>
+<td style="text-align: left;">Massengut, Container</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Seeschiff</td>
+<td style="text-align: left;">Containerschiff bis ~24.000 TEU</td>
+<td style="text-align: left;">25–40 km/h</td>
+<td style="text-align: left;">Häfen</td>
+<td style="text-align: right;">~5–20</td>
+<td style="text-align: left;">Container, Massengut</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Luft</td>
+<td style="text-align: left;">Frachtflugzeug ~100–120 t</td>
+<td style="text-align: left;">800–900 km/h</td>
+<td style="text-align: left;">Flughäfen</td>
+<td style="text-align: right;">~500–1.000</td>
+<td style="text-align: left;">hochwertig, eilig, verderblich</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="smaller-text">
+<p>THG-Werte für Straße, Schiene, Binnenschiff: Durchschnittswerte des Umweltbundesamts (TREMOD) <span class="citation" data-cites="uba2024emissionsdaten">(<a href="#/tm-exercise" role="doc-biblioref" onclick=""><strong>uba2024emissionsdaten?</strong></a>)</span>. Werte für See- und Luftfracht: grobe Größenordnungen, stark abhängig von Schiffsgröße bzw. Belly- oder Frachtflugzeug.</p>
+</div>
+</div><div class="column" style="width:42%;">
+<div class="fragment fade-up">
+<div class="callout callout-warning callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p>Unter <strong>50 km</strong> ist der Lkw praktisch ohne Alternative: Bahn und Schiff können keine Fläche bedienen.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-radar" class="slide level2">
+<h2>Verkehrsträger im Vergleich</h2>
+<div class="slide-subtitle">
+<p>Qualitatives Profil</p>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-051899ce875a21f962ad" style="width:912px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-051899ce875a21f962ad">{"x":{"visdat":{"493c6f1b2920":["function () ","plotlyVisDat"]},"cur_data":"493c6f1b2920","attrs":{"493c6f1b2920":{"mode":"lines+markers","fill":"toself","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatterpolar"},"493c6f1b2920.1":{"mode":"lines+markers","fill":"toself","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatterpolar","r":[2,4,5,2,2,4,2],"theta":["Kosten (niedrig)","Geschwindigkeit","Netzdichte/Flexibilität","Kapazität","Klimabilanz","Zuverlässigkeit","Kosten (niedrig)"],"name":"Straße","line":{"color":"#0B6E4F"},"marker":{"color":"#0B6E4F"},"fillcolor":"#0B6E4F22","inherit":true},"493c6f1b2920.2":{"mode":"lines+markers","fill":"toself","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatterpolar","r":[4,3,2,4,5,3,4],"theta":["Kosten (niedrig)","Geschwindigkeit","Netzdichte/Flexibilität","Kapazität","Klimabilanz","Zuverlässigkeit","Kosten (niedrig)"],"name":"Schiene","line":{"color":"#2A7ACA"},"marker":{"color":"#2A7ACA"},"fillcolor":"#2A7ACA22","inherit":true},"493c6f1b2920.3":{"mode":"lines+markers","fill":"toself","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatterpolar","r":[5,1,1,5,4,2,5],"theta":["Kosten (niedrig)","Geschwindigkeit","Netzdichte/Flexibilität","Kapazität","Klimabilanz","Zuverlässigkeit","Kosten (niedrig)"],"name":"Binnenschiff","line":{"color":"#D97B29"},"marker":{"color":"#D97B29"},"fillcolor":"#D97B2922","inherit":true},"493c6f1b2920.4":{"mode":"lines+markers","fill":"toself","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatterpolar","r":[1,5,2,1,1,4,1],"theta":["Kosten (niedrig)","Geschwindigkeit","Netzdichte/Flexibilität","Kapazität","Klimabilanz","Zuverlässigkeit","Kosten (niedrig)"],"name":"Luft","line":{"color":"#9B59B6"},"marker":{"color":"#9B59B6"},"fillcolor":"#9B59B622","inherit":true}},"layout":{"width":720,"height":520,"margin":{"b":30,"l":60,"t":30,"r":60},"polar":{"radialaxis":{"visible":true,"range":[0,5]}},"legend":{"orientation":"h","x":0.050000000000000003,"y":-0.10000000000000001},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"fillcolor":"rgba(31,119,180,0.5)","mode":"lines+markers","fill":"toself","type":"scatterpolar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"fillcolor":"#0B6E4F22","mode":"lines+markers","fill":"toself","type":"scatterpolar","r":[2,4,5,2,2,4,2],"theta":["Kosten (niedrig)","Geschwindigkeit","Netzdichte/Flexibilität","Kapazität","Klimabilanz","Zuverlässigkeit","Kosten (niedrig)"],"name":"Straße","line":{"color":"#0B6E4F"},"marker":{"color":"#0B6E4F","line":{"color":"rgba(255,127,14,1)"}},"frame":null},{"fillcolor":"#2A7ACA22","mode":"lines+markers","fill":"toself","type":"scatterpolar","r":[4,3,2,4,5,3,4],"theta":["Kosten (niedrig)","Geschwindigkeit","Netzdichte/Flexibilität","Kapazität","Klimabilanz","Zuverlässigkeit","Kosten (niedrig)"],"name":"Schiene","line":{"color":"#2A7ACA"},"marker":{"color":"#2A7ACA","line":{"color":"rgba(44,160,44,1)"}},"frame":null},{"fillcolor":"#D97B2922","mode":"lines+markers","fill":"toself","type":"scatterpolar","r":[5,1,1,5,4,2,5],"theta":["Kosten (niedrig)","Geschwindigkeit","Netzdichte/Flexibilität","Kapazität","Klimabilanz","Zuverlässigkeit","Kosten (niedrig)"],"name":"Binnenschiff","line":{"color":"#D97B29"},"marker":{"color":"#D97B29","line":{"color":"rgba(214,39,40,1)"}},"frame":null},{"fillcolor":"#9B59B622","mode":"lines+markers","fill":"toself","type":"scatterpolar","r":[1,5,2,1,1,4,1],"theta":["Kosten (niedrig)","Geschwindigkeit","Netzdichte/Flexibilität","Kapazität","Klimabilanz","Zuverlässigkeit","Kosten (niedrig)"],"name":"Luft","line":{"color":"#9B59B6"},"marker":{"color":"#9B59B6","line":{"color":"rgba(148,103,189,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</div><div class="column" style="width:42%;">
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Lesart</strong></p>
+</div>
+<div class="callout-content">
+<p>Kein Verkehrsträger dominiert. Die Wahl hängt vom <strong>Produkt</strong> ab (Wert, Verderblichkeit, Gewicht), von der <strong>Entfernung</strong> und von der Bedeutung der <strong>Lieferzeit</strong> (vgl. Strategic Fit, Einheit 2).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Beispiel Rhein</strong></p>
+</div>
+<div class="callout-content">
+<p>Binnenschiffe sind günstig und klimafreundlich, aber bei <strong>Niedrigwasser</strong> (z. B. Pegel Kaub) sinkt die Abladetiefe. Dann steigen Frachtraten und Lieferrisiko.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="smaller-text">
+<p>Bewertung 1 (schlecht) bis 5 (gut), qualitative Einschätzung.</p>
+</div>
+</div></div>
+</section>
+<section id="tm-kv" class="slide level2">
+<h2>Kombinierter Verkehr</h2>
+<div class="slide-subtitle">
+<p>Wann lohnt sich die Bahn im Hauptlauf?</p>
+</div>
+<div class="columns">
+<div class="column" style="width:45%;">
+<div class="smaller-text">
+<p><strong>Prinzip:</strong> Vorlauf per Lkw → Umschlag ins Terminal → <strong>Hauptlauf</strong> Bahn oder Schiff → Umschlag → Nachlauf per Lkw. Die Ladeeinheit (Sattelauflieger, Wechselbrücke, Container) bleibt geschlossen.</p>
+<p><strong>Kostenstruktur</strong></p>
+<ul>
+<li>Straße direkt: <span class="math inline">\(K_S(d) = k_S \cdot d\)</span></li>
+<li>Kombiniert: <span class="math inline">\(K_{KV}(d) = \underbrace{2 \cdot u + 2 \cdot k_V \cdot d_V}_{\text{entfernungsunabhängig}} + k_B \cdot d\)</span></li>
+</ul>
+<p><strong>Break-even-Entfernung</strong> <span class="math display">\[d^* = \frac{2u + 2 k_V d_V}{k_S - k_B}\]</span></p>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-note callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p>Zusätzlich: Im Vor- und Nachlauf des KV sind in Deutschland <strong>44 t</strong> Gesamtgewicht erlaubt (statt 40 t).</p>
+</div>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:52%;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-1ed555c197c915a24710" style="width:912px;height:403.2px;"></div>
+<script type="application/json" data-for="htmlwidget-1ed555c197c915a24710">{"x":{"visdat":{"493c1ea049e7":["function () ","plotlyVisDat"]},"cur_data":"493c1ea049e7","attrs":{"493c1ea049e7":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300,310,320,330,340,350,360,370,380,390,400,410,420,430,440,450,460,470,480,490,500,510,520,530,540,550,560,570,580,590,600],"y":[0,17.600000000000001,35.200000000000003,52.799999999999997,70.400000000000006,88,105.59999999999999,123.2,140.80000000000001,158.40000000000001,176,193.59999999999999,211.19999999999999,228.80000000000001,246.40000000000001,264,281.60000000000002,299.19999999999999,316.80000000000001,334.39999999999998,352,369.60000000000002,387.19999999999999,404.80000000000001,422.39999999999998,440,457.60000000000002,475.19999999999999,492.80000000000001,510.39999999999998,528,545.60000000000002,563.20000000000005,580.79999999999995,598.39999999999998,616,633.60000000000002,651.20000000000005,668.79999999999995,686.39999999999998,704,721.60000000000002,739.20000000000005,756.79999999999995,774.39999999999998,792,809.60000000000002,827.20000000000005,844.79999999999995,862.39999999999998,880,897.60000000000002,915.20000000000005,932.79999999999995,950.39999999999998,968,985.60000000000002,1003.2,1020.8,1038.4000000000001,1056],"type":"scatter","mode":"lines","name":"Straße direkt","line":{"color":"#9AA5B1","width":3},"inherit":true},"493c1ea049e7.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300,310,320,330,340,350,360,370,380,390,400,410,420,430,440,450,460,470,480,490,500,510,520,530,540,550,560,570,580,590,600],"y":[200,209.5,219,228.5,238,247.5,257,266.5,276,285.5,295,304.5,314,323.5,333,342.5,352,361.5,371,380.5,390,399.5,409,418.5,428,437.5,447,456.5,466,475.5,485,494.5,504,513.5,523,532.5,542,551.5,561,570.5,580,589.5,599,608.5,618,627.5,637,646.5,656,665.5,675,684.5,694,703.5,713,722.5,732,741.5,751,760.5,770],"type":"scatter","mode":"lines","name":"Kombinierter Verkehr","line":{"color":"#0B6E4F","width":3},"inherit":true},"493c1ea049e7.2":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":246.91358024691357,"y":434.5679012345679,"type":"scatter","mode":"markers","name":"Break-even","marker":{"color":"#D97B29","size":12},"inherit":true}},"layout":{"width":680,"height":380,"margin":{"b":60,"l":70,"t":20,"r":20},"annotations":[{"text":"d* ≈ 247 km","x":246.91358024691357,"y":434.5679012345679,"ax":-60,"ay":-40,"font":{"size":14}}],"xaxis":{"domain":[0,1],"automargin":true,"title":"Entfernung d (km)"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Kosten je Ladeeinheit (€)"},"showlegend":true,"legend":{"orientation":"h","x":0,"y":-0.17999999999999999},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300,310,320,330,340,350,360,370,380,390,400,410,420,430,440,450,460,470,480,490,500,510,520,530,540,550,560,570,580,590,600],"y":[0,17.600000000000001,35.200000000000003,52.799999999999997,70.400000000000006,88,105.59999999999999,123.2,140.80000000000001,158.40000000000001,176,193.59999999999999,211.19999999999999,228.80000000000001,246.40000000000001,264,281.60000000000002,299.19999999999999,316.80000000000001,334.39999999999998,352,369.60000000000002,387.19999999999999,404.80000000000001,422.39999999999998,440,457.60000000000002,475.19999999999999,492.80000000000001,510.39999999999998,528,545.60000000000002,563.20000000000005,580.79999999999995,598.39999999999998,616,633.60000000000002,651.20000000000005,668.79999999999995,686.39999999999998,704,721.60000000000002,739.20000000000005,756.79999999999995,774.39999999999998,792,809.60000000000002,827.20000000000005,844.79999999999995,862.39999999999998,880,897.60000000000002,915.20000000000005,932.79999999999995,950.39999999999998,968,985.60000000000002,1003.2,1020.8,1038.4000000000001,1056],"type":"scatter","mode":"lines","name":"Straße direkt","line":{"color":"#9AA5B1","width":3},"marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300,310,320,330,340,350,360,370,380,390,400,410,420,430,440,450,460,470,480,490,500,510,520,530,540,550,560,570,580,590,600],"y":[200,209.5,219,228.5,238,247.5,257,266.5,276,285.5,295,304.5,314,323.5,333,342.5,352,361.5,371,380.5,390,399.5,409,418.5,428,437.5,447,456.5,466,475.5,485,494.5,504,513.5,523,532.5,542,551.5,561,570.5,580,589.5,599,608.5,618,627.5,637,646.5,656,665.5,675,684.5,694,703.5,713,722.5,732,741.5,751,760.5,770],"type":"scatter","mode":"lines","name":"Kombinierter Verkehr","line":{"color":"#0B6E4F","width":3},"marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[246.91358024691357],"y":[434.5679012345679],"type":"scatter","mode":"markers","name":"Break-even","marker":{"color":"#D97B29","size":12,"line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="smaller-text">
+<p>Annahmen: <span class="math inline">\(k_S\)</span> = 1,76 €/km (Lkw inkl. Fahrer, s. u.), Umschlag <span class="math inline">\(u\)</span> = 45 €, Vor-/Nachlauf je 25 km zu 2,20 €/km, Bahn <span class="math inline">\(k_B\)</span> = 0,95 €/km. In der Praxis kommen Fahrplanbindung und Terminalzeiten hinzu.</p>
+</div>
+</div></div>
+</section>
+<section id="tm-cs-inbound" class="slide level2">
+<h2>Fallstudie – Lachs aus Norwegen</h2>
+<div class="slide-subtitle">
+<p>Verkehrsträgerwahl für Frischware</p>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 22px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Option</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Laufzeit</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Kosten</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">THG</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Hauptrisiko</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Kühl-Lkw + Fähre</td>
+<td style="text-align: left;">~1,5–2 Tage</td>
+<td style="text-align: left;">mittel</td>
+<td style="text-align: left;">hoch</td>
+<td style="text-align: left;">Stau, Fahrermangel</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Kühl-Lkw + Bahn (KV)</td>
+<td style="text-align: left;">~2,5–3 Tage</td>
+<td style="text-align: left;">niedrig bis mittel</td>
+<td style="text-align: left;">niedrig</td>
+<td style="text-align: left;">Fahrplan, Terminalzeiten</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Luftfracht</td>
+<td style="text-align: left;">&lt; 1 Tag (+ Vor-/Nachlauf)</td>
+<td style="text-align: left;">sehr hoch</td>
+<td style="text-align: left;">sehr hoch</td>
+<td style="text-align: left;">Kapazität, Kühlkette am Flughafen</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:42%;">
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Abwägung</strong></p>
+</div>
+<div class="callout-content">
+<p>Für Sushi zählt die <strong>Resthaltbarkeit</strong> beim Eintreffen. Jeder Tag Transport reduziert die Verkaufszeit in der Filiale. Das erhöht die Überdeckungskosten im <strong>Newsvendor-Modell</strong> (Einheit 7).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Mögliche Lösung</strong></p>
+</div>
+<div class="callout-content">
+<p>KV für tiefgekühlte oder länger haltbare Ware (z. B. Reis, Nori, TK-Garnelen), Lkw für frischen Lachs. Unterschiedliche Produkte, unterschiedliche Verkehrsträger.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-fahrzeugklassen" class="slide level2">
+<h2>Straßengüterverkehr</h2>
+<div class="slide-subtitle">
+<p>Fahrzeugklassen</p>
+</div>
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 22px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Fahrzeug</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">zul. Gesamtgewicht</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Nutzlast</th>
+<th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Paletten</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Führerschein</th>
+<th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Lkw-Maut</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Typischer Einsatz</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Lastenrad</td>
+<td style="text-align: left;">bis ~0,4 t (System)</td>
+<td style="text-align: left;">100–250 kg</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: left;">keiner (Pedelec)</td>
+<td style="text-align: center;">nein</td>
+<td style="text-align: left;">Innenstadt, KEP</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Transporter (N1)</td>
+<td style="text-align: left;">bis 3,5 t</td>
+<td style="text-align: left;">~1 t</td>
+<td style="text-align: center;">3–5</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: center;">nein</td>
+<td style="text-align: left;">KEP, Handwerk, letzte Meile</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Leichter Lkw (N2)</td>
+<td style="text-align: left;">7,5 t</td>
+<td style="text-align: left;">~2–3 t</td>
+<td style="text-align: center;">8–15</td>
+<td style="text-align: left;">C1</td>
+<td style="text-align: center;">ja (&gt; 3,5 t)</td>
+<td style="text-align: left;">Filialbelieferung, Kühlverteilung</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Motorwagen (N3)</td>
+<td style="text-align: left;">12–26 t</td>
+<td style="text-align: left;">~5–15 t</td>
+<td style="text-align: center;">15–20</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: center;">ja</td>
+<td style="text-align: left;">Regionalverteilung</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Sattelzug (N3)</td>
+<td style="text-align: left;">40 t (E-Lkw: bis 42 t)</td>
+<td style="text-align: left;">~25 t</td>
+<td style="text-align: center;">33</td>
+<td style="text-align: left;">CE</td>
+<td style="text-align: center;">ja</td>
+<td style="text-align: left;">Fernverkehr, Hauptlauf</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Für die Planung relevant</strong></p>
+</div>
+<div class="callout-content">
+<p>Jede Klasse bringt <strong>eigene Restriktionen</strong> mit: Kapazität (Gewicht <strong>und</strong> Volumen bzw. Paletten), Fahrerqualifikation, Maut, Zufahrts- und Durchfahrtsverbote, Lenk- und Ruhezeiten (ab 3,5 t nach VO (EG) 561/2006: nach 4,5 h Lenkzeit 45 min Pause, i. d.&nbsp;R. max. 9 h pro Tag).</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tm-antriebe" class="slide level2">
+<h2>Antriebstechnologien</h2>
+<div class="slide-subtitle">
+<p>Überblick Straßengüterverkehr</p>
+</div>
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 21px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Antrieb</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Energieträger</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Reichweite</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Tanken/Laden</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Infrastruktur</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Lkw-Maut 2026</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Diesel (fossil)</td>
+<td style="text-align: left;">Diesel</td>
+<td style="text-align: left;">&gt; 1.500 km</td>
+<td style="text-align: left;">Minuten</td>
+<td style="text-align: left;">flächendeckend</td>
+<td style="text-align: left;">voll</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">HVO / Biodiesel</td>
+<td style="text-align: left;">Diesel aus Rest-/Abfallstoffen</td>
+<td style="text-align: left;">&gt; 1.500 km</td>
+<td style="text-align: left;">Minuten</td>
+<td style="text-align: left;">wachsend</td>
+<td style="text-align: left;">voll</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Bio-LNG / CNG</td>
+<td style="text-align: left;">Methan (fossil/biogen)</td>
+<td style="text-align: left;">~1.000 km</td>
+<td style="text-align: left;">Minuten</td>
+<td style="text-align: left;">dünn</td>
+<td style="text-align: left;">voll</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Batterieelektrisch (BEV)</td>
+<td style="text-align: left;">Strom aus Batterie</td>
+<td style="text-align: left;">~200–500 km</td>
+<td style="text-align: left;">45 min (MCS) bis Stunden</td>
+<td style="text-align: left;">Depot + wachsend</td>
+<td style="text-align: left;">befreit bis 06/2031</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Brennstoffzelle (FCEV, H₂)</td>
+<td style="text-align: left;">Wasserstoff → Strom</td>
+<td style="text-align: left;">~400–800 km</td>
+<td style="text-align: left;">~15 min</td>
+<td style="text-align: left;">sehr dünn</td>
+<td style="text-align: left;">befreit bis 06/2031</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Oberleitung (O-Lkw)</td>
+<td style="text-align: left;">Strom aus Fahrdraht + Batterie</td>
+<td style="text-align: left;">unbegrenzt unter Draht</td>
+<td style="text-align: left;">während der Fahrt</td>
+<td style="text-align: left;">Teststrecken (z. B. A5 Hessen)</td>
+<td style="text-align: left;">befreit bis 06/2031</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Drop-in-Kraftstoffe</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>HVO100</strong> kann in vielen Diesel-Lkw ohne Umbau getankt werden. Das senkt die THG-Emissionen stark, ändert aber <strong>nichts</strong> an Reichweite, Kosten pro km (eher höher) und Planung.</p>
+</div>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:47%;">
+<div class="fragment fade-up">
+<div class="callout callout-warning callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Planungsrelevant</strong></p>
+</div>
+<div class="callout-content">
+<p>Vor allem <strong>BEV</strong> verändern die Planung: begrenzte Reichweite, lange Ladezeiten, Ladeinfrastruktur, Gewicht. Wasserstoff spielt im Lkw-Bereich derzeit kaum eine Rolle (wenige Tankstellen, hohe H₂-Preise).</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-bev" class="slide level2">
+<h2>Batterieelektrische Lkw</h2>
+<div class="slide-subtitle">
+<p>Technik und Rahmenbedingungen 2026</p>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Technik (schwerer Fernverkehr)</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Batterien <strong>~500–800 kWh</strong>, Herstellerreichweite ~500 km bei 40 t, in der Praxis 15–30 % weniger</li>
+<li>Verbrauch <strong>~1,2–1,8 kWh/km</strong> (Last, Wetter, Tempo, Topografie)</li>
+<li>Laden: <strong>Depot</strong> über Nacht (50–150 kW), unterwegs <strong>CCS</strong> bis ~400 kW oder <strong>Megawatt Charging (MCS)</strong>, seit 2026 als IEC 63379 genormt</li>
+<li>Kaufpreis etwa das <strong>2,3- bis 2,8-Fache</strong> eines Diesel-Sattelzugs</li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:47%;">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Rahmenbedingungen in Deutschland</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Lkw-Maut:</strong> emissionsfreie Lkw sind bis <strong>30.06.2031</strong> befreit <span class="citation" data-cites="ihk2026maut">(<a href="#/tm-exercise" role="doc-biblioref" onclick=""><strong>ihk2026maut?</strong></a>)</span>. Diesel-Sattelzug (Euro VI, CO₂-Klasse 1): 34,8 ct/km <span class="citation" data-cites="tollcollect2024mautsaetze">(<a href="#/tm-exercise" role="doc-biblioref" onclick=""><strong>tollcollect2024mautsaetze?</strong></a>)</span></li>
+<li><strong>Gewicht:</strong> bis zu <strong>2 t</strong> Zusatzgewicht für emissionsfreie Lkw (z. B. 42 statt 40 t). Die Revision der EU-Richtlinie 96/53/EG sieht je nach Achskonfiguration Zuschläge bis 4 t vor, die Umsetzung steht noch aus.</li>
+<li><strong>Strom:</strong> Depot ~20–28 ct/kWh netto, öffentliches Schnellladen ~38–60 ct/kWh netto</li>
+</ul>
+</div>
+</div>
+</div>
+</div></div>
+<div class="fragment fade-up">
+<div class="smaller-text">
+<p>Kaufpreise, Verbrauch und Strompreise sind Marktbeobachtungen und Schätzungen (Stand Herbst 2026), keine Listenpreise. Für eigene Kalkulationen immer konkrete Angebote einholen.</p>
+</div>
+</div>
+</section>
+<section id="tm-laden" class="slide level2">
+<h2>Batterieelektrische Lkw</h2>
+<div class="slide-subtitle">
+<p>Laden und Lenkzeiten</p>
+</div>
+<div class="columns">
+<div class="column" style="width:52%;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-d1132cf85b0aeb619fa2" style="width:912px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-d1132cf85b0aeb619fa2">{"x":{"visdat":{"493c7f664b02":["function () ","plotlyVisDat"]},"cur_data":"493c7f664b02","attrs":{"493c7f664b02":{"x":{},"y":{},"mode":"lines","line":{"color":"#0B6E4F","width":3},"name":"Ladezustand","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"493c7f664b02.1":{"x":45,"y":0,"mode":"lines","line":{"color":"#D97B29","width":3,"dash":"dash"},"name":"45-min-Pause","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","xend":45,"yend":100,"inherit":true}},"layout":{"width":700,"height":430,"margin":{"b":60,"l":70,"t":20,"r":20},"xaxis":{"domain":[0,1],"automargin":true,"title":"Ladezeit (min)"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Ladezustand (SoC, %)"},"showlegend":true,"legend":{"orientation":"h","x":0,"y":-0.17999999999999999},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48],"y":[20,22.083333333333336,24.166666666666671,26.25,28.333333333333332,30.416666666666664,32.499999999999993,34.583333333333329,36.666666666666657,38.749999999999993,40.833333333333321,42.91666666666665,44.999999999999986,47.083333333333314,49.16666666666665,51.249999999999986,53.333333333333321,55.416666666666657,57.499999999999993,59.583333333333336,61.666666666666671,63.680555555555564,65.610532407407419,67.460093557098773,69.232589658886326,70.931231756432723,72.559097099914695,74.119134720751575,75.614170774053591,77.046913658468014,78.419958922698513,79.735793967586076,80.996802552269983,82.205269112592077,83.363382899567412,84.473241945418764,85.536856864359649,86.556154495011327,87.532981391052516,88.469107166425331,89.366227701157612,90.225968213609377,91.049886204708983,91.839474279512785,92.59616285119975,93.321322732399764,94.016267618549762,94.682256467776853,95.320495781619485],"mode":"lines","line":{"color":"#0B6E4F","width":3},"name":"Ladezustand","type":"scatter","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[45,45],"y":[0,100],"mode":"lines","line":{"color":"#D97B29","width":3,"dash":"dash"},"name":"45-min-Pause","type":"scatter","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="smaller-text">
+<p>Illustrative Ladekurve: 600-kWh-Batterie, 750 kW bis 60 % Ladezustand, danach sinkende Ladeleistung.</p>
+</div>
+</div><div class="column" style="width:45%;">
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Laden in der Lenkzeitpause</strong></p>
+</div>
+<div class="callout-content">
+<p>In der gesetzlichen <strong>45-Minuten-Pause</strong> steigt der Ladezustand von 20 % auf rund 93 %. Das sind ca. 440 kWh, also gut 340 km Reichweite.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-warning callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Nichtlineares Laden</strong></p>
+</div>
+<div class="callout-content">
+<p>Die letzten Prozente dauern am längsten (20 → 80 %: 32 min). In der Planung lädt man deshalb meist nur <strong>bis ~80 %</strong>. Die Ladezeit hängt also vom Ladezustand ab und ist nicht einfach proportional zur Energiemenge.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="smaller-text">
+<p>Voraussetzung: Ein freier MCS-Ladepunkt liegt <strong>auf der Route</strong> und ist zur Pausenzeit verfügbar.</p>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-reichweite" class="slide level2">
+<h2>Batterieelektrische Lkw</h2>
+<div class="slide-subtitle">
+<p>Was beeinflusst die Reichweite?</p>
+</div>
+<div class="columns">
+<div class="column" style="width:52%;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-05664ed726234f12240e" style="width:912px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-05664ed726234f12240e">{"x":{"visdat":{"493c1d7b620":["function () ","plotlyVisDat"]},"cur_data":"493c1d7b620","attrs":{"493c1d7b620":{"y":{},"x":{},"orientation":"h","marker":{"color":"rgba(0,0,0,0)"},"hoverinfo":"skip","showlegend":false,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"493c1d7b620.1":{"y":{},"x":{},"orientation":"h","marker":{"color":["#9AA5B1","#52B788","#2A7ACA","#D97B29","#C00000"]},"hoverinfo":"skip","showlegend":false,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar","text":{},"textposition":"inside","inherit":true}},"layout":{"width":740,"height":420,"margin":{"b":50,"l":90,"t":10,"r":20},"barmode":"stack","yaxis":{"domain":[0,1],"automargin":true,"autorange":"reversed","title":"","tickfont":{"size":14},"type":"category","categoryorder":"array","categoryarray":["Basis","Beladung","Kühlung","Winter","Autobahn"]},"xaxis":{"domain":[0,1],"automargin":true,"title":"Verbrauch (kWh/100 km)"},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"y":["Basis","Beladung","Kühlung","Winter","Autobahn"],"x":[0,46,52,62,70],"orientation":"h","marker":{"color":"rgba(0,0,0,0)","line":{"color":"rgba(31,119,180,1)"}},"hoverinfo":["skip","skip","skip","skip","skip"],"showlegend":false,"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Basis","Beladung","Kühlung","Winter","Autobahn"],"x":[46,6,10,8,6],"orientation":"h","marker":{"color":["#9AA5B1","#52B788","#2A7ACA","#D97B29","#C00000"],"line":{"color":"rgba(255,127,14,1)"}},"hoverinfo":["skip","skip","skip","skip","skip"],"showlegend":false,"type":"bar","text":["+46","+6","+10","+8","+6"],"textposition":["inside","inside","inside","inside","inside"],"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="smaller-text">
+<p>Illustratives Beispiel 7,5-t-E-Kühl-Lkw: <strong>Sommer</strong> (Basis + Beladung + Kühlung) 62 kWh/100 km, <strong>Winter</strong> (Heizung, kalte Batterie, weniger Kühlbedarf) 70 kWh/100 km, Autobahn im Winter 76 kWh/100 km.</p>
+</div>
+</div><div class="column" style="width:45%;">
+<div class="fragment fade-up">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Einflussfaktoren</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Masse</strong>: Beladung, Batteriegewicht</li>
+<li><strong>Geschwindigkeit</strong>: Luftwiderstand steigt quadratisch</li>
+<li><strong>Topografie</strong>: Steigungen; bergab Rückgewinnung (Rekuperation)</li>
+<li><strong>Temperatur</strong>: Batterieleistung und Heizung im Winter</li>
+<li><strong>Nebenverbraucher</strong>: Kühlaggregat, Ladebordwand</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-warning callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p>Beim Diesel spielt das für die Planung kaum eine Rolle (Tank reicht). Beim E-Lkw entscheidet es über die <strong>Zulässigkeit einer Tour</strong>.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-restriktionen" class="slide level2">
+<h2>Einschränkungen für die Planung</h2>
+<div class="slide-subtitle">
+<p>Von der Technik zur Nebenbedingung</p>
+</div>
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 22px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Technische Eigenschaft</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Folge für die Planung</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Modell (Einheit)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Begrenzte Batteriekapazität</td>
+<td style="text-align: left;">Max. Tourlänge, Energie-Nebenbedingung je Tour</td>
+<td style="text-align: left;">E-VRP</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Lange, nichtlineare Ladezeit</td>
+<td style="text-align: left;">Ladezeit als Teil der Tourdauer, Lenkzeitpausen nutzen</td>
+<td style="text-align: left;">E-VRP mit Ladefunktion</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Wenige (Schnell-)Ladepunkte</td>
+<td style="text-align: left;">Ladestopps als zusätzliche Knoten im Graphen</td>
+<td style="text-align: left;">E-VRP mit Ladestationen</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Ladeleistung am Depot / Netzanschluss</td>
+<td style="text-align: left;">Ladefenster nachts, Fahrzeugeinsatz staffeln (Schichtplanung)</td>
+<td style="text-align: left;">Ladeplanung / Scheduling</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Höheres Leergewicht</td>
+<td style="text-align: left;">Geringere Nutzlast → Kapazitätsrestriktion im VRP</td>
+<td style="text-align: left;">CVRP</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Verbrauch abhängig von Last und Wetter</td>
+<td style="text-align: left;">Saisonabhängige Reichweite, Puffer einplanen</td>
+<td style="text-align: left;">Robuste Planung</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Mautbefreiung, Zufahrt in Umweltzonen</td>
+<td style="text-align: left;">Andere Kostensätze c_ij, ggf. andere kürzeste Wege</td>
+<td style="text-align: left;">Kürzeste Wege, Transportproblem</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-tip no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Energie-Nebenbedingung im E-VRP <span class="citation" data-cites="schneider2014electric">(<a href="#/tm-exercise" role="doc-biblioref" onclick=""><strong>schneider2014electric?</strong></a>)</span></strong></p>
+</div>
+<div class="callout-content">
+<p>Ladezustand <span class="math inline">\(q_j\)</span> bei Ankunft in <span class="math inline">\(j\)</span>, Verbrauch <span class="math inline">\(e_{ij}\)</span> auf der Fahrt von <span class="math inline">\(i\)</span> nach <span class="math inline">\(j\)</span>, nutzbare Kapazität <span class="math inline">\(Q\)</span>: <span class="math display">\[0 \leq q_j \leq q_i - e_{ij} \cdot x_{ij} + Q \cdot (1 - x_{ij}) \qquad \forall i, j, \qquad q_{\text{Depot}} = Q\]</span> An <strong>Ladestationen</strong> wird <span class="math inline">\(q_i\)</span> wieder auf (bis zu) <span class="math inline">\(Q\)</span> angehoben.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tm-cs-reichweite" class="slide level2">
+<h2>Fallstudie – E-Kühl-Lkw für SushiFresh</h2>
+<div class="slide-subtitle">
+<p>Sind die Touren aus Einheit 11 noch zulässig?</p>
+</div>
+<div class="columns">
+<div class="column" style="width:52%;">
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 24px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Tour (Einheit 11)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">km</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Sommer (0,62 kWh/km)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Winter (0,70 kWh/km)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important; color: rgba(31, 41, 51, 1) !important; background-color: rgba(248, 215, 218, 1) !important;">Pendel</td>
+<td style="text-align: right; color: rgba(31, 41, 51, 1) !important; background-color: rgba(248, 215, 218, 1) !important;">296</td>
+<td style="text-align: right; color: rgba(31, 41, 51, 1) !important; background-color: rgba(248, 215, 218, 1) !important;">184 kWh ✗</td>
+<td style="text-align: right; color: rgba(31, 41, 51, 1) !important; background-color: rgba(248, 215, 218, 1) !important;">207 kWh ✗</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important; color: rgba(31, 41, 51, 1) !important; background-color: rgba(253, 235, 211, 1) !important;">NN</td>
+<td style="text-align: right; color: rgba(31, 41, 51, 1) !important; background-color: rgba(253, 235, 211, 1) !important;">162</td>
+<td style="text-align: right; color: rgba(31, 41, 51, 1) !important; background-color: rgba(253, 235, 211, 1) !important;">100 kWh ✓</td>
+<td style="text-align: right; color: rgba(31, 41, 51, 1) !important; background-color: rgba(253, 235, 211, 1) !important;">113 kWh ✗</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">2-opt</td>
+<td style="text-align: right;">153</td>
+<td style="text-align: right;">95 kWh ✓</td>
+<td style="text-align: right;">107 kWh ✓</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Optimum</td>
+<td style="text-align: right;">151</td>
+<td style="text-align: right;">94 kWh ✓</td>
+<td style="text-align: right;">106 kWh ✓</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Nutzbare Energie je Tour: <span class="math inline">\(Q =\)</span> 110 kWh (Batterie 140 kWh, Reserve für Alterung und Unvorhergesehenes).</p>
+</div>
+</div><div class="column" style="width:45%;">
+<div class="fragment fade-up">
+<div class="callout callout-important callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Ergebnis</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Der <strong>Pendelverkehr</strong> ist mit dem E-Lkw <strong>unmöglich</strong> (ohne Zwischenladen).</li>
+<li>Die <strong>Nearest-Neighbor-Tour</strong> klappt im Sommer, aber <strong>nicht im Winter</strong>.</li>
+<li>Erst die <strong>optimierte Tour</strong> (2-opt bzw. Optimum) ist ganzjährig fahrbar, mit knappem Puffer.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Lehre</strong></p>
+</div>
+<div class="callout-content">
+<p>Bei E-Fahrzeugen ist Tourenoptimierung keine Kostenfrage mehr, sondern eine Frage der <strong>Machbarkeit</strong>. Alternativen: Zwischenladen am Depot (z. B. in der Ladezeit) oder größere Batterie (teurer, schwerer).</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-lastmile" class="slide level2">
+<h2>Letzte Meile</h2>
+<div class="slide-subtitle">
+<p>Warum die letzten Kilometer so teuer sind</p>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Merkmale</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>viele Stopps mit <strong>kleinen Sendungen</strong> → keine Bündelung</li>
+<li><strong>Parkplatzsuche</strong>, Halten in zweiter Reihe, Fußwege</li>
+<li><strong>Zeitfenster</strong> und Nicht-Antreffen (Zweitzustellung)</li>
+<li>Zufahrtsbeschränkungen, Umweltzonen, Fußgängerzonen</li>
+<li>hoher <strong>Personalkostenanteil</strong>: Kosten fallen pro Stopp an, nicht pro km</li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:47%;">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Neue Optionen</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Lastenrad</strong> mit <strong>Mikrodepot</strong> (Container, Ladenfläche)</li>
+<li><strong>E-Transporter</strong> (bis 4,25 t emissionsfrei dauerhaft mautbefreit)</li>
+<li><strong>Drohnen</strong> für leichte, eilige Sendungen</li>
+<li><strong>Paketstationen</strong> und Abholpunkte (Kunde übernimmt die letzte Meile)</li>
+<li>autonome <strong>Lieferroboter</strong> (Gehweg)</li>
+</ul>
+</div>
+</div>
+</div>
+</div></div>
+<div class="fragment fade-up">
+<div class="small-text">
+<p>Kennzahl der letzten Meile ist <strong>€ pro Stopp</strong> bzw. <strong>€ pro Sendung</strong>, nicht € pro km. Treiber sind die <strong>Stoppdichte</strong> (Stopps pro Stunde) und der <strong>Stundensatz</strong>.</p>
+</div>
+</div>
+</section>
+<section id="tm-lastenrad" class="slide level2">
+<h2>Lastenrad und Mikrodepot</h2>
+<div class="slide-subtitle">
+<p>Zweistufige Belieferung</p>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-734341d0f2e283e11f13" style="width:912px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-734341d0f2e283e11f13">{"x":{"visdat":{"493c109e4b7e":["function () ","plotlyVisDat"]},"cur_data":"493c109e4b7e","attrs":{"493c109e4b7e":{"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"493c109e4b7e.1":{"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","x":0.59999999999999998,"y":0.59999999999999998,"xend":5,"yend":5,"line":{"color":"#2A7ACA","width":6},"name":"Stufe 1: Lkw → Mikrodepot","inherit":true},"493c109e4b7e.2":{"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","x":[5,4.9310144910423368,4.883263032299368,4.8108909086644163,4.6933323565008918,4.3788320114643025,3.4722532287764265,4.6626975465136784,5.6961488654571442,4.8533465299669762,2.0778990370047463,5],"y":[5,4.330180987052068,4.2960056364438692,4.1074675061946611,4.0640016464058295,4.5264839552331804,4.1370950907825543,3.4948908511387762,3.060520606285742,2.3443715850587048,4.6028369715964672,5],"line":{"color":"#0B6E4F","width":2},"name":"Lastenrad-Tour 1","showlegend":true,"inherit":true},"493c109e4b7e.3":{"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","x":[5,5.3994412524710729,5.6995454378770818,5.4446951554550989,6.4353566196458338,6.6626741971828327,7.220266085264746,6.3361421690898592,6.5080542918613355,6.4521246803032115,7.5153099319712178,5],"y":[5,4.7170036789541774,5.0397348675814815,5.5061070903143987,5.5554506356277678,5.5009951355653417,6.1386138741669143,6.5885113878933783,7.0847128073914618,4.2006246902157667,3.1112904530193228,5],"line":{"color":"#D97B29","width":2},"name":"Lastenrad-Tour 2","showlegend":false,"inherit":true},"493c109e4b7e.4":{"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","x":[5,4.68732178644232,4.8958750577455925,3.0405607226219997,2.3154863785669284,5],"y":[5,5.2265984602202789,5.7753210709517013,5.4760998284775892,5.8339795592694683,5],"line":{"color":"#9B59B6","width":2},"name":"Lastenrad-Tour 3","showlegend":false,"inherit":true},"493c109e4b7e.5":{"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","x":[6.5080542918613355,4.3788320114643025,5.3994412524710729,5.6961488654571442,5.4446951554550989,4.883263032299368,6.6626741971828327,4.8958750577455925,7.220266085264746,4.9310144910423368,6.4353566196458338,7.5153099319712178,3.4722532287764265,4.6933323565008918,4.8533465299669762,5.6995454378770818,4.68732178644232,2.0778990370047463,2.3154863785669284,6.4521246803032115,4.6626975465136784,3.0405607226219997,4.8108909086644163,6.3361421690898592],"y":[7.0847128073914618,4.5264839552331804,4.7170036789541774,3.060520606285742,5.5061070903143987,4.2960056364438692,5.5009951355653417,5.7753210709517013,6.1386138741669143,4.330180987052068,5.5554506356277678,3.1112904530193228,4.1370950907825543,4.0640016464058295,2.3443715850587048,5.0397348675814815,5.2265984602202789,4.6028369715964672,5.8339795592694683,4.2006246902157667,3.4948908511387762,5.4760998284775892,4.1074675061946611,6.5885113878933783],"marker":{"color":"#2D9E8E","size":9},"name":"Endkunde","inherit":true},"493c109e4b7e.6":{"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","x":5,"y":5,"marker":{"symbol":"square","size":22,"color":"#BFDBF7","line":{"color":"#2F3E46","width":2}},"name":"Mikrodepot","inherit":true},"493c109e4b7e.7":{"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","x":0.59999999999999998,"y":0.59999999999999998,"marker":{"symbol":"hexagon","size":26,"color":"#BFDBF7","line":{"color":"#2F3E46","width":2}},"name":"Zentralküche","inherit":true}},"layout":{"width":680,"height":470,"margin":{"b":5,"l":5,"t":5,"r":5},"xaxis":{"domain":[0,1],"automargin":true,"visible":false,"title":[]},"yaxis":{"domain":[0,1],"automargin":true,"visible":false,"title":[]},"legend":{"orientation":"h","x":0,"y":-0.050000000000000003},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"mode":"markers","type":"scatter","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines","type":"scatter","x":[0.59999999999999998,5],"y":[0.59999999999999998,5],"line":{"color":"#2A7ACA","width":6},"name":"Stufe 1: Lkw → Mikrodepot","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines","type":"scatter","x":[5,4.9310144910423368,4.883263032299368,4.8108909086644163,4.6933323565008918,4.3788320114643025,3.4722532287764265,4.6626975465136784,5.6961488654571442,4.8533465299669762,2.0778990370047463,5],"y":[5,4.330180987052068,4.2960056364438692,4.1074675061946611,4.0640016464058295,4.5264839552331804,4.1370950907825543,3.4948908511387762,3.060520606285742,2.3443715850587048,4.6028369715964672,5],"line":{"color":"#0B6E4F","width":2},"name":"Lastenrad-Tour 1","showlegend":true,"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines","type":"scatter","x":[5,5.3994412524710729,5.6995454378770818,5.4446951554550989,6.4353566196458338,6.6626741971828327,7.220266085264746,6.3361421690898592,6.5080542918613355,6.4521246803032115,7.5153099319712178,5],"y":[5,4.7170036789541774,5.0397348675814815,5.5061070903143987,5.5554506356277678,5.5009951355653417,6.1386138741669143,6.5885113878933783,7.0847128073914618,4.2006246902157667,3.1112904530193228,5],"line":{"color":"#D97B29","width":2},"name":"Lastenrad-Tour 2","showlegend":false,"marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines","type":"scatter","x":[5,4.68732178644232,4.8958750577455925,3.0405607226219997,2.3154863785669284,5],"y":[5,5.2265984602202789,5.7753210709517013,5.4760998284775892,5.8339795592694683,5],"line":{"color":"#9B59B6","width":2},"name":"Lastenrad-Tour 3","showlegend":false,"marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","type":"scatter","x":[6.5080542918613355,4.3788320114643025,5.3994412524710729,5.6961488654571442,5.4446951554550989,4.883263032299368,6.6626741971828327,4.8958750577455925,7.220266085264746,4.9310144910423368,6.4353566196458338,7.5153099319712178,3.4722532287764265,4.6933323565008918,4.8533465299669762,5.6995454378770818,4.68732178644232,2.0778990370047463,2.3154863785669284,6.4521246803032115,4.6626975465136784,3.0405607226219997,4.8108909086644163,6.3361421690898592],"y":[7.0847128073914618,4.5264839552331804,4.7170036789541774,3.060520606285742,5.5061070903143987,4.2960056364438692,5.5009951355653417,5.7753210709517013,6.1386138741669143,4.330180987052068,5.5554506356277678,3.1112904530193228,4.1370950907825543,4.0640016464058295,2.3443715850587048,5.0397348675814815,5.2265984602202789,4.6028369715964672,5.8339795592694683,4.2006246902157667,3.4948908511387762,5.4760998284775892,4.1074675061946611,6.5885113878933783],"marker":{"color":"#2D9E8E","size":9,"line":{"color":"rgba(140,86,75,1)"}},"name":"Endkunde","error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"line":{"color":"rgba(140,86,75,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","type":"scatter","x":[5],"y":[5],"marker":{"color":"#BFDBF7","symbol":"square","size":22,"line":{"color":"#2F3E46","width":2}},"name":"Mikrodepot","error_y":{"color":"rgba(227,119,194,1)"},"error_x":{"color":"rgba(227,119,194,1)"},"line":{"color":"rgba(227,119,194,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","type":"scatter","x":[0.59999999999999998],"y":[0.59999999999999998],"marker":{"color":"#BFDBF7","symbol":"hexagon","size":26,"line":{"color":"#2F3E46","width":2}},"name":"Zentralküche","error_y":{"color":"rgba(127,127,127,1)"},"error_x":{"color":"rgba(127,127,127,1)"},"line":{"color":"rgba(127,127,127,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</div><div class="column" style="width:47%;">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Lastenrad (E-Pedelec)</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Nutzlast ~100–250 kg, Volumen ~1–2 m³</li>
+<li>Motorunterstützung bis <strong>25 km/h</strong>, kein Führerschein</li>
+<li>Reichweite ~40–80 km je Akku (Akkutausch möglich)</li>
+<li>nutzt Radwege, kurze Haltewege, keine Parkplatzsuche</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Planungsfolgen</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Zwei-Stufen-Problem</strong> (2E-VRP): Standort des Mikrodepots, Belieferung per Lkw, Touren der Lastenräder</li>
+<li>viele kurze Touren mit <strong>kleiner Kapazität</strong></li>
+<li>Kühlboxen für Frischware, Wetter als Risiko</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-drohnen" class="slide level2">
+<h2>Drohnen</h2>
+<div class="slide-subtitle">
+<p>Möglichkeiten und Grenzen</p>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Eigenschaften</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Nutzlast typischerweise <strong>2–5 kg</strong></li>
+<li>Reichweite ~10–40 km (Multikopter), mehr mit Starrflügel-/VTOL-Bauweise</li>
+<li>schnell, unabhängig vom Straßenverkehr</li>
+<li><strong>Regulierung</strong>: EU-Drohnenverordnung (EU) 2019/947. Flüge außerhalb der Sichtweite (BVLOS) brauchen eine Betriebsgenehmigung; Luftraumkonzept <strong>U-Space</strong></li>
+<li>Wetter (Wind, Regen), Lärm, Akzeptanz, Übergabe beim Empfänger</li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:47%;">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Einsatzfelder</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Medizin (Laborproben, Blutkonserven)</li>
+<li>Ersatzteile, Inseln, schwer erreichbare Orte</li>
+<li>Kombination <strong>Lkw + Drohne</strong>: Die Drohne startet vom Fahrzeug und bedient Kunden parallel → <em>Flying Sidekick TSP</em> <span class="citation" data-cites="murray2015flying">(<a href="#/tm-exercise" role="doc-biblioref" onclick=""><strong>murray2015flying?</strong></a>)</span></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-warning callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>SushiFresh</strong></p>
+</div>
+<div class="callout-content">
+<p>Eine Eilnachlieferung von 3 kg entspricht rund <strong>6–7 Boxen</strong>. Für die Filialbelieferung bleibt die Drohne eine <strong>Nische</strong>, z. B. bei Ausverkauf am Nachmittag in Rüsselsheim (6 km).</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-lastmile-vgl" class="slide level2">
+<h2>Letzte Meile im Vergleich</h2>
+<div class="slide-subtitle">
+<p>Eigenschaften und Restriktionen</p>
+</div>
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 22px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Option</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Kapazität</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Geschwindigkeit</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Reichweite</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Wichtigste Restriktion</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Planungsmodell</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">E-Transporter</td>
+<td style="text-align: left;">~1 t, 10–15 m³</td>
+<td style="text-align: left;">Stadtverkehr, Parkplatzsuche</td>
+<td style="text-align: left;">~150–300 km</td>
+<td style="text-align: left;">Parken, Umweltzonen, Ladefenster</td>
+<td style="text-align: left;">CVRP mit Zeitfenstern</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Lastenrad</td>
+<td style="text-align: left;">100–250 kg</td>
+<td style="text-align: left;">bis 25 km/h, Radwege</td>
+<td style="text-align: left;">~40–80 km</td>
+<td style="text-align: left;">Kapazität, Wetter, Mikrodepot nötig</td>
+<td style="text-align: left;">2E-VRP</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Drohne</td>
+<td style="text-align: left;">2–5 kg</td>
+<td style="text-align: left;">schnell, luftlinienartig</td>
+<td style="text-align: left;">~10–40 km</td>
+<td style="text-align: left;">Genehmigung, Wetter, Gewicht</td>
+<td style="text-align: left;">TSP-D / FSTSP</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Lieferroboter</td>
+<td style="text-align: left;">~20–50 kg</td>
+<td style="text-align: left;">Schritttempo</td>
+<td style="text-align: left;">wenige km</td>
+<td style="text-align: left;">Gehwegrecht, Treppen, Vandalismus</td>
+<td style="text-align: left;">Roboter-VRP</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p>Neue Verkehrsmittel ändern die <strong>Struktur</strong> des Planungsproblems: Aus einem VRP wird ein <strong>zweistufiges</strong> Problem (Mikrodepot), ein <strong>synchronisiertes</strong> Problem (Lkw + Drohne) oder ein Problem mit <strong>Energie-Nebenbedingungen</strong> (E-VRP).</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tm-kosten-grundlagen" class="slide level2">
+<h2>Transportkostensätze</h2>
+<div class="slide-subtitle">
+<p>Grundlagen der Fahrzeugkostenrechnung</p>
+</div>
+<div class="small-text">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fixe (zeitabhängige) Kosten pro Jahr</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Abschreibung</strong> (AfA): <span class="math inline">\(\dfrac{A - RW}{N}\)</span></li>
+<li><strong>kalkulatorische Zinsen</strong>: <span class="math inline">\(\dfrac{A + RW}{2} \cdot i\)</span></li>
+<li>Versicherung, Kfz-Steuer</li>
+<li>Fahrerpersonal (Lohn + Nebenkosten)</li>
+<li>anteilige Gemeinkosten (Disposition, Verwaltung)</li>
+<li>bei E-Lkw: <strong>Ladeinfrastruktur</strong> am Depot</li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:47%;">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Variable (wegabhängige) Kosten pro km</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Energie</strong>: Verbrauch × Preis (Diesel bzw. Strom)</li>
+<li>Wartung und Reparatur</li>
+<li>Reifen</li>
+<li>AdBlue, Schmierstoffe</li>
+<li><strong>Maut</strong>: Mautsatz × Anteil mautpflichtiger Strecke</li>
+</ul>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-important no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Kostensätze</strong></p>
+</div>
+<div class="callout-content">
+<p><span class="math display">\[k_{km} = \frac{K_{fix}}{L_{Jahr}} + k_{var} \qquad\qquad k_{h} = \frac{K_{Personal}}{T_{Jahr}} \qquad\qquad k_{tkm} = \frac{k_{km}}{m \cdot \alpha \cdot (1 - \lambda)}\]</span> mit Jahresfahrleistung <span class="math inline">\(L\)</span>, produktiven Stunden <span class="math inline">\(T\)</span>, Nutzlast <span class="math inline">\(m\)</span> (t), Auslastung <span class="math inline">\(\alpha\)</span> und Leerfahrtanteil <span class="math inline">\(\lambda\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tm-kosten-r" class="slide level2">
+<h2>Transportkostensätze</h2>
+<div class="slide-subtitle">
+<p>Kalkulation in R</p>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>fahrzeugkosten <span class="ot">&lt;-</span> <span class="cf">function</span>(p, km_jahr) {</span>
+<span id="cb1-2"><a href=""></a>  afa    <span class="ot">&lt;-</span> (p<span class="sc">$</span>A <span class="sc">-</span> p<span class="sc">$</span>RW) <span class="sc">/</span> p<span class="sc">$</span>N</span>
+<span id="cb1-3"><a href=""></a>  zins   <span class="ot">&lt;-</span> (p<span class="sc">$</span>A <span class="sc">+</span> p<span class="sc">$</span>RW) <span class="sc">/</span> <span class="dv">2</span> <span class="sc">*</span> p<span class="sc">$</span>i</span>
+<span id="cb1-4"><a href=""></a>  fix    <span class="ot">&lt;-</span> afa <span class="sc">+</span> zins <span class="sc">+</span> p<span class="sc">$</span>versicherung <span class="sc">+</span></span>
+<span id="cb1-5"><a href=""></a>            p<span class="sc">$</span>steuer <span class="sc">+</span> p<span class="sc">$</span>sonst_fix</span>
+<span id="cb1-6"><a href=""></a>  var_km <span class="ot">&lt;-</span> p<span class="sc">$</span>energie_km <span class="sc">+</span> p<span class="sc">$</span>wartung_km <span class="sc">+</span></span>
+<span id="cb1-7"><a href=""></a>            p<span class="sc">$</span>reifen_km <span class="sc">+</span> p<span class="sc">$</span>maut_km</span>
+<span id="cb1-8"><a href=""></a>  <span class="fu">list</span>(<span class="at">fix =</span> fix, <span class="at">var_km =</span> var_km,</span>
+<span id="cb1-9"><a href=""></a>       <span class="at">gesamt_km =</span> fix <span class="sc">/</span> km_jahr <span class="sc">+</span> var_km)</span>
+<span id="cb1-10"><a href=""></a>}</span>
+<span id="cb1-11"><a href=""></a></span>
+<span id="cb1-12"><a href=""></a>sf_diesel <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-13"><a href=""></a>  <span class="at">A =</span> <span class="dv">95000</span>, <span class="at">RW =</span> <span class="dv">15000</span>, <span class="at">N =</span> <span class="dv">6</span>, <span class="at">i =</span> <span class="fl">0.05</span>,</span>
+<span id="cb1-14"><a href=""></a>  <span class="at">versicherung =</span> <span class="dv">4500</span>, <span class="at">steuer =</span> <span class="dv">500</span>,</span>
+<span id="cb1-15"><a href=""></a>  <span class="at">sonst_fix =</span> <span class="dv">6000</span>,</span>
+<span id="cb1-16"><a href=""></a>  <span class="at">energie_km =</span> <span class="fl">0.17</span> <span class="sc">*</span> <span class="fl">2.00</span>,  <span class="co"># 17 l/100 km</span></span>
+<span id="cb1-17"><a href=""></a>  <span class="at">wartung_km =</span> <span class="fl">0.09</span>, <span class="at">reifen_km =</span> <span class="fl">0.03</span>,</span>
+<span id="cb1-18"><a href=""></a>  <span class="at">maut_km =</span> <span class="fl">0.151</span> <span class="sc">*</span> <span class="fl">0.5</span>)     <span class="co"># 50 % mautpflichtig</span></span>
+<span id="cb1-19"><a href=""></a></span>
+<span id="cb1-20"><a href=""></a><span class="fu">fahrzeugkosten</span>(sf_diesel, <span class="at">km_jahr =</span> <span class="dv">296</span> <span class="sc">*</span> <span class="dv">300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div><div class="column" style="width:42%;">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Vorgehen</strong></p>
+</div>
+<div class="callout-content">
+<ol type="1">
+<li>Fahrzeugparameter als <strong>Liste</strong> erfassen</li>
+<li>Fixkosten pro Jahr und variable Kosten pro km berechnen</li>
+<li>Mit Fahrleistung und Einsatzzeit in <strong>Kostensätze</strong> umrechnen</li>
+<li><strong>Sensitivitäten</strong> prüfen (Dieselpreis, Strompreis, Fahrleistung)</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-warning callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p>Alle Zahlen der folgenden Beispiele sind <strong>gerundete Annahmen</strong> (netto, Stand Herbst 2026), etwa zum Dieselpreis von rund 2,40 €/l brutto im September 2026 <span class="citation" data-cites="destatis2026diesel">(<a href="#/tm-exercise" role="doc-biblioref" onclick=""><strong>destatis2026diesel?</strong></a>)</span>. Sie ersetzen keine Angebote.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-bsp1" class="slide level2">
+<h2>Beispiel 1 – Diesel-Kühl-Lkw</h2>
+<div class="slide-subtitle">
+<p>Kostensätze für den 7,5-Tonner von SushiFresh</p>
+</div>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 22px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Kalkulationsposition</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Wert</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Anschaffung A / Restwert RW / Nutzung N</td>
+<td style="text-align: right;">95.000 € / 15.000 € / 6 J.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Abschreibung (A − RW)/N</td>
+<td style="text-align: right;">13.333 €</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Kalk. Zinsen (A + RW)/2 · 5 %</td>
+<td style="text-align: right;">2.750 €</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Versicherung + Kfz-Steuer</td>
+<td style="text-align: right;">5.000 €</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gemeinkosten (Fahrzeuganteil)</td>
+<td style="text-align: right;">6.000 €</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Fixkosten Fahrzeug pro Jahr</strong></td>
+<td style="text-align: right;"><strong>27.083 €</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Diesel 17 l/100 km × 2,00 €/l</td>
+<td style="text-align: right;">0,340 €/km</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wartung + Reifen</td>
+<td style="text-align: right;">0,120 €/km</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Maut 15,1 ct/km × 50 %</td>
+<td style="text-align: right;">0,075 €/km</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Variable Kosten pro km</strong></td>
+<td style="text-align: right;"><strong>0,536 €/km</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:49%;">
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Kostensätze (Pendelverkehr, 88.800 km/Jahr)</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Fahrzeug fix: 90,28 €/Tag bzw. 0,305 €/km</li>
+<li>Fahrzeug gesamt: <strong>0,840 €/km</strong></li>
+<li>Fahrer: 52.000 € / 1650 h = <strong>31,52 €/h</strong></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Zweigliedriger Kostensatz</strong></p>
+</div>
+<div class="callout-content">
+<p>Für die Tourenplanung ist die Trennung in <strong>€/km</strong> (Fahrzeug, variabel) und <strong>€/h</strong> (Fahrer + fixe Fahrzeugkosten je Einsatzstunde) üblich, denn Touren unterscheiden sich in Strecke <strong>und</strong> Dauer.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-bsp1b" class="slide level2">
+<h2>Beispiel 1 – Diesel-Kühl-Lkw</h2>
+<div class="slide-subtitle">
+<p>Was kostet eine Box? Nachrechnen des Satzes aus Einheit 5</p>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 22px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Variante</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">km/Tag</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">h/Tag</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Fahrzeug fix (€)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Fahrzeug var. (€)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Fahrer (€)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Gesamt (€/Tag)</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">€/Box</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Pendelverkehr</td>
+<td style="text-align: right;">296</td>
+<td style="text-align: right;">9,6</td>
+<td style="text-align: right;">90,28</td>
+<td style="text-align: right;">158,51</td>
+<td style="text-align: right;">301,85</td>
+<td style="text-align: right;">550,63</td>
+<td style="text-align: right;">0,652</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Rundtour (2-opt)</td>
+<td style="text-align: right;">153</td>
+<td style="text-align: right;">5,2</td>
+<td style="text-align: right;">90,28</td>
+<td style="text-align: right;">81,93</td>
+<td style="text-align: right;">162,30</td>
+<td style="text-align: right;">334,51</td>
+<td style="text-align: right;">0,396</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="smaller-text">
+<p>Annahmen: Ø 45 km/h, je Filiale 15 min Entladen, je Beladung in Raunheim 15 min.</p>
+</div>
+</div>
+</div><div class="column" style="width:42%;">
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Kostensatz je Box und km</strong></p>
+</div>
+<div class="callout-content">
+<p>Im Pendelverkehr legen alle Boxen zusammen <span class="math inline">\(\sum_j \mu_j \cdot d_{Rj} =\)</span> 21.655 beladene Box-km zurück (Rückfahrt leer): <span class="math display">\[\frac{550{,}63\ \text{€}}{21.655\ \text{Box-km}} \approx 0{,}025\ \text{€}/(\text{Box} \cdot \text{km})\]</span> Das liegt in der Größenordnung der Annahme <strong>0,02 €/(Box·km)</strong> aus Einheit 5. Die Differenz entsteht vor allem durch die voll eingerechneten Lade- und Entladezeiten des Fahrers.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-important callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p>Die Rundtour senkt die Kosten je Box um <strong>39 %</strong>. Ein linearer Satz je Box-km bildet das <strong>nicht</strong> ab: Bündelungseffekte erfasst nur die Tourenplanung.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-bsp2" class="slide level2">
+<h2>Beispiel 2 – Diesel oder E-Lkw?</h2>
+<div class="slide-subtitle">
+<p>Jahreskosten des Kühl-Lkw für die Rundtour</p>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-990baa42dde349b84de1" style="width:912px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-990baa42dde349b84de1">{"x":{"visdat":{"493c71a22d6c":["function () ","plotlyVisDat"]},"cur_data":"493c71a22d6c","attrs":{"493c71a22d6c":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":["Diesel","Batterieelektrisch"],"y":[16083.333333333334,28333.333333333332],"type":"bar","name":"Abschreibung + Zinsen","marker":{"color":"#2F3E46"},"inherit":true},"493c71a22d6c.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":["Diesel","Batterieelektrisch"],"y":[11000,14500],"type":"bar","name":"Versicherung, Steuer, Gemeinkosten, Ladepunkt","marker":{"color":"#9AA5B1"},"inherit":true},"493c71a22d6c.2":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":["Diesel","Batterieelektrisch"],"y":[15606.000000000002,7270.5600000000004],"type":"bar","name":"Energie","marker":{"color":"#D97B29"},"inherit":true},"493c71a22d6c.3":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":["Diesel","Batterieelektrisch"],"y":[5508,4131],"type":"bar","name":"Wartung + Reifen","marker":{"color":"#52B788"},"inherit":true},"493c71a22d6c.4":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":["Diesel","Batterieelektrisch"],"y":[3465.4499999999998,0],"type":"bar","name":"Maut","marker":{"color":"#C00000"},"inherit":true}},"layout":{"width":720,"height":470,"margin":{"b":60,"l":70,"t":20,"r":20},"barmode":"stack","xaxis":{"domain":[0,1],"automargin":true,"title":"","type":"category","categoryorder":"array","categoryarray":["Batterieelektrisch","Diesel"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Fahrzeugkosten (€/Jahr, ohne Fahrer)"},"showlegend":true,"legend":{"orientation":"h","x":0,"y":-0.17999999999999999},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Diesel","Batterieelektrisch"],"y":[16083.333333333334,28333.333333333332],"type":"bar","name":"Abschreibung + Zinsen","marker":{"color":"#2F3E46","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Diesel","Batterieelektrisch"],"y":[11000,14500],"type":"bar","name":"Versicherung, Steuer, Gemeinkosten, Ladepunkt","marker":{"color":"#9AA5B1","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Diesel","Batterieelektrisch"],"y":[15606.000000000002,7270.5600000000004],"type":"bar","name":"Energie","marker":{"color":"#D97B29","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Diesel","Batterieelektrisch"],"y":[5508,4131],"type":"bar","name":"Wartung + Reifen","marker":{"color":"#52B788","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Diesel","Batterieelektrisch"],"y":[3465.4499999999998,0],"type":"bar","name":"Maut","marker":{"color":"#C00000","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</div><div class="column" style="width:42%;">
+<div class="smaller-text">
+<p><strong>Annahmen E-Lkw:</strong> 170.000 € Kaufpreis, Restwert 30.000 €, 66 kWh/100 km (Jahresmittel inkl. Kühlung) zu 0,24 €/kWh, Wartung 6 ct/km, keine Maut und Kfz-Steuer, Depot-Ladepunkt 3.500 €/Jahr. Fahrleistung: 45.900 km/Jahr.</p>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Ergebnis</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Diesel: <strong>51.663 €/Jahr</strong> (1,13 €/km)</li>
+<li>E-Lkw: <strong>54.235 €/Jahr</strong> (1,18 €/km)</li>
+<li>Fahrerkosten (48.691 €/Jahr) sind gleich</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="smaller-text">
+<p>Bei nur ~46 Tsd. km/Jahr kann die Ersparnis bei Energie und Maut den höheren Kaufpreis <strong>noch nicht</strong> ausgleichen. Entscheidend ist die <strong>Fahrleistung</strong>.</p>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-bsp2b" class="slide level2">
+<h2>Beispiel 2 – Diesel oder E-Lkw?</h2>
+<div class="slide-subtitle">
+<p>Break-even-Fahrleistung</p>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-8469b1bdb6ce3bb2a13d" style="width:912px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-8469b1bdb6ce3bb2a13d">{"x":{"visdat":{"493c7c476945":["function () ","plotlyVisDat"]},"cur_data":"493c7c476945","attrs":{"493c7c476945":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":[20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120],"y":[1.8896666666666668,1.8251825396825399,1.7665606060606063,1.7130362318840582,1.6639722222222224,1.6188333333333336,1.5771666666666668,1.5385864197530865,1.502761904761905,1.4694080459770116,1.438277777777778,1.4091559139784948,1.3818541666666668,1.3562070707070708,1.3320686274509805,1.309309523809524,1.287814814814815,1.267481981981982,1.2482192982456142,1.2299444444444445,1.2125833333333333,1.1960691056910571,1.1803412698412701,1.1653449612403102,1.1510303030303031,1.1373518518518519,1.1242681159420291,1.1117411347517732,1.0997361111111112,1.0882210884353742,1.0771666666666668,1.0665457516339871,1.0563333333333333,1.0465062893081762,1.0370432098765434,1.0279242424242425,1.0191309523809524,1.0106461988304094,1.0024540229885059,0.99453954802259892,0.98688888888888904,0.97948907103825156,0.97232795698924745,0.96539417989418008,0.95867708333333346,0.95216666666666683,0.94585353535353556,0.9397288557213932,0.93378431372549031,0.92801207729468604,0.92240476190476195,0.91695539906103296,0.91165740740740753,0.90650456621004571,0.90149099099099117,0.89661111111111125,0.89185964912280713,0.88723160173160187,0.88272222222222241,0.87832700421940935,0.87404166666666683,0.86986213991769556,0.86578455284552858,0.86180522088353428,0.85792063492063497,0.85412745098039222,0.85042248062015513,0.84680268199233732,0.84326515151515169,0.83980711610486902,0.83642592592592602,0.83311904761904776,0.82988405797101461,0.82671863799283163,0.82362056737588663,0.8205877192982457,0.81761805555555567,0.81470962199312724,0.81186054421768716,0.80906902356902366,0.80633333333333346,0.80365181518151818,0.8010228758169935,0.79844498381877038,0.79591666666666683,0.793436507936508,0.79100314465408816,0.78861526479750788,0.78627160493827164,0.78397094801223255,0.7817121212121213,0.77949399399399411,0.77731547619047636,0.7751755162241889,0.77307309941520475,0.77100724637681173,0.76897701149425302,0.7669814814814816,0.7650197740112995,0.76309103641456599,0.76119444444444451],"type":"scatter","mode":"lines","name":"Diesel","line":{"color":"#9AA5B1","width":3},"inherit":true},"493c7c476945.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":[20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120],"y":[2.3900666666666668,2.2880825396825397,2.195369696969697,2.1107188405797102,2.0331222222222221,1.9617333333333331,1.8958358974358973,1.8348197530864194,1.7781619047619046,1.7254114942528733,1.6761777777777775,1.6301204301075267,1.5869416666666665,1.5463797979797977,1.5082039215686274,1.4722095238095236,1.4382148148148146,1.4060576576576576,1.3755929824561401,1.3466905982905981,1.3192333333333333,1.2931154471544715,1.2682412698412697,1.2445240310077519,1.2218848484848484,1.2002518518518517,1.1795594202898549,1.1597475177304963,1.1407611111111111,1.1225496598639455,1.1050666666666666,1.0882692810457515,1.0721179487179486,1.0565761006289307,1.0416098765432098,1.0271878787878788,1.0132809523809523,0.99986198830409356,0.98690574712643664,0.97438870056497162,0.96228888888888875,0.95058579234972673,0.93926021505376345,0.92829417989417973,0.91767083333333321,0.90737435897435881,0.89738989898989896,0.88770348258706466,0.87830196078431366,0.86917294685990343,0.86030476190476191,0.85168638497652571,0.84330740740740739,0.83515799086757991,0.82722882882882875,0.81951111111111108,0.81199649122807016,0.80467705627705621,0.79754529914529915,0.7905940928270041,0.78381666666666661,0.77720658436213985,0.77075772357723582,0.76446425702811238,0.75832063492063484,0.75232156862745092,0.74646201550387592,0.74073716475095774,0.73514242424242426,0.72967340823970028,0.72432592592592582,0.71909597069597064,0.71397971014492745,0.70897347670250888,0.70407375886524814,0.69927719298245616,0.69458055555555553,0.68998075601374564,0.68547482993197273,0.6810599326599327,0.6767333333333333,0.67249240924092413,0.66833464052287583,0.66425760517799348,0.6602589743589744,0.65633650793650788,0.65248805031446544,0.64871152647975072,0.64500493827160488,0.64136636085626908,0.63779393939393936,0.63428588588588586,0.63084047619047623,0.62745604719764003,0.62413099415204676,0.62086376811594202,0.6176528735632183,0.61449686609686605,0.6113943502824859,0.60834397759103642,0.60534444444444446],"type":"scatter","mode":"lines","name":"Batterieelektrisch","line":{"color":"#0B6E4F","width":3},"inherit":true},"493c7c476945.2":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":45.899999999999999,"y":0,"xend":45.899999999999999,"yend":2.5,"type":"scatter","mode":"lines","name":"SushiFresh Rundtour","line":{"color":"#D97B29","dash":"dash"},"inherit":true},"493c7c476945.3":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":88.799999999999997,"y":0,"xend":88.799999999999997,"yend":2.5,"type":"scatter","mode":"lines","name":"SushiFresh Pendelverkehr","line":{"color":"#C00000","dash":"dot"},"inherit":true}},"layout":{"width":720,"height":470,"margin":{"b":60,"l":70,"t":20,"r":20},"yaxis":{"domain":[0,1],"automargin":true,"range":[0,2.5],"title":"Fahrzeugkosten (€/km, ohne Fahrer)"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Jahresfahrleistung (Tsd. km)"},"showlegend":true,"legend":{"orientation":"h","x":0,"y":-0.17999999999999999},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120],"y":[1.8896666666666668,1.8251825396825399,1.7665606060606063,1.7130362318840582,1.6639722222222224,1.6188333333333336,1.5771666666666668,1.5385864197530865,1.502761904761905,1.4694080459770116,1.438277777777778,1.4091559139784948,1.3818541666666668,1.3562070707070708,1.3320686274509805,1.309309523809524,1.287814814814815,1.267481981981982,1.2482192982456142,1.2299444444444445,1.2125833333333333,1.1960691056910571,1.1803412698412701,1.1653449612403102,1.1510303030303031,1.1373518518518519,1.1242681159420291,1.1117411347517732,1.0997361111111112,1.0882210884353742,1.0771666666666668,1.0665457516339871,1.0563333333333333,1.0465062893081762,1.0370432098765434,1.0279242424242425,1.0191309523809524,1.0106461988304094,1.0024540229885059,0.99453954802259892,0.98688888888888904,0.97948907103825156,0.97232795698924745,0.96539417989418008,0.95867708333333346,0.95216666666666683,0.94585353535353556,0.9397288557213932,0.93378431372549031,0.92801207729468604,0.92240476190476195,0.91695539906103296,0.91165740740740753,0.90650456621004571,0.90149099099099117,0.89661111111111125,0.89185964912280713,0.88723160173160187,0.88272222222222241,0.87832700421940935,0.87404166666666683,0.86986213991769556,0.86578455284552858,0.86180522088353428,0.85792063492063497,0.85412745098039222,0.85042248062015513,0.84680268199233732,0.84326515151515169,0.83980711610486902,0.83642592592592602,0.83311904761904776,0.82988405797101461,0.82671863799283163,0.82362056737588663,0.8205877192982457,0.81761805555555567,0.81470962199312724,0.81186054421768716,0.80906902356902366,0.80633333333333346,0.80365181518151818,0.8010228758169935,0.79844498381877038,0.79591666666666683,0.793436507936508,0.79100314465408816,0.78861526479750788,0.78627160493827164,0.78397094801223255,0.7817121212121213,0.77949399399399411,0.77731547619047636,0.7751755162241889,0.77307309941520475,0.77100724637681173,0.76897701149425302,0.7669814814814816,0.7650197740112995,0.76309103641456599,0.76119444444444451],"type":"scatter","mode":"lines","name":"Diesel","line":{"color":"#9AA5B1","width":3},"marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120],"y":[2.3900666666666668,2.2880825396825397,2.195369696969697,2.1107188405797102,2.0331222222222221,1.9617333333333331,1.8958358974358973,1.8348197530864194,1.7781619047619046,1.7254114942528733,1.6761777777777775,1.6301204301075267,1.5869416666666665,1.5463797979797977,1.5082039215686274,1.4722095238095236,1.4382148148148146,1.4060576576576576,1.3755929824561401,1.3466905982905981,1.3192333333333333,1.2931154471544715,1.2682412698412697,1.2445240310077519,1.2218848484848484,1.2002518518518517,1.1795594202898549,1.1597475177304963,1.1407611111111111,1.1225496598639455,1.1050666666666666,1.0882692810457515,1.0721179487179486,1.0565761006289307,1.0416098765432098,1.0271878787878788,1.0132809523809523,0.99986198830409356,0.98690574712643664,0.97438870056497162,0.96228888888888875,0.95058579234972673,0.93926021505376345,0.92829417989417973,0.91767083333333321,0.90737435897435881,0.89738989898989896,0.88770348258706466,0.87830196078431366,0.86917294685990343,0.86030476190476191,0.85168638497652571,0.84330740740740739,0.83515799086757991,0.82722882882882875,0.81951111111111108,0.81199649122807016,0.80467705627705621,0.79754529914529915,0.7905940928270041,0.78381666666666661,0.77720658436213985,0.77075772357723582,0.76446425702811238,0.75832063492063484,0.75232156862745092,0.74646201550387592,0.74073716475095774,0.73514242424242426,0.72967340823970028,0.72432592592592582,0.71909597069597064,0.71397971014492745,0.70897347670250888,0.70407375886524814,0.69927719298245616,0.69458055555555553,0.68998075601374564,0.68547482993197273,0.6810599326599327,0.6767333333333333,0.67249240924092413,0.66833464052287583,0.66425760517799348,0.6602589743589744,0.65633650793650788,0.65248805031446544,0.64871152647975072,0.64500493827160488,0.64136636085626908,0.63779393939393936,0.63428588588588586,0.63084047619047623,0.62745604719764003,0.62413099415204676,0.62086376811594202,0.6176528735632183,0.61449686609686605,0.6113943502824859,0.60834397759103642,0.60534444444444446],"type":"scatter","mode":"lines","name":"Batterieelektrisch","line":{"color":"#0B6E4F","width":3},"marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[45.899999999999999,45.899999999999999],"y":[0,2.5],"type":"scatter","mode":"lines","name":"SushiFresh Rundtour","line":{"color":"#D97B29","dash":"dash"},"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[88.799999999999997,88.799999999999997],"y":[0,2.5],"type":"scatter","mode":"lines","name":"SushiFresh Pendelverkehr","line":{"color":"#C00000","dash":"dot"},"marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</div><div class="column" style="width:42%;">
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Interpretation</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>E-Lkw: hohe <strong>Fixkosten</strong>, niedrige <strong>variable</strong> Kosten → lohnen sich bei <strong>hoher Fahrleistung</strong></li>
+<li>Break-even bei ca. <strong>55 Tsd. km/Jahr</strong></li>
+<li>Der Pendelverkehr hätte mehr km, ist aber mit dem E-Lkw <strong>nicht fahrbar</strong> (Reichweite)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Hebel für SushiFresh</strong></p>
+</div>
+<div class="callout-content">
+<p>Zweiter Einsatz am Nachmittag (z. B. Beschaffungsfahrten, Lieferdienst) erhöht die Fahrleistung und verschiebt die Rechnung zugunsten des E-Lkw.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-bsp3" class="slide level2">
+<h2>Beispiel 3 – Fernverkehr</h2>
+<div class="slide-subtitle">
+<p>40-t-Sattelzug: Diesel vs.&nbsp;batterieelektrisch</p>
+</div>
+<div class="columns">
+<div class="column" style="width:47%;">
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 24px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">€/km</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Diesel</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Batterieelektrisch</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Fixkosten Fahrzeug</td>
+<td style="text-align: right;">0,246</td>
+<td style="text-align: right;">0,619</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Energie</td>
+<td style="text-align: right;">0,580</td>
+<td style="text-align: right;">0,346</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Wartung + Reifen</td>
+<td style="text-align: right;">0,160</td>
+<td style="text-align: right;">0,120</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Maut</td>
+<td style="text-align: right;">0,313</td>
+<td style="text-align: right;">0,000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Fahrer</td>
+<td style="text-align: right;">0,458</td>
+<td style="text-align: right;">0,458</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;"><strong>Summe €/km</strong></td>
+<td style="text-align: right;">1,758</td>
+<td style="text-align: right;">1,543</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="smaller-text">
+<p>Annahmen: 120.000 km/Jahr, 5 Jahre; Diesel 125.000 €, 28 l/100 km zu 2,00 €/l, Maut 34,8 ct/km auf 90 % der Strecke; BEV 300.000 €, 1,2 kWh/km, Strommix 80 % Depot / 20 % öffentlich, Ladepunkt 10.000 €/Jahr, mautbefreit.</p>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-547273222171a8475807" style="width:912px;height:384px;"></div>
+<script type="application/json" data-for="htmlwidget-547273222171a8475807">{"x":{"visdat":{"493c64ac53d5":["function () ","plotlyVisDat"]},"cur_data":"493c64ac53d5","attrs":{"493c64ac53d5":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":[1.2,1.25,1.3,1.3500000000000001,1.3999999999999999,1.45,1.5,1.55,1.6000000000000001,1.6499999999999999,1.7,1.75,1.8,1.8500000000000001,1.8999999999999999,1.95,2,2.0499999999999998,2.1000000000000001,2.1499999999999999,2.2000000000000002,2.25,2.2999999999999998,2.3500000000000001,2.4000000000000004,2.4500000000000002,2.5,2.5499999999999998,2.6000000000000001],"y":[1.5337833333333333,1.5477833333333333,1.5617833333333333,1.5757833333333333,1.5897833333333333,1.6037833333333333,1.6177833333333334,1.6317833333333334,1.6457833333333334,1.6597833333333334,1.6737833333333334,1.6877833333333334,1.7017833333333334,1.7157833333333334,1.7297833333333335,1.7437833333333335,1.7577833333333335,1.7717833333333333,1.7857833333333335,1.7997833333333333,1.8137833333333335,1.8277833333333335,1.8417833333333333,1.8557833333333336,1.8697833333333336,1.8837833333333336,1.8977833333333334,1.9117833333333334,1.9257833333333334],"type":"scatter","mode":"lines","name":"Diesel","line":{"color":"#9AA5B1","width":3},"inherit":true},"493c64ac53d5.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":[1.2,1.25,1.3,1.3500000000000001,1.3999999999999999,1.45,1.5,1.55,1.6000000000000001,1.6499999999999999,1.7,1.75,1.8,1.8500000000000001,1.8999999999999999,1.95,2,2.0499999999999998,2.1000000000000001,2.1499999999999999,2.2000000000000002,2.25,2.2999999999999998,2.3500000000000001,2.4000000000000004,2.4500000000000002,2.5,2.5499999999999998,2.6000000000000001],"y":[1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334],"type":"scatter","mode":"lines","name":"BEV, mautbefreit","line":{"color":"#0B6E4F","width":3},"inherit":true},"493c64ac53d5.2":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":[1.2,1.25,1.3,1.3500000000000001,1.3999999999999999,1.45,1.5,1.55,1.6000000000000001,1.6499999999999999,1.7,1.75,1.8,1.8500000000000001,1.8999999999999999,1.95,2,2.0499999999999998,2.1000000000000001,2.1499999999999999,2.2000000000000002,2.25,2.2999999999999998,2.3500000000000001,2.4000000000000004,2.4500000000000002,2.5,2.5499999999999998,2.6000000000000001],"y":[1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331],"type":"scatter","mode":"lines","name":"BEV, volle Maut","line":{"color":"#0B6E4F","width":3,"dash":"dash"},"inherit":true},"493c64ac53d5.3":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":2,"y":1.3,"xend":2,"yend":2.3999999999999999,"type":"scatter","mode":"lines","name":"Annahme 2026","line":{"color":"#D97B29","dash":"dot"},"inherit":true}},"layout":{"width":700,"height":370,"margin":{"b":60,"l":70,"t":20,"r":20},"xaxis":{"domain":[0,1],"automargin":true,"title":"Dieselpreis (€/l netto)"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Gesamtkosten inkl. Fahrer (€/km)"},"showlegend":true,"legend":{"orientation":"h","x":0,"y":-0.17999999999999999},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[1.2,1.25,1.3,1.3500000000000001,1.3999999999999999,1.45,1.5,1.55,1.6000000000000001,1.6499999999999999,1.7,1.75,1.8,1.8500000000000001,1.8999999999999999,1.95,2,2.0499999999999998,2.1000000000000001,2.1499999999999999,2.2000000000000002,2.25,2.2999999999999998,2.3500000000000001,2.4000000000000004,2.4500000000000002,2.5,2.5499999999999998,2.6000000000000001],"y":[1.5337833333333333,1.5477833333333333,1.5617833333333333,1.5757833333333333,1.5897833333333333,1.6037833333333333,1.6177833333333334,1.6317833333333334,1.6457833333333334,1.6597833333333334,1.6737833333333334,1.6877833333333334,1.7017833333333334,1.7157833333333334,1.7297833333333335,1.7437833333333335,1.7577833333333335,1.7717833333333333,1.7857833333333335,1.7997833333333333,1.8137833333333335,1.8277833333333335,1.8417833333333333,1.8557833333333336,1.8697833333333336,1.8837833333333336,1.8977833333333334,1.9117833333333334,1.9257833333333334],"type":"scatter","mode":"lines","name":"Diesel","line":{"color":"#9AA5B1","width":3},"marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1.2,1.25,1.3,1.3500000000000001,1.3999999999999999,1.45,1.5,1.55,1.6000000000000001,1.6499999999999999,1.7,1.75,1.8,1.8500000000000001,1.8999999999999999,1.95,2,2.0499999999999998,2.1000000000000001,2.1499999999999999,2.2000000000000002,2.25,2.2999999999999998,2.3500000000000001,2.4000000000000004,2.4500000000000002,2.5,2.5499999999999998,2.6000000000000001],"y":[1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334,1.5426833333333334],"type":"scatter","mode":"lines","name":"BEV, mautbefreit","line":{"color":"#0B6E4F","width":3},"marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1.2,1.25,1.3,1.3500000000000001,1.3999999999999999,1.45,1.5,1.55,1.6000000000000001,1.6499999999999999,1.7,1.75,1.8,1.8500000000000001,1.8999999999999999,1.95,2,2.0499999999999998,2.1000000000000001,2.1499999999999999,2.2000000000000002,2.25,2.2999999999999998,2.3500000000000001,2.4000000000000004,2.4500000000000002,2.5,2.5499999999999998,2.6000000000000001],"y":[1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331,1.8558833333333331],"type":"scatter","mode":"lines","name":"BEV, volle Maut","line":{"color":"#0B6E4F","width":3,"dash":"dash"},"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[2,2],"y":[1.3,2.3999999999999999],"type":"scatter","mode":"lines","name":"Annahme 2026","line":{"color":"#D97B29","dash":"dot"},"marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="smaller-text">
+<p>Mautbefreit ist der E-Lkw ab ca. 1,25 €/l günstiger, mit voller Maut erst ab ca. 2,35 €/l. Der Vorteil hängt also stark an der <strong>politisch befristeten</strong> Mautbefreiung (bis 06/2031).</p>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-bsp4" class="slide level2">
+<h2>Beispiel 4 – Letzte Meile</h2>
+<div class="slide-subtitle">
+<p>Kosten pro Zustellung: E-Transporter vs.&nbsp;Lastenrad</p>
+</div>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="small-text">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 22px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Option</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Fahrzeug + Depot</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">km-Kosten</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Personal</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Kosten/Tag</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Stopps/Tag</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">€ je Stopp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">E-Transporter</td>
+<td style="text-align: right;">45 €</td>
+<td style="text-align: right;">7 €</td>
+<td style="text-align: right;">224 €</td>
+<td style="text-align: right;">276 €</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">6,90 €</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Lastenrad + Mikrodepot</td>
+<td style="text-align: right;">36 €</td>
+<td style="text-align: right;">1 €</td>
+<td style="text-align: right;">224 €</td>
+<td style="text-align: right;">261 €</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">5,43 €</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="smaller-text">
+<p>Annahmen: 8-h-Schicht, gleicher Stundenlohn, E-Transporter 5 Stopps/h (Parkplatzsuche), Lastenrad 6 Stopps/h im Umkreis von 3 km um das Mikrodepot, Mikrodepot 720 €/Monat.</p>
+</div>
+</div>
+</div><div class="column" style="width:42%;">
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Ergebnis</strong></p>
+</div>
+<div class="callout-content">
+<p>Das Lastenrad ist trotz Mikrodepot ca. <strong>21 %</strong> günstiger je Stopp. Der Hebel sind <strong>nicht</strong> die Fahrzeugkosten, sondern die <strong>Stopps pro Stunde</strong>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-warning callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Grenzen</strong></p>
+</div>
+<div class="callout-content">
+<p>Lastenräder brauchen <strong>hohe Stoppdichte</strong> auf kleiner Fläche. Bei verstreuten Kunden, schweren Sendungen oder schlechtem Wetter dreht sich das Bild.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-tkm" class="slide level2">
+<h2>Vom Kostensatz zum Tarif</h2>
+<div class="slide-subtitle">
+<p>Auslastung und Leerfahrten</p>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="small-text">
+<p><strong>Diesel-Sattelzug:</strong> 1,76 €/km, Nutzlast 25 t</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-condensed table-striped caption-top" style="font-size: 24px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Auslastung α</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">Leerfahrten 0 %</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">20 %</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">40 %</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">60 %</td>
+<td style="text-align: right;">11,7 ct</td>
+<td style="text-align: right;">14,6 ct</td>
+<td style="text-align: right;">19,5 ct</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">80 %</td>
+<td style="text-align: right;">8,8 ct</td>
+<td style="text-align: right;">11,0 ct</td>
+<td style="text-align: right;">14,6 ct</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold; color: white !important; background-color: rgba(47, 62, 70, 1) !important;">100 %</td>
+<td style="text-align: right;">7,0 ct</td>
+<td style="text-align: right;">8,8 ct</td>
+<td style="text-align: right;">11,7 ct</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Kostensatz je Tonnenkilometer: <span class="math inline">\(k_{tkm} = \dfrac{k_{km}}{m \cdot \alpha \cdot (1-\lambda)}\)</span></p>
+</div>
+</div><div class="column" style="width:47%;">
+<div class="fragment fade-up">
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Botschaft</strong></p>
+</div>
+<div class="callout-content">
+<p>Derselbe Lkw kostet je tkm zwischen 7,0 und 19,5 ct, abhängig von <strong>Auslastung</strong> und <strong>Leerfahrten</strong>. Bündelung, Rückladungen und Frachtbörsen sind deshalb für Spediteure entscheidend.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment fade-up">
+<div class="callout callout-note callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Vom Kostensatz zum Preis</strong></p>
+</div>
+<div class="callout-content">
+<p>Preis = Kostensatz + Wagnis und Gewinn. Üblich sind Tarife je <strong>Palette</strong>, je <strong>100 kg</strong> (Stückgut, entfernungsgestaffelt), je <strong>Tour</strong> oder je <strong>Stopp</strong> (KEP), dazu Diesel- und Mautzuschläge (Floater).</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="tm-summary" class="slide level2">
+<h2>Kernaussagen</h2>
+<div class="callout callout-tip callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Das Wichtigste in Kürze</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Verkehrsträger unterscheiden sich in <strong>Kosten, Geschwindigkeit, Netzdichte, Kapazität und Klimabilanz</strong>. Der <strong>kombinierte Verkehr</strong> lohnt sich ab einer Break-even-Entfernung.</li>
+<li><strong>Alternative Antriebe</strong> verändern die Planung: Batterieelektrische Lkw bringen <strong>Reichweiten-, Lade- und Gewichtsrestriktionen</strong>, die in <strong>E-VRP</strong>-Modellen abgebildet werden.</li>
+<li>Für SushiFresh ist der E-Kühl-Lkw nur mit <strong>optimierter Tour</strong> ganzjährig fahrbar. Tourenplanung wird zur <strong>Machbarkeitsfrage</strong>.</li>
+<li><strong>Lastenrad, Mikrodepot und Drohne</strong> führen zu zweistufigen bzw. synchronisierten Planungsproblemen. Auf der letzten Meile zählt <strong>€ pro Stopp</strong>.</li>
+<li><strong>Transportkostensätze</strong> entstehen aus Fixkosten (AfA, Zinsen, Versicherung, Personal) und variablen Kosten (Energie, Wartung, Maut). Fahrleistung, Auslastung und Leerfahrten bestimmen, was ein km, eine Stunde oder ein tkm kostet.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="tm-exercise" class="slide level2 smaller scrollable">
+<h2>Übung</h2>
+<div class="exercise-slide">
+<div class="exercise-header">
+<p>Kostensätze und Machbarkeit – SushiFresh im Dezember</p>
+</div>
+<div class="columns exercise-content">
+<div class="column" style="width:55%;">
+<p>Im Dezember fährt SushiFresh zwei Touren (Einheit 11, Savings): West 62 km und Ost 101 km. Statt zweier Diesel-Kühlvans werden zwei <strong>E-Transporter</strong> (3,5 t, 75 kWh nutzbar, 0,30 kWh/km inkl. Kühlung, Kaufpreis 75.000 €, Restwert 15.000 €, 6 Jahre) erwogen.</p>
+<ul>
+<li>Prüfen Sie die Reichweite beider Touren. Kann <strong>ein</strong> E-Transporter beide Touren nacheinander fahren, wenn er dazwischen 45 min mit 22 kW am Depot lädt?</li>
+<li>Berechnen Sie mit <code>fahrzeugkosten()</code> den Kostensatz in €/km bei 60.000 km/Jahr.</li>
+<li>Wie verändert sich das Ergebnis, wenn 30 % öffentlich zu 0,50 €/kWh geladen werden?</li>
+</ul>
+</div><div class="column" style="width:42%;">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>e_van <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-2"><a href=""></a>  <span class="at">A =</span> <span class="dv">75000</span>, <span class="at">RW =</span> <span class="dv">15000</span>, <span class="at">N =</span> <span class="dv">6</span>, <span class="at">i =</span> <span class="fl">0.05</span>,</span>
+<span id="cb2-3"><a href=""></a>  <span class="at">versicherung =</span> <span class="dv">2500</span>, <span class="at">steuer =</span> <span class="dv">0</span>,</span>
+<span id="cb2-4"><a href=""></a>  <span class="at">sonst_fix =</span> <span class="dv">2000</span>,</span>
+<span id="cb2-5"><a href=""></a>  <span class="at">energie_km =</span> <span class="fl">0.30</span> <span class="sc">*</span> <span class="fl">0.24</span>,</span>
+<span id="cb2-6"><a href=""></a>  <span class="at">wartung_km =</span> <span class="fl">0.05</span>, <span class="at">reifen_km =</span> <span class="fl">0.02</span>,</span>
+<span id="cb2-7"><a href=""></a>  <span class="at">maut_km =</span> <span class="dv">0</span>)   <span class="co"># ≤ 4,25 t: mautfrei</span></span>
+<span id="cb2-8"><a href=""></a></span>
+<span id="cb2-9"><a href=""></a><span class="fu">fahrzeugkosten</span>(e_van, <span class="at">km_jahr =</span> <span class="dv">60000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div></div>
+</div>
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-chopra2025supply" class="csl-entry" role="listitem">
+Chopra, Sunil, and Peter Meindl. 2025. <em>Supply Chain Management: Strategy, Planning, and Operation</em>. 8th ed. Pearson.
+</div>
+<div id="ref-guenther2012produktion" class="csl-entry" role="listitem">
+Günther, Hans-Otto, and Horst Tempelmeier. 2012. <em>Produktion Und Logistik</em>. 9th ed. Springer-Lehrbuch. Springer.
+</div>
+</div>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<p><img src="../images/hsrm-logo.png" class="slide-logo"></p>
+<div class="footer footer-default">
+<p>Supply Chain Management</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="12_transportmittel-und-antriebe_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 4.0e-2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+
+    <script>
+
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+
+      // slide changes (different for each slide format).
+
+      (function () {
+
+        // dispatch for htmlwidgets
+
+        function fireSlideEnter() {
+
+          const event = window.document.createEvent("Event");
+
+          event.initEvent("slideenter", true, true);
+
+          window.document.dispatchEvent(event);
+
+        }
+
+    
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          fireSlideEnter();
+
+    
+
+          // dispatch for shiny
+
+          if (window.jQuery) {
+
+            if (previousSlide) {
+
+              window.jQuery(previousSlide).trigger("hidden");
+
+            }
+
+            if (currentSlide) {
+
+              window.jQuery(currentSlide).trigger("shown");
+
+            }
+
+          }
+
+        }
+
+    
+
+        // hookup for slidy
+
+        if (window.w3c_slidy) {
+
+          window.w3c_slidy.add_observer(function (slide_num) {
+
+            // slide_num starts at position 1
+
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+
+          });
+
+        }
+
+    
+
+      })();
+
+    </script>
+
+    
+
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

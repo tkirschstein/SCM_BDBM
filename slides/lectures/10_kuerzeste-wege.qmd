@@ -1,0 +1,870 @@
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden (u. a. haversine())
+source("../R/scm_functions.R")
+
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(kableExtra)
+
+knitr::opts_chunk$set(fig.width = 9.5, fig.height = 6.3)
+
+# ── Vereinfachtes Straßennetz Rhein-Main ─────────────────────────────────────
+# Knoten: Zentralküche, Autobahnknoten, Filialen
+sp_nodes <- data.frame(
+  ID   = c("R", "MH", "WK", "FK", "C1", "C2", "C3", "C4", "C5", "C6"),
+  Name = c("Raunheim (Zentralküche)", "Mönchhof-Dreieck", "Wiesbadener Kreuz",
+           "Frankfurter Kreuz", "Wiesbaden", "Mainz", "Frankfurt",
+           "Rüsselsheim", "Darmstadt", "Offenbach"),
+  Typ  = c("Küche", "Knoten", "Knoten", "Knoten", rep("Filiale", 6)),
+  Lon  = c(8.4650, 8.4950, 8.3720, 8.5985, 8.2398, 8.2711, 8.6821, 8.4116,
+           8.6512, 8.7761),
+  Lat  = c(50.0000, 50.0350, 50.0620, 50.0535, 50.0782, 50.0000, 50.1109,
+           49.9904, 49.8728, 50.0956)
+)
+# Planare Koordinaten in km (für maßstabsgetreue Grafiken)
+sp_nodes$x <- sp_nodes$Lon * 111.32 * cos(50 * pi / 180)
+sp_nodes$y <- sp_nodes$Lat * 111.32
+
+# Kanten: Straßenverbindungen mit Länge in km (didaktisch vereinfacht)
+sp_edges <- data.frame(
+  from = c("R",  "R",  "R",  "MH", "MH", "MH", "WK", "WK", "C1", "C2",
+           "C4", "FK", "FK", "FK", "C3", "C5"),
+  to   = c("MH", "C4", "C3", "WK", "FK", "C4", "C1", "C2", "C2", "C4",
+           "C5", "C3", "C5", "C6", "C6", "C6"),
+  km   = c(5, 6, 33, 13, 10, 10, 8, 15, 14, 16, 33, 13, 29, 12, 10, 24)
+)
+
+# Gewichtsmatrix (0 = keine direkte Verbindung), ungerichtet
+sp_W <- matrix(0, nrow(sp_nodes), nrow(sp_nodes),
+               dimnames = list(sp_nodes$ID, sp_nodes$ID))
+sp_W[cbind(sp_edges$from, sp_edges$to)] <- sp_edges$km
+sp_W[cbind(sp_edges$to, sp_edges$from)] <- sp_edges$km
+
+# ── Dijkstra mit Protokoll ───────────────────────────────────────────────────
+dijkstra_trace <- function(W, start) {
+  n <- nrow(W); ids <- rownames(W)
+  d <- setNames(rep(Inf, n), ids); pred <- setNames(rep(NA_character_, n), ids)
+  perm <- setNames(rep(FALSE, n), ids)
+  d[start] <- 0
+  steps <- list()
+  while (!all(perm)) {
+    cand <- ifelse(perm, Inf, d)
+    u <- names(which.min(cand))
+    perm[u] <- TRUE
+    updates <- character(0); old <- c()
+    for (v in ids[W[u, ] > 0 & !perm]) {
+      if (d[u] + W[u, v] < d[v]) {
+        old[v] <- d[v]
+        d[v] <- d[u] + W[u, v]; pred[v] <- u
+        updates <- c(updates, v)
+      }
+    }
+    steps[[length(steps) + 1]] <- list(u = u, d = d, pred = pred,
+                                       perm = perm, updates = updates,
+                                       old = old)
+  }
+  list(steps = steps, d = d, pred = pred)
+}
+
+pfad <- function(pred, ziel) {
+  p <- ziel
+  while (!is.na(pred[p[1]])) p <- c(pred[p[1]], p)
+  unname(p)
+}
+
+sp_res <- dijkstra_trace(sp_W, "R")
+
+# ── Hilfsfunktionen für Darstellung ──────────────────────────────────────────
+fmt <- function(x, d = 1) formatC(x, format = "f", digits = d,
+                                   big.mark = ".", decimal.mark = ",")
+
+kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
+                   col1_bg = "#2F3E46") {
+  out <- kbl(df, ...) |>
+    kable_styling(bootstrap_options = c("condensed", "striped"),
+                  full_width = TRUE, font_size = font_size) |>
+    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+  if (first_col) out <- out |>
+    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
+  out
+}
+
+# Netzwerkgrafik; state = Schritt aus dijkstra_trace() oder NULL
+sp_plot <- function(state = NULL, tree = FALSE, highlight_path = NULL,
+                    show_km = TRUE, height = 590, width = 900,
+                    removed = NULL) {
+  nd <- sp_nodes
+  xy <- split(nd[, c("x", "y")], nd$ID)
+  fig <- plot_ly(type = "scatter", mode = "markers")
+  # Kanten
+  tree_edges <- character(0)
+  if (tree && !is.null(state)) {
+    for (v in names(state$pred)) if (!is.na(state$pred[v]) && state$perm[v])
+      tree_edges <- c(tree_edges, paste(sort(c(v, state$pred[v])), collapse = "-"))
+  }
+  path_edges <- character(0)
+  if (!is.null(highlight_path) && length(highlight_path) > 1)
+    for (k in 2:length(highlight_path))
+      path_edges <- c(path_edges, paste(sort(highlight_path[(k - 1):k]),
+                                         collapse = "-"))
+  for (e in seq_len(nrow(sp_edges))) {
+    a <- sp_edges$from[e]; b <- sp_edges$to[e]
+    key <- paste(sort(c(a, b)), collapse = "-")
+    is_removed <- !is.null(removed) && key %in% removed
+    col <- if (key %in% path_edges) "#D97B29" else if (key %in% tree_edges)
+      "#0B6E4F" else "#B8BEC6"
+    wd  <- if (key %in% c(path_edges, tree_edges)) 5 else 2
+    fig <- fig |> add_segments(
+      x = xy[[a]]$x, xend = xy[[b]]$x, y = xy[[a]]$y, yend = xy[[b]]$y,
+      line = list(color = if (is_removed) "#E15759" else col, width = wd,
+                  dash = if (is_removed) "dot" else "solid"),
+      hoverinfo = "skip", showlegend = FALSE)
+    if (show_km) fig <- fig |> add_annotations(
+      x = (xy[[a]]$x + xy[[b]]$x) / 2, y = (xy[[a]]$y + xy[[b]]$y) / 2,
+      text = sp_edges$km[e], showarrow = FALSE, bgcolor = "white",
+      font = list(size = 12, color = "#4B5563"))
+  }
+  # Knotenfarben
+  col <- ifelse(nd$Typ == "Knoten", "#D0D5DD",
+                ifelse(nd$Typ == "Küche", "#BFDBF7", "#2D9E8E"))
+  lin <- rep("#4B5563", nrow(nd)); lw <- rep(1.5, nrow(nd))
+  if (!is.null(state)) {
+    perm <- state$perm[nd$ID]
+    temp <- !perm & is.finite(state$d[nd$ID])
+    col[perm] <- "#0B6E4F"
+    col[temp] <- "#F4A259"
+    lin[nd$ID %in% state$updates] <- "#C00000"; lw[nd$ID %in% state$updates] <- 4
+    lin[nd$ID == state$u] <- "#1F2933"; lw[nd$ID == state$u] <- 4
+  }
+  txtcol <- ifelse(col %in% c("#0B6E4F", "#2D9E8E"), "white", "#1F2933")
+  fig <- fig |> add_trace(
+    x = nd$x, y = nd$y, text = nd$ID, mode = "markers+text",
+    marker = list(symbol = ifelse(nd$Typ == "Knoten", "diamond",
+                                  ifelse(nd$Typ == "Küche", "hexagon", "circle")),
+                  size = ifelse(nd$Typ == "Knoten", 30, 40), color = col,
+                  line = list(color = lin, width = lw)),
+    textfont = list(size = 13, color = txtcol),
+    hovertext = nd$Name, hoverinfo = "text", showlegend = FALSE)
+  # Marken d(v) / Vorgänger
+  if (!is.null(state)) {
+    lab <- ifelse(is.finite(state$d[nd$ID]),
+                  paste0(state$d[nd$ID], " | ", ifelse(is.na(state$pred[nd$ID]),
+                                                       "–", state$pred[nd$ID])),
+                  "∞")
+    fig <- fig |> add_annotations(
+      x = nd$x, y = nd$y + 2.6, text = paste0("<b>", lab, "</b>"),
+      showarrow = FALSE, font = list(size = 13, color = "#1F2933"),
+      bgcolor = "rgba(255,255,255,0.85)")
+  } else {
+    fig <- fig |> add_annotations(
+      x = nd$x, y = nd$y - 2.6, text = nd$Name, showarrow = FALSE,
+      font = list(size = 11, color = "#4B5563"))
+  }
+  fig |> layout(
+    xaxis = list(visible = FALSE, fixedrange = TRUE,
+                 range = range(nd$x) + c(-4, 4)),
+    yaxis = list(visible = FALSE, fixedrange = TRUE,
+                 range = range(nd$y) + c(-4, 4.5)),
+    plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+    margin = list(l = 5, r = 5, t = 5, b = 5),
+    height = height, width = width)
+}
+
+# Dijkstra-Tableau (Zeilen = Iterationen)
+sp_tableau <- function(res, font_size = 20) {
+  ids <- names(res$d)
+  rows <- lapply(seq_along(res$steps), function(k) {
+    s <- res$steps[[k]]
+    prev_perm <- if (k == 1) setNames(rep(FALSE, length(ids)), ids) else
+      res$steps[[k - 1]]$perm
+    cells <- sapply(ids, function(v) {
+      if (prev_perm[v]) return("")
+      if (v == s$u) return(paste0("<span style='background:#0B6E4F;color:white;",
+                                  "padding:2px 6px;border-radius:4px'><b>",
+                                  s$d[v], "</b></span>"))
+      if (!is.finite(s$d[v])) return("<span style='color:#B8BEC6'>∞</span>")
+      txt <- paste0(s$d[v], " | ", s$pred[v])
+      if (v %in% s$updates) txt <- paste0("<span style='color:#C00000'><b>",
+                                          txt, "</b></span>")
+      txt
+    })
+    c(k, s$u, cells)
+  })
+  df <- as.data.frame(do.call(rbind, rows), stringsAsFactors = FALSE)
+  names(df) <- c("It.", "perm.", ids)
+  rownames(df) <- NULL
+  kbl(df, escape = FALSE, align = c("c", "c", rep("c", length(ids)))) |>
+    kable_styling(bootstrap_options = c("condensed", "striped"),
+                  full_width = TRUE, font_size = font_size) |>
+    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+    column_spec(1:2, bold = TRUE, background = "#2F3E46", color = "white")
+}
+```
+
+## Transport- und Tourenplanung {#sp-outline}
+
+- Transportplanung
+- **Kürzeste Wege**
+- Tourenplanung
+
+---
+
+## Lernziele {#sp-learning-objectives}
+
+Nach dieser Einheit können Sie …
+
+- Straßennetze als **Graphen** mit Knoten, Kanten und Kantengewichten **modellieren**,
+- verschiedene Varianten des **Kürzeste-Wege-Problems** **unterscheiden**,
+- den **Dijkstra-Algorithmus** von Hand **durchführen** und in R **implementieren**,
+- aus kürzesten Wegen eine **Distanzmatrix** für Transport- und Tourenplanung **ableiten**.
+
+**Literatur zur Vertiefung**
+
+- **Kürzeste Wege und Graphentheorie in der Logistik:** [@domschke2007transport].
+- **Originalarbeit zum Algorithmus:** [@dijkstra1959note].
+- **Transport- und Tourenplanung im Überblick:** [@guenther2012produktion].
+
+---
+
+## Fallstudie – SushiFresh GmbH {#sp-cs1}
+::: slide-subtitle
+Woher kommen eigentlich die Transportkosten?
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.callout-note appearance="simple"}
+## Rückblick
+In den Einheiten 5 und 9 waren die Transportkosten $c_{ij}$ **vorgegeben**. Im Januar endet das Weihnachtsgeschäft: Die Zentralküche **Raunheim** beliefert wieder alle sechs Filialen allein.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Auftrag der Disposition
+Die neue Disponentin möchte die Kostensätze **selbst nachvollziehen**. Dafür braucht sie die **Straßenentfernungen**
+
+- von Raunheim zu jeder Filiale und
+- zwischen allen Filialen (für die Tourenplanung in Einheit 11).
+:::
+:::
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: small-text
+**Erste Idee: Luftlinie (Haversine, Einheit 4)**
+
+```{r sp-luftlinie}
+#| echo: false
+
+luft <- sp_nodes |>
+  filter(Typ == "Filiale") |>
+  mutate(Luft = haversine(50.0000, 8.4650, Lat, Lon)) |>
+  select(ID, Name, Luft)
+
+kbl_sf(luft |> mutate(Luft = fmt(Luft)),
+       col.names = c("ID", "Filiale", "Luftlinie ab Raunheim (km)"),
+       align = c("c", "l", "r"), col1_bg = "#2D9E8E", font_size = 22)
+```
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Lkw fahren nicht Luftlinie: Rhein- und Mainbrücken, Autobahnkreuze und Ortsdurchfahrten bestimmen die tatsächliche Strecke.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Straßennetz als Graph {#sp-graph}
+::: slide-subtitle
+Modellierung
+:::
+
+::: columns
+::: {.column width="40%"}
+
+::: {.smaller-text}
+**Graph** $G = (V, E)$
+
+- **Knoten** $V$: Orte (Küche, Filialen) und **Verknüpfungspunkte** (Autobahnkreuze)
+- **Kanten** $E$: direkte Straßenverbindungen
+- **Kantengewicht** $c_{vw} \geq 0$: Länge, Fahrzeit oder Kosten
+- **ungerichtet**, wenn beide Richtungen gleich lang sind; sonst **gerichtet** (Einbahnstraßen, Auffahrten)
+
+**Weg** von $s$ nach $t$: Folge benachbarter Knoten; **Länge** = Summe der Kantengewichte
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Das SushiFresh-Netz hat `r nrow(sp_nodes)` Knoten und `r nrow(sp_edges)` Kanten (vereinfacht).
+:::
+:::
+
+:::
+::: {.column width="58%"}
+
+```{r sp-graph-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+sp_plot(height = 590, width = 900)
+```
+
+:::
+:::
+
+---
+
+## Kürzeste-Wege-Probleme {#sp-problem}
+::: slide-subtitle
+Problemvarianten
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.small-text}
+```{r sp-varianten}
+#| echo: false
+
+var <- data.frame(
+  Variante = c("1 → 1", "1 → alle", "alle → alle"),
+  Frage = c("Kürzester Weg von s nach t",
+            "Kürzeste Wege von s zu allen Knoten",
+            "Kürzeste Wege zwischen allen Knotenpaaren"),
+  Verfahren = c("Dijkstra (mit Abbruch), A*",
+                "Dijkstra, Bellman-Ford",
+                "Floyd-Warshall oder n × Dijkstra"),
+  Beispiel = c("Navigationssystem", "Kostensätze ab Zentralküche",
+               "Distanzmatrix für die Tourenplanung")
+)
+kbl_sf(var, align = c("c", "l", "l", "l"), font_size = 24)
+```
+:::
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Als Netzwerkflussproblem
+Ein Kürzeste-Wege-Problem ist ein Transportproblem auf einem Netz: Eine Einheit fließt von $s$ nach $t$.
+
+$$\min \sum_{(v,w) \in E} c_{vw} \, x_{vw}$$
+$$\sum_{w} x_{vw} - \sum_{w} x_{wv} = \begin{cases} 1 & v = s \\ -1 & v = t \\ 0 & \text{sonst} \end{cases}$$
+$$x_{vw} \geq 0$$
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.small-text}
+Mit spezialisierten Algorithmen geht es aber **deutlich schneller** als mit einem LP-Solver.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Dijkstra-Algorithmus {#sp-dijkstra-idea}
+::: slide-subtitle
+Idee
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**Idee [@dijkstra1959note]:** Breite dich vom Startknoten $s$ wie eine **Welle** aus. Jeder Knoten $v$ trägt eine **Marke** $d(v)$ (bisher kürzeste bekannte Entfernung) und einen **Vorgänger** $p(v)$. In jedem Schritt wird der **nächstgelegene noch offene** Knoten endgültig („permanent“) markiert.
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Zwei Arten von Marken**
+
+- **temporär**: vorläufiger Wert, kann noch **verbessert** werden
+- **permanent**: endgültig kürzeste Entfernung
+
+**Warum ist der kleinste temporäre Wert endgültig?**
+Jeder andere Weg müsste über einen Knoten mit größerer Marke laufen und kann wegen $c_{vw} \geq 0$ nicht kürzer werden.
+:::
+:::
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Kernoperation: Markenkorrektur
+Für jeden Nachbarn $w$ des neu permanenten Knotens $v$:
+$$d(w) \leftarrow \min\big(d(w),\; d(v) + c_{vw}\big)$$
+Verbessert sich $d(w)$, wird $p(w) \leftarrow v$ gesetzt.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Voraussetzung: **keine negativen** Kantengewichte.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Dijkstra-Algorithmus {#sp-dijkstra-algo}
+::: slide-subtitle
+Algorithmus
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.smaller-text}
+**Initialisierung:** $d(s) = 0$, $d(v) = \infty$ für alle $v \neq s$; alle Marken temporär; $p(v) = \text{–}$
+
+**Wiederhole**, bis alle Knoten permanent sind:
+
+1. Wähle den temporär markierten Knoten $v$ mit **kleinstem** $d(v)$.
+2. Markiere $v$ **permanent**.
+3. Für jeden temporär markierten Nachbarn $w$ von $v$:
+   - **falls** $d(v) + c_{vw} < d(w)$:
+     setze $d(w) = d(v) + c_{vw}$ und $p(w) = v$
+
+**Ergebnis:** $d(v)$ = kürzeste Entfernung von $s$ nach $v$; der Weg ergibt sich durch **Rückverfolgung** der Vorgänger $p(v)$.
+:::
+
+:::
+::: {.column width="42%"}
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Aufwand
+- $n$ Iterationen, je Iteration Minimumsuche über $n$ Knoten → $\mathcal{O}(n^2)$
+- mit Prioritätswarteschlange (Heap) → $\mathcal{O}(|E| + n \log n)$
+- Ein Navigationssystem durchsucht so Millionen Knoten in Millisekunden (mit Beschleunigungen wie A*).
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Notation im Fallbeispiel
+Marke „$d$ | $p$“, z. B. „15 | MH“ = 15 km, Vorgänger Mönchhof-Dreieck
+:::
+:::
+
+:::
+:::
+
+---
+
+## Dijkstra-Algorithmus {#sp-dij-step1}
+::: slide-subtitle
+Fallbeispiel – Iteration 1: Start in Raunheim
+:::
+
+::: columns
+::: {.column width="58%"}
+
+```{r sp-step1}
+#| echo: false
+#| warning: false
+#| message: false
+
+sp_plot(sp_res$steps[[1]], height = 590, width = 900)
+```
+
+:::
+::: {.column width="40%"}
+
+::: {.smaller-text}
+::: {.callout-tip appearance="simple"}
+## Schritt
+- R hat die kleinste Marke (0) → **permanent**
+- Nachbarn erhalten erste Marken:
+  - MH: $0 + 5 = 5$
+  - C4: $0 + 6 = 6$
+  - C3: $0 + 33 = 33$ (Bundesstraße direkt nach Frankfurt)
+:::
+
+**Legende**
+
+- <span style="color:#0B6E4F">●</span> permanent
+- <span style="color:#F4A259">●</span> temporär markiert
+- <span style="color:#C00000">○</span> in dieser Iteration verbessert
+- graue Knoten: noch $d = \infty$
+:::
+
+:::
+:::
+
+---
+
+## Dijkstra-Algorithmus {#sp-dij-step3}
+::: slide-subtitle
+Fallbeispiel – Iteration 3: Rüsselsheim
+:::
+
+::: columns
+::: {.column width="58%"}
+
+```{r sp-step3}
+#| echo: false
+#| warning: false
+#| message: false
+
+sp_plot(sp_res$steps[[3]], height = 590, width = 900)
+```
+
+:::
+::: {.column width="40%"}
+
+::: {.smaller-text}
+::: {.callout-tip appearance="simple"}
+## Schritt
+- Iteration 2: MH (5) wurde permanent → WK = 18, FK = 15
+- Iteration 3: kleinste temporäre Marke ist **C4 (6)** → permanent
+- Nachbarn von C4:
+  - C2: $6 + 16 = 22$ → neu
+  - C5: $6 + 33 = 39$ → neu
+  - MH ist bereits permanent → keine Prüfung
+:::
+
+::: {.fragment .fade-up}
+Die Marke von C4 bleibt 6: Der Umweg über MH ($5 + 10 = 15$) war **nie** besser.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Dijkstra-Algorithmus {#sp-dij-step4}
+::: slide-subtitle
+Fallbeispiel – Iteration 4: Markenkorrektur in Frankfurt
+:::
+
+::: columns
+::: {.column width="58%"}
+
+```{r sp-step4}
+#| echo: false
+#| warning: false
+#| message: false
+
+sp_plot(sp_res$steps[[4]], height = 590, width = 900)
+```
+
+:::
+::: {.column width="40%"}
+
+::: {.smaller-text}
+::: {.callout-tip appearance="simple"}
+## Schritt
+- **FK (15)** wird permanent
+- Nachbarn von FK:
+  - C3: $15 + 13 = 28 < 33$ → **Korrektur!** neue Marke 28, Vorgänger FK
+  - C6: $15 + 12 = 27$ → neu
+  - C5: $15 + 29 = 44 > 39$ → keine Änderung
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-important appearance="simple"}
+Der direkte Weg nach Frankfurt (33 km) wird durch den Weg über die Autobahn (28 km) **ersetzt**. Temporäre Marken sind eben nur vorläufig.
+:::
+:::
+:::
+
+:::
+:::
+
+---
+
+## Dijkstra-Algorithmus {#sp-dij-table}
+::: slide-subtitle
+Fallbeispiel – Tableau aller Iterationen
+:::
+
+::: {.small-text}
+```{r sp-tableau}
+#| echo: false
+
+sp_tableau(sp_res, font_size = 24)
+```
+:::
+
+::: columns
+::: {.column width="55%"}
+::: {.smaller-text}
+Zellen: „$d$ | $p$“ (temporäre Marke), <span style="background:#0B6E4F;color:white;padding:1px 5px;border-radius:3px">**grün**</span> = wird in dieser Iteration permanent, <span style="color:#C00000">**rot**</span> = in dieser Iteration verbessert, leer = bereits permanent.
+:::
+:::
+::: {.column width="42%"}
+::: {.fragment .fade-up}
+::: {.smaller-text}
+Nach `r length(sp_res$steps)` Iterationen sind alle Knoten permanent. Die Reihenfolge entspricht **aufsteigenden** Entfernungen.
+:::
+:::
+:::
+:::
+
+---
+
+## Dijkstra-Algorithmus {#sp-tree}
+::: slide-subtitle
+Ergebnis: Kürzeste-Wege-Baum ab Raunheim
+:::
+
+::: columns
+::: {.column width="55%"}
+
+```{r sp-tree-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+sp_plot(sp_res$steps[[length(sp_res$steps)]], tree = TRUE,
+        height = 590, width = 880)
+```
+
+:::
+::: {.column width="43%"}
+
+::: small-text
+```{r sp-routes}
+#| echo: false
+
+routes <- sp_nodes |>
+  filter(Typ == "Filiale") |>
+  mutate(
+    Weg   = sapply(ID, function(v) paste(pfad(sp_res$pred, v), collapse = " → ")),
+    Netz  = sp_res$d[ID],
+    Luft  = haversine(50.0000, 8.4650, Lat, Lon),
+    Umweg = Netz / Luft
+  )
+
+kbl_sf(routes |>
+         transmute(ID, Weg, Netz, Luft = fmt(Luft), Umweg = fmt(Umweg, 2)),
+       col.names = c("Filiale", "Kürzester Weg", "km", "Luftlinie", "Umweg-faktor"),
+       align = c("c", "l", "r", "r", "r"), col1_bg = "#2D9E8E", font_size = 20)
+```
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+Die Vorgänger bilden einen **Baum** (grün): Von jedem Knoten führt genau ein kürzester Weg zurück nach Raunheim. Der mittlere **Umwegfaktor** liegt bei `r fmt(mean(routes$Umweg), 2)`. Typische Werte in Deutschland liegen bei 1,2–1,4.
+:::
+:::
+:::
+
+:::
+:::
+
+---
+
+## Dijkstra-Algorithmus {#sp-r}
+::: slide-subtitle
+Implementierung in R
+:::
+
+::: columns
+::: {.column width="55%"}
+
+```{r sp-r-code}
+#| echo: true
+#| eval: true
+
+# W: Gewichtsmatrix (0 = keine Kante)
+dijkstra <- function(W, start) {
+  ids  <- rownames(W)
+  d    <- setNames(rep(Inf, nrow(W)), ids)
+  pred <- setNames(rep(NA, nrow(W)), ids)
+  perm <- setNames(rep(FALSE, nrow(W)), ids)
+  d[start] <- 0
+  while (!all(perm)) {
+    # 1. kleinste temporäre Marke
+    v <- names(which.min(ifelse(perm, Inf, d)))
+    # 2. permanent markieren
+    perm[v] <- TRUE
+    # 3. Markenkorrektur der Nachbarn
+    for (w in ids[W[v, ] > 0 & !perm]) {
+      if (d[v] + W[v, w] < d[w]) {
+        d[w]    <- d[v] + W[v, w]
+        pred[w] <- v
+      }
+    }
+  }
+  list(d = d, pred = pred)
+}
+```
+
+:::
+::: {.column width="42%"}
+
+```{r sp-r-run}
+#| echo: true
+#| eval: true
+
+res <- dijkstra(sp_W, start = "R")
+res$d[c("C1", "C2", "C3",
+        "C4", "C5", "C6")]
+```
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Alternative mit Paketen
+`igraph::distances(g, weights = ...)` oder `osrm::osrmTable()` für echte Straßendaten (Einheit 5).
+:::
+:::
+
+:::
+:::
+
+---
+
+## Distanzmatrix für die Tourenplanung {#sp-matrix}
+::: slide-subtitle
+Alle Paare: $n$-mal Dijkstra
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: small-text
+```{r sp-dist-matrix}
+#| echo: false
+
+stops <- c("R", paste0("C", 1:6))
+sp_D <- t(sapply(stops, function(s) dijkstra(sp_W, s)$d[stops]))
+dimnames(sp_D) <- list(stops, stops)
+
+kbl_sf(as.data.frame(sp_D) |> rownames_to_column("von"),
+       align = c("c", rep("r", 7)), font_size = 24) |>
+  add_header_above(c(" " = 1, "nach (km)" = 7),
+                   background = "#2F3E46", color = "white")
+```
+
+```{r sp-dist-code}
+#| echo: true
+#| eval: false
+
+stops <- c("R", paste0("C", 1:6))
+D <- t(sapply(stops, function(s)
+  dijkstra(sp_W, s)$d[stops]))
+```
+:::
+
+:::
+::: {.column width="45%"}
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Eigenschaften der Distanzmatrix
+- **symmetrisch** (ungerichtetes Netz)
+- erfüllt die **Dreiecksungleichung** $d_{ik} \leq d_{ij} + d_{jk}$, denn jede Direktverbindung ist bereits ein kürzester Weg
+- enthält nur noch die **relevanten** Orte, die Autobahnknoten sind „herausgerechnet“
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-important appearance="simple"}
+## Ausblick auf Einheit 11
+Fährt der Kühltransporter jede Filiale einzeln an (**Pendelverkehr**), legt er täglich $2 \cdot \sum_j d_{Rj} =$ **`r 2 * sum(sp_D["R", -1])` km** zurück. Geht das mit einer **Rundtour** kürzer?
+:::
+:::
+
+:::
+:::
+
+---
+
+## Kürzeste Wege in der Praxis {#sp-praxis}
+::: slide-subtitle
+Varianten und Erweiterungen
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="simple"}
+## Weitere Algorithmen
+- **Bellman-Ford**: erlaubt negative Kantengewichte (z. B. Rückfrachten mit Erlös), $\mathcal{O}(n \cdot |E|)$
+- **Floyd-Warshall**: alle Paare auf einmal, $\mathcal{O}(n^3)$
+- **A\***: Dijkstra mit Schätzung der Restentfernung (z. B. Luftlinie) → durchsucht viel weniger Knoten
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.callout-tip appearance="simple"}
+## Was ist „kurz“?
+- **Distanz** (km): Kraftstoff, Verschleiß
+- **Fahrzeit**: Personal, Frische der Ware, Lieferfenster
+- **Kosten**: Maut, Fahrzeugkosten
+- **zeitabhängig**: Berufsverkehr auf der A3 um 7 Uhr ≠ um 4 Uhr
+
+Je nach Zielgröße ergeben sich **unterschiedliche** kürzeste Wege.
+:::
+
+:::
+:::
+
+---
+
+## Kernaussagen {#sp-summary}
+
+::: {.callout-tip appearance="simple"}
+## Das Wichtigste in Kürze
+
+- Straßennetze werden als **Graphen** modelliert. Transportkosten $c_{ij}$ ergeben sich aus **kürzesten Wegen** im Netz, nicht aus der Luftlinie.
+- Der **Dijkstra-Algorithmus** markiert schrittweise den nächstgelegenen offenen Knoten permanent und korrigiert die Marken seiner Nachbarn. Voraussetzung: nichtnegative Gewichte.
+- Temporäre Marken können sich noch **verbessern** (SushiFresh: Frankfurt von 33 auf 28 km).
+- Mehrfaches Anwenden liefert eine symmetrische, metrische **Distanzmatrix**, die Grundlage der **Tourenplanung**.
+:::
+
+---
+
+## Übung {#sp-exercise}
+
+::: {.exercise-slide}
+::: {.exercise-header}
+Kürzeste Wege – Baustelle auf der A3
+:::
+
+::: {.columns .exercise-content}
+::: {.column width="52%"}
+Wegen einer Vollsperrung ist die Verbindung **Mönchhof-Dreieck – Frankfurter Kreuz** (10 km) für drei Wochen gesperrt.
+
+- Führen Sie den Dijkstra-Algorithmus ab Raunheim **von Hand** im Tableau durch.
+- Welche Filialen sind betroffen? Wie ändern sich die Entfernungen?
+- Wie viele Kilometer mehr fährt der Kühltransporter im Pendelverkehr pro Tag?
+- Prüfen Sie Ihr Ergebnis mit der Funktion `dijkstra()`.
+:::
+::: {.column width="45%"}
+```{r sp-exercise-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+sp_plot(removed = "FK-MH", height = 470, width = 680)
+```
+:::
+:::
+:::

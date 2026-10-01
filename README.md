@@ -33,8 +33,6 @@ Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des 
 
 ---
 
-
-
 ## Prüfungsleistung: Klausur
 
 

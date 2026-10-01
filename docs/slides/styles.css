@@ -1,0 +1,153 @@
+/* Uniform sizing for auto-generated LaTeX formula/table graphics
+   (originally rendered as very wide, whitespace-heavy PNGs, e.g.
+   image72/74/114/115/121-124). Caps their maximum width so they stay
+   legible and consistent across slides, and keeps them from shrinking
+   to an unreadable size inside multi-column layouts. */
+.reveal .formula-img {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  min-width: 320px;
+  height: auto;
+  margin: 0.3em auto;
+}
+
+.slide-subtitle {
+  font-size: 1.2em;
+  color: #666;
+  margin-top: -0.3em;
+  margin-bottom: 0.3em;
+}
+
+.tiny-text {
+  font-size: 0.6em;
+  line-height: 1.0;
+}
+
+.smaller-text {
+  font-size: 0.725em;
+  line-height: 1.0;
+}
+
+.small-text {
+  font-size: 0.85em;
+  line-height: 1.2;
+}
+
+.large-text {
+  font-size: 1.3em;
+  line-height: 1.5;
+}
+
+.smalltable table {
+  font-size: 0.5em;
+}
+
+.exercise-slide {
+  width: 100%;
+  margin-top: -0.5em;
+  font-size: 0.86em;
+}
+
+.exercise-header {
+  background: #403c3a;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1em;
+  padding: 0.22em 0.42em;
+  margin-bottom: 0.22em;
+}
+
+.exercise-content {
+  align-items: stretch;
+  gap: 0.6em;
+}
+
+.exercise-content > .column:first-child {
+  background: #d4d3d1;
+  padding: 0.35em 0.5em 0.2em 0.5em;
+  color: #3d3a38;
+  line-height: 1.12;
+}
+
+.exercise-content > .column:last-child {
+  padding: 0;
+}
+
+.exercise-content p {
+  margin-top: 0;
+  margin-bottom: 0.55em;
+}
+
+.exercise-content ul {
+  margin-top: 0.15em;
+  margin-bottom: 0.45em;
+  padding-left: 1.1em;
+}
+
+.exercise-content li {
+  margin-bottom: 0.05em;
+}
+
+.vspace-1 {
+  height: 0.35em;
+}
+
+.vspace-2 {
+  height: 0.55em;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.7fr 1.1fr;
+  grid-template-rows: 1fr 1.08fr;
+  gap: 0.25em;
+  width: 100%;
+  height: 100%;
+  min-height: 11.2em;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #f7f7f5;
+  padding: 0.15em;
+}
+
+.chocolate {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.bottle {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.shirt {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.bike {
+  grid-column: 1;
+  grid-row: 2;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+.reveal section .tikz-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.reveal section .tikz-slide img,
+.reveal section .tikz-slide svg {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 100%;
+  object-fit: contain;
+}
