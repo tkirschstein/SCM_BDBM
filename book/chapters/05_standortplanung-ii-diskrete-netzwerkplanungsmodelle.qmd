@@ -21,7 +21,7 @@ library(kableExtra)
 Nach der Bearbeitung dieses Kapitels können Sie …
 
 - diskrete Standort- und Netzwerkplanungsprobleme von den kontinuierlichen Verfahren aus Kapitel [-@sec-standort-1] abgrenzen,
-- das klassische Transportproblem als lineares Optimierungsmodell formulieren und mit der Vogel'schen Approximationsmethode näherungsweise lösen,
+- das klassische Transportproblem als Spezialfall der Netzwerkplanung mit festen Standorten einordnen,
 - das Warehouse Location Problem (WLP) als gemischt-ganzzahliges Optimierungsmodell aufstellen und seine Entscheidungsvariablen, Zielfunktion und Nebenbedingungen interpretieren,
 - ein WLP mit dem R-Paket `ompr` exakt lösen und das Ergebnis ökonomisch einordnen,
 - die Grundideen konstruktiver Add- und Drop-Heuristiken nachvollziehen, in R anwenden und ihre Lösungsgüte beurteilen,
@@ -50,7 +50,7 @@ Bei der diskreten Standortplanung wird aus einer endlichen Menge vorab definiert
 
 Diskrete Standortentscheidungen sind stets eingebettet in ein größeres **Supply-Chain-Netzwerk**, das sich grob in die Stufen Beschaffung, Produktion, Distribution und Absatz gliedern lässt. Auf jeder dieser Stufen können Knoten (Lieferantenwerke, Produktionsstätten, Lagerhäuser, Cross-Docking-Punkte) geöffnet, geschlossen oder miteinander verbunden werden; man spricht in diesem Zusammenhang auch von **Netzwerkdesign**. Die Vorlesung betont dabei, dass in der Praxis meist nur ein **Ausschnitt** des Gesamtnetzes betrachtet wird: Man wählt konkrete Standorte auf einer oder zwei Stufen aus und hält die übrigen Stufen fest. Dieses Kapitel konzentriert sich entsprechend auf die Frage, welche Produktions- und Distributionsstandorte SushiFresh betreiben und welche Filiale von welchem Standort beliefert werden soll. Die vorgestellten Modelle lassen sich jedoch unmittelbar auf andere Netzwerkstufen übertragen.
 
-Wir nähern uns der diskreten Standortplanung in zwei Schritten. Zunächst betrachten wir den **Spezialfall**, dass die Standorte bereits feststehen und nur noch die Liefermengen optimal auf die Filialen verteilt werden müssen – das klassische **Transportproblem**. Anschließend erweitern wir das Modell um die eigentliche Standortentscheidung: das **Warehouse Location Problem (WLP)**, bei dem sowohl die Frage „wo?" als auch die Frage „wie viel wohin?" simultan zu beantworten ist.
+Wir nähern uns der diskreten Standortplanung in zwei Schritten. Zunächst betrachten wir kurz den **Spezialfall**, dass die Standorte bereits feststehen und nur noch die Liefermengen optimal auf die Filialen verteilt werden müssen – das klassische **Transportproblem**, dessen Lösungsverfahren Kapitel [-@sec-transportplanung] vertieft. Anschließend erweitern wir das Modell um die eigentliche Standortentscheidung: das **Warehouse Location Problem (WLP)**, bei dem sowohl die Frage „wo?" als auch die Frage „wie viel wohin?" simultan zu beantworten ist.
 
 ## Fallbeispiel: SushiFresh GmbH
 
@@ -143,66 +143,15 @@ dist_km <- tab$distances / 1000
 In realen Anwendungen ist eine Transportkostenmatrix weder symmetrisch noch an der Luftlinie orientiert: Straßenwege, Autobahnauffahrten und Rheinbrücken bestimmen die tatsächliche Entfernung, und Fahrzeiten können je nach Tageszeit stark schwanken. Solche Effekte sind der Grund, warum diskrete Modelle in der Praxis mit Straßendistanzen oder -fahrzeiten statt mit euklidischen Distanzen arbeiten – und warum die kontinuierlichen Verfahren aus Kapitel [-@sec-standort-1] nur eine erste Orientierung liefern.
 :::
 
-## Das klassische Transportproblem
+## Ein Spezialfall: das Transportproblem
 
-Nehmen wir zunächst an, SushiFresh betreibe – hypothetisch, als Ausgangsszenario *vor* der eigentlichen Standortentscheidung – bereits **alle fünf** Standorte gleichzeitig und müsse "nur" noch festlegen, welche Filiale von welchem Standort mit welcher Menge beliefert wird. Die Standorte haben dabei begrenzte Tages-Produktionskapazitäten, die in Summe genau der Gesamtnachfrage aller sechs Filialen entsprechen:
-
-```{r}
-#| label: ch5-angebot
-
-angebot   <- c(S1 = 200, S2 = 150, S3 = 250, S4 = 120, S5 = 125)   # Boxen/Tag
-nachfrage <- setNames(filialen_fall$mu, filialen_fall$ID)          # Boxen/Tag
-
-c(Angebot = sum(angebot), Nachfrage = sum(nachfrage))
-```
-
-Fünf **Quellen** (Angebot der Standorte) und sechs **Senken** (Nachfrage der Filialen) – das klassische **Transportproblem**.
-
-::: {.definition}
-**Definition: Transportproblem**
-
-Beim (klassischen) Transportproblem sind $m$ Quellen $i \in I$ mit Angebotsmengen $s_i$ und $n$ Senken $j \in J$ mit Nachfragemengen $a_j$ gegeben. Für jede Verbindung $(i,j)$ fallen Transportkosten $c_{ij}$ pro transportierter Einheit an. Gesucht ist eine kostenminimale Verteilung der Angebotsmengen auf die Nachfragemengen. Das Problem heißt **balanciert**, wenn $\sum_i s_i = \sum_j a_j$ gilt; andernfalls ist es **unbalanciert**.
-:::
-
-Formal lautet das zugehörige lineare Optimierungsmodell mit den Transportmengen $x_{ij} \geq 0$ als Entscheidungsvariablen:
+Bevor wir die Standortentscheidung modellieren, lohnt ein Blick auf den Spezialfall, in dem die Standorte bereits **feststehen**. Dann bleibt nur die Frage, welche Filiale von welchem Standort mit welcher Menge beliefert wird. Das ist das klassische **Transportproblem**: $m$ Quellen mit Angebotsmengen $s_i$, $n$ Senken mit Nachfragemengen $a_j$ und Transportkosten $c_{ij}$ je Einheit. Mit den Transportmengen $x_{ij} \geq 0$ lautet das Modell
 
 $$
-\begin{align}
-\min \quad & \sum_{i \in I} \sum_{j \in J} c_{ij} \cdot x_{ij} \\
-\text{u.d.N.} \quad & \sum_{j \in J} x_{ij} \leq s_i & \forall i \in I \quad &\rightarrow \text{Angebotsrestriktion} \\
-& \sum_{i \in I} x_{ij} = a_j & \forall j \in J \quad &\rightarrow \text{Nachfrage exakt decken} \\
-& x_{ij} \geq 0 & \forall (i,j) &\quad \rightarrow \text{Nichtnegativität}
-\end{align}
+\min \sum_{i} \sum_{j} c_{ij} \cdot x_{ij} \quad \text{u.d.N.} \quad \sum_{j} x_{ij} \leq s_i \;\; \forall i, \qquad \sum_{i} x_{ij} = a_j \;\; \forall j, \qquad x_{ij} \geq 0.
 $$
 
-Da alle Nebenbedingungen und die Zielfunktion linear in $x_{ij}$ sind, handelt es sich um ein reines **lineares Optimierungsproblem** (kein MILP) – die Optimallösung liegt stets an einer Ecke des Lösungspolyeders, und es existieren spezialisierte, sehr effiziente Lösungsverfahren.
-
-::: {.vertiefung}
-**Theorie-Vertiefung: Warum Transportprobleme "von selbst" ganzzahlige Lösungen liefern**
-
-Die Nebenbedingungsmatrix des Transportproblems hat eine besondere Struktur: Jede Variable $x_{ij}$ taucht in genau zwei Nebenbedingungen auf – einmal in der Angebotszeile von $i$ und einmal in der Nachfragezeile von $j$ –, jeweils mit dem Koeffizienten 1. Matrizen mit dieser Struktur sind **total unimodular**, d. h. jede quadratische Teilmatrix hat die Determinante 0, +1 oder −1. Daraus folgt nach der Cramer'schen Regel, dass jede Ecke des Lösungspolyeders ganzzahlig ist, sofern Angebots- und Nachfragemengen ganzzahlig sind. Für die Praxis heißt das: Obwohl das Transportproblem als LP mit kontinuierlichen Variablen gelöst wird, erhält man automatisch ganzzahlige Transportmengen – man muss keine "halben Boxen" nachträglich runden.
-
-Eine zweite nützliche Eigenschaft betrifft die Anzahl positiver Transportmengen: Eine Basislösung eines balancierten Transportproblems hat höchstens $m + n - 1$ positive Variablen. Bei fünf Standorten und sechs Filialen werden also höchstens zehn der dreißig möglichen Verbindungen genutzt – die meisten Filialen werden von genau einem Standort beliefert, nur wenige werden auf zwei Standorte "aufgeteilt". Die Eröffnungsverfahren unten erzeugen genau solche Basislösungen.
-:::
-
-Historisch wurden für Transportprobleme sogenannte **Tableau-Verfahren** entwickelt, die auf der Simplex-Idee aufbauen, sich aber die spezielle Struktur zunutze machen. Zwei klassische Eröffnungsverfahren, die eine erste zulässige Lösung konstruieren, sind die **Nordwestecken-Methode** und die **Vogel'sche Approximationsmethode**.
-
-Die Nordwestecken-Methode ist denkbar einfach: Man beginnt in der "Nordwestecke" des Tableaus (Zeile 1, Spalte 1), beliefert dort so viel wie möglich, streicht die dadurch erschöpfte Zeile oder Spalte und wiederholt das Vorgehen für die verbleibende Restmatrix. Der große Vorteil ist die Einfachheit; der Nachteil: Die Kosten $c_{ij}$ werden bei der Wahl der Zellen **überhaupt nicht berücksichtigt**. Das Verfahren liefert daher zwar stets eine zulässige, aber oft eine ökonomisch schlechte Startlösung.
-
-Die **Vogel'sche Approximationsmethode (VAM)** verbessert dies, indem sie in jedem Schritt die Zeile oder Spalte bevorzugt beliefert, bei der eine "falsche" Entscheidung am teuersten wäre. Dazu wird für jede Zeile und jede Spalte eine **Strafkosten-Differenz** (englisch *penalty*) berechnet: die Differenz zwischen den beiden günstigsten Kosten in dieser Zeile bzw. Spalte. Eine große Differenz bedeutet: Wird hier nicht die günstigste Zelle gewählt, wird es überdurchschnittlich teuer (Opportunitätskosten der zweitbesten Wahl). Die Grundidee lässt sich wie folgt zusammenfassen:
-
-```r
-# Kernidee der Vogel'schen Approximationsmethode (vereinfacht):
-# Wiederhole, solange noch Angebot und Nachfrage offen sind:
-#   1. Berechne für jede aktive Zeile/Spalte die Strafkosten-Differenz
-#      = Differenz zwischen den zwei günstigsten Kosten in dieser
-#        Zeile bzw. Spalte
-#   2. Wähle die Zeile/Spalte mit der GRÖSSTEN Strafkosten-Differenz
-#   3. Beliefere darin die günstigste Zelle mit der maximal möglichen
-#      Menge (= min(Restangebot, Restnachfrage))
-#   4. Aktualisiere Restangebot/-nachfrage; ist eine Zeile/Spalte
-#      erschöpft, wird sie aus der weiteren Betrachtung entfernt
-```
+Das Warehouse Location Problem erweitert genau dieses Modell um die Entscheidung, *welche* Quellen überhaupt geöffnet werden. Die Transportmengen $x_{ij}$ und die Kostenmatrix $c_{ij}$ tauchen deshalb im WLP unverändert wieder auf. Lösungsverfahren für das Transportproblem, also die Nordwestecken-Regel, die Vogel'sche Approximationsmethode und die exakte Lösung als LP, behandelt Kapitel [-@sec-transportplanung]. Es greift die Standortentscheidung dieses Kapitels auf und fragt, was passiert, wenn die Kapazität der gewählten Zentralküche in der Adventszeit nicht mehr ausreicht.
 
 ::: {.r-exkurs}
 **R-Exkurs: Matrizen als Kosten- und Transporttableaus**
@@ -217,55 +166,8 @@ kosten_mat[, "C3"]          # Kosten, Frankfurt von jedem Standort zu beliefern
 apply(kosten_mat, 2, which.min)   # je Filiale: Zeilenindex des guenstigsten Standorts
 ```
 
-Nach der Lösung lässt sich mit `rowSums()` und `colSums()` sehr einfach prüfen, ob eine berechnete Allokationsmatrix zulässig ist: Die Zeilensummen müssen dem Angebot, die Spaltensummen der Nachfrage entsprechen.
+Mit `rowSums()` und `colSums()` lässt sich später sehr einfach prüfen, ob eine berechnete Zuordnung zulässig ist: Die Spaltensummen einer Liefermatrix müssen der Nachfrage der Filialen entsprechen.
 :::
-
-Die Funktion `vogels_approximation()` aus `R/scm_functions.R` implementiert das oben skizzierte Verfahren vollständig, inklusive automatischer Balancierung über einen Dummy-Standort bzw. eine Dummy-Filiale, falls Angebot und Nachfrage nicht übereinstimmen:
-
-```{r}
-#| label: ch5-vogel-example
-
-vam_ergebnis <- vogels_approximation(
-  cost_mat = kosten_mat,
-  supply   = angebot,
-  demand   = nachfrage,
-  verbose  = FALSE
-)
-
-vam_ergebnis$allocation
-round(vam_ergebnis$total_cost, 2)   # Transportkosten in EUR/Tag
-
-# Zulaessigkeitspruefung
-rowSums(vam_ergebnis$allocation) == angebot
-colSums(vam_ergebnis$allocation) == nachfrage
-```
-
-Die Allokationsmatrix zeigt ein ökonomisch plausibles Bild: Die Filialen werden überwiegend von den jeweils nahe gelegenen Standorten beliefert, und nur dort, wo ein Standort seine Kapazität bereits ausgeschöpft hat, wird eine Filiale auf zwei Standorte aufgeteilt. Die Gesamtkosten belaufen sich auf `r round(vam_ergebnis$total_cost, 2)` € pro Tag. Da VAM eine **Eröffnungsheuristik** ist, muss dieses Ergebnis nicht die Optimallösung sein. Wie gut sie ist, lässt sich prüfen, indem man das Transportproblem zusätzlich exakt als LP löst (mit dem Paket `ompr`, das weiter unten ausführlich eingeführt wird):
-
-```{r}
-#| label: ch5-transport-lp
-#| message: false
-
-library(ompr)
-library(ompr.roi)
-library(ROI.plugin.glpk)
-
-m <- nrow(kosten_mat); n <- ncol(kosten_mat)
-
-tp_modell <- MIPModel() |>
-  add_variable(x[i, j], i = 1:m, j = 1:n, type = "continuous", lb = 0) |>
-  set_objective(sum_expr(kosten_mat[i, j] * x[i, j], i = 1:m, j = 1:n), "min") |>
-  add_constraint(sum_expr(x[i, j], j = 1:n) <= angebot[i], i = 1:m) |>
-  add_constraint(sum_expr(x[i, j], i = 1:m) == nachfrage[j], j = 1:n)
-
-tp_loesung <- solve_model(tp_modell, with_ROI(solver = "glpk"))
-tp_opt     <- objective_value(tp_loesung)
-
-c(VAM = round(vam_ergebnis$total_cost, 2), Optimum = round(tp_opt, 2),
-  Abweichung_Prozent = round((vam_ergebnis$total_cost / tp_opt - 1) * 100, 2))
-```
-
-`r if (abs(vam_ergebnis$total_cost - tp_opt) < 0.01) 'In diesem Beispiel findet VAM sogar bereits die optimale Lösung – das ist nicht garantiert, kommt bei kleinen Instanzen aber häufig vor, weil die Strafkosten-Logik die teuren Fehlentscheidungen gezielt vermeidet.' else paste0('In diesem Beispiel liegt die VAM-Lösung ', round((vam_ergebnis$total_cost / tp_opt - 1) * 100, 1), ' % über dem Optimum – ein für Eröffnungsverfahren typischer Wert.')` Das Transportproblem unterstellt jedoch, dass die Menge der liefernden Standorte bereits feststeht. Genau diese Annahme wird im nächsten Abschnitt aufgehoben.
 
 ## Das Warehouse Location Problem
 
@@ -329,7 +231,7 @@ standort_info[["fixkosten"]]           # Zugriff via [[ ]] mit Namen
 standort_info[["koordinaten"]]["lat"]  # verschachtelter Zugriff
 ```
 
-Listen sind nicht nur zur *Eingabe* nützlich – auch die **Rückgabewerte** vieler R-Funktionen sind Listen, sobald mehr als ein Ergebnis zurückgegeben werden soll. Das haben wir im vorigen Abschnitt bereits genutzt: `vogels_approximation()` liefert eine Liste mit den Feldern `allocation` (Matrix), `total_cost` (Zahl) und `balanced` (logisch). Ebenso liefern `add_heuristic_wlp()` und `drop_heuristic_wlp()`, die wir weiter unten einsetzen, ihr Ergebnis als Liste mit den Feldern `open_warehouses`, `fixed_cost`, `transport_cost`, `total_cost` und `assignment`.
+Listen sind nicht nur zur *Eingabe* nützlich – auch die **Rückgabewerte** vieler R-Funktionen sind Listen, sobald mehr als ein Ergebnis zurückgegeben werden soll. So liefern etwa `add_heuristic_wlp()` und `drop_heuristic_wlp()`, die wir weiter unten einsetzen, ihr Ergebnis als Liste mit den Feldern `open_warehouses`, `fixed_cost`, `transport_cost`, `total_cost` und `assignment`.
 :::
 
 Für die eigentliche Rechnung benötigen wir die Fixkosten und die Jahresnachfrage als **benannte Vektoren** sowie die Kostenmatrix `kosten_mat`:
@@ -415,7 +317,7 @@ Das WLP lässt sich als MILP mit spezialisierten Solvern exakt lösen, ohne alle
 ::: {.r-exkurs}
 **R-Exkurs: Algebraische Optimierungsmodellierung mit `ompr`**
 
-Bislang haben wir Optimierungsprobleme (Center of Gravity, Weiszfeld, Vogel'sche Methode) über **maßgeschneiderte Algorithmen** gelöst. `ompr` verfolgt einen generischeren Ansatz: Man beschreibt das Modell **deklarativ** (Variablen, Zielfunktion, Nebenbedingungen) und überlässt die Lösungssuche einem universellen Solver. Der Workflow gliedert sich in sechs Schritte:
+Bislang haben wir Optimierungsprobleme (Center of Gravity, Weiszfeld) über **maßgeschneiderte Algorithmen** gelöst. `ompr` verfolgt einen generischeren Ansatz: Man beschreibt das Modell **deklarativ** (Variablen, Zielfunktion, Nebenbedingungen) und überlässt die Lösungssuche einem universellen Solver. Der Workflow gliedert sich in sechs Schritte:
 
 1. `MIPModel()` – ein leeres Modellobjekt anlegen,
 2. `add_variable()` – Entscheidungsvariablen mit Typ (`binary`, `continuous`, `integer`) und Indexmenge definieren,
@@ -428,6 +330,11 @@ Im folgenden Code entspricht `y[i]` der binären Standortvariable $y_i$ und `x[i
 
 ```{r}
 #| label: ch5-ompr-model
+#| message: false
+
+library(ompr)
+library(ompr.roi)
+library(ROI.plugin.glpk)
 
 n_J  <- length(nachfrage_jahr)
 f    <- fixkosten_vec     # Eroeffnungskosten f_i (EUR/Jahr)
@@ -626,12 +533,12 @@ Diese Beobachtung ist kein Widerspruch, sondern verdeutlicht die **unterschiedli
 ::: {.fallstudie}
 **Fallstudie: Zwischenergebnis für SushiFresh**
 
-Das WLP empfiehlt einen zentralen Standort in **Raunheim**, gegebenenfalls ergänzt um einen zweiten Standort in Wiesbaden-Erbenheim. Da die Zweistandortlösung im Zahlenbeispiel nur rund `r format(round(brute_force_df$Gesamtkosten[brute_force_df$Standorte == "S3"] - min(brute_force_df$Gesamtkosten)), big.mark = ".", decimal.mark = ",")` €/Jahr günstiger ist als der Einzelstandort Raunheim und bei realistischer Hochrechnung sogar teurer, spricht vieles für eine **Konsolidierung der Produktion in einer Zentralküche in Raunheim**. Einen wichtigen Effekt blendet das WLP allerdings aus: die Bestände, die an jedem Standort zur Absicherung gegen Nachfrageschwankungen vorgehalten werden müssen. Genau diese Frage – wie viel Sicherheitsbestand spart eine zentrale gegenüber einer dezentralen Versorgung? – untersucht Kapitel [-@sec-unsicherheit-pooling]. Sie liefert ein zusätzliches, gewichtiges Argument für die Konsolidierung.
+Das WLP empfiehlt einen zentralen Standort in **Raunheim**, gegebenenfalls ergänzt um einen zweiten Standort in Wiesbaden-Erbenheim. Da die Zweistandortlösung im Zahlenbeispiel nur rund `r format(round(brute_force_df$Gesamtkosten[brute_force_df$Standorte == "S3"] - min(brute_force_df$Gesamtkosten)), big.mark = ".", decimal.mark = ",")` €/Jahr günstiger ist als der Einzelstandort Raunheim und bei realistischer Hochrechnung sogar teurer, spricht vieles für eine **Konsolidierung der Produktion in einer Zentralküche in Raunheim**. Einen wichtigen Effekt blendet das WLP allerdings aus: die Bestände, die an jedem Standort zur Absicherung gegen Nachfrageschwankungen vorgehalten werden müssen. Genau diese Frage – wie viel Sicherheitsbestand spart eine zentrale gegenüber einer dezentralen Versorgung? – untersucht Kapitel [-@sec-unsicherheit-pooling]. Sie liefert ein zusätzliches, gewichtiges Argument für die Konsolidierung. Zuvor fragt Kapitel [-@sec-transportplanung], wie die Ware verteilt wird, wenn die Kapazität der Zentralküche in Spitzenzeiten nicht ausreicht.
 :::
 
 ## Zusammenfassung
 
-Dieses Kapitel hat den Übergang von der kontinuierlichen zur **diskreten Standortplanung** vollzogen: Statt eines beliebigen Punktes in der Ebene wird eine Teilmenge aus einer endlichen Liste vorab definierter Standortkandidaten gesucht. Als methodischen Ausgangspunkt haben wir das **klassische Transportproblem** kennengelernt, bei dem die belieferten Standorte bereits feststehen und nur die Transportflüsse kostenminimal zu bestimmen sind; seine Nebenbedingungsmatrix ist total unimodular, sodass die LP-Lösung automatisch ganzzahlig ist. Die **Vogel'sche Approximationsmethode** liefert in wenigen Schritten eine gute Startlösung, indem sie die Zeile oder Spalte mit der größten Strafkosten-Differenz vorrangig beliefert.
+Dieses Kapitel hat den Übergang von der kontinuierlichen zur **diskreten Standortplanung** vollzogen: Statt eines beliebigen Punktes in der Ebene wird eine Teilmenge aus einer endlichen Liste vorab definierter Standortkandidaten gesucht. Als methodischen Ausgangspunkt haben wir das **klassische Transportproblem** eingeordnet, bei dem die belieferten Standorte bereits feststehen und nur die Transportflüsse kostenminimal zu bestimmen sind. Seine Lösungsverfahren folgen in Kapitel [-@sec-transportplanung].
 
 Das **Warehouse Location Problem** erweitert dieses Modell um die eigentliche Standortentscheidung: Eine binäre Variable $y_i$ pro Standort entscheidet über Eröffnung oder Nichteröffnung, gekoppelt an die Transportmengen $x_{ij}$ über die Nebenbedingung $x_{ij} \leq y_i \cdot a_j$. Weil sowohl binäre als auch kontinuierliche Variablen auftreten, handelt es sich um ein MILP, das sich mit `ompr` in wenigen, an die mathematische Formulierung angelehnten Codezeilen exakt lösen lässt. Am Beispiel von SushiFresh zeigte sich, dass der zentral gelegene Standort Raunheim trotz der höchsten Investitionskosten das Rückgrat jedes guten Netzes bildet; ob ein zweiter Standort in Wiesbaden-Erbenheim hinzukommt, hängt – wie die Sensitivitätsanalyse zeigte – von der Hochrechnung der Nachfrage ab. Die qualitative AHP-Empfehlung (Mainz-Hechtsheim) wurde durch die Kostenoptimierung nicht bestätigt, was die Notwendigkeit beider Verfahren im Entscheidungsprozess unterstreicht. Da das WLP NP-schwer ist, sind für große Instanzen konstruktive **Add-** und **Drop-Heuristiken** ein praktikabler Ausweg – im Fallbeispiel fanden beide das globale Optimum, was allerdings keine allgemeingültige Eigenschaft dieser Verfahren ist.
 
@@ -641,13 +548,11 @@ Auf der R-Seite haben Sie mit diesem Kapitel vier neue Bausteine kennengelernt: 
 **Kontrollfragen**
 
 1. Worin unterscheidet sich die diskrete von der kontinuierlichen Standortplanung, und warum ist die diskrete Variante für die meisten praktischen Standortentscheidungen realistischer?
-2. Formulieren Sie Zielfunktion und Nebenbedingungen des klassischen Transportproblems. Was bedeutet es, wenn ein Transportproblem "unbalanciert" ist, und wie geht `vogels_approximation()` damit um?
-3. Erläutern Sie die Grundidee der Vogel'schen Approximationsmethode. Warum liefert sie in der Regel bessere Startlösungen als die Nordwestecken-Methode?
-4. Warum liefert die LP-Lösung eines Transportproblems bei ganzzahligen Angebots- und Nachfragemengen automatisch ganzzahlige Transportmengen?
-5. Welche zusätzliche Entscheidungsvariable enthält das Warehouse Location Problem im Vergleich zum Transportproblem, und welche Rolle spielt die Nebenbedingung $x_{ij} \leq y_i \cdot a_j$? Warum ist sie der aggregierten Form $\sum_j x_{ij} \leq y_i \sum_j a_j$ vorzuziehen?
-6. Beschreiben Sie Add- und Drop-Heuristik in eigenen Worten. Unter welcher Bedingung lohnt es sich in der Add-Heuristik, einen weiteren Standort zu öffnen?
-7. Was versteht man unter dem "Gap zum Optimum", und warum ist er bei heuristischen Standortentscheidungen eine wichtige Kennzahl?
-8. Erklären Sie den Unterschied zwischen einer Liste (`list()`) und einem `data.frame`/`tibble`. Nennen Sie ein Beispiel aus diesem Kapitel, bei dem eine R-Funktion ihr Ergebnis sinnvollerweise als Liste zurückgibt.
-9. Warum ist im SushiFresh-Beispiel bei 365 Verkaufstagen ein Standort, bei 1.000 "Tagen" dagegen sind zwei Standorte optimal? Argumentieren Sie mit der Struktur der Zielfunktion.
-10. Die AHP-Analyse (Kapitel [-@sec-standort-1]) favorisiert Mainz-Hechtsheim, die WLP-Analyse Raunheim. Erklären Sie die Diskrepanz und diskutieren Sie, wie beide Verfahren in der Praxis sinnvoll kombiniert werden können.
+2. Worin unterscheiden sich Transportproblem und Warehouse Location Problem? Welche Entscheidung trifft das WLP zusätzlich?
+3. Welche zusätzliche Entscheidungsvariable enthält das Warehouse Location Problem im Vergleich zum Transportproblem, und welche Rolle spielt die Nebenbedingung $x_{ij} \leq y_i \cdot a_j$? Warum ist sie der aggregierten Form $\sum_j x_{ij} \leq y_i \sum_j a_j$ vorzuziehen?
+4. Beschreiben Sie Add- und Drop-Heuristik in eigenen Worten. Unter welcher Bedingung lohnt es sich in der Add-Heuristik, einen weiteren Standort zu öffnen?
+5. Was versteht man unter dem "Gap zum Optimum", und warum ist er bei heuristischen Standortentscheidungen eine wichtige Kennzahl?
+6. Erklären Sie den Unterschied zwischen einer Liste (`list()`) und einem `data.frame`/`tibble`. Nennen Sie ein Beispiel aus diesem Kapitel, bei dem eine R-Funktion ihr Ergebnis sinnvollerweise als Liste zurückgibt.
+7. Warum ist im SushiFresh-Beispiel bei 365 Verkaufstagen ein Standort, bei 1.000 "Tagen" dagegen sind zwei Standorte optimal? Argumentieren Sie mit der Struktur der Zielfunktion.
+8. Die AHP-Analyse (Kapitel [-@sec-standort-1]) favorisiert Mainz-Hechtsheim, die WLP-Analyse Raunheim. Erklären Sie die Diskrepanz und diskutieren Sie, wie beide Verfahren in der Praxis sinnvoll kombiniert werden können.
 :::

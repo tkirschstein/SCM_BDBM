@@ -28,6 +28,7 @@ library(osrm)
 - Multikriterielle  Standortplanung
 - Kontinuierliche Standortplanung
 - **Diskrete Standortplanung**
+- Transportplanung
 
 ---
 

@@ -15,7 +15,7 @@ library(kableExtra)
 
 knitr::opts_chunk$set(fig.width = 9.5, fig.height = 6.3)
 
-# ── Straßennetz aus Einheit 10 ───────────────────────────────────────────────
+# ── Straßennetz aus Einheit Kürzeste Wege ───────────────────────────────────────────────
 tsp_nodes <- data.frame(
   ID   = c("R", "MH", "WK", "FK", "C1", "C2", "C3", "C4", "C5", "C6"),
   Name = c("Raunheim", "Mönchhof-Dreieck", "Wiesbadener Kreuz",
@@ -55,7 +55,7 @@ dijkstra <- function(W, start) {
   d
 }
 
-# Distanzmatrix Zentralküche + Filialen (Ergebnis Einheit 10)
+# Distanzmatrix Zentralküche + Filialen (Ergebnis Einheit Kürzeste Wege)
 stops <- c("R", paste0("C", 1:6))
 D <- t(sapply(stops, function(s) dijkstra(W, s)[stops]))
 dimnames(D) <- list(stops, stops)
@@ -210,11 +210,13 @@ vrp     <- savings_cw(D, q_norm, cap = 500)
 vrp_len <- sapply(vrp$touren, function(t) tour_length(c("R", t), D))
 ```
 
-## Transport- und Tourenplanung {#tsp-outline}
+## Distributionslogistik {#tsp-outline}
 
-- Transportplanung
+- Lager und Kommissionierung
+- Verkehrsmittel, Antriebe und Kosten
 - Kürzeste Wege
 - **Tourenplanung**
+- Distributionssystem gestalten
 
 ---
 
@@ -274,7 +276,7 @@ Da alle Boxen auf einmal in den Transporter passen, kann er die Filialen in **ei
 :::
 
 ::: {.fragment .fade-up}
-Die Distanzen $d_{ij}$ stammen aus der **Distanzmatrix** von Einheit 10 (kürzeste Wege im Straßennetz).
+Die Distanzen $d_{ij}$ stammen aus der **Distanzmatrix** von Einheit Kürzeste Wege (kürzeste Wege im Straßennetz).
 :::
 :::
 
@@ -318,7 +320,7 @@ Gegeben sind $n$ Orte (ein **Depot** und $n-1$ Kunden) und die Entfernungen $d_{
 
 ::: {.fragment .fade-up}
 ::: small-text
-**Distanzmatrix $d_{ij}$ (km) aus Einheit 10**
+**Distanzmatrix $d_{ij}$ (km) aus Einheit Kürzeste Wege**
 
 ```{r tsp-dist}
 #| echo: false
@@ -902,8 +904,125 @@ Die optimale Tour unterscheidet sich von der 2-opt-Lösung durch das **Verschieb
 
 ::: {.fragment .fade-up}
 ::: {.callout-note appearance="simple"}
-## Wirtschaftlich
-Gegenüber dem Pendelverkehr spart die Tour täglich `r len_star - len_2o` km, bei 300 Liefertagen und 0,80 €/km rund **`r fmt((len_star - len_2o) * 300 * 0.8, 0)` €/Jahr**.
+Gegenüber dem Pendelverkehr spart die Tour täglich **`r len_star - len_2o` km**. Was das in Euro und für den E-Kühl-Lkw bedeutet, zeigen die nächsten beiden Folien.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Was bringt die Rundtour? {#tsp-kosten}
+::: slide-subtitle
+Bewertung mit den Kostensätzen aus der Einheit Verkehrsmittel und Antriebe
+:::
+
+```{r tsp-kosten-calc}
+#| echo: false
+
+# Kostensätze 7,5-t-Diesel-Kühl-Lkw (Einheit Verkehrsmittel und Antriebe)
+fix_tag <- 90.28; k_km <- 0.536; k_h <- 31.52
+v_kmh <- 45; t_stopp <- 0.25; t_lade <- 0.25; boxen <- 845; tage_jahr <- 300
+bew <- data.frame(Variante = c("Pendelverkehr", "Nearest Neighbor", "NN + 2-opt"),
+                  km = c(len_star, len_nn, len_2o),
+                  beladungen = c(6, 1, 1)) |>
+  mutate(h = km / v_kmh + 6 * t_stopp + beladungen * t_lade,
+         kosten = fix_tag + k_km * km + k_h * h,
+         je_box = kosten / boxen)
+ersparnis_jahr <- (bew$kosten[1] - bew$kosten[3]) * tage_jahr
+```
+
+::: columns
+::: {.column width="56%"}
+
+::: {.small-text}
+```{r tsp-kosten-tab}
+#| echo: false
+
+kbl_sf(bew |> transmute(Variante, km, h = fmt(h), kosten = paste0(fmt(kosten), " €"),
+                        je_box = paste0(fmt(je_box, 3), " €")),
+       col.names = c("Variante", "km/Tag", "Stunden/Tag", "Kosten/Tag", "€ je Box"),
+       align = c("l", "r", "r", "r", "r"), font_size = 24)
+```
+
+Fahrzeugfixkosten `r fmt(fix_tag)` €/Tag, `r fmt(k_km, 3)` €/km, Fahrer `r fmt(k_h)` €/h; Ø `r v_kmh` km/h, `r t_stopp * 60` min je Filiale, `r t_lade * 60` min je Beladung in Raunheim.
+:::
+
+:::
+::: {.column width="42%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnis
+Die optimierte Rundtour senkt die Kosten je Box um **`r fmt((1 - bew$je_box[3] / bew$je_box[1]) * 100, 0)` %**, das sind rund **`r fmt(ersparnis_jahr, 0)` € pro Jahr**. Gespart werden Kilometer **und** Fahrerstunden, weil nur einmal beladen wird.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+Der lineare Satz von 0,02 €/(Box·km) aus der Standortplanung unterstellt Pendelverkehr. Bündelungseffekte der Tour kann er nicht abbilden.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Reichweite als Nebenbedingung {#tsp-reichweite}
+::: slide-subtitle
+Klappt die Tour mit dem E-Kühl-Lkw?
+:::
+
+```{r tsp-reichweite-calc}
+#| echo: false
+
+Q_nutz <- 110; e_sommer <- 0.62; e_winter <- 0.70   # Einheit Verkehrsmittel
+rw <- data.frame(Variante = c("Pendelverkehr", "Nearest Neighbor", "NN + 2-opt",
+                              "Optimum"),
+                 km = c(len_star, len_nn, len_2o, len_opt)) |>
+  mutate(E_s = km * e_sommer, E_w = km * e_winter,
+         ok_s = ifelse(E_s <= Q_nutz, "✓", "✗"),
+         ok_w = ifelse(E_w <= Q_nutz, "✓", "✗"))
+```
+
+::: columns
+::: {.column width="52%"}
+
+::: {.small-text}
+```{r tsp-reichweite-tab}
+#| echo: false
+
+kbl_sf(rw |> transmute(Variante, km,
+                       Sommer = paste0(fmt(E_s, 0), " kWh ", ok_s),
+                       Winter = paste0(fmt(E_w, 0), " kWh ", ok_w)),
+       col.names = c("Tour", "km", "Sommer (0,62 kWh/km)", "Winter (0,70 kWh/km)"),
+       align = c("l", "r", "r", "r"), font_size = 24) |>
+  row_spec(which(rw$E_w > Q_nutz & rw$E_s <= Q_nutz), background = "#FDEBD3",
+           color = "#1F2933") |>
+  row_spec(which(rw$E_s > Q_nutz), background = "#F8D7DA", color = "#1F2933")
+```
+
+Nutzbare Energie je Tour: $Q =$ `r Q_nutz` kWh (vgl. Einheit Verkehrsmittel und Antriebe).
+:::
+
+:::
+::: {.column width="45%"}
+
+::: {.fragment .fade-up}
+::: {.callout-important appearance="simple"}
+## Ergebnis
+- **Pendelverkehr**: unmöglich
+- **Nearest Neighbor**: im Sommer ja, im **Winter nicht**
+- **2-opt** und **Optimum**: ganzjährig fahrbar, mit knappem Puffer
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Lehre
+Beim E-Lkw entscheidet die Qualität der Tourenplanung über die **Machbarkeit**, nicht nur über die Kosten. Modelle mit Energie-Nebenbedingung heißen **E-VRP** [@schneider2014electric].
 :::
 :::
 

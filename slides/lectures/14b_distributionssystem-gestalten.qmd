@@ -1,0 +1,741 @@
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden (u. a. haversine())
+source("../R/scm_functions.R")
+
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(kableExtra)
+
+knitr::opts_chunk$set(fig.width = 9.5, fig.height = 6)
+
+# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
+fmt <- function(x, d = 2) formatC(x, format = "f", digits = d,
+                                   big.mark = ".", decimal.mark = ",")
+eur <- function(x, d = 0) paste0(fmt(x, d), " €")
+
+kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
+                   col1_bg = "#2F3E46") {
+  out <- kbl(df, ...) |>
+    kable_styling(bootstrap_options = c("condensed", "striped"),
+                  full_width = TRUE, font_size = font_size) |>
+    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+  if (first_col) out <- out |>
+    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
+  out
+}
+
+plt_layout <- function(p, xt = "", yt = "", h = 480, w = 760, legend = TRUE) {
+  p |> layout(xaxis = list(title = xt), yaxis = list(title = yt),
+              showlegend = legend,
+              legend = list(orientation = "h", x = 0, y = -0.18),
+              margin = list(l = 70, r = 20, t = 20, b = 60),
+              plot_bgcolor = "white", paper_bgcolor = "white",
+              height = h, width = w)
+}
+
+# ── Kostensätze aus Einheit Verkehrsmittel und Antriebe (7,5-t-Diesel-Kühl-Lkw) ───────────────────────
+fix_tag <- 90.28    # Fahrzeug-Fixkosten je Einsatztag (€)
+k_km    <- 0.536    # variable Kosten (€/km)
+k_h     <- 31.52    # Fahrerkosten (€/h)
+v_kmh   <- 60       # Ø Geschwindigkeit Regionalverkehr
+t_stopp <- 0.25     # h je Markt
+t_lade  <- 0.5      # h Beladung je Tour
+kap_lkw <- 450      # Boxen je Tour (Kühlvolumen, Rollcontainer)
+t_max   <- 9        # max. Tourdauer (h)
+umweg   <- 1.3      # Umwegfaktor Straße/Luftlinie (vgl. Einheit Kürzeste Wege)
+hk_box  <- 3.00     # Herstellkosten je Box (€)
+
+# ── RheinMarkt: 40 Supermärkte in Hessen ─────────────────────────────────────
+set.seed(14)
+n_m <- 40
+maerkte <- data.frame(id = sprintf("M%02d", seq_len(n_m)),
+                      lon = runif(n_m, 8.05, 9.75), lat = runif(n_m, 49.55, 51.35),
+                      boxen = sample(25:60, n_m, replace = TRUE))
+depot  <- c(lon = 8.465, lat = 50.000)   # Zentralküche Raunheim
+xdock  <- c(lon = 8.920, lat = 50.130)   # Frische-Cross-Dock des Händlers (Hanau)
+zlager <- c(lon = 9.710, lat = 50.870)   # Zentrallager des Händlers (Bad Hersfeld)
+n_boxen <- sum(maerkte$boxen)
+
+P_rm <- rbind(depot, as.matrix(maerkte[, c("lon", "lat")]))
+D_rm <- outer(seq_len(nrow(P_rm)), seq_len(nrow(P_rm)), Vectorize(function(i, j)
+  umweg * haversine(P_rm[i, 2], P_rm[i, 1], P_rm[j, 2], P_rm[j, 1])))
+
+# Savings-Verfahren mit Kapazitäts- und Dauerrestriktion (Einheit Tourenplanung)
+savings_vrp <- function(D, q, cap, t_max) {
+  k <- length(q); touren <- as.list(2:(k + 1))
+  dauer <- function(t) {
+    tt <- c(1, t, 1)
+    sum(D[cbind(head(tt, -1), tt[-1])]) / v_kmh + length(t) * t_stopp + t_lade
+  }
+  s <- which(upper.tri(D[-1, -1]), arr.ind = TRUE)
+  s <- data.frame(i = s[, 1] + 1, j = s[, 2] + 1)
+  s$s <- D[1, s$i] + D[1, s$j] - D[cbind(s$i, s$j)]
+  s <- s[order(-s$s), ]
+  for (r in seq_len(nrow(s))) {
+    i <- s$i[r]; j <- s$j[r]
+    ti <- which(sapply(touren, function(t) i %in% t))
+    tj <- which(sapply(touren, function(t) j %in% t))
+    if (ti == tj) next
+    A <- touren[[ti]]; B <- touren[[tj]]
+    if (sum(q[c(A, B) - 1]) > cap) next
+    if (tail(A, 1) == i && B[1] == j) neu <- c(A, B)
+    else if (A[1] == i && tail(B, 1) == j) neu <- c(B, A)
+    else if (tail(A, 1) == i && tail(B, 1) == j) neu <- c(A, rev(B))
+    else if (A[1] == i && B[1] == j) neu <- c(rev(A), B)
+    else next
+    if (dauer(neu) > t_max) next
+    touren[[ti]] <- neu; touren <- touren[-tj]
+  }
+  touren
+}
+tour_km <- function(t, D) { tt <- c(1, t, 1); sum(D[cbind(head(tt, -1), tt[-1])]) }
+
+# Variante A: Direktbelieferung aller Märkte
+touren_A <- savings_vrp(D_rm, maerkte$boxen, kap_lkw, t_max)
+km_A <- sapply(touren_A, tour_km, D = D_rm)
+h_A  <- km_A / v_kmh + lengths(touren_A) * t_stopp + t_lade
+kosten_A_transport <- sum(fix_tag + k_km * km_A + k_h * h_A)
+
+# Varianten B und C: Hauptlauf zu einem Knoten des Händlers
+hauptlauf <- function(ziel, boxen) {
+  d <- umweg * haversine(depot["lat"], depot["lon"], ziel["lat"], ziel["lon"])
+  fahrten <- ceiling(boxen / 900)          # 900 Boxen je Lkw (Einheit Tourenplanung)
+  km <- 2 * d * fahrten; h <- km / v_kmh + fahrten * 2 * t_lade
+  list(d = unname(d), fahrten = fahrten, km = unname(km),
+       kosten = unname(fahrten * fix_tag + k_km * km + k_h * h))
+}
+hl_B <- hauptlauf(zlager, n_boxen)
+hl_C <- hauptlauf(xdock, n_boxen)
+
+varianten <- data.frame(
+  Variante = c("A: Direktbelieferung", "B: über Zentrallager", "C: über Cross-Dock"),
+  transport = c(kosten_A_transport, hl_B$kosten, hl_C$kosten),
+  entgelt_box = c(0, 0.20, 0.12),          # Logistikentgelt des Händlers
+  abschrift = c(0.04, 0.10, 0.04),         # Abschriftquote (Frische)
+  lieferzeit = c("gleicher Tag", "+1 Tag", "gleicher Tag")
+) |>
+  mutate(entgelt = entgelt_box * n_boxen,
+         abschr = abschrift * hk_box * n_boxen,
+         gesamt = transport + entgelt + abschr,
+         je_box = gesamt / n_boxen)
+
+# ── Plot: Karte mit Märkten und Touren ───────────────────────────────────────
+km_x <- function(lon) lon * 111.32 * cos(50.4 * pi / 180)
+km_y <- function(lat) lat * 111.32
+rm_plot <- function(touren = NULL, ziel = NULL, ziel_name = "",
+                    height = 520, width = 640) {
+  p <- plot_ly(type = "scatter", mode = "markers")
+  farben <- c("#0B6E4F", "#2A7ACA", "#D97B29", "#9B59B6", "#C00000", "#2D9E8E",
+              "#F4A259")
+  if (!is.null(touren)) for (k in seq_along(touren)) {
+    tt <- c(1, touren[[k]], 1)
+    p <- p |> add_trace(x = km_x(P_rm[tt, 1]), y = km_y(P_rm[tt, 2]), mode = "lines",
+                        line = list(color = farben[(k - 1) %% 7 + 1], width = 2.5),
+                        name = paste("Tour", k), hoverinfo = "skip")
+  }
+  if (!is.null(ziel)) p <- p |>
+    add_trace(x = km_x(c(depot["lon"], ziel["lon"])), y = km_y(c(depot["lat"], ziel["lat"])),
+              mode = "lines", line = list(color = "#2F3E46", width = 6),
+              name = "Hauptlauf", hoverinfo = "skip") |>
+    add_trace(x = km_x(ziel["lon"]), y = km_y(ziel["lat"]), mode = "markers+text",
+              text = ziel_name, textposition = "top center",
+              marker = list(symbol = "square", size = 22, color = "#F4A259",
+                            line = list(color = "#2F3E46", width = 2)),
+              showlegend = FALSE, hoverinfo = "skip")
+  p |>
+    add_trace(x = km_x(maerkte$lon), y = km_y(maerkte$lat), mode = "markers",
+              marker = list(size = 6 + maerkte$boxen / 6, color = "#2D9E8E",
+                            line = list(color = "white", width = 1)),
+              text = paste0(maerkte$id, ": ", maerkte$boxen, " Boxen"),
+              hoverinfo = "text", name = "Markt") |>
+    add_trace(x = km_x(depot["lon"]), y = km_y(depot["lat"]), mode = "markers+text",
+              text = "Raunheim", textposition = "bottom center",
+              marker = list(symbol = "hexagon", size = 24, color = "#BFDBF7",
+                            line = list(color = "#2F3E46", width = 2)),
+              showlegend = FALSE, hoverinfo = "skip") |>
+    layout(xaxis = list(visible = FALSE, fixedrange = TRUE,
+                        scaleanchor = "y", scaleratio = 1),
+           yaxis = list(visible = FALSE, fixedrange = TRUE),
+           legend = list(orientation = "h", x = 0, y = -0.02),
+           margin = list(l = 5, r = 5, t = 5, b = 5),
+           plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+           height = height, width = width)
+}
+
+# ── Schemata für Netzstrukturen ──────────────────────────────────────────────
+netz_panel <- function(typ) {
+  kunden <- data.frame(x = rep(c(0.12, 0.31, 0.5, 0.69, 0.88), 2)[1:8],
+                       y = 0.08)
+  kunden$x <- seq(0.06, 0.94, length.out = 8)
+  werk <- c(0.5, 0.92)
+  p <- plot_ly(type = "scatter", mode = "markers")
+  seg <- function(p, a, b, col = "#2F3E46", w = 2, dash = "solid")
+    add_segments(p, x = a[1], xend = b[1], y = a[2], yend = b[2],
+                 line = list(color = col, width = w, dash = dash),
+                 hoverinfo = "skip", showlegend = FALSE)
+  lager <- NULL
+  if (typ == "direkt") {
+    for (k in seq_len(nrow(kunden))) p <- seg(p, werk, unlist(kunden[k, ]), "#9AA5B1", 1.5)
+  } else if (typ == "zentral") {
+    lager <- data.frame(x = 0.5, y = 0.5)
+    p <- seg(p, werk, c(0.5, 0.5), "#2F3E46", 5)
+    for (k in seq_len(nrow(kunden))) p <- seg(p, c(0.5, 0.5), unlist(kunden[k, ]), "#9AA5B1", 1.5)
+  } else if (typ == "zweistufig") {
+    lager <- data.frame(x = c(0.5, 0.25, 0.75), y = c(0.62, 0.36, 0.36))
+    p <- seg(p, werk, c(0.5, 0.62), "#2F3E46", 5)
+    p <- seg(p, c(0.5, 0.62), c(0.25, 0.36), "#2F3E46", 3.5)
+    p <- seg(p, c(0.5, 0.62), c(0.75, 0.36), "#2F3E46", 3.5)
+    for (k in seq_len(nrow(kunden))) {
+      l <- if (kunden$x[k] < 0.5) c(0.25, 0.36) else c(0.75, 0.36)
+      p <- seg(p, l, unlist(kunden[k, ]), "#9AA5B1", 1.5)
+    }
+  } else if (typ == "crossdock") {
+    werke <- data.frame(x = c(0.2, 0.5, 0.8), y = 0.92)
+    lager <- data.frame(x = 0.5, y = 0.5)
+    for (k in 1:3) p <- seg(p, unlist(werke[k, ]), c(0.5, 0.5), "#2F3E46", 4)
+    for (k in seq_len(nrow(kunden))) p <- seg(p, c(0.5, 0.5), unlist(kunden[k, ]), "#D97B29", 1.5)
+    p <- p |> add_trace(x = werke$x, y = werke$y, mode = "markers",
+                        marker = list(symbol = "hexagon", size = 18, color = "#BFDBF7",
+                                      line = list(color = "#2F3E46", width = 1.5)),
+                        hoverinfo = "skip", showlegend = FALSE)
+  }
+  if (typ != "crossdock") p <- p |> add_trace(
+    x = werk[1], y = werk[2], mode = "markers",
+    marker = list(symbol = "hexagon", size = 20, color = "#BFDBF7",
+                  line = list(color = "#2F3E46", width = 1.5)),
+    hoverinfo = "skip", showlegend = FALSE)
+  if (!is.null(lager)) p <- p |> add_trace(
+    x = lager$x, y = lager$y, mode = "markers",
+    marker = list(symbol = if (typ == "crossdock") "diamond" else "square",
+                  size = 18, color = "#F4A259",
+                  line = list(color = "#2F3E46", width = 1.5)),
+    hoverinfo = "skip", showlegend = FALSE)
+  p |> add_trace(x = kunden$x, y = kunden$y, mode = "markers",
+                 marker = list(size = 11, color = "#2D9E8E"),
+                 hoverinfo = "skip", showlegend = FALSE) |>
+    layout(xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
+           yaxis = list(visible = FALSE, range = c(0, 1.02), fixedrange = TRUE))
+}
+```
+
+## Distributionslogistik {#ds-outline}
+
+- Lager und Kommissionierung
+- Verkehrsmittel, Antriebe und Kosten
+- Kürzeste Wege
+- Tourenplanung
+- **Distributionssystem gestalten**
+
+---
+
+## Lernziele {#ds-learning-objectives}
+
+Nach dieser Einheit können Sie …
+
+- Direktbelieferung, Zentrallager und **Cross-Docking** mit den Methoden des Semesters **durchrechnen** und **vergleichen**,
+- **Hub-and-Spoke**-Netze und **Omnichannel**-Fulfillment **einordnen**,
+- **Retouren** und **Mehrwegkreisläufe** planen und Behälterbedarfe **berechnen**.
+
+::: {.small-text}
+**Literatur zur Vertiefung**
+
+- **Distributionsnetzwerke:** [@chopra2025supply].
+- **E-Fulfillment und Retouren:** [@agatz2008efulfillment]; [@fleischmann1997quantitative].
+:::
+
+---
+
+## Fallstudie – SushiFresh GmbH {#ds-cs1}
+::: slide-subtitle
+Drei Kanäle laufen, die Anfrage aus dem Handel ist offen
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.small-text}
+```{r ds-kanaele-tab}
+#| echo: false
+
+ka <- data.frame(
+  Kanal = c("Filialen", "Lieferdienst", "Sushi@Home", "RheinMarkt (neu)"),
+  Kunde = c("eigene Filialen", "Endkunden Frankfurt", "Endkunden bundesweit",
+            "Supermarktkette"),
+  Ware = c("frische Boxen", "frische Boxen", "Kits, Zubehör (haltbar)",
+           "frische Boxen"),
+  Belieferung = c("Rundtour (Kühl-Lkw)", "Lastenrad, E-Transporter",
+                  "Paket ab Lager Raunheim", "offen"),
+  Einheit = c("Tourenplanung", "Verkehrsmittel und Antriebe",
+              "Lager und Kommissionierung", "heute")
+)
+kbl_sf(ka, col.names = c("Kanal", "Kunde", "Ware", "Distribution", "behandelt in"),
+       align = c("l", "l", "l", "l", "l"), font_size = 22)
+```
+:::
+
+:::
+::: {.column width="42%"}
+
+::: {.callout-important appearance="simple"}
+## Die Anfrage
+Die Supermarktkette **RheinMarkt** möchte SushiFresh-Boxen in **`r n_m` Märkten in Hessen** listen, zusammen ca. **`r fmt(n_boxen, 0)` Boxen pro Tag**. Die Boxen müssen morgens frisch im Regal stehen. Die Haltbarkeit beträgt **zwei Tage**.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Optionen
+- **A**: SushiFresh beliefert jeden Markt **direkt**.
+- **B**: Lieferung ins **Zentrallager** des Händlers (Bad Hersfeld), von dort Verteilung am Folgetag.
+- **C**: Lieferung in das **Frische-Cross-Dock** des Händlers (Hanau), Weiterverteilung in derselben Nacht.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Fallstudie – Variante A {#ds-varA}
+::: slide-subtitle
+SushiFresh beliefert alle `r n_m` Märkte direkt
+:::
+
+::: columns
+::: {.column width="52%"}
+
+```{r ds-varA-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+rm_plot(touren_A, height = 540, width = 640)
+```
+
+:::
+::: {.column width="46%"}
+
+::: {.small-text}
+```{r ds-varA-tab}
+#| echo: false
+
+tA <- data.frame(Tour = seq_along(touren_A), Maerkte = lengths(touren_A),
+                 Boxen = sapply(touren_A, function(t) sum(maerkte$boxen[t - 1])),
+                 km = km_A, h = h_A,
+                 Kosten = fix_tag + k_km * km_A + k_h * h_A)
+kbl_sf(tA |> mutate(km = fmt(km, 0), h = fmt(h, 1), Kosten = eur(Kosten)),
+       col.names = c("Tour", "Märkte", "Boxen", "km", "Dauer (h)", "Kosten"),
+       align = c("c", rep("r", 5)), font_size = 22)
+```
+
+Savings-Verfahren (Einheit Tourenplanung) mit Kapazität `r kap_lkw` Boxen je Tour und max. `r t_max` h Tourdauer. Distanzen: Luftlinie × `r fmt(umweg, 1)`. Kostensätze des Kühl-Lkw aus Einheit Verkehrsmittel und Antriebe.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+`r length(touren_A)` Fahrzeuge und Fahrer nur für RheinMarkt, insgesamt **`r fmt(sum(km_A), 0)` km pro Nacht**. Der Engpass ist die **Tourdauer**, nicht die Kapazität: Die nordhessischen Märkte liegen bis zu `r fmt(max(D_rm[1, -1]), 0)` km entfernt.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Fallstudie – Varianten B und C {#ds-varBC}
+::: slide-subtitle
+Hauptlauf zum Händler
+:::
+
+::: columns
+::: {.column width="48%"}
+
+```{r ds-varC-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+rm_plot(ziel = xdock, ziel_name = "Cross-Dock Hanau", height = 500, width = 600) |>
+  add_trace(x = km_x(zlager["lon"]), y = km_y(zlager["lat"]), mode = "markers+text",
+            text = "Zentrallager Bad Hersfeld", textposition = "top center",
+            marker = list(symbol = "square", size = 18, color = "#D0D5DD",
+                          line = list(color = "#2F3E46", width = 2)),
+            showlegend = FALSE, hoverinfo = "skip")
+```
+
+:::
+::: {.column width="50%"}
+
+::: {.callout-note appearance="simple"}
+## B: Zentrallager Bad Hersfeld
+Hauptlauf `r fmt(hl_B$d, 0)` km (einfach), `r hl_B$fahrten` Lkw-Fahrten. Der Händler lagert ein und verteilt **am Folgetag** mit seinen Frischetouren. Entgelt 0,20 €/Box. Die Boxen verlieren **einen der zwei Haltbarkeitstage** → Abschriften steigen von 4 % auf 10 %.
+:::
+
+::: {.callout-tip appearance="simple"}
+## C: Frische-Cross-Dock Hanau
+Hauptlauf `r fmt(hl_C$d, 0)` km, `r hl_C$fahrten` Lkw-Fahrten bis 22 Uhr. Umschlag in der Nacht und Auslieferung zusammen mit Obst, Gemüse und Molkereiprodukten anderer Lieferanten. Entgelt 0,12 €/Box, keine zusätzliche Standzeit.
+:::
+
+::: {.smaller-text}
+Entgelte und Abschriftquoten sind Annahmen für das Fallbeispiel. Herstellkosten: `r fmt(hk_box)` € je Box.
+:::
+
+:::
+:::
+
+---
+
+## Fallstudie – Vergleich {#ds-vergleich}
+::: slide-subtitle
+Kosten je Box und Lieferservice
+:::
+
+::: columns
+::: {.column width="55%"}
+
+```{r ds-vgl-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+vv <- varianten |> select(Variante, Transport = transport,
+                          `Entgelt Händler` = entgelt, Abschrift = abschr) |>
+  pivot_longer(-Variante, names_to = "Position", values_to = "Wert") |>
+  mutate(Wert = Wert / n_boxen,
+         Position = factor(Position, levels = c("Transport", "Entgelt Händler",
+                                                "Abschrift")))
+farb <- c("#2F3E46", "#F4A259", "#C00000")
+p <- plot_ly()
+for (k in seq_along(levels(vv$Position))) {
+  s <- vv[vv$Position == levels(vv$Position)[k], ]
+  p <- p |> add_bars(x = s$Variante, y = s$Wert, name = levels(vv$Position)[k],
+                     marker = list(color = farb[k]))
+}
+p |> layout(barmode = "stack") |>
+  add_annotations(x = varianten$Variante, y = varianten$je_box,
+                  text = paste0("<b>", fmt(varianten$je_box), " €</b>"),
+                  yshift = 14, showarrow = FALSE) |>
+  plt_layout("", "Distributionskosten je Box (€)", h = 480, w = 760)
+```
+
+:::
+::: {.column width="43%"}
+
+::: {.small-text}
+```{r ds-vgl-tab}
+#| echo: false
+
+kbl_sf(varianten |> transmute(Variante, je_box = paste0(fmt(je_box), " €"),
+                              lieferzeit),
+       col.names = c("Variante", "€ je Box", "Lieferzeit"),
+       align = c("l", "r", "l"), font_size = 22)
+```
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnis
+**Cross-Docking** ist mit Abstand am günstigsten **und** liefert am selben Tag. Die Direktbelieferung scheitert an der Fläche, das Zentrallager an der **Haltbarkeit**.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+Bei Frischware sind **Abschriften** eine Distributionskostenposition. Eine Struktur, die Zeit kostet, kostet bei kurzer Haltbarkeit direkt Geld (vgl. Newsvendor, Einheit Newsvendor).
+:::
+:::
+
+:::
+:::
+
+---
+
+## Hub-and-Spoke-Netze {#ds-hub}
+::: slide-subtitle
+Bündelung in Stückgut- und Paketnetzen
+:::
+
+```{r ds-hub-calc}
+#| echo: false
+
+n_dep <- 8
+rel_direkt <- n_dep * (n_dep - 1)
+rel_hub <- 2 * n_dep
+```
+
+::: columns
+::: {.column width="55%"}
+
+::: {.small-text}
+**Links:** Rasternetz mit `r n_dep` Depots, `r rel_direkt` Relationen. **Rechts:** Hub-and-Spoke, `r rel_hub` Relationen.
+:::
+
+```{r ds-hub-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4.2
+
+w <- seq(0, 2 * pi, length.out = n_dep + 1)[-1]
+pos <- data.frame(x = cos(w), y = sin(w))
+p1 <- plot_ly(type = "scatter", mode = "markers")
+for (i in 1:(n_dep - 1)) for (j in (i + 1):n_dep)
+  p1 <- p1 |> add_segments(x = pos$x[i], xend = pos$x[j], y = pos$y[i], yend = pos$y[j],
+                           line = list(color = "#9AA5B1", width = 1.2),
+                           hoverinfo = "skip", showlegend = FALSE)
+p1 <- p1 |> add_trace(x = pos$x, y = pos$y, mode = "markers",
+                      marker = list(size = 16, color = "#2D9E8E"),
+                      hoverinfo = "skip", showlegend = FALSE)
+p2 <- plot_ly(type = "scatter", mode = "markers")
+for (i in 1:n_dep)
+  p2 <- p2 |> add_segments(x = 0, xend = pos$x[i], y = 0, yend = pos$y[i],
+                           line = list(color = "#2F3E46", width = 3),
+                           hoverinfo = "skip", showlegend = FALSE)
+p2 <- p2 |> add_trace(x = pos$x, y = pos$y, mode = "markers",
+                      marker = list(size = 16, color = "#2D9E8E"),
+                      hoverinfo = "skip", showlegend = FALSE) |>
+  add_trace(x = 0, y = 0, mode = "markers",
+            marker = list(symbol = "diamond", size = 24, color = "#F4A259",
+                          line = list(color = "#2F3E46", width = 2)),
+            hoverinfo = "skip", showlegend = FALSE)
+ax <- list(visible = FALSE, range = c(-1.3, 1.3), fixedrange = TRUE)
+subplot(p1, p2, nrows = 1, margin = 0.05) |>
+  layout(xaxis = ax, yaxis = ax, xaxis2 = ax, yaxis2 = ax,
+         margin = list(l = 5, r = 5, t = 5, b = 5), height = 360, width = 780,
+         plot_bgcolor = "transparent", paper_bgcolor = "transparent")
+```
+
+:::
+::: {.column width="43%"}
+
+::: {.callout-note appearance="simple"}
+## Prinzip
+Jedes Depot sammelt in seiner Region (**Vorlauf**), schickt alles zum **Hub**, dort wird nach Zieldepots sortiert (**Hauptlauf**), das Zieldepot stellt zu (**Nachlauf**).
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Abwägung
+- **Rasternetz** (jedes Depot direkt zu jedem): $n(n-1)$ Relationen, nur bei großen Mengen je Relation ausgelastet
+- **Hub-and-Spoke**: $2n$ Relationen, gut ausgelastete Lkw, aber **Umwege** und ein zusätzlicher Umschlag
+- Praxis: Mischformen, starke Relationen direkt, schwache über den Hub
+:::
+:::
+
+:::
+:::
+
+---
+
+## Omnichannel-Distribution {#ds-omnichannel}
+::: slide-subtitle
+Fulfillment-Optionen im E-Commerce
+:::
+
+::: {.small-text}
+```{r ds-omni-tab}
+#| echo: false
+
+om <- data.frame(
+  Option = c("Zentrales E-Commerce-Lager", "Ship-from-Store", "Click & Collect",
+             "Dark Store / Mikrodepot", "Abholstation / Paketshop"),
+  Prinzip = c("eigenes Lager nur für Onlineaufträge, Versand per KEP",
+              "Filiale kommissioniert und versendet Onlineaufträge",
+              "online bestellen, in der Filiale abholen",
+              "städtisches Lager ohne Kundenverkehr, schnelle Zustellung",
+              "Kunde holt an Station oder Partnergeschäft ab"),
+  Vorteil = c("Skaleneffekte, hohe Kommissionierleistung",
+              "kurze Wege, Filialbestand wird genutzt",
+              "keine Zustellkosten, Zusatzkäufe in der Filiale",
+              "Lieferung in Minuten bis Stunden",
+              "gebündelte Zustellung, kein Nicht-Antreffen"),
+  SushiFresh = c("Sushi@Home ab Raunheim (Einheit Lager und Kommissionierung)", "–",
+                 "Vorbestellung in den sechs Filialen", "Mikrodepot Lastenrad (Einheit Verkehrsmittel und Antriebe)",
+                 "Kühlfächer an Abholstationen?")
+)
+kbl_sf(om, col.names = c("Option", "Prinzip", "Vorteil", "SushiFresh"),
+       align = c("l", "l", "l", "l"), font_size = 21)
+```
+:::
+
+::: columns
+::: {.column width="50%"}
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Herausforderungen
+- **ein** Bestand für **alle** Kanäle sichtbar und reservierbar machen
+- kleine Aufträge, kurze Zeitfenster, Retouren [@agatz2008efulfillment]
+- Kosten der letzten Meile (€ je Stopp, Einheit Verkehrsmittel und Antriebe)
+:::
+:::
+:::
+::: {.column width="47%"}
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Zusammenhang
+Jede Option ist eine Kombination aus **Struktur** (wo liegt der Bestand?) und **letzter Meile** (wer überbrückt die letzten Kilometer?). Deshalb gehören Lager-, Transport- und Kanalplanung zusammen.
+:::
+:::
+:::
+:::
+
+---
+
+## Retouren und Mehrweg {#ds-retouren}
+::: slide-subtitle
+Reverse Logistics
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="simple"}
+## Rückwärtsflüsse
+- **Retouren** im Onlinehandel (Rücksendung, Umtausch)
+- **Rückrufe** (Qualitätsmängel)
+- **Mehrweg**: Paletten, Behälter, Pfandflaschen
+- **Altprodukte**: Recycling, Entsorgung
+
+**Prozess:** Rücknahme → Sammlung → Prüfung → **Disposition** (Wiederverkauf, Aufbereitung, Recycling, Entsorgung) [@fleischmann1997quantitative]
+:::
+
+:::
+::: {.column width="49%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Mehrweg bei SushiFresh
+Wer in Deutschland Speisen zum Mitnehmen in Einweg-Kunststoffverpackungen abgibt, muss seit 2023 auch eine **Mehrwegalternative** anbieten (Verpackungsgesetz; Ausnahmen für sehr kleine Betriebe). SushiFresh führt eine **Pfandbox** ein, die Kunden in den Filialen zurückgeben.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Planungsfragen
+Wie viele Boxen braucht der Kreislauf? Wer bringt sie zurück? Lohnt sich das gegenüber Einweg? Der Rücktransport kann die **Leerfahrten** der Filialtour nutzen (Einheit Tourenplanung).
+:::
+:::
+
+:::
+:::
+
+---
+
+## Mehrwegkreislauf {#ds-mehrweg}
+::: slide-subtitle
+Rechenbeispiel Behälterbedarf und Wirtschaftlichkeit
+:::
+
+```{r ds-mw-calc}
+#| echo: false
+
+bedarf_tag  <- 845          # Boxen pro Tag (Filialen)
+quote_mw    <- 0.30         # Anteil der Kunden mit Mehrweg
+umlauf      <- 4            # Tage: Verkauf → Kunde → Rückgabe → Rücktransport → Spülen
+puffer      <- 0.15         # Sicherheitszuschlag
+schwund     <- 0.05         # Anteil nicht zurückgegebener Boxen je Umlauf
+preis_mw    <- 3.50         # € je Mehrwegbox
+lebensdauer <- 200          # technisch mögliche Umläufe
+spuelen     <- 0.08         # € je Umlauf
+preis_ew    <- 0.18         # € je Einwegverpackung
+
+mw_tag  <- bedarf_tag * quote_mw
+bestand <- ceiling(mw_tag * umlauf * (1 + puffer))
+umlaeufe <- min(lebensdauer, 1 / schwund)          # Ø Umläufe je Box
+k_mw <- preis_mw / umlaeufe + spuelen
+s_be <- (preis_ew - spuelen) / preis_mw            # Break-even-Schwundquote
+```
+
+::: columns
+::: {.column width="50%"}
+
+::: {.callout-note appearance="simple"}
+## Behälterbedarf
+- Mehrweganteil `r quote_mw * 100` % → **`r fmt(mw_tag, 0)` Boxen/Tag**
+- Umlaufzeit `r umlauf` Tage, Puffer `r puffer * 100` %
+- Bestand im Kreislauf: $`r fmt(mw_tag, 0)` \cdot `r umlauf` \cdot `r gsub("[.]", "{,}", 1 + puffer)` \approx$ **`r fmt(bestand, 0)` Boxen**
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+Umlaufzeit = Zeit vom Verkauf über Kunde, Rückgabe in der Filiale, Rücktransport (Leerfahrt der Tour) bis zur Spülung in Raunheim. Jeder Tag längere Umlaufzeit erhöht den Behälterbestand um `r fmt(mw_tag, 0)` Boxen.
+:::
+:::
+
+:::
+::: {.column width="47%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Kosten je Nutzung
+Bei `r schwund * 100` % Schwund kehrt eine Box im Mittel nur $1 / `r gsub("[.]", "{,}", schwund)` = `r fmt(umlaeufe, 0)`$-mal zurück (nicht `r lebensdauer`-mal):
+$$\frac{`r gsub("[.]", "{,}", preis_mw)`\ \text{€}}{`r fmt(umlaeufe, 0)`} + `r gsub("[.]", "{,}", spuelen)`\ \text{€} = `r gsub(",", "{,}", fmt(k_mw, 3))`\ \text{€}$$
+gegenüber `r fmt(preis_ew)` € für Einweg.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-important appearance="simple"}
+Mehrweg lohnt sich erst bei einer Schwundquote unter **`r fmt(s_be * 100, 1)` %**. Der entscheidende Hebel ist also nicht der Behälterpreis, sondern die **Rückgabequote** (Pfand, bequeme Rückgabe).
+:::
+:::
+
+:::
+:::
+
+---
+
+## Kernaussagen {#ds-summary}
+
+::: {.callout-tip appearance="simple"}
+## Das Wichtigste in Kürze
+
+- Die Wahl der Distributionsstruktur lässt sich mit den Methoden des Semesters **quantitativ** vergleichen: Tourenplanung (Savings), Kostensätze, Frische- und Abschriftkosten.
+- Für RheinMarkt ist **Cross-Docking** die günstigste **und** schnellste Option. Bei Frischware kostet jede zusätzliche Lagerstufe Haltbarkeit und damit Geld.
+- **Hub-and-Spoke** bündelt Ströme zum Preis von Umwegen und zusätzlichem Umschlag.
+- **Omnichannel** verbindet Strukturentscheidung (wo liegt der Bestand?) und letzte Meile.
+- **Retouren** und **Mehrweg** erzeugen Rückwärtsflüsse. Bei Mehrweg entscheidet die **Rückgabequote** über die Wirtschaftlichkeit.
+:::
+
+---
+
+## Übung {#ds-exercise}
+
+::: {.exercise-slide}
+::: {.exercise-header}
+Distributionsstrukturen – RheinMarkt verhandelt nach
+:::
+
+::: {.columns .exercise-content}
+::: {.column width="55%"}
+RheinMarkt möchte das Cross-Dock-Entgelt von 0,12 € auf **0,35 € je Box** erhöhen.
+
+- Berechnen Sie die Kosten je Box für Variante C neu. Ist C noch günstiger als A und B?
+- Ab welchem Entgelt wäre die Direktbelieferung (A) günstiger?
+- Welche **Mischform** ist denkbar (z. B. nahe Märkte direkt, ferne über das Cross-Dock)? Welche Märkte würden Sie direkt beliefern?
+- Welche nicht-monetären Kriterien (Lieferservice, Abhängigkeit, Kundenkontakt) sprechen für bzw. gegen A?
+:::
+::: {.column width="42%"}
+```{r ds-exercise-hint}
+#| echo: true
+#| eval: false
+
+entgelt_neu <- 0.35
+kosten_C <- hl_C$kosten +
+  entgelt_neu * n_boxen +
+  0.04 * hk_box * n_boxen
+kosten_C / n_boxen
+
+# Break-even-Entgelt gegenüber A
+(varianten$gesamt[1] - hl_C$kosten -
+   0.04 * hk_box * n_boxen) / n_boxen
+```
+:::
+:::
+:::

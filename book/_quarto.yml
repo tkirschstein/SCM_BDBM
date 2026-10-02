@@ -12,15 +12,30 @@ book:
   page-footer: "Supply Chain Management — Lehrbuch"
   chapters:
     - index.qmd
-    - chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd
-    - chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.qmd
-    - chapters/03_ziele-zielkonflikte-und-logistikkosten.qmd
-    - chapters/09_nachhaltigkeit-im-supply-chain-management.qmd
-    - chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.qmd
-    - chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.qmd
-    - chapters/06_unsicherheit-in-supply-chains-pooling.qmd
-    - chapters/07_das-newsvendor-modell.qmd
-    - chapters/08_der-bullwhip-effekt-und-das-beergame.qmd
+    - part: "Grundlagen"
+      chapters:
+        - chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd
+        - chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.qmd
+        - chapters/03_ziele-zielkonflikte-und-logistikkosten.qmd
+        - chapters/09_nachhaltigkeit-im-supply-chain-management.qmd
+        - chapters/14a_distributionsstrukturen.qmd
+    - part: "Strategische Gestaltung von Supply Chains"
+      chapters:
+        - chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.qmd
+        - chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.qmd
+        - chapters/09_transportplanung.qmd
+    - part: "Unsicherheit und Koordination"
+      chapters:
+        - chapters/06_unsicherheit-in-supply-chains-pooling.qmd
+        - chapters/07_das-newsvendor-modell.qmd
+        - chapters/08_der-bullwhip-effekt-und-das-beergame.qmd
+    - part: "Distributionslogistik"
+      chapters:
+        - chapters/13_lagerplanung-und-kommissionierung.qmd
+        - chapters/12_transportmittel-und-antriebe.qmd
+        - chapters/10_kuerzeste-wege.qmd
+        - chapters/11_tourenplanung-tsp.qmd
+        - chapters/14b_distributionssystem-gestalten.qmd
     - references.qmd
 
 lang: de

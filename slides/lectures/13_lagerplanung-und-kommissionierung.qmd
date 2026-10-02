@@ -1,0 +1,1449 @@
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden
+source("../R/scm_functions.R")
+
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(kableExtra)
+
+knitr::opts_chunk$set(fig.width = 9.5, fig.height = 6)
+
+# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
+fmt <- function(x, d = 1) formatC(x, format = "f", digits = d,
+                                   big.mark = ".", decimal.mark = ",")
+
+kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
+                   col1_bg = "#2F3E46") {
+  out <- kbl(df, ...) |>
+    kable_styling(bootstrap_options = c("condensed", "striped"),
+                  full_width = TRUE, font_size = font_size) |>
+    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+  if (first_col) out <- out |>
+    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
+  out
+}
+
+plt_layout <- function(p, xt = "", yt = "", h = 480, w = 760, legend = TRUE) {
+  p |> layout(xaxis = list(title = xt), yaxis = list(title = yt),
+              showlegend = legend,
+              legend = list(orientation = "h", x = 0, y = -0.18),
+              margin = list(l = 70, r = 20, t = 20, b = 60),
+              plot_bgcolor = "white", paper_bgcolor = "white",
+              height = h, width = w)
+}
+
+# ── Lagerlayout SushiFresh Raunheim ──────────────────────────────────────────
+# 8 Kommissioniergänge, je Gang zwei Regalseiten mit 12 Fächern (1,5 m breit),
+# Quergang vorne (y = 0) und hinten (y = Y), Depot/Packplatz vorne links
+n_gang <- 8; n_tief <- 12; Y <- 20
+gang_x <- 4 * seq_len(n_gang)
+slots <- expand.grid(tiefe = 1:n_tief, seite = c("L", "R"), gang = 1:n_gang,
+                     stringsAsFactors = FALSE) |>
+  mutate(slot = row_number(), x = gang_x[gang],
+         y = 1 + 1.5 * (tiefe - 0.5),
+         rx = x + ifelse(seite == "L", -1.5, 1.5))
+n_sku <- nrow(slots)
+
+# Wegdistanz zwischen zwei Pickpositionen (Gangmitte) bzw. Depot
+dist_lager <- function(p, q) {
+  if (p[1] == q[1]) return(abs(p[2] - q[2]))
+  abs(p[1] - q[1]) + min(p[2] + q[2], 2 * Y - p[2] - q[2])
+}
+weg_laenge <- function(wp) sum(abs(diff(wp[, 1])) + abs(diff(wp[, 2])))
+
+# ── Routingstrategien (liefern Wegpunkte ab/bis Depot) ───────────────────────
+route_sshape <- function(pk) {
+  g <- sort(unique(pk$gang)); m <- length(g)
+  wp <- list(c(0, 0)); vorne <- TRUE
+  for (k in seq_len(m)) {
+    x <- gang_x[g[k]]; ys <- pk$y[pk$gang == g[k]]
+    if (k == m && m %% 2 == 1) {
+      wp <- c(wp, list(c(x, 0), c(x, max(ys)), c(x, 0)))
+    } else if (vorne) {
+      wp <- c(wp, list(c(x, 0), c(x, Y))); vorne <- FALSE
+    } else {
+      wp <- c(wp, list(c(x, Y), c(x, 0))); vorne <- TRUE
+    }
+  }
+  do.call(rbind, c(wp, list(c(0, 0))))
+}
+route_return <- function(pk) {
+  g <- sort(unique(pk$gang)); wp <- list(c(0, 0))
+  for (j in g) {
+    x <- gang_x[j]
+    wp <- c(wp, list(c(x, 0), c(x, max(pk$y[pk$gang == j])), c(x, 0)))
+  }
+  do.call(rbind, c(wp, list(c(0, 0))))
+}
+route_lgap <- function(pk) {
+  g <- sort(unique(pk$gang)); m <- length(g)
+  if (m == 1) return(route_return(pk))
+  wp <- list(c(0, 0), c(gang_x[g[1]], 0), c(gang_x[g[1]], Y))
+  vorne_max <- c()
+  mitte <- if (m > 2) g[2:(m - 1)] else integer(0)
+  for (j in mitte) {
+    pts <- c(0, sort(pk$y[pk$gang == j]), Y); k <- which.max(diff(pts))
+    x <- gang_x[j]; wp <- c(wp, list(c(x, Y)))
+    if (pts[k + 1] < Y) wp <- c(wp, list(c(x, pts[k + 1]), c(x, Y)))
+    vorne_max[as.character(j)] <- pts[k]
+  }
+  xl <- gang_x[g[m]]; wp <- c(wp, list(c(xl, Y), c(xl, 0)))
+  for (j in rev(mitte)) {
+    x <- gang_x[j]; fm <- vorne_max[as.character(j)]
+    wp <- c(wp, list(c(x, 0)))
+    if (fm > 0) wp <- c(wp, list(c(x, fm), c(x, 0)))
+  }
+  do.call(rbind, c(wp, list(c(0, 0))))
+}
+
+# TSP auf dem Lagergraph (Einheiten Kürzeste Wege und Tourenplanung)
+dist_matrix <- function(pk) {
+  P <- rbind(c(0, 0), as.matrix(pk[, c("x", "y")])); n <- nrow(P)
+  D <- matrix(0, n, n)
+  for (i in 1:n) for (j in 1:n) D[i, j] <- dist_lager(P[i, ], P[j, ])
+  list(P = P, D = D)
+}
+tour_len <- function(t, D) sum(D[cbind(t, c(t[-1], t[1]))])
+nn_tour <- function(D) {
+  t <- 1
+  while (length(t) < nrow(D)) {
+    o <- setdiff(seq_len(nrow(D)), t); t <- c(t, o[which.min(D[tail(t, 1), o])])
+  }
+  t
+}
+two_opt <- function(t, D) {
+  n <- length(t)
+  repeat {
+    best <- 0
+    for (i in 1:(n - 1)) for (k in (i + 1):n) {
+      a <- t[i]; b <- t[i + 1]; c <- t[k]; d <- t[k %% n + 1]
+      if (b == c || a == d) next
+      dl <- D[a, b] + D[c, d] - D[a, c] - D[b, d]
+      if (dl > best + 1e-9) { best <- dl; bi <- i; bk <- k }
+    }
+    if (best <= 0) break
+    t <- c(t[1:bi], rev(t[(bi + 1):bk]), if (bk < n) t[(bk + 1):n])
+  }
+  t
+}
+perms <- function(v){ if (length(v) <= 1) list(v) else
+  do.call(c, lapply(seq_along(v), function(i)
+    lapply(perms(v[-i]), function(p) c(v[i], p))))
+}
+
+tour_wp <- function(t, P) {
+  tt <- c(t, t[1]); wp <- list(P[tt[1], ])
+  for (k in 2:length(tt)) {
+    p <- P[tt[k - 1], ]; q <- P[tt[k], ]
+    if (p[1] != q[1]) {
+      yy <- if (p[2] + q[2] <= 2 * Y - p[2] - q[2]) 0 else Y
+      wp <- c(wp, list(c(p[1], yy), c(q[1], yy)))
+    }
+    wp <- c(wp, list(q))
+  }
+  do.call(rbind, wp)
+}
+
+# ── Sortiment und Zugriffshäufigkeiten ───────────────────────────────────────
+set.seed(2026)
+namen <- paste("Artikel", sprintf("%03d", seq_len(n_sku)))
+namen[c(1:16, 25, 48, 90, 150)] <- c(
+  "Sushi-Reis 1 kg", "Nori-Blätter 10 St.", "Sojasauce 150 ml", "Reisessig",
+  "Wasabi-Paste", "Ingwer eingelegt", "Stäbchen 10 Paar", "Sesam geröstet",
+  "Teriyaki-Sauce", "Miso-Suppe 4 Port.", "Panko", "Bambusmatte", "Mirin",
+  "Grüntee Sencha", "Matcha-Pulver", "Tempura-Mehl", "Sriracha-Sauce",
+  "Sushi-Bazooka", "Reis-Messbecher", "Keramik-Sojaschale")
+zugriffe <- round(500 * seq_len(n_sku)^(-1.0)) + 1      # Picks pro Woche
+nA <- round(0.2 * n_sku); nB <- round(0.3 * n_sku)
+klasse <- c(rep("A", nA), rep("B", nB), rep("C", n_sku - nA - nB))
+sku <- data.frame(sku = seq_len(n_sku), name = namen, zugriffe = zugriffe,
+                  klasse = klasse)
+
+# ── Lagerplatzvergabe-Strategien: Artikel → Fach ─────────────────────────────
+zuordnung_klasse <- function(fach_reihenfolge) {
+  out <- integer(n_sku)
+  for (k in c("A", "B", "C")) {
+    idx <- which(klasse == k)
+    out[idx] <- sample(fach_reihenfolge[idx])
+  }
+  out
+}
+ord_gangkopf  <- slots |> arrange(y, gang) |> pull(slot)   # vorne in allen Gängen
+ord_gangweise <- slots |> arrange(gang, y) |> pull(slot)   # erste Gänge zuerst
+strategien <- list(
+  "Zufällig (chaotisch)" = sample(n_sku),
+  "ABC am Gangkopf"      = zuordnung_klasse(ord_gangkopf),
+  "ABC gangweise"        = zuordnung_klasse(ord_gangweise)
+)
+
+# ── Beispielauftrag ──────────────────────────────────────────────────────────
+bsp_sku <- c(1, 3, 7, 12, 25, 48, 90, 150)
+bsp_menge <- c(2, 3, 1, 1, 1, 1, 1, 2)
+bsp_pk <- slots[strategien[["Zufällig (chaotisch)"]][bsp_sku], ]
+bsp_pk$name <- namen[bsp_sku]
+bsp_routes <- list(
+  "S-Shape"     = route_sshape(bsp_pk),
+  "Return"      = route_return(bsp_pk),
+  "Largest Gap" = route_lgap(bsp_pk)
+)
+bsp_dm <- dist_matrix(bsp_pk)
+bsp_P  <- perms(2:nrow(bsp_dm$D))
+bsp_L  <- sapply(bsp_P, function(p) tour_len(c(1, p), bsp_dm$D))
+bsp_opt_t <- c(1, bsp_P[[which.min(bsp_L)]])
+bsp_routes[["Optimal (TSP)"]] <- tour_wp(bsp_opt_t, bsp_dm$P)
+bsp_len <- sapply(bsp_routes, weg_laenge)
+
+# ── Simulation: Lagerplatzvergabe × Routing ──────────────────────────────────
+n_auftraege <- 300
+auftraege <- replicate(n_auftraege,
+                       sample(n_sku, sample(5:10, 1), prob = zugriffe),
+                       simplify = FALSE)
+sim <- map_dfr(names(strategien), function(s) {
+  a <- strategien[[s]]
+  d <- sapply(auftraege, function(o) {
+    pk <- slots[a[o], ]; dm <- dist_matrix(pk)
+    c("S-Shape" = weg_laenge(route_sshape(pk)),
+      "Return" = weg_laenge(route_return(pk)),
+      "Largest Gap" = weg_laenge(route_lgap(pk)),
+      "NN + 2-opt" = tour_len(two_opt(nn_tour(dm$D), dm$D), dm$D))
+  })
+  data.frame(strategie = s, routing = rownames(d), weg = rowMeans(d))
+})
+pos_mittel <- mean(lengths(auftraege))
+
+# ── Plot: Lagerlayout ────────────────────────────────────────────────────────
+klassen_farbe <- c(A = "#0B6E4F", B = "#F4A259", C = "#D0D5DD")
+lager_plot <- function(zuordnung = NULL, picks = NULL, wp = NULL,
+                       route_farbe = "#C00000", height = 520, width = 760,
+                       labels = TRUE) {
+  fach_klasse <- rep(NA, n_sku)
+  if (!is.null(zuordnung)) fach_klasse[zuordnung] <- klasse
+  shapes <- lapply(seq_len(n_sku), function(i) {
+    s <- slots[i, ]
+    list(type = "rect", x0 = s$rx - 0.5, x1 = s$rx + 0.5,
+         y0 = s$y - 0.7, y1 = s$y + 0.7,
+         fillcolor = if (is.na(fach_klasse[i])) "#E5E7EB" else
+           klassen_farbe[[fach_klasse[i]]],
+         line = list(color = "white", width = 1), layer = "below")
+  })
+  p <- plot_ly(type = "scatter", mode = "markers")
+  if (!is.null(wp)) p <- p |> add_trace(
+    x = wp[, 1], y = wp[, 2], mode = "lines",
+    line = list(color = route_farbe, width = 3), hoverinfo = "skip",
+    showlegend = FALSE)
+  if (!is.null(picks)) {
+    p <- p |> add_trace(
+      x = picks$rx, y = picks$y, mode = "markers",
+      marker = list(size = 15, color = "#2A7ACA",
+                    line = list(color = "white", width = 2)),
+      text = picks$name, hoverinfo = "text", showlegend = FALSE)
+    if (labels) p <- p |> add_annotations(
+      x = picks$rx, y = picks$y, text = seq_len(nrow(picks)),
+      showarrow = FALSE, font = list(color = "white", size = 11))
+  }
+  p |>
+    add_trace(x = 0, y = 0, mode = "markers+text", text = "Depot",
+              textposition = "bottom center",
+              marker = list(symbol = "square", size = 22, color = "#BFDBF7",
+                            line = list(color = "#2F3E46", width = 2)),
+              hoverinfo = "skip", showlegend = FALSE) |>
+    add_annotations(x = gang_x, y = -1.6, text = paste("Gang", seq_len(n_gang)),
+                    showarrow = FALSE, font = list(size = 11, color = "#4B5563")) |>
+    layout(shapes = shapes,
+           xaxis = list(visible = FALSE, range = c(-2.5, max(gang_x) + 2.5),
+                        fixedrange = TRUE),
+           yaxis = list(visible = FALSE, range = c(-3, Y + 1),
+                        fixedrange = TRUE),
+           plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+           margin = list(l = 5, r = 5, t = 5, b = 5),
+           height = height, width = width)
+}
+```
+
+# Distributionslogistik
+
+## Distributionslogistik {#lk-outline}
+
+- **Lager und Kommissionierung**
+- Verkehrsmittel, Antriebe und Kosten
+- Kürzeste Wege
+- Tourenplanung
+- Distributionssystem gestalten
+
+---
+
+## Lernziele {#lk-learning-objectives}
+
+Nach dieser Einheit können Sie …
+
+- Lagertypen und Kommissionierverfahren **unterscheiden** und für ein Sortiment **auswählen**,
+- feste, chaotische und zugriffsorientierte **Lagerplatzvergabe** (ABC, COI) **vergleichen** und anwenden,
+- Kommissioniertouren mit **S-Shape**, **Return** und **Largest Gap** **bestimmen** und mit der optimalen Tour **vergleichen**,
+- das Zusammenspiel von **Lagerplatzvergabe und Routing** **beurteilen**.
+
+::: {.small-text}
+**Literatur zur Vertiefung**
+
+- **Lager- und Kommissioniersysteme:** [@tenhompel2010warehouse]; [@guenther2012produktion].
+- **Übersicht zur Kommissionierplanung:** [@dekoster2007design].
+- **Routing und Lagerplatzvergabe:** [@ratliff1983order]; [@hall1993distance]; [@petersen1999evaluation].
+:::
+
+---
+
+## Fallstudie – SushiFresh GmbH {#lk-cs1}
+::: slide-subtitle
+Sushi@Home: Das neue Kommissionierlager in Raunheim
+:::
+
+::: columns
+::: {.column width="52%"}
+
+```{r lk-cs-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+lager_plot(height = 500, width = 760)
+```
+
+:::
+::: {.column width="46%"}
+
+::: {.small-text}
+::: {.callout-note appearance="simple"}
+## Ausgangslage
+SushiFresh setzt eine der Wachstumsideen aus der Einheit Distributionsstrukturen um: den Onlineshop **Sushi@Home** mit Kits zum Selbermachen, Saucen, Getränken und Zubehör. Dafür entsteht in Raunheim ein **Fachbodenlager** mit `r n_gang` Gängen und `r n_sku` Fächern für `r n_sku` Artikel.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Problem nach dem Start
+Rund **300 Aufträge pro Tag** mit Ø `r fmt(pos_mittel)` Positionen. Die Artikel wurden eingelagert, „wo gerade Platz war“. Die Picker laufen lange Wege, der Versand am Nachmittag wird knapp.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Fragen
+1. Welcher Lagertyp und welches Kommissionierverfahren passen?
+2. Welcher Artikel gehört auf welchen Platz?
+3. In welcher Reihenfolge sollen die Picker die Fächer anlaufen?
+:::
+:::
+:::
+
+:::
+:::
+
+---
+
+## Lagerfunktionen und Lagerprozesse {#lk-funktionen}
+::: slide-subtitle
+Warum und wie gelagert wird
+:::
+
+::: columns
+::: {.column width="40%"}
+
+::: {.callout-note appearance="simple"}
+## Funktionen eines Lagers
+- **Ausgleich**: Mengen und Zeitpunkte von Zu- und Abgängen entkoppeln (Losgrößen, Saison)
+- **Sicherung**: Schutz gegen Nachfrage- und Lieferunsicherheit (Einheit Pooling)
+- **Sortimentsbildung**: aus sortenreinen Lieferungen kundenspezifische Aufträge zusammenstellen
+- **Veredelung**: Reifen, Konfektionieren, Verpacken
+:::
+
+:::
+::: {.column width="57%"}
+
+```{r lk-prozess}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+
+schritte <- c("Waren-\neingang", "Ein-\nlagerung", "Lagerung\n(Reserve)",
+              "Nach-\nschub", "Kommis-\nsionierung", "Verpackung", "Versand")
+xs <- seq(0.5, by = 1.4, length.out = length(schritte))
+farbe <- c("#BFDBF7", "#BFDBF7", "#BFDBF7", "#BFDBF7", "#F4A259", "#BFDBF7", "#BFDBF7")
+shp <- lapply(seq_along(xs), function(i)
+  list(type = "rect", x0 = xs[i] - 0.6, x1 = xs[i] + 0.6, y0 = -0.5, y1 = 0.5,
+       fillcolor = farbe[i], line = list(color = "#2F3E46", width = 1.5)))
+p <- plot_ly(type = "scatter", mode = "markers")
+for (i in 1:(length(xs) - 1)) p <- p |> add_annotations(
+  x = xs[i + 1] - 0.62, y = 0, ax = xs[i] + 0.62, ay = 0,
+  xref = "x", yref = "y", axref = "x", ayref = "y", text = "",
+  showarrow = TRUE, arrowhead = 2, arrowsize = 1.2, arrowcolor = "#2F3E46")
+p |>
+  add_annotations(x = xs, y = 0, text = gsub("\n", "<br>", schritte),
+                  showarrow = FALSE, font = list(size = 16)) |>
+  add_annotations(x = xs[5], y = -0.95,
+                  text = "<b>personal- und kostenintensivster Schritt</b>",
+                  showarrow = FALSE, font = list(size = 16, color = "#C00000")) |>
+  layout(shapes = shp,
+         xaxis = list(visible = FALSE, range = c(-0.3, max(xs) + 0.8)),
+         yaxis = list(visible = FALSE, range = c(-1.3, 0.8)),
+         margin = list(l = 5, r = 5, t = 5, b = 5),
+         plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+         height = 260, width = 820)
+```
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Reserve- und Kommissionierlager
+Häufig werden **Reservelager** (Paletten, große Mengen, platzsparend) und **Kommissionierlager** (Anbruchmengen, gut erreichbar) getrennt. Der **Nachschub** füllt die Kommissionierplätze auf. Bei SushiFresh: Palettenregal für Reis-Säcke und Getränke, Fachbodenregal für die Kommissionierung.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Lagertypen {#lk-lagertypen}
+::: slide-subtitle
+Statische Lagersysteme im Überblick
+:::
+
+::: {.small-text}
+```{r lk-lagertypen-tab}
+#| echo: false
+
+lt <- data.frame(
+  Typ = c("Bodenlager (Block)", "Bodenlager (Zeile)", "Palettenregal",
+          "Durchlaufregal", "Fachbodenregal", "Hochregallager (HRL)"),
+  Einheit = c("Paletten, Säcke", "Paletten", "Paletten", "Paletten, Behälter",
+              "Kartons, Kleinteile", "Paletten"),
+  Zugriff = c("nur obere/vordere Einheit (LIFO)", "jede Einheit", "jede Palette",
+              "FIFO (Ein- und Ausgabeseite getrennt)", "jedes Fach", "jede Palette (RBG)"),
+  Flaeche = c("sehr hoch", "mittel", "mittel", "hoch", "gering", "sehr hoch"),
+  Auto = c("keine", "keine", "Stapler", "Schwerkraft", "manuell", "vollautomatisch"),
+  Eignung = c("wenige Artikel, große Mengen", "mittlere Artikelzahl",
+              "breites Sortiment, Reserve", "Frische, Haltbarkeit (FIFO)",
+              "manuelle Kommissionierung", "hohe Durchsätze, große Bestände")
+)
+kbl_sf(lt, col.names = c("Lagertyp", "Ladeeinheit", "Zugriff", "Flächennutzung",
+                         "Automatisierung", "Geeignet für"),
+       align = c("l", "l", "l", "l", "l", "l"), font_size = 22)
+```
+:::
+
+::: columns
+::: {.column width="50%"}
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Auswahlkriterien
+Artikelzahl, Menge je Artikel, Zugriffshäufigkeit, Ladeeinheit, **Haltbarkeit** (FIFO, Mindesthaltbarkeit), Temperaturzone, Investitionsbudget.
+:::
+:::
+:::
+::: {.column width="47%"}
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## SushiFresh
+Fachbodenregal für die Kommissionierung. Für kühlpflichtige Kit-Bestandteile ein **Durchlaufregal in der Kühlzelle**: Die Befüllung von hinten sichert **FIFO**.
+:::
+:::
+:::
+:::
+
+---
+
+## Lagertypen {#lk-automatisierung}
+::: slide-subtitle
+Automatisierte Systeme: Ware zur Person
+:::
+
+::: {.small-text}
+```{r lk-auto-tab}
+#| echo: false
+
+au <- data.frame(
+  System = c("Automatisches Kleinteilelager (AKL)", "Shuttle-System",
+             "Würfelspeicher (z. B. AutoStore)", "Liftsystem / Paternoster",
+             "Autonome mobile Roboter (AMR)"),
+  Prinzip = c("Regalbediengerät bringt Behälter zum Pickplatz",
+              "Shuttle je Ebene, sehr hohe Behälterdurchsätze",
+              "Behälter gestapelt, Roboter greifen von oben",
+              "Tablare werden zur Bedienöffnung gefahren",
+              "Roboter fahren Regale oder Behälter zum Picker"),
+  Staerke = c("kompakt, bewährt", "Durchsatz", "Flächennutzung, modular",
+              "günstiger Einstieg, kompakt", "flexibel, skalierbar"),
+  Schwaeche = c("Investition, begrenzter Durchsatz je Gasse",
+                "hohe Investition", "Zugriff auf untere Behälter dauert",
+                "geringe Leistung", "Software, Flottenmanagement")
+)
+kbl_sf(au, col.names = c("System", "Prinzip", "Stärke", "Schwäche"),
+       align = c("l", "l", "l", "l"), font_size = 22)
+```
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+Bei **Ware-zur-Person** entfallen die Wege des Pickers. Picker Routing wird dann zur **Reihenfolgeplanung** der Behälter. Investitionen lohnen sich bei hohen Auftragszahlen und stabiler Auslastung. Für 300 Aufträge pro Tag bleibt SushiFresh zunächst bei **Person-zur-Ware**.
+:::
+:::
+
+---
+
+## Lagerplatzvergabe {#lk-vergabe}
+::: slide-subtitle
+Feste, chaotische und zonierte Lagerplatzvergabe
+:::
+
+::: {.small-text}
+```{r lk-vergabe-tab}
+#| echo: false
+
+vg <- data.frame(
+  Strategie = c("Feste Lagerplatzvergabe", "Chaotische (freie) Lagerplatzvergabe",
+                "Zonierte Vergabe (z. B. ABC-Zonen)"),
+  Regel = c("Jeder Artikel hat einen festen Platz",
+            "Einlagerung auf irgendeinen freien Platz",
+            "Feste Zone je Klasse, innerhalb der Zone frei"),
+  Pro = c("Picker kennen die Plätze, kein IT-System nötig",
+          "hohe Flächennutzung, flexibel bei Sortimentswechsel",
+          "kurze Wege für Schnelldreher bei guter Flächennutzung"),
+  Contra = c("Platz für den Maximalbestand jedes Artikels nötig",
+             "Lagerverwaltungssystem (LVS) zwingend, Wege nicht gesteuert",
+             "Klassen pflegen, Umlagerungen bei Nachfrageänderung")
+)
+kbl_sf(vg, col.names = c("Strategie", "Regel", "Vorteil", "Nachteil"),
+       align = c("l", "l", "l", "l"), font_size = 22)
+```
+:::
+
+::: columns
+::: {.column width="50%"}
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple" icon=false}
+#### Platzbedarf
+- fest: $\displaystyle \sum_i \max_t B_{i}(t)$
+- chaotisch: $\displaystyle \max_t \sum_i B_{i}(t)$
+
+mit Bestand $B_i(t)$ von Artikel $i$ in Lagerplätzen
+:::
+:::
+:::
+::: {.column width="47%"}
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+Da nicht alle Artikel gleichzeitig ihren Höchstbestand haben, gilt immer: **chaotisch ≤ fest**. Im Mittel ist bei gleichmäßigem Abbau nur gut die Hälfte des Maximalbestands belegt, die chaotische Lagerung muss aber die **gemeinsame Spitze** abdecken.
+:::
+:::
+:::
+:::
+
+---
+
+## Lagerplatzvergabe {#lk-kapazitaet}
+::: slide-subtitle
+Beispiel: Platzbedarf im Reservelager
+:::
+
+```{r lk-kap-calc}
+#| echo: false
+
+set.seed(11)
+res_art <- data.frame(
+  Artikel = c("Sushi-Reis 25 kg", "Nori Karton", "Sojasauce Karton", "Reisessig",
+              "Ramune Tray", "Grüntee Karton", "Panko Karton", "Stäbchen Karton",
+              "Mirin Karton", "Tempura-Mehl", "Miso Karton", "Sesam Karton"),
+  Q = c(8, 4, 6, 3, 5, 3, 4, 5, 6, 4, 3, 5),         # Bestellmenge in Palettenplätzen
+  T = c(12, 7, 10, 9, 6, 14, 11, 8, 13, 5, 9, 7)     # Bestellzyklus in Tagen
+)
+res_art$offset <- sapply(res_art$T, function(t) sample(0:(t - 1), 1))
+tage <- 0:59
+bestand <- sapply(seq_len(nrow(res_art)), function(i) {
+  with(res_art[i, ], ceiling(Q * (1 - ((tage + offset) %% T) / T)))
+})
+colnames(bestand) <- res_art$Artikel
+platz_fest <- sum(apply(bestand, 2, max))
+platz_chaos <- max(rowSums(bestand))
+platz_mittel <- mean(rowSums(bestand))
+```
+
+::: columns
+::: {.column width="58%"}
+
+```{r lk-kap-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+df_b <- as.data.frame(bestand) |> mutate(Tag = tage) |>
+  pivot_longer(-Tag, names_to = "Artikel", values_to = "Plaetze")
+farben8 <- c("#0B6E4F", "#2D9E8E", "#52B788", "#95D5B2", "#2A7ACA", "#7FB3E6",
+             "#BFDBF7", "#F4A259", "#D97B29", "#F6C28B", "#9B59B6", "#C9A0DC")
+p <- plot_ly()
+for (k in seq_along(res_art$Artikel)) {
+  s <- df_b[df_b$Artikel == res_art$Artikel[k], ]
+  p <- p |> add_trace(x = s$Tag, y = s$Plaetze, type = "scatter", mode = "none",
+                      stackgroup = "one", name = res_art$Artikel[k],
+                      fillcolor = farben8[k])
+}
+p |>
+  add_lines(x = tage, y = rep(platz_fest, length(tage)), name = "Bedarf fest",
+            line = list(color = "#C00000", width = 3, dash = "dash")) |>
+  add_lines(x = tage, y = rep(platz_chaos, length(tage)), name = "Bedarf chaotisch",
+            line = list(color = "#2F3E46", width = 3)) |>
+  layout(yaxis = list(range = c(0, platz_fest + 4))) |>
+  plt_layout("Tag", "belegte Palettenplätze", h = 470, w = 780)
+```
+
+:::
+::: {.column width="40%"}
+
+::: {.small-text}
+Zwölf Artikel im Reservelager, Bestand jeweils sägezahnförmig zwischen Bestellmenge $Q_i$ und null (Bestellzyklus 6–14 Tage, zeitlich versetzt).
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnis
+- **fest:** $\sum_i Q_i =$ **`r platz_fest`** Plätze
+- **chaotisch:** höchstens **`r platz_chaos`** Plätze gleichzeitig belegt (im Mittel nur `r round(platz_mittel)`)
+- Ersparnis: **`r round((1 - platz_chaos / platz_fest) * 100)` %**
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Bei synchronen Bestellungen (alle Artikel am selben Tag) schrumpft der Vorteil. Bei schwankender Nachfrage braucht auch die chaotische Lagerung einen **Puffer**.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Zugriffsorientierte Platzvergabe {#lk-abc}
+::: slide-subtitle
+ABC-Analyse der Zugriffe
+:::
+
+::: columns
+::: {.column width="55%"}
+
+```{r lk-abc-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+abc <- sku |> arrange(desc(zugriffe)) |>
+  mutate(anteil_art = row_number() / n(), kum = cumsum(zugriffe) / sum(zugriffe))
+anteil_A <- abc$kum[nA]; anteil_B <- abc$kum[nA + nB] - anteil_A
+plot_ly(abc, x = ~anteil_art * 100, y = ~kum * 100, type = "scatter",
+        mode = "lines", line = list(color = "#2F3E46", width = 3),
+        name = "kumulierter Anteil der Picks") |>
+  add_trace(x = c(0, 100), y = c(0, 100), mode = "lines",
+            line = list(color = "#9AA5B1", dash = "dot"), name = "Gleichverteilung") |>
+  layout(shapes = list(
+    list(type = "rect", x0 = 0, x1 = 20, y0 = 0, y1 = 100,
+         fillcolor = "#0B6E4F22", line = list(width = 0)),
+    list(type = "rect", x0 = 20, x1 = 50, y0 = 0, y1 = 100,
+         fillcolor = "#F4A25922", line = list(width = 0))),
+    annotations = list(
+      list(x = 10, y = 8, text = "<b>A</b>", showarrow = FALSE, font = list(size = 18)),
+      list(x = 35, y = 8, text = "<b>B</b>", showarrow = FALSE, font = list(size = 18)),
+      list(x = 75, y = 8, text = "<b>C</b>", showarrow = FALSE, font = list(size = 18)))) |>
+  plt_layout("Anteil der Artikel (%)", "Anteil der Zugriffe (%)", h = 470, w = 740)
+```
+
+:::
+::: {.column width="42%"}
+
+::: {.callout-note appearance="simple"}
+## Sushi@Home-Sortiment
+- **A-Artikel** (20 % der Artikel): `r round(anteil_A * 100)` % aller Picks, z. B. Sushi-Reis, Nori, Sojasauce
+- **B-Artikel** (30 %): `r round(anteil_B * 100)` % der Picks
+- **C-Artikel** (50 %): `r round((1 - anteil_A - anteil_B) * 100)` % der Picks, z. B. Zubehör, Geschirr
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Grundregel
+**Schnelldreher** gehören auf Plätze mit **kurzem Weg** (und in Griffhöhe), Langsamdreher dürfen weiter weg liegen. Was „kurzer Weg“ heißt, hängt aber von der **Routingstrategie** ab, dazu später mehr.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Zugriffsorientierte Platzvergabe {#lk-coi}
+::: slide-subtitle
+Cube-per-Order-Index (COI)
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Idee [@heskett1963cube]:** Artikel mit **viel Platzbedarf** belegen viele gute Plätze. Deshalb wird nicht nur die Zugriffshäufigkeit, sondern das Verhältnis aus Platzbedarf und Zugriffen betrachtet:
+$$\text{COI}_i = \frac{\text{Platzbedarf}_i}{\text{Zugriffe}_i}$$
+Artikel werden nach **aufsteigendem COI** den Plätzen mit den **kürzesten Wegen** zugeordnet.
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+Unter bestimmten Annahmen (Weg je Zugriff proportional zur Distanz des Platzes, Return-Routing) ist die COI-Regel optimal. Bei S-Shape-Routing oder Aufträgen mit vielen Positionen ist sie eine Heuristik.
+:::
+:::
+
+:::
+::: {.column width="49%"}
+
+::: {.fragment .fade-up}
+::: {.small-text}
+```{r lk-coi-tab}
+#| echo: false
+
+coi <- data.frame(
+  Artikel = c("Sushi-Reis 1 kg", "Nori-Blätter", "Sojasauce", "Stäbchen",
+              "Bambusmatte", "Reiskocher"),
+  Platz = c(4, 1, 2, 1, 3, 6),
+  Zugriffe = c(900, 700, 800, 600, 400, 60)
+) |>
+  mutate(COI = Platz / Zugriffe,
+         Rang_Z = rank(-Zugriffe), Rang_COI = rank(COI))
+kbl_sf(coi |> mutate(COI = formatC(COI * 1000, format = "f", digits = 2,
+                                   decimal.mark = ",")),
+       col.names = c("Artikel", "Fächer", "Zugriffe/Woche", "COI (×10⁻³)",
+                     "Rang nach Zugriffen", "Rang nach COI"),
+       align = c("l", "r", "r", "r", "c", "c"), font_size = 22) |>
+  column_spec(6, bold = TRUE, background = "#D8F3DC")
+```
+
+Der Sushi-Reis wird am häufigsten gegriffen, braucht aber **4 Fächer**. Nach COI erhalten Nori und Stäbchen die besten Plätze, der Reis rückt auf Rang 4.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Lagerplatzvergabe bei SushiFresh {#lk-zonierung}
+::: slide-subtitle
+Drei Varianten im Layout
+:::
+
+::: columns
+::: {.column width="33%"}
+::: {.small-text}
+**Zufällig (chaotisch)**
+:::
+```{r lk-zon-1}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+
+lager_plot(strategien[["Zufällig (chaotisch)"]], height = 340, width = 470)
+```
+:::
+::: {.column width="33%"}
+::: {.small-text}
+**ABC am Gangkopf** (vorne in allen Gängen)
+:::
+```{r lk-zon-2}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+
+lager_plot(strategien[["ABC am Gangkopf"]], height = 340, width = 470)
+```
+:::
+::: {.column width="33%"}
+::: {.small-text}
+**ABC gangweise** (A in den ersten Gängen)
+:::
+```{r lk-zon-3}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+
+lager_plot(strategien[["ABC gangweise"]], height = 340, width = 470)
+```
+:::
+:::
+
+::: {.small-text}
+<span style="color:#0B6E4F">■</span> A-Artikel &nbsp; <span style="color:#F4A259">■</span> B-Artikel &nbsp; <span style="color:#B8BEC6">■</span> C-Artikel. Innerhalb einer Zone werden die Artikel zufällig verteilt.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Beide ABC-Varianten bringen die Schnelldreher näher an das Depot, aber auf **unterschiedliche** Weise. Welche besser ist, entscheidet die Art, wie die Picker durch das Lager laufen.
+:::
+:::
+
+---
+
+## Kommissionierung {#lk-kommissionierung}
+::: slide-subtitle
+Begriffe und Zeitanteile
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="simple"}
+## Begriffe
+- **Kommissionierung**: Zusammenstellen von Teilmengen aus einem Sortiment nach einem Auftrag
+- **Auftrag**: Kundenauftrag bzw. Kommissionierauftrag
+- **Position**: Auftragszeile (ein Artikel in bestimmter Menge)
+- **Pick**: einzelner Greifvorgang
+- **Kommissionierleistung**: Positionen bzw. Picks pro Stunde
+:::
+
+:::
+::: {.column width="49%"}
+
+```{r lk-zeitanteile}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4.3
+
+za <- data.frame(Teil = c("Wegzeit", "Suchen", "Greifen", "Basiszeit (Rüsten)",
+                          "Sonstiges"),
+                 Anteil = c(50, 20, 15, 10, 5))
+za$Teil <- factor(za$Teil, levels = rev(za$Teil))
+plot_ly(za, y = ~Teil, x = ~Anteil, type = "bar", orientation = "h",
+        marker = list(color = c("#C00000", "#F4A259", "#52B788", "#2A7ACA", "#9AA5B1")),
+        text = ~paste0(Anteil, " %"), textposition = "outside", hoverinfo = "skip") |>
+  layout(xaxis = list(title = "Anteil an der Kommissionierzeit (%)",
+                      range = c(0, 62)),
+         yaxis = list(title = "", automargin = TRUE),
+         margin = list(l = 10, r = 20, t = 10, b = 50),
+         height = 330, width = 680)
+```
+
+::: {.smaller-text}
+Typische Aufteilung der Zeit eines Pickers bei Person-zur-Ware [@dekoster2007design].
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Rund die **Hälfte** der Zeit entfällt auf das **Gehen**. Kürzere Wege durch gute Lagerplatzvergabe und Routing sind deshalb der größte Hebel für die Kommissionierleistung.
+:::
+:::
+
+---
+
+## Kommissionierverfahren {#lk-verfahren}
+::: slide-subtitle
+Gestaltungsmöglichkeiten
+:::
+
+::: {.small-text}
+```{r lk-verfahren-tab}
+#| echo: false
+
+kv <- data.frame(
+  Merkmal = c("Bereitstellung", "Auftragsbearbeitung", "", "Zonen",
+              "Informationsbereitstellung"),
+  Varianten = c("Person-zur-Ware (statisch) · Ware-zur-Person (dynamisch)",
+                "einstufig, auftragsweise: ein Auftrag pro Tour",
+                "zweistufig, serienweise (Batch): mehrere Aufträge pro Tour, danach Sortieren",
+                "einzonig · mehrzonig (sequenziell weitergeben oder parallel und zusammenführen)",
+                "Papier-Pickliste · Scanner/MDE · Pick-by-Voice · Pick-by-Light · Datenbrille"),
+  Wirkung = c("Wegzeit vs. Investition", "einfach, kurze Durchlaufzeit je Auftrag",
+              "weniger Wege, aber Sortieraufwand und Fehlerrisiko",
+              "kurze Wege je Picker, Abstimmung nötig",
+              "Fehlerquote, Geschwindigkeit, Hände frei")
+)
+kbl_sf(kv, col.names = c("Merkmal", "Varianten", "Wirkung"),
+       align = c("l", "l", "l"), font_size = 22)
+```
+:::
+
+::: columns
+::: {.column width="50%"}
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple" icon=false}
+#### Kommissionierzeit eines Auftrags
+$$t = t_{\text{Basis}} + \frac{w}{v} + n \cdot t_{\text{Pos}}$$
+Basiszeit $t_{\text{Basis}}$, Weglänge $w$, Gehgeschwindigkeit $v$, Positionen $n$ mit Greif- und Bestätigungszeit $t_{\text{Pos}}$
+:::
+:::
+:::
+::: {.column width="47%"}
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## SushiFresh
+Person-zur-Ware, einstufig, auftragsweise, eine Zone, **Scanner** (Artikel und Fach werden bestätigt). Nur die **Weglänge** $w$ hängt von Lagerplatzvergabe und Routing ab.
+:::
+:::
+:::
+:::
+
+---
+
+## Picker Routing {#lk-routing-problem}
+::: slide-subtitle
+Ein TSP im Lager
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Problemstellung:** Gegeben ist eine Pickliste mit $n$ Positionen. Gesucht ist die **kürzeste Rundtour** vom Depot zu allen Pickpositionen und zurück. Das ist ein **Rundreiseproblem** (*Traveling Salesman Problem*, TSP) auf einem speziellen Graphen aus Gängen und Quergängen. Allgemein behandeln wir das TSP in der Einheit Tourenplanung.
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Annahmen (Ein-Block-Layout)**
+
+- parallele Gänge, Quergang **vorne** und **hinten**
+- Picker greift beidseitig, Gangbreite vernachlässigt
+- Depot am vorderen Quergang links
+
+**Distanz zwischen Pickpositionen** $(x_1, y_1)$ und $(x_2, y_2)$:
+
+- gleicher Gang: $d = |y_1 - y_2|$
+- verschiedene Gänge: $d = |x_1 - x_2| + \min\big(y_1 + y_2,\; 2Y - y_1 - y_2\big)$
+
+(Umweg über vorne oder hinten; $Y$ = Lage des hinteren Quergangs)
+:::
+:::
+
+:::
+::: {.column width="49%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Lösungswege
+- **Optimal:** Für dieses Layout gibt es ein effizientes exaktes Verfahren (dynamische Programmierung) [@ratliff1983order]. Alternativ: allgemeine TSP-Heuristiken auf der Distanzmatrix (Einheit Tourenplanung)
+- **Einfache Routingstrategien:** S-Shape, Return, Midpoint, Largest Gap [@hall1993distance]
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Warum einfache Strategien?
+Picker folgen in der Praxis lieber **leicht merkbaren Mustern**. Optimale Touren wirken oft unlogisch, werden nicht eingehalten und führen in engen Gängen zu Staus.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Picker Routing {#lk-beispielauftrag}
+::: slide-subtitle
+Beispielauftrag bei chaotischer Lagerung
+:::
+
+::: columns
+::: {.column width="40%"}
+
+::: {.small-text}
+```{r lk-bsp-tab}
+#| echo: false
+
+bsp_tab <- data.frame(
+  Nr = seq_along(bsp_sku), Artikel = bsp_pk$name, Menge = bsp_menge,
+  Klasse = klasse[bsp_sku], Gang = bsp_pk$gang,
+  Fach = paste0(bsp_pk$seite, bsp_pk$tiefe)
+)
+kbl_sf(bsp_tab, col.names = c("Nr.", "Artikel", "Menge", "Klasse", "Gang", "Fach"),
+       align = c("c", "l", "c", "c", "c", "c"), font_size = 22)
+```
+
+Auftrag 4711 von Sushi@Home: ein „Starter-Kit“ mit Zubehör. Die Artikel liegen verstreut über `r length(unique(bsp_pk$gang))` Gänge.
+:::
+
+:::
+::: {.column width="58%"}
+
+```{r lk-bsp-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+lager_plot(picks = bsp_pk, height = 520, width = 780)
+```
+
+:::
+:::
+
+---
+
+## Routingstrategie S-Shape {#lk-sshape}
+::: slide-subtitle
+Jeden Gang mit Picks vollständig durchlaufen
+:::
+
+::: columns
+::: {.column width="58%"}
+
+```{r lk-sshape-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+lager_plot(picks = bsp_pk, wp = bsp_routes[["S-Shape"]], height = 520, width = 780)
+```
+
+:::
+::: {.column width="40%"}
+
+::: {.callout-note appearance="simple"}
+## Regel (auch: Traversal)
+- Jeder Gang mit mindestens einem Pick wird **vollständig durchlaufen**, abwechselnd nach hinten und nach vorne.
+- Bei **ungerader** Gangzahl wird der letzte Gang nur bis zum hintersten Pick betreten (Hin und Zurück).
+- Gänge ohne Pick werden übersprungen.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Bewertung
+Weglänge: **`r fmt(bsp_len[["S-Shape"]])` m**. Einfach zu merken und gut bei **vielen Picks pro Gang**. Bei wenigen, weit vorne liegenden Picks wird viel unnötig gelaufen.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Routingstrategie Return {#lk-return}
+::: slide-subtitle
+Jeden Gang von vorne betreten und umkehren
+:::
+
+::: columns
+::: {.column width="58%"}
+
+```{r lk-return-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+lager_plot(picks = bsp_pk, wp = bsp_routes[["Return"]], height = 520, width = 780)
+```
+
+:::
+::: {.column width="40%"}
+
+::: {.callout-note appearance="simple"}
+## Regel
+- Jeder Gang mit Picks wird **vom vorderen Quergang** betreten.
+- Der Picker geht bis zum **hintersten** Pick des Gangs und **kehrt um**.
+- Der hintere Quergang wird nie benutzt.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Bewertung
+Weglänge: **`r fmt(bsp_len[["Return"]])` m**. Gut, wenn Picks **nahe am vorderen Gangende** liegen. Bei Picks tief im Gang wird jeder Meter doppelt gelaufen.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Routingstrategie Largest Gap {#lk-largestgap}
+::: slide-subtitle
+Die größte Lücke im Gang nicht laufen
+:::
+
+::: columns
+::: {.column width="58%"}
+
+```{r lk-lgap-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+lager_plot(picks = bsp_pk, wp = bsp_routes[["Largest Gap"]], height = 520, width = 780)
+```
+
+:::
+::: {.column width="40%"}
+
+::: {.callout-note appearance="simple"}
+## Regel [@hall1993distance]
+- Erster und letzter Gang mit Picks werden **vollständig** durchlaufen.
+- In den Gängen dazwischen wird die **größte Lücke** bestimmt: zwischen benachbarten Picks bzw. zu den Quergängen.
+- Picks **vor** der Lücke werden vom vorderen, Picks **dahinter** vom hinteren Quergang aus geholt (jeweils hin und zurück).
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Bewertung
+Weglänge: **`r fmt(bsp_len[["Largest Gap"]])` m**. Etwas schwerer zu merken, schneidet aber in Studien meist am besten unter den einfachen Strategien ab.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Optimale Tour {#lk-optimal}
+::: slide-subtitle
+Exakte Lösung durch vollständige Enumeration
+:::
+
+::: columns
+::: {.column width="58%"}
+
+```{r lk-opt-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+lager_plot(picks = bsp_pk, wp = bsp_routes[["Optimal (TSP)"]],
+           route_farbe = "#0B6E4F", height = 520, width = 780)
+```
+
+:::
+::: {.column width="40%"}
+
+::: {.small-text}
+```{r lk-vgl-bsp}
+#| echo: false
+
+vgl <- data.frame(Strategie = names(bsp_len), Weg = bsp_len) |>
+  mutate(Mehr = (Weg / min(Weg) - 1) * 100)
+rownames(vgl) <- NULL
+kbl_sf(vgl |> mutate(Weg = paste0(fmt(Weg), " m"),
+                     Mehr = paste0("+", fmt(Mehr, 0), " %")),
+       col.names = c("Strategie", "Weglänge", "über Optimum"),
+       align = c("l", "r", "r"), font_size = 24)
+```
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Beobachtung
+Die optimale Tour (`r format(factorial(nrow(bsp_pk)), big.mark = ".", decimal.mark = ",")` mögliche Reihenfolgen geprüft) kombiniert Elemente der einfachen Strategien: manche Gänge werden durchlaufen, andere von vorne oder hinten angelaufen.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+Für größere Aufträge: Ratliff-Rosenthal-Algorithmus oder TSP-Heuristiken wie Nearest Neighbor + 2-opt (Einheit Tourenplanung).
+:::
+:::
+
+:::
+:::
+
+---
+
+## Picker Routing in R {#lk-r}
+::: slide-subtitle
+Implementierung der Strategien
+:::
+
+::: columns
+::: {.column width="52%"}
+
+```{r lk-r-sshape}
+#| echo: true
+#| eval: false
+
+# pk: Picks mit Gang (gang) und Tiefe (y)
+# Ergebnis: Wegpunkte ab/bis Depot (0, 0)
+route_sshape <- function(pk) {
+  g <- sort(unique(pk$gang)); m <- length(g)
+  wp <- list(c(0, 0)); vorne <- TRUE
+  for (k in seq_len(m)) {
+    x <- gang_x[g[k]]; ys <- pk$y[pk$gang == g[k]]
+    if (k == m && m %% 2 == 1) {        # letzter Gang:
+      wp <- c(wp, list(c(x, 0), c(x, max(ys)), c(x, 0)))
+    } else if (vorne) {                 # nach hinten
+      wp <- c(wp, list(c(x, 0), c(x, Y))); vorne <- FALSE
+    } else {                            # nach vorne
+      wp <- c(wp, list(c(x, Y), c(x, 0))); vorne <- TRUE
+    }
+  }
+  do.call(rbind, c(wp, list(c(0, 0))))
+}
+```
+
+:::
+::: {.column width="45%"}
+
+```{r lk-r-return}
+#| echo: true
+#| eval: false
+
+route_return <- function(pk) {
+  wp <- list(c(0, 0))
+  for (j in sort(unique(pk$gang))) {
+    x <- gang_x[j]
+    wp <- c(wp, list(c(x, 0),
+                     c(x, max(pk$y[pk$gang == j])),
+                     c(x, 0)))
+  }
+  do.call(rbind, c(wp, list(c(0, 0))))
+}
+
+# Weglänge: Summe der Rechteck-Abstände
+weg_laenge <- function(wp)
+  sum(abs(diff(wp[, 1])) + abs(diff(wp[, 2])))
+```
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Alle Strategien liefern **Wegpunkte**. Daraus ergeben sich Weglänge und Grafik. Largest Gap und die TSP-Lösung sind im Quellcode der Folien enthalten.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Lagerplatzvergabe und Routing {#lk-simulation}
+::: slide-subtitle
+Simulation mit `r n_auftraege` Aufträgen
+:::
+
+::: columns
+::: {.column width="58%"}
+
+```{r lk-sim-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+sim$routing <- factor(sim$routing, levels = c("S-Shape", "Return", "Largest Gap",
+                                              "NN + 2-opt"))
+sim$strategie <- factor(sim$strategie, levels = names(strategien))
+farb_s <- c("#9AA5B1", "#2A7ACA", "#0B6E4F")
+p <- plot_ly()
+for (k in seq_along(levels(sim$strategie))) {
+  s <- sim[sim$strategie == levels(sim$strategie)[k], ]
+  p <- p |> add_bars(x = s$routing, y = s$weg, name = levels(sim$strategie)[k],
+                     marker = list(color = farb_s[k]),
+                     text = fmt(s$weg, 0), textposition = "outside")
+}
+p |> layout(barmode = "group", yaxis = list(range = c(0, max(sim$weg) * 1.15))) |>
+  plt_layout("Routingstrategie", "Ø Weglänge je Auftrag (m)", h = 500, w = 800)
+```
+
+:::
+::: {.column width="40%"}
+
+```{r lk-sim-kennz}
+#| echo: false
+
+w <- function(s, r) sim$weg[sim$strategie == s & sim$routing == r]
+best <- sim[which.min(sim$weg), ]
+```
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnisse
+- **S-Shape** profitiert von **gangweiser** ABC-Zonierung: Schnelldreher in wenigen Gängen → wenige Gänge zu durchlaufen.
+- **Return** profitiert von ABC **am Gangkopf**: Schnelldreher vorne → kurze Stichwege.
+- Die falsche Kombination verschenkt einen Großteil des Potenzials.
+- *NN + 2-opt* ist eine allgemeine TSP-Heuristik (Einheit Tourenplanung) und dient hier als Referenz nahe am Optimum.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-important appearance="simple"}
+Lagerplatzvergabe und Routing müssen **gemeinsam** geplant werden [@petersen1999evaluation]. Bestes Paar hier: **`r best$strategie` + `r best$routing`** mit Ø `r fmt(best$weg, 0)` m statt `r fmt(w("Zufällig (chaotisch)", "S-Shape"), 0)` m heute.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Kommissionierleistung bei SushiFresh {#lk-leistung}
+::: slide-subtitle
+Was bringen die kürzeren Wege?
+:::
+
+```{r lk-leistung-calc}
+#| echo: false
+
+v <- 0.8; t_basis <- 60; t_pos <- 10; auftraege_tag <- 300
+szen <- data.frame(
+  Szenario = c("Heute: zufällig + S-Shape", "ABC gangweise + S-Shape",
+               "ABC gangweise + Largest Gap", "ABC gangweise + NN + 2-opt"),
+  weg = c(w("Zufällig (chaotisch)", "S-Shape"), w("ABC gangweise", "S-Shape"),
+          w("ABC gangweise", "Largest Gap"), w("ABC gangweise", "NN + 2-opt"))
+) |>
+  mutate(t_weg = weg / v, t = t_basis + t_weg + pos_mittel * t_pos,
+         anteil_weg = t_weg / t, auftr_h = 3600 / t,
+         std_tag = auftraege_tag * t / 3600)
+```
+
+::: columns
+::: {.column width="58%"}
+
+::: {.small-text}
+```{r lk-leistung-tab}
+#| echo: false
+
+kbl_sf(szen |> transmute(Szenario, weg = fmt(weg, 0), t = fmt(t, 0),
+                         anteil = paste0(fmt(anteil_weg * 100, 0), " %"),
+                         auftr_h = fmt(auftr_h, 1), std = fmt(std_tag, 1)),
+       col.names = c("Szenario", "Weg (m)", "Zeit/Auftrag (s)", "Anteil Weg",
+                     "Aufträge/h", "Picker-Std./Tag"),
+       align = c("l", rep("r", 5)), font_size = 22)
+```
+
+::: {.smaller-text}
+Annahmen: $v$ = `r fmt(v)` m/s mit Wagen, $t_{\text{Basis}}$ = `r t_basis` s, $t_{\text{Pos}}$ = `r t_pos` s, Ø `r fmt(pos_mittel)` Positionen, `r auftraege_tag` Aufträge pro Tag.
+:::
+:::
+
+:::
+::: {.column width="40%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnis
+Allein durch Umlagern der Artikel und eine feste Laufregel sinkt der Personalbedarf von `r fmt(szen$std_tag[1])` auf `r fmt(szen$std_tag[3])` Picker-Stunden pro Tag (**`r fmt((1 - szen$std_tag[3] / szen$std_tag[1]) * 100, 0)` %**), ohne Investition in Technik.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Umsetzung
+Die ABC-Zonierung erfordert eine **einmalige Umlagerung** und eine regelmäßige Überprüfung der Klassen (z. B. quartalsweise, Saisonartikel!). Das Lagerverwaltungssystem sortiert die Pickliste in Laufreihenfolge.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Sammelkommissionierung {#lk-batching}
+::: slide-subtitle
+Mehrere Aufträge in einer Tour
+:::
+
+```{r lk-batch-calc}
+#| echo: false
+
+a <- strategien[["ABC gangweise"]]
+o1 <- auftraege[[1]]; o2 <- auftraege[[2]]
+pk1 <- slots[a[o1], ]; pk2 <- slots[a[o2], ]; pk12 <- slots[a[unique(c(o1, o2))], ]
+l1 <- weg_laenge(route_lgap(pk1)); l2 <- weg_laenge(route_lgap(pk2))
+l12 <- weg_laenge(route_lgap(pk12))
+```
+
+::: columns
+::: {.column width="55%"}
+
+```{r lk-batch-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+pk12$name <- ""
+lager_plot(strategien[["ABC gangweise"]], picks = pk12, wp = route_lgap(pk12),
+           labels = FALSE, height = 500, width = 760)
+```
+
+:::
+::: {.column width="43%"}
+
+::: {.callout-note appearance="simple"}
+## Prinzip
+Der Picker holt die Positionen **mehrerer Aufträge** in einer Tour (z. B. Wagen mit mehreren Kisten). Danach wird nach Aufträgen getrennt, entweder direkt am Wagen (*pick and sort*) oder in einem zweiten Schritt.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Beispiel (ABC gangweise, Largest Gap)
+- Auftrag 1 allein: `r fmt(l1, 0)` m
+- Auftrag 2 allein: `r fmt(l2, 0)` m
+- **Beide zusammen: `r fmt(l12, 0)` m** statt `r fmt(l1 + l2, 0)` m (`r fmt((1 - l12 / (l1 + l2)) * 100, 0)` % weniger)
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+Batchbildung ist selbst ein Optimierungsproblem, z. B. per Savings-Logik (Einheit Tourenplanung): Aufträge mit überlappenden Gängen kombinieren.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Kernaussagen {#lk-summary}
+
+::: {.callout-tip appearance="simple"}
+## Das Wichtigste in Kürze
+
+- Lager **gleichen aus, sichern ab und bilden Sortimente**. Der Lagertyp richtet sich nach Ladeeinheit, Artikelzahl, Zugriffshäufigkeit und Haltbarkeit (FIFO).
+- **Chaotische** Lagerplatzvergabe spart Fläche (SushiFresh-Beispiel: `r round((1 - platz_chaos / platz_fest) * 100)` %), **zugriffsorientierte** Vergabe (ABC, COI) spart Wege.
+- Die **Kommissionierung** ist der teuerste Lagerprozess. Rund die Hälfte der Zeit ist **Wegzeit**.
+- **Picker Routing** ist ein TSP im Lager. Einfache Strategien (S-Shape, Return, Largest Gap) sind praxistauglich und oft nahe am Optimum.
+- Lagerplatzvergabe und Routing müssen **zusammenpassen**: S-Shape mit gangweiser Zonierung, Return mit Zonierung am Gangkopf.
+- **Sammelkommissionierung** reduziert die Wege weiter, erfordert aber Sortieraufwand.
+:::
+
+---
+
+## Übung {#lk-exercise}
+
+::: {.exercise-slide}
+::: {.exercise-header}
+Picker Routing – Auftrag 4712
+:::
+
+::: {.columns .exercise-content}
+::: {.column width="55%"}
+Auftrag 4712 enthält sechs Positionen in folgenden Gängen und Tiefen (Fachmitte in m ab vorderem Quergang; hinterer Quergang bei $Y = 20$ m; Gangabstand 4 m, Depot vorne links 4 m vor Gang 1):
+
+| Gang | 1 | 2 | 2 | 4 | 5 | 7 |
+|------|---|---|---|---|---|---|
+| Tiefe (m) | 4 | 3 | 17 | 16 | 10 | 2 |
+
+- Bestimmen Sie die Weglängen für **S-Shape**, **Return** und **Largest Gap** von Hand.
+- Welche Strategie ist hier am besten? Warum?
+- Prüfen Sie Ihr Ergebnis mit den Funktionen aus den Folien.
+:::
+::: {.column width="42%"}
+```{r lk-exercise-hint}
+#| echo: true
+#| eval: false
+
+pk <- data.frame(
+  gang = c(1, 2, 2, 4, 5, 7),
+  y    = c(4, 3, 17, 16, 10, 2))
+
+weg_laenge(route_sshape(pk))
+weg_laenge(route_return(pk))
+weg_laenge(route_lgap(pk))
+```
+:::
+:::
+:::

@@ -1,0 +1,390 @@
+# Tourenplanung {#sec-tourenplanung}
+
+```{r}
+#| label: chtsp-setup
+#| echo: false
+#| warning: false
+#| message: false
+
+source("../R/scm_functions.R")
+
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+# Inline-Zahlen im Fließtext deutsch formatieren (Dezimalkomma, Tausenderpunkt)
+knitr::knit_hooks$set(inline = function(x) {
+  if (is.numeric(x)) format(x, big.mark = ".", decimal.mark = ",") else x
+})
+```
+
+::: {.lernziele}
+**Lernziele**
+
+Nach der Bearbeitung dieses Kapitels können Sie …
+
+- das **Traveling Salesman Problem (TSP)** als Grundproblem der Tourenplanung beschreiben und als binäres Optimierungsmodell formulieren,
+- die **Komplexität** des TSP einschätzen und den Einsatz von Heuristiken begründen,
+- Touren mit dem **Nearest-Neighbor-Verfahren** konstruieren und mit **2-opt** verbessern sowie lokale und globale Optima unterscheiden,
+- das TSP mit `ompr` und der **MTZ-Formulierung** exakt lösen,
+- Touren mit Kostensätzen bewerten und **Reichweiten** als Nebenbedingung berücksichtigen,
+- Tourenplanungsprobleme mit mehreren Fahrzeugen (**VRP**) mit dem **Savings-Verfahren** lösen,
+- Teilvektoren mit `rev()` umkehren, zyklische Indizes mit `%%` bilden und Index-Filter in `ompr` einsetzen.
+
+**Literatur zur Vertiefung**
+
+- **Rundreise- und Tourenplanung:** [@domschke2010rundreisen].
+- **TSP – Geschichte, Modelle, exakte Verfahren:** [@applegate2006traveling]; [@dantzig1954solution].
+- **Vehicle Routing Problems:** [@toth2014vehicle]; [@clarke1964scheduling].
+:::
+
+## Von Pendelfahrten zur Rundtour
+
+Das Transportproblem in Kapitel [-@sec-transportplanung] hat unterstellt, dass jede Filiale **einzeln** beliefert wird und die Kosten proportional zur Menge sind. Für große Ladungen ist das realistisch. Bei der täglichen Belieferung von Filialen mit kleinen Mengen ist es verschwenderisch: Das Fahrzeug fährt mit einem Bruchteil seiner Kapazität zu einer Filiale und leer zurück. Die Alternative ist eine **Tour**: Ein Fahrzeug lädt die Ware für mehrere Filialen und fährt sie nacheinander an. Damit hängen die Kosten nicht mehr von der Menge ab, sondern von der **Reihenfolge**, in der die Filialen angefahren werden.
+
+::: {.fallstudie}
+**Fallstudie: Pendelverkehr oder Rundtour?**
+
+Im Normalbetrieb liefert ein Kühltransporter (Kapazität 900 Boxen) jeden Morgen 845 Boxen aus Raunheim an die sechs Filialen. Bisher fährt der Fahrer jede Filiale **einzeln** an und kehrt danach zur Küche zurück. Mit der Distanzmatrix aus Kapitel [-@sec-kuerzeste-wege] sind das 296 km pro Tag. Da alle Boxen auf einmal in den Transporter passen, könnte er die Filialen auch in einer **Rundtour** anfahren. In welcher Reihenfolge ist die Tour am kürzesten? Und würde sie die Reichweite eines E-Kühl-Lkw einhalten, die Kapitel [-@sec-verkehrsmittel] auf rund 157 km im Winter beziffert hat?
+:::
+
+Wir berechnen zunächst die Distanzmatrix aus Kapitel [-@sec-kuerzeste-wege] neu.
+
+```{r}
+#| label: chtsp-daten
+
+kanten <- tribble(
+  ~von, ~nach, ~km,
+  "R", "MH", 5,  "R", "C4", 6,  "R", "C3", 33, "MH", "WK", 13, "MH", "FK", 10,
+  "MH", "C4", 10, "WK", "C1", 8, "WK", "C2", 15, "C1", "C2", 14, "C2", "C4", 16,
+  "C4", "C5", 33, "FK", "C3", 13, "FK", "C5", 29, "FK", "C6", 12, "C3", "C6", 10,
+  "C5", "C6", 24
+)
+ids <- c("R", "MH", "WK", "FK", paste0("C", 1:6))
+W <- matrix(0, length(ids), length(ids), dimnames = list(ids, ids))
+W[cbind(kanten$von, kanten$nach)] <- kanten$km
+W[cbind(kanten$nach, kanten$von)] <- kanten$km
+
+dijkstra <- function(W, start) {
+  d <- setNames(rep(Inf, nrow(W)), rownames(W)); perm <- setNames(rep(FALSE, nrow(W)), rownames(W))
+  d[start] <- 0
+  while (!all(perm)) {
+    v <- names(which.min(ifelse(perm, Inf, d))); perm[v] <- TRUE
+    for (w in rownames(W)[W[v, ] > 0 & !perm]) d[w] <- min(d[w], d[v] + W[v, w])
+  }
+  d
+}
+
+orte <- c("R", paste0("C", 1:6))
+D <- t(sapply(orte, function(s) dijkstra(W, s)[orte]))
+D
+```
+
+## Das Traveling Salesman Problem
+
+::: {.definition}
+**Definition: Traveling Salesman Problem**
+
+Gegeben sind $n$ Orte, ein **Depot** und $n-1$ Kunden, sowie die Entfernungen $d_{ij}$ zwischen allen Paaren. Gesucht ist eine **Rundreise** (ein *Hamiltonkreis*), die jeden Ort **genau einmal** besucht, zum Ausgangspunkt zurückkehrt und **minimale Gesamtlänge** hat. Das TSP heißt **symmetrisch**, wenn $d_{ij} = d_{ji}$, und **metrisch**, wenn zusätzlich die Dreiecksungleichung gilt.
+:::
+
+Das TSP ist eines der am besten untersuchten Probleme der kombinatorischen Optimierung [@applegate2006traveling]. Kürzeste-Wege-Probleme fragen, wie man von $i$ nach $j$ kommt. Das TSP fragt, in welcher **Reihenfolge** man alle Orte besucht. Beide Probleme hängen zusammen: Die Distanzen $d_{ij}$ des TSP sind kürzeste Wege im Netz.
+
+### Mathematisches Modell
+
+Mit der Binärvariablen $x_{ij} = 1$, falls direkt von $i$ nach $j$ gefahren wird, lautet das klassische Modell von @dantzig1954solution:
+
+$$
+\begin{align}
+\min \quad & \sum_{i} \sum_{j \neq i} d_{ij} \cdot x_{ij} \\
+\text{u.d.N.} \quad & \sum_{j \neq i} x_{ij} = 1 & \forall i \quad &\rightarrow \text{jeden Ort genau einmal verlassen} \\
+& \sum_{i \neq j} x_{ij} = 1 & \forall j \quad &\rightarrow \text{jeden Ort genau einmal erreichen} \\
+& \sum_{i \in S} \sum_{j \in S} x_{ij} \leq |S| - 1 & \forall S \subset V,\ 2 \leq |S| < n \quad &\rightarrow \text{keine Kurzzyklen} \\
+& x_{ij} \in \{0, 1\} & \forall i \neq j
+\end{align}
+$$
+
+Die ersten beiden Bedingungen allein reichen nicht aus. Sie erlauben, dass sich die Orte in **mehrere getrennte Kreise** aufteilen, etwa einen Kreis Raunheim → Rüsselsheim → Mainz → Wiesbaden → Raunheim und einen zweiten Kreis Frankfurt → Offenbach → Darmstadt → Frankfurt, der nie die Küche berührt. Jeder Ort hat dann genau einen Vorgänger und Nachfolger, eine Tour ist es aber nicht. Die dritte Bedingung, die **Kurzzyklusbedingung** (*subtour elimination*), verbietet das: Innerhalb jeder echten Teilmenge $S$ dürfen höchstens $|S| - 1$ Kanten liegen, also kein geschlossener Kreis.
+
+### Komplexität
+
+Warum probiert man nicht einfach alle Touren aus? Bei $n$ Orten gibt es im symmetrischen Fall $(n-1)!/2$ verschiedene Touren:
+
+```{r}
+#| label: chtsp-komplexitaet
+
+tibble(Orte = c(5, 7, 10, 15, 20, 30)) |>
+  mutate(Touren = factorial(Orte - 1) / 2,
+         Jahre_bei_1e9_pro_s = Touren / 1e9 / (3600 * 24 * 365)) |>
+  mutate(across(-Orte, ~ format(.x, scientific = TRUE, digits = 2)))
+```
+
+Für SushiFresh mit sieben Orten sind es nur 360 Touren, für einen Paketdienst mit 30 Stopps pro Fahrzeug selbst bei einer Milliarde Touren pro Sekunde mehr Jahre, als das Universum alt ist. Das TSP ist **NP-schwer**: Es ist kein Verfahren bekannt, das jede Instanz in polynomieller Zeit optimal löst. In der Praxis setzt man deshalb **Heuristiken** ein: **Eröffnungsverfahren** konstruieren eine Tour (Nearest Neighbor, Einfügeverfahren, Savings), **Verbesserungsverfahren** verändern sie lokal (2-opt, Or-opt, 3-opt), und **Metaheuristiken** steuern die Suche über lokale Optima hinweg. Für große Instanzen gibt es zudem sehr leistungsfähige exakte Verfahren auf Basis von Branch-and-Cut.
+
+## Nearest-Neighbor-Verfahren
+
+Das **Nearest-Neighbor-Verfahren** folgt der Intuition vieler Fahrer: Fahre vom aktuellen Ort immer zum **nächstgelegenen noch nicht besuchten** Ort. Sind alle besucht, kehre zum Depot zurück.
+
+```{r}
+#| label: chtsp-nn
+
+nearest_neighbor <- function(D, start = 1) {
+  tour <- start
+  while (length(tour) < nrow(D)) {
+    offen  <- setdiff(seq_len(nrow(D)), tour)
+    letzte <- tail(tour, 1)
+    tour   <- c(tour, offen[which.min(D[letzte, offen])])
+  }
+  rownames(D)[tour]
+}
+
+tour_laenge <- function(tour, D) sum(D[cbind(tour, c(tour[-1], tour[1]))])
+
+tour_nn <- nearest_neighbor(D)
+c(Tour = paste(c(tour_nn, "R"), collapse = " → "), km = tour_laenge(tour_nn, D))
+```
+
+Die Funktion `tour_laenge()` nutzt wieder eine Indexmatrix (Kapitel [-@sec-transportplanung]): `cbind(tour, c(tour[-1], tour[1]))` paart jeden Ort mit seinem Nachfolger, wobei der letzte Ort mit dem ersten gepaart wird. So wird auch die Rückfahrt zum Depot gezählt.
+
+Die Tour ist mit `r tour_laenge(tour_nn, D)` km schon deutlich kürzer als der Pendelverkehr. Ein Blick auf die Reihenfolge zeigt aber die typische Schwäche des Verfahrens: Nach Wiesbaden springt die Tour quer durch das Gebiet nach **Offenbach** (`r D["C1", "C6"]` km), weil Offenbach einen Kilometer näher liegt als Frankfurt, fährt dann zurück nach Frankfurt und wieder nach Süden nach Darmstadt. Das Verfahren ist **greedy**: Jede Entscheidung ist lokal gut, berücksichtigt aber nicht, was danach kommt. Die letzten Orte liegen oft verstreut, und am Ende werden lange Wege und der Rückweg zum Depot „erzwungen“. Gezeichnet **kreuzt** sich die Tour selbst. Eine einfache Verbesserung ist, das Verfahren von jedem Ort aus zu starten und die beste Tour zu wählen.
+
+## Das 2-opt-Verfahren
+
+### Idee
+
+Das **2-opt-Verfahren** [@croes1958method] verbessert eine bestehende Tour. Es entfernt **zwei nicht benachbarte Kanten** $(a, b)$ und $(c, d)$ und verbindet die Teilstücke neu über $(a, c)$ und $(b, d)$. Das Teilstück zwischen $b$ und $c$ wird dabei in umgekehrter Richtung durchlaufen. Der Zug lohnt sich, wenn die Ersparnis
+
+$$\Delta = \underbrace{d_{ab} + d_{cd}}_{\text{entfernt}} - \underbrace{d_{ac} + d_{bd}}_{\text{hinzugefügt}}$$
+
+positiv ist. Das Verfahren wiederholt den besten verbessernden Zug, bis keiner mehr existiert. Die Tour ist dann **2-optimal**. Bei euklidischen Distanzen entfernt 2-opt insbesondere alle Kantenkreuzungen, denn zwei sich kreuzende Kanten lassen sich immer durch zwei kürzere ersetzen.
+
+::: {.r-exkurs}
+**R-Exkurs: Teilvektoren umkehren und zyklische Indizes**
+
+Ein 2-opt-Zug lässt sich in R mit einer einzigen Zeile ausführen: Die Tour wird in drei Teile zerlegt, den Anfang bis Position $i$, das Mittelstück von $i+1$ bis $k$ und den Rest. Das Mittelstück wird mit `rev()` umgekehrt, und mit `c()` werden die Teile wieder zusammengefügt. Für die letzte Kante der Tour, die vom letzten Ort zurück zum ersten führt, brauchen wir einen **zyklischen Index**: Der Nachfolger von Position $k$ ist `k %% n + 1`. Der Modulo-Operator `%%` liefert den Rest der Division, sodass auf Position $n$ wieder Position 1 folgt.
+
+```{r}
+#| label: chtsp-rev
+
+x <- c("R", "A", "B", "C", "D")
+c(x[1:1], rev(x[2:4]), x[5:5])       # Mittelstück A–C umkehren
+n <- 5; sapply(1:n, function(k) k %% n + 1)   # zyklische Nachfolger
+```
+:::
+
+```{r}
+#| label: chtsp-2opt
+
+two_opt <- function(tour, D) {
+  n <- length(tour); zuege <- list()
+  repeat {
+    best <- 0
+    for (i in 1:(n - 1)) for (k in (i + 1):n) {
+      a <- tour[i]; b <- tour[i + 1]; c <- tour[k]; d <- tour[k %% n + 1]
+      if (b == c || a == d) next                    # benachbarte Kanten überspringen
+      delta <- D[a, b] + D[c, d] - D[a, c] - D[b, d]
+      if (delta > best) { best <- delta; bi <- i; bk <- k }
+    }
+    if (best <= 0) break                            # 2-optimal
+    zuege[[length(zuege) + 1]] <- tibble(
+      entfernt = paste0("(", tour[bi], ",", tour[bi + 1], ") (", tour[bk], ",",
+                        tour[bk %% n + 1], ")"), Ersparnis = best)
+    tour <- c(tour[1:bi], rev(tour[(bi + 1):bk]), if (bk < n) tour[(bk + 1):n])
+  }
+  list(tour = tour, zuege = bind_rows(zuege))
+}
+
+res_2opt <- two_opt(tour_nn, D)
+res_2opt$zuege
+c(Tour = paste(c(res_2opt$tour, "R"), collapse = " → "),
+  km = tour_laenge(res_2opt$tour, D))
+```
+
+Ein einziger Zug genügt: Die Kanten (Wiesbaden, Offenbach) und (Frankfurt, Darmstadt) werden durch (Wiesbaden, Frankfurt) und (Offenbach, Darmstadt) ersetzt. Das spart `r res_2opt$zuege$Ersparnis[1]` km und löst die Kreuzung auf. Danach findet 2-opt keinen verbessernden Zug mehr.
+
+### Lokales und globales Optimum
+
+Ist die 2-optimale Tour auch optimal? Bei sieben Orten lässt sich das durch vollständige Enumeration aller Reihenfolgen prüfen. Die rekursive Funktion `perms()` haben wir in Kapitel [-@sec-lager] kennengelernt.
+
+```{r}
+#| label: chtsp-enum
+
+perms <- function(v) if (length(v) <= 1) list(v) else
+  do.call(c, lapply(seq_along(v), function(i) lapply(perms(v[-i]), function(p) c(v[i], p))))
+
+alle <- lapply(perms(orte[-1]), function(p) c("R", p))
+laengen <- sapply(alle, tour_laenge, D = D)
+tour_opt <- alle[[which.min(laengen)]]
+c(Tour = paste(c(tour_opt, "R"), collapse = " → "), km = min(laengen))
+```
+
+Die optimale Tour ist mit `r min(laengen)` km noch etwas kürzer. Vergleicht man die Kanten beider Touren, stimmen vier überein. Drei sind verschieden: Die optimale Tour fährt von Raunheim zuerst nach Wiesbaden, bindet Rüsselsheim zwischen Mainz und Darmstadt ein und kehrt von Frankfurt zurück. Um von der 2-opt-Tour dorthin zu gelangen, müssen **drei Kanten gleichzeitig** ausgetauscht werden, ein sogenannter **3-opt-Zug**. Jeder einzelne 2-opt-Zug verlängert die Tour dagegen. 2-opt bleibt deshalb in einem **lokalen Optimum** stecken, das hier `r round((tour_laenge(res_2opt$tour, D) / min(laengen) - 1) * 100, 1)` % über dem globalen Optimum liegt. Das ist typisch: Verbesserungsverfahren garantieren nur, dass keine Lösung in der jeweiligen **Nachbarschaft** besser ist. Mächtigere Nachbarschaften (Or-opt, 3-opt) oder Metaheuristiken, die zeitweise auch Verschlechterungen zulassen, finden bessere Lösungen.
+
+### Exakte Lösung mit ompr
+
+Für ein Modell mit `ompr` ist die Kurzzyklusbedingung unpraktisch, denn sie verlangt eine Nebenbedingung für **jede** Teilmenge, exponentiell viele. Die **MTZ-Formulierung** [@miller1960integer] ersetzt sie durch Reihenfolgevariablen $u_i$, die die Position jedes Kunden in der Tour angeben:
+
+$$
+u_i - u_j + 1 \leq (n - 1) \cdot (1 - x_{ij}) \qquad \forall i, j \in \{2, \dots, n\},\ i \neq j
+$$
+
+Fährt man von $i$ nach $j$ ($x_{ij} = 1$), muss $u_j \geq u_i + 1$ gelten. Ein Kreis ohne Depot ist damit unmöglich, denn entlang eines Kreises müssten die Positionen ständig steigen und am Ende wieder beim Ausgangswert ankommen.
+
+```{r}
+#| label: chtsp-ompr
+#| message: false
+
+library(ompr)
+library(ompr.roi)
+library(ROI.plugin.glpk)
+
+n <- nrow(D)
+tsp_modell <- MIPModel() |>
+  add_variable(x[i, j], i = 1:n, j = 1:n, type = "binary") |>
+  add_variable(u[i], i = 1:n, lb = 1, ub = n) |>
+  set_objective(sum_expr(D[i, j] * x[i, j], i = 1:n, j = 1:n), "min") |>
+  add_constraint(x[i, i] == 0, i = 1:n) |>
+  add_constraint(sum_expr(x[i, j], j = 1:n) == 1, i = 1:n) |>
+  add_constraint(sum_expr(x[i, j], i = 1:n) == 1, j = 1:n) |>
+  add_constraint(u[i] - u[j] + 1 <= (n - 1) * (1 - x[i, j]),
+                 i = 2:n, j = 2:n, i != j)          # Index-Filter: nur i ungleich j
+
+tsp_loesung <- solve_model(tsp_modell, with_ROI(solver = "glpk"))
+objective_value(tsp_loesung)
+```
+
+Der Ausdruck `i != j` am Ende von `add_constraint()` ist ein **Index-Filter**: `ompr` erzeugt die Nebenbedingung nur für Indexkombinationen, die die Bedingung erfüllen. Der Solver bestätigt das Ergebnis der Enumeration. Die MTZ-Formulierung ist einfach, aber schwach, weil ihre LP-Relaxation schlechte Schranken liefert. Für große Instanzen werden spezialisierte Verfahren eingesetzt.
+
+## Bewertung der Rundtour
+
+### Was bringt die Rundtour in Euro?
+
+Mit den Kostensätzen des Diesel-Kühl-Lkw aus Kapitel [-@sec-verkehrsmittel] lassen sich die Varianten bewerten. Neben den Kilometern zählen die **Fahrerstunden**: Im Pendelverkehr wird sechsmal beladen, auf der Tour nur einmal.
+
+```{r}
+#| label: chtsp-kosten
+
+fix_tag <- 90.28; k_km <- 0.536; k_h <- 31.52     # Kostensätze (Kapitel Verkehrsmittel)
+bewertung <- tibble(
+  Variante = c("Pendelverkehr", "Nearest Neighbor", "NN + 2-opt", "Optimum"),
+  km = c(2 * sum(D["R", -1]), tour_laenge(tour_nn, D),
+         tour_laenge(res_2opt$tour, D), min(laengen)),
+  Beladungen = c(6, 1, 1, 1)
+) |>
+  mutate(Stunden = km / 45 + 6 * 0.25 + Beladungen * 0.25,
+         Kosten_Tag = fix_tag + k_km * km + k_h * Stunden,
+         je_Box = Kosten_Tag / 845)
+bewertung |> mutate(across(where(is.numeric), ~ round(.x, 2)))
+```
+
+Die optimierte Tour senkt die Kosten je Box um rund `r round((1 - bewertung$je_Box[3] / bewertung$je_Box[1]) * 100)` %, das sind bei 300 Liefertagen rund `r format(round((bewertung$Kosten_Tag[1] - bewertung$Kosten_Tag[3]) * 300, -2), big.mark = ".", decimal.mark = ",")` € pro Jahr. Der lineare Satz von 0,02 € je Box und Kilometer aus der Standortplanung kann diesen **Bündelungseffekt** nicht abbilden, weil er Einzelanfahrten unterstellt.
+
+### Reichweite als Nebenbedingung
+
+```{r}
+#| label: chtsp-reichweite
+
+Q <- 110; e_sommer <- 0.62; e_winter <- 0.70     # Kapitel Verkehrsmittel
+bewertung |>
+  transmute(Variante, km,
+            Sommer = ifelse(km * e_sommer <= Q, "zulässig", "unzulässig"),
+            Winter = ifelse(km * e_winter <= Q, "zulässig", "unzulässig"))
+```
+
+Der Pendelverkehr ist mit dem E-Kühl-Lkw unmöglich. Die Nearest-Neighbor-Tour klappt im Sommer, aber **nicht im Winter**. Erst die mit 2-opt verbesserte oder die optimale Tour ist ganzjährig fahrbar, mit knappem Puffer. Beim E-Lkw entscheidet die Qualität der Tourenplanung damit über die **Machbarkeit**. Modelle mit Energie-Nebenbedingung heißen **E-VRP** [@schneider2014electric].
+
+## Tourenplanung mit mehreren Fahrzeugen
+
+### Das Vehicle Routing Problem
+
+Reicht ein Fahrzeug nicht aus, entsteht ein **Vehicle Routing Problem** (VRP): Die Kunden müssen so auf mehrere Touren verteilt werden, dass jede Tour die **Fahrzeugkapazität** einhält (*capacitated VRP*, CVRP) und die Gesamtstrecke minimal ist. Das TSP ist der Spezialfall mit einem Fahrzeug ohne Kapazitätsgrenze. In der Praxis kommen weitere Restriktionen hinzu: **Zeitfenster** (Anlieferung vor Ladenöffnung), maximale **Tourdauer** (Lenkzeiten, Kühlkette), heterogene Flotten oder mehrere Depots [@toth2014vehicle].
+
+::: {.fallstudie}
+**Fallstudie: Zwei Kühlvans statt eines Transporters**
+
+SushiFresh ersetzt den 900-Boxen-Transporter durch zwei **Kühlvans à 500 Boxen**, die mit dem Führerschein der Klasse B gefahren werden dürfen. Die Tagesmenge von 845 Boxen passt nicht mehr in ein Fahrzeug. Wie werden die Filialen auf zwei Touren verteilt?
+:::
+
+### Das Savings-Verfahren
+
+Das **Savings-Verfahren** von @clarke1964scheduling ist das klassische Eröffnungsverfahren für das CVRP. Es beginnt mit **Pendeltouren**: Jeder Kunde wird einzeln vom Depot aus beliefert. Dann werden schrittweise Touren verbunden. Werden die Kunden $i$ und $j$ statt in zwei Pendeltouren in einer gemeinsamen Tour beliefert, entfallen die Rückfahrt von $i$ und die Anfahrt zu $j$, dafür kommt die Strecke von $i$ nach $j$ hinzu. Die **Ersparnis** (*saving*) beträgt
+
+$$s_{ij} = d_{0i} + d_{0j} - d_{ij},$$
+
+mit dem Depot als Ort 0. Das Verfahren lautet:
+
+1. Berechne alle Savings $s_{ij}$ und sortiere sie absteigend.
+2. Gehe die Liste von oben nach unten durch. Verbinde die Touren von $i$ und $j$, wenn
+   - $i$ und $j$ in **verschiedenen** Touren liegen,
+   - $i$ und $j$ jeweils an einem **Ende** ihrer Tour liegen, also direkt mit dem Depot verbunden sind,
+   - die gemeinsame Tour die **Kapazität** (und gegebenenfalls weitere Restriktionen) einhält.
+3. Stopp, wenn die Liste abgearbeitet ist.
+
+```{r}
+#| label: chtsp-savings
+
+q <- c(C1 = 120, C2 = 150, C3 = 280, C4 = 90, C5 = 110, C6 = 95)
+
+savings_liste <- expand.grid(i = names(q), j = names(q), stringsAsFactors = FALSE) |>
+  filter(i < j) |>
+  mutate(s = D["R", i] + D["R", j] - D[cbind(i, j)]) |>
+  arrange(desc(s))
+head(savings_liste, 8)
+```
+
+Die größte Ersparnis bringt die Verbindung von Frankfurt und Offenbach (`r savings_liste$s[1]` km): Beide liegen weit vom Depot entfernt, aber nah beieinander. Die Funktion `order()` hinter `arrange(desc(s))` sortiert die Liste absteigend.
+
+```{r}
+#| label: chtsp-savings-fun
+
+savings_vrp <- function(D, q, kap, depot = "R") {
+  touren <- as.list(names(q))                       # Start: Pendeltouren
+  s <- expand.grid(i = names(q), j = names(q), stringsAsFactors = FALSE) |>
+    filter(i < j) |>
+    mutate(s = D[depot, i] + D[depot, j] - D[cbind(i, j)]) |>
+    arrange(desc(s))
+  for (r in seq_len(nrow(s))) {
+    i <- s$i[r]; j <- s$j[r]
+    ti <- which(sapply(touren, function(t) i %in% t))
+    tj <- which(sapply(touren, function(t) j %in% t))
+    if (ti == tj) next                              # schon in derselben Tour
+    A <- touren[[ti]]; B <- touren[[tj]]
+    if (sum(q[c(A, B)]) > kap) next                 # Kapazität verletzt
+    neu <- if (tail(A, 1) == i && B[1] == j) c(A, B)
+      else if (A[1] == i && tail(B, 1) == j) c(B, A)
+      else if (tail(A, 1) == i && tail(B, 1) == j) c(A, rev(B))
+      else if (A[1] == i && B[1] == j) c(rev(A), B)
+      else NULL                                     # i oder j nicht am Tourende
+    if (is.null(neu)) next
+    touren[[ti]] <- neu; touren <- touren[-tj]
+  }
+  touren
+}
+
+touren <- savings_vrp(D, q, kap = 500)
+tibble(Tour = map_chr(touren, ~ paste(c("R", .x, "R"), collapse = " → ")),
+       Boxen = map_dbl(touren, ~ sum(q[.x])),
+       km = map_dbl(touren, ~ tour_laenge(c("R", .x), D)))
+```
+
+Das Verfahren bildet eine **Westtour** über Wiesbaden, Mainz und Rüsselsheim und eine **Osttour** über Frankfurt, Offenbach und Darmstadt. Beide halten die Kapazität von 500 Boxen ein, zusammen sind sie `r sum(map_dbl(touren, ~ tour_laenge(c("R", .x), D)))` km lang, nur wenig mehr als die optimale Einzeltour. Das ist der Preis der kleineren Fahrzeuge. Weitere Restriktionen wie eine maximale Tourdauer lassen sich als zusätzliche Prüfung vor dem Verbinden einbauen. Kapitel [-@sec-distributionssystem] nutzt genau das für die Belieferung von 40 Supermärkten.
+
+## Zusammenfassung
+
+Das **Traveling Salesman Problem** sucht die kürzeste Rundreise durch alle Orte. Es lässt sich als binäres Optimierungsmodell mit Kurzzyklusbedingungen formulieren und ist **NP-schwer**: Die Zahl der Touren wächst mit $(n-1)!/2$. Das **Nearest-Neighbor-Verfahren** konstruiert schnell eine Tour, neigt aber zu langen Sprüngen am Ende und zu Kreuzungen. **2-opt** tauscht Kantenpaare, solange sich die Tour verkürzt, und entfernt dabei Kreuzungen. Das Ergebnis ist ein **lokales Optimum**. Das globale Optimum erforderte im Beispiel einen 3-opt-Zug oder ein exaktes Verfahren wie die MTZ-Formulierung in `ompr`. Für SushiFresh halbiert die Rundtour die Fahrstrecke gegenüber dem Pendelverkehr, senkt die Kosten je Box deutlich und macht den Einsatz eines E-Kühl-Lkw überhaupt erst möglich. Mit mehreren Fahrzeugen entsteht ein **Vehicle Routing Problem**, das das **Savings-Verfahren** löst, indem es Pendeltouren schrittweise nach der größten Ersparnis verbindet.
+
+Auf der R-Seite haben Sie Teilvektoren mit `rev()` umgekehrt, zyklische Indizes mit `%%` gebildet, ein binäres Optimierungsmodell mit Index-Filtern in `ompr` formuliert und Listen von Touren schrittweise zusammengeführt.
+
+::: {.kontrollfragen}
+**Kontrollfragen**
+
+1. Formulieren Sie das TSP als binäres Optimierungsmodell. Warum reichen die Bedingungen „jeden Ort genau einmal verlassen und erreichen“ nicht aus?
+2. Wie viele verschiedene Touren gibt es bei zehn Orten im symmetrischen TSP? Warum ist vollständige Enumeration für praktische Probleme keine Option?
+3. Führen Sie das Nearest-Neighbor-Verfahren ab Raunheim von Hand mit der Distanzmatrix des Kapitels durch.
+4. Erklären Sie einen 2-opt-Zug und berechnen Sie die Ersparnis des Zuges, der die NN-Tour verbessert.
+5. Was ist der Unterschied zwischen einem lokalen und einem globalen Optimum? Welche Kanten müssen getauscht werden, um von der 2-opt-Tour zum Optimum zu gelangen?
+6. Erklären Sie die Funktionsweise der MTZ-Nebenbedingungen.
+7. SushiFresh gewinnt eine siebte Filiale in Hofheim am Taunus (C7), die über eine 9 km lange Straße mit dem Wiesbadener Kreuz und eine 12 km lange Straße mit dem Mönchhof-Dreieck verbunden ist. Ergänzen Sie das Netz, berechnen Sie die Distanzmatrix neu und bestimmen Sie eine Tour mit Nearest Neighbor und 2-opt.
+8. Berechnen Sie die Savings für das Kundenpaar Mainz/Rüsselsheim von Hand. Warum werden Frankfurt und Offenbach zuerst verbunden?
+9. Welche Bedingungen müssen im Savings-Verfahren erfüllt sein, damit zwei Touren verbunden werden dürfen?
+:::

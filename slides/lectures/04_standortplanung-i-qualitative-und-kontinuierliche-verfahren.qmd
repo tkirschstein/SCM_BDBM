@@ -30,6 +30,7 @@ library(knitr)
 - **Multikriterielle Standortplanung**
 - Kontinuierliche Standortplanung
 - Diskrete Standortplanung
+- Transportplanung
 
 ## Lernziele {#learning-objectives-location-continuous}
 

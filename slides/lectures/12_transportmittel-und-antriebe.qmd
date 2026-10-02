@@ -89,16 +89,18 @@ fv_bev <- list(A = 300000, RW = 70000, N = 5, i = 0.05,
 fv_km <- 120000
 fv_fahrer <- 55000
 
-# Distanzen aus Einheit 10/11
-tour_km <- c(Pendel = 296, NN = 162, `2-opt` = 153, Optimum = 151)
+# Streckenlängen der Filialbelieferung: Pendelverkehr heute (296 km/Tag);
+# eine Rundtour von ca. 153 km wird in der Einheit Tourenplanung hergeleitet
+tour_km <- c(Pendel = 296, `2-opt` = 153)
 ```
 
-## Transport- und Tourenplanung {#tm-outline}
+## Distributionslogistik {#tm-outline}
 
-- Transportplanung
+- Lager und Kommissionierung
+- **Verkehrsmittel, Antriebe und Kosten**
 - Kürzeste Wege
 - Tourenplanung
-- **Verkehrsträger, Transportmittel und Antriebe**
+- Distributionssystem gestalten
 
 ---
 
@@ -106,17 +108,13 @@ tour_km <- c(Pendel = 296, NN = 162, `2-opt` = 153, Optimum = 151)
 
 Nach dieser Einheit können Sie …
 
-- Verkehrsträger, Verkehrsmittel und Ladeeinheiten **unterscheiden** und für eine Transportaufgabe **auswählen**,
-- konventionelle und alternative **Antriebstechnologien** im Straßengüterverkehr **erläutern**,
+- Verkehrsträger, Verkehrsmittel und **Antriebstechnologien** **unterscheiden** und für eine Transportaufgabe **auswählen**,
 - die **Einschränkungen** batterieelektrischer Fahrzeuge, von Lastenrädern und Drohnen für die Transport- und Tourenplanung **ableiten**,
-- **Transportkostensätze** (€/km, €/h, €/tkm, €/Stopp) aus einer Fahrzeugkostenrechnung **berechnen** und Antriebe über die Gesamtkosten (TCO) **vergleichen**.
+- **Transportkostensätze** berechnen, Antriebe über die Gesamtkosten (TCO) und **Eigen- vs. Fremdtransport** **vergleichen**,
+- Transportemissionen nach **ISO 14083** **berechnen** und Sendungen **zuordnen**.
 
 ::: {.small-text}
-**Literatur zur Vertiefung**
-
-- **Verkehrsträger und Transportentscheidungen:** [@chopra2025supply]; [@guenther2012produktion].
-- **Elektrische Tourenplanung (E-VRP):** [@schneider2014electric].
-- **Lkw-Drohnen-Kombinationen:** [@murray2015flying].
+**Literatur zur Vertiefung:** Verkehrsträger [@chopra2025supply; @guenther2012produktion], E-VRP [@schneider2014electric], Lkw-Drohnen-Kombination [@murray2015flying], Emissionsbilanzierung [@iso2023_14083; @sfc2023glec].
 :::
 
 ---
@@ -140,7 +138,7 @@ Der Lachs kommt aus **Norwegen** (ca. 1.700 km). Bisher per Kühl-Lkw mit Fähre
 ## 2. Fuhrpark
 Das Leasing des **7,5-t-Diesel-Kühl-Lkw** läuft aus. Alternative: ein **batterieelektrischer** Kühl-Lkw.
 
-*Was kostet das, und klappt die Tour aus Einheit 11 überhaupt noch?*
+*Was kostet das, und wie weit kommt ein E-Kühl-Lkw überhaupt?*
 :::
 :::
 ::: {.column width="32%"}
@@ -155,7 +153,7 @@ Pilot für einen **Lieferdienst an Endkunden** in Frankfurt. Im Gespräch: E-Tra
 
 ::: {.fragment .fade-up}
 ::: {.small-text}
-Dazu brauchen wir einen Überblick über Verkehrsträger und Antriebe **und** ein Werkzeug zur Berechnung von **Transportkostensätzen**. Die bisher verwendeten Kostensätze (z. B. 0,02 €/(Box·km) aus Einheit 5) werden wir dabei nachrechnen.
+Dazu brauchen wir einen Überblick über Verkehrsträger und Antriebe **und** ein Werkzeug zur Berechnung von **Transportkostensätzen**. Die bisher verwendeten Kostensätze (z. B. 0,02 €/(Box·km) aus Einheit Standortplanung II) werden wir dabei nachrechnen.
 :::
 :::
 
@@ -301,7 +299,7 @@ p |> layout(polar = list(radialaxis = list(visible = TRUE, range = c(0, 5))),
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Lesart
-Kein Verkehrsträger dominiert. Die Wahl hängt vom **Produkt** ab (Wert, Verderblichkeit, Gewicht), von der **Entfernung** und von der Bedeutung der **Lieferzeit** (vgl. Strategic Fit, Einheit 2).
+Kein Verkehrsträger dominiert. Die Wahl hängt vom **Produkt** ab (Wert, Verderblichkeit, Gewicht), von der **Entfernung** und von der Bedeutung der **Lieferzeit** (vgl. Strategic Fit).
 :::
 :::
 
@@ -413,7 +411,7 @@ kbl_sf(inb, col.names = c("Option", "Laufzeit", "Kosten", "THG", "Hauptrisiko"),
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Abwägung
-Für Sushi zählt die **Resthaltbarkeit** beim Eintreffen. Jeder Tag Transport reduziert die Verkaufszeit in der Filiale. Das erhöht die Überdeckungskosten im **Newsvendor-Modell** (Einheit 7).
+Für Sushi zählt die **Resthaltbarkeit** beim Eintreffen. Jeder Tag Transport reduziert die Verkaufszeit in der Filiale. Das erhöht die Überdeckungskosten im **Newsvendor-Modell** (Einheit Newsvendor).
 :::
 :::
 
@@ -726,8 +724,16 @@ An **Ladestationen** wird $q_i$ wieder auf (bis zu) $Q$ angehoben.
 
 ## Fallstudie – E-Kühl-Lkw für SushiFresh {#tm-cs-reichweite}
 ::: slide-subtitle
-Sind die Touren aus Einheit 11 noch zulässig?
+Reicht die Reichweite für die heutige Belieferung?
 :::
+
+```{r tm-reichweite-calc}
+#| echo: false
+
+Q_nutz <- 110          # kWh für die Planung nutzbar (140 kWh brutto, Reserve)
+e_sommer <- 0.62; e_winter <- 0.70   # kWh/km inkl. Kühlung
+rw_max_s <- Q_nutz / e_sommer; rw_max_w <- Q_nutz / e_winter
+```
 
 ::: columns
 ::: {.column width="52%"}
@@ -736,26 +742,19 @@ Sind die Touren aus Einheit 11 noch zulässig?
 ```{r tm-reichweite-tab}
 #| echo: false
 
-Q_nutz <- 110          # kWh für die Planung nutzbar (140 kWh brutto, Reserve)
-e_sommer <- 0.62; e_winter <- 0.70   # kWh/km inkl. Kühlung
-rw <- data.frame(Variante = names(tour_km), km = tour_km) |>
-  mutate(E_s = km * e_sommer, E_w = km * e_winter,
-         ok_s = ifelse(E_s <= Q_nutz, "✓", "✗"),
-         ok_w = ifelse(E_w <= Q_nutz, "✓", "✗"))
-rownames(rw) <- NULL
-
-kbl_sf(rw |> transmute(Variante, km,
-                       Sommer = paste0(fmt(E_s, 0), " kWh ", ok_s),
-                       Winter = paste0(fmt(E_w, 0), " kWh ", ok_w)),
-       col.names = c("Tour (Einheit 11)", "km", "Sommer (0,62 kWh/km)",
-                     "Winter (0,70 kWh/km)"),
-       align = c("l", "r", "r", "r"), font_size = 24) |>
-  row_spec(which(rw$E_w > Q_nutz & rw$E_s <= Q_nutz), background = "#FDEBD3",
-           color = "#1F2933") |>
-  row_spec(which(rw$E_s > Q_nutz), background = "#F8D7DA", color = "#1F2933")
+rw <- data.frame(
+  Zeile = c("Pendelverkehr heute: Energiebedarf", "Maximal fahrbare Strecke"),
+  Sommer = c(paste0(fmt(tour_km[["Pendel"]] * e_sommer, 0), " kWh ✗"),
+             paste0(fmt(rw_max_s, 0), " km")),
+  Winter = c(paste0(fmt(tour_km[["Pendel"]] * e_winter, 0), " kWh ✗"),
+             paste0(fmt(rw_max_w, 0), " km"))
+)
+kbl_sf(rw, col.names = c("", "Sommer (0,62 kWh/km)", "Winter (0,70 kWh/km)"),
+       align = c("l", "r", "r"), font_size = 24) |>
+  row_spec(1, background = "#F8D7DA", color = "#1F2933")
 ```
 
-Nutzbare Energie je Tour: $Q =$ `r Q_nutz` kWh (Batterie 140 kWh, Reserve für Alterung und Unvorhergesehenes).
+Pendelverkehr heute: `r tour_km[["Pendel"]]` km pro Tag. Nutzbare Energie: $Q =$ `r Q_nutz` kWh (Batterie 140 kWh, Reserve für Alterung und Unvorhergesehenes).
 :::
 
 :::
@@ -764,16 +763,15 @@ Nutzbare Energie je Tour: $Q =$ `r Q_nutz` kWh (Batterie 140 kWh, Reserve für A
 ::: {.fragment .fade-up}
 ::: {.callout-important appearance="simple"}
 ## Ergebnis
-- Der **Pendelverkehr** ist mit dem E-Lkw **unmöglich** (ohne Zwischenladen).
-- Die **Nearest-Neighbor-Tour** klappt im Sommer, aber **nicht im Winter**.
-- Erst die **optimierte Tour** (2-opt bzw. Optimum) ist ganzjährig fahrbar, mit knappem Puffer.
+- Der heutige **Pendelverkehr** ist mit dem E-Lkw **unmöglich** (ohne Zwischenladen).
+- Eine Tour darf im Winter höchstens rund **`r fmt(rw_max_w, 0)` km** lang sein.
 :::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-## Lehre
-Bei E-Fahrzeugen ist Tourenoptimierung keine Kostenfrage mehr, sondern eine Frage der **Machbarkeit**. Alternativen: Zwischenladen am Depot (z. B. in der Ladezeit) oder größere Batterie (teurer, schwerer).
+## Offene Frage
+Schafft eine **Rundtour** durch alle sechs Filialen diese Grenze? Dafür brauchen wir die Straßenentfernungen (Einheit Kürzeste Wege) und eine gute Reihenfolge (Einheit Tourenplanung). Bei E-Fahrzeugen wird Tourenplanung damit zur Frage der **Machbarkeit**.
 :::
 :::
 
@@ -847,7 +845,7 @@ cl <- cut(winkel, breaks = c(-pi, -pi / 3, pi / 3, pi), labels = FALSE,
 cols <- c("#0B6E4F", "#D97B29", "#9B59B6")
 for (k in 1:3) {
   pts <- kunden[cl == k, ]
-  # Reihenfolge per Nearest Neighbor ab dem Mikrodepot (Einheit 11)
+  # Reihenfolge per Nearest Neighbor ab dem Mikrodepot (Einheit Tourenplanung)
   ord <- c(); cur <- hub; rest <- seq_len(nrow(pts))
   while (length(rest) > 0) {
     nxt <- rest[which.min((pts$x[rest] - cur[1])^2 + (pts$y[rest] - cur[2])^2)]
@@ -1136,7 +1134,7 @@ Für die Tourenplanung ist die Trennung in **€/km** (Fahrzeug, variabel) und *
 
 ## Beispiel 1 – Diesel-Kühl-Lkw {#tm-bsp1b}
 ::: slide-subtitle
-Was kostet eine Box? Nachrechnen des Satzes aus Einheit 5
+Was kostet eine Box? Nachrechnen des Satzes aus Einheit Standortplanung II
 :::
 
 ```{r tm-bsp1b-calc}
@@ -1172,7 +1170,7 @@ satz_boxkm <- tag$gesamt[1] / boxkm
 ```{r tm-bsp1b-tab}
 #| echo: false
 
-kbl_sf(tag |> transmute(Variante, km, h = fmt(h, 1), fix = fmt(fix), var = fmt(var),
+kbl_sf(tag[1, ] |> transmute(Variante, km, h = fmt(h, 1), fix = fmt(fix), var = fmt(var),
                         fahrer = fmt(fahrer), gesamt = fmt(gesamt),
                         je_box = fmt(je_box, 3)),
        col.names = c("Variante", "km/Tag", "h/Tag", "Fahrzeug fix (€)",
@@ -1193,13 +1191,13 @@ Annahmen: Ø `r v_kmh` km/h, je Filiale `r t_stopp * 60` min Entladen, je Beladu
 ## Kostensatz je Box und km
 Im Pendelverkehr legen alle Boxen zusammen $\sum_j \mu_j \cdot d_{Rj} =$ `r fmt(boxkm, 0)` beladene Box-km zurück (Rückfahrt leer):
 $$\frac{`r gsub(",", "{,}", fmt(tag$gesamt[1]))`\ \text{€}}{`r fmt(boxkm, 0)`\ \text{Box-km}} \approx `r gsub(",", "{,}", fmt(satz_boxkm, 3))`\ \text{€}/(\text{Box} \cdot \text{km})$$
-Das liegt in der Größenordnung der Annahme **0,02 €/(Box·km)** aus Einheit 5. Die Differenz entsteht vor allem durch die voll eingerechneten Lade- und Entladezeiten des Fahrers.
+Das liegt in der Größenordnung der Annahme **0,02 €/(Box·km)** aus Einheit Standortplanung II. Die Differenz entsteht vor allem durch die voll eingerechneten Lade- und Entladezeiten des Fahrers.
 :::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-important appearance="simple"}
-Die Rundtour senkt die Kosten je Box um **`r fmt((1 - tag$je_box[2] / tag$je_box[1]) * 100, 0)` %**. Ein linearer Satz je Box-km bildet das **nicht** ab: Bündelungseffekte erfasst nur die Tourenplanung.
+Ein linearer Satz je Box-km unterstellt Einzelanfahrten. Was eine **Rundtour** spart, rechnen wir in der Einheit Tourenplanung nach.
 :::
 :::
 
@@ -1210,7 +1208,7 @@ Die Rundtour senkt die Kosten je Box um **`r fmt((1 - tag$je_box[2] / tag$je_box
 
 ## Beispiel 2 – Diesel oder E-Lkw? {#tm-bsp2}
 ::: slide-subtitle
-Jahreskosten des Kühl-Lkw für die Rundtour
+Jahreskosten des Kühl-Lkw bei Rundtourbetrieb
 :::
 
 ```{r tm-bsp2-calc}
@@ -1259,7 +1257,7 @@ p |> layout(barmode = "stack") |>
 ::: {.column width="42%"}
 
 ::: {.smaller-text}
-**Annahmen E-Lkw:** 170.000 € Kaufpreis, Restwert 30.000 €, 66 kWh/100 km (Jahresmittel inkl. Kühlung) zu `r fmt(strom_depot)` €/kWh, Wartung 6 ct/km, keine Maut und Kfz-Steuer, Depot-Ladepunkt 3.500 €/Jahr. Fahrleistung: `r fmt(km_tour_jahr, 0)` km/Jahr.
+**Annahmen E-Lkw:** 170.000 € Kaufpreis, Restwert 30.000 €, 66 kWh/100 km (Jahresmittel inkl. Kühlung) zu `r fmt(strom_depot)` €/kWh, Wartung 6 ct/km, keine Maut und Kfz-Steuer, Depot-Ladepunkt 3.500 €/Jahr. Fahrleistung: `r fmt(km_tour_jahr, 0)` km/Jahr (Annahme: Rundtour mit ca. `r tour_km[["2-opt"]]` km pro Tag, hergeleitet in der Einheit Tourenplanung).
 :::
 
 ::: {.fragment .fade-up}
@@ -1541,6 +1539,393 @@ Preis = Kostensatz + Wagnis und Gewinn. Üblich sind Tarife je **Palette**, je *
 
 ---
 
+## Logistikdienstleister {#tm-dl-markt}
+::: slide-subtitle
+Wer bietet Transportleistungen an?
+:::
+
+::: {.small-text}
+```{r tm-dl-tab}
+#| echo: false
+
+dl <- data.frame(
+  Akteur = c("Frachtführer", "Spediteur", "KEP-Dienst", "Kontraktlogistiker (3PL)",
+             "4PL / Lead Logistics Provider", "Digitale Spedition / Frachtbörse"),
+  Leistung = c("führt die Beförderung selbst durch (eigene Fahrzeuge)",
+               "organisiert die Beförderung im eigenen Namen, beauftragt Frachtführer",
+               "Kurier-, Express-, Paketsendungen in eigenen Netzen (Hub-and-Spoke)",
+               "langfristige, kundenspezifische Leistungsbündel: Lager, Kommissionierung, Transport, Mehrwertdienste",
+               "steuert das gesamte Logistiknetz inkl. weiterer Dienstleister, oft ohne eigene Anlagen",
+               "Plattform vermittelt Ladungen und Laderaum, oft mit Echtzeit-Preisen"),
+  Recht = c("Frachtvertrag (§ 407 HGB)", "Speditionsvertrag (§ 453 HGB)",
+            "Frachtvertrag, AGB", "individueller Logistikvertrag", "Rahmenvertrag",
+            "Vermittlung bzw. Spedition"),
+  SushiFresh = c("regionaler Kühltransporteur", "organisiert den Lachs aus Norwegen",
+                 "Versand Sushi@Home (Einheit Lager und Kommissionierung)", "Betrieb des Sushi@Home-Lagers?",
+                 "für SushiFresh zu groß", "Zusatztouren in der Saison")
+)
+kbl_sf(dl, col.names = c("Akteur", "Leistung", "Vertrag", "Beispiel SushiFresh"),
+       align = c("l", "l", "l", "l"), font_size = 21)
+```
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+Der Logistikmarkt ist sehr fragmentiert: viele kleine Frachtführer und wenige große Netzwerkanbieter. Für Verlader bedeutet das: Preise und Kapazitäten schwanken stark mit Saison, Dieselpreis und Fahrermangel.
+:::
+:::
+
+---
+
+## Fremdvergabe {#tm-makebuy}
+::: slide-subtitle
+Eigenes Fahrzeug oder Spediteur?
+:::
+
+```{r tm-mb-calc}
+#| echo: false
+
+mb_fix     <- kd$fix + fahrer_jahr       # zweiter Kühl-Lkw inkl. Fahrer (€/Jahr)
+mb_km_tag  <- 150                        # km je Zusatztour
+mb_var_tag <- kd$var_km * mb_km_tag      # variable Kosten je Einsatztag
+mb_preis   <- 390                        # Tagessatz Spediteur inkl. Fahrer
+mb_be      <- mb_fix / (mb_preis - mb_var_tag)
+mb_tage    <- 60                         # Bedarf SushiFresh (Dezember, Sommer, Events)
+```
+
+::: columns
+::: {.column width="55%"}
+
+```{r tm-mb-plot}
+#| echo: false
+#| warning: false
+#| message: false
+
+tage <- 0:300
+plot_ly() |>
+  add_lines(x = tage, y = mb_fix + mb_var_tag * tage, name = "Eigenes Fahrzeug + Fahrer",
+            line = list(color = "#2F3E46", width = 3)) |>
+  add_lines(x = tage, y = mb_preis * tage, name = "Spediteur (Tagessatz)",
+            line = list(color = "#D97B29", width = 3)) |>
+  add_segments(x = mb_tage, xend = mb_tage, y = 0, yend = 1.3e5,
+               name = "Bedarf SushiFresh", line = list(color = "#0B6E4F", dash = "dash")) |>
+  add_markers(x = mb_be, y = mb_preis * mb_be, name = "Break-even",
+              marker = list(color = "#C00000", size = 12)) |>
+  plt_layout("Einsatztage pro Jahr", "Kosten (€/Jahr)", h = 470, w = 760)
+```
+
+:::
+::: {.column width="43%"}
+
+::: {.small-text}
+**Situation:** In Spitzenzeiten braucht SushiFresh eine **zweite Kühltour** (ca. `r mb_km_tag` km). Eigenes Fahrzeug: Fixkosten `r eur(kd$fix)` + Fahrer `r eur(fahrer_jahr)` pro Jahr, variabel `r fmt(kd$var_km, 3)` €/km (Beispiel 1). Spediteur: `r mb_preis` € je Einsatztag inkl. Fahrer.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnis
+Break-even bei **`r round(mb_be)` Einsatztagen** pro Jahr. Bei `r mb_tage` Tagen Bedarf kostet die Fremdvergabe `r eur(mb_preis * mb_tage)` statt `r eur(mb_fix + mb_var_tag * mb_tage)`. **Fremdvergabe** wandelt Fixkosten in variable Kosten.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Nicht im Preis enthalten
+Transaktionskosten (Ausschreibung, Steuerung, Kontrolle), Abhängigkeit, Verfügbarkeit in der Spitze (alle wollen im Dezember Kapazität), Qualität der Kühlkette, Kundenkontakt.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Fremdvergabe {#tm-vergabe}
+::: slide-subtitle
+Ausschreibung, Vergütung und Dieselfloater
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="simple"}
+## Ausschreibung von Transportleistungen
+1. Bedarf beschreiben: Relationen, Mengen, Zeitfenster, Temperaturanforderungen
+2. **Leistungsniveau** festlegen (SLA): Pünktlichkeit, OTIF, Reaktionszeit, Schadensquote
+3. Angebote einholen und vergleichen (Preis **und** Qualität)
+4. Vertrag mit Kennzahlen, Bonus-Malus und Preisgleitklauseln
+5. Laufende Leistungsmessung
+:::
+
+::: {.smaller-text}
+**Vergütungsformen:** €/km, €/Tour, Tagessatz, €/Palette, €/100 kg (Stückguttarif nach Entfernung und Gewicht), €/Stopp (KEP).
+:::
+
+:::
+::: {.column width="49%"}
+
+```{r tm-floater-calc}
+#| echo: false
+
+d_basis <- 1.60; d_akt <- diesel_preis; anteil_kraftstoff <- 0.30
+zuschlag <- (d_akt - d_basis) / d_basis * anteil_kraftstoff
+```
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple" icon=false}
+#### Dieselfloater (Preisgleitklausel)
+$$\text{Zuschlag} = \frac{p_{\text{aktuell}} - p_{\text{Basis}}}{p_{\text{Basis}}} \cdot a_{\text{Kraftstoff}}$$
+Vertrag 2025 mit Basis `r fmt(d_basis)` €/l, heute `r fmt(d_akt)` €/l (netto), Kraftstoffanteil am Frachtpreis `r anteil_kraftstoff * 100` %:
+
+Zuschlag = **`r fmt(zuschlag * 100, 1)` %** → Tagessatz `r mb_preis` € steigt auf **`r fmt(mb_preis * (1 + zuschlag))` €**.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+Der Floater verteilt das **Dieselpreisrisiko** fair zwischen Verlader und Dienstleister. Ähnliche Klauseln gibt es für die **Maut**, etwa bei Änderungen nach Ende der Befreiung für E-Lkw 2031.
+:::
+:::
+
+:::
+:::
+
+---
+
+## CO₂-Bilanzierung von Transporten {#tm-co2-rahmen}
+::: slide-subtitle
+Warum und nach welchem Standard?
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="simple"}
+## Anlass
+- Transporte sind für die meisten Unternehmen **Scope-3-Emissionen** (vor- und nachgelagerter Transport nach GHG Protocol)
+- Händler wie RheinMarkt fragen Emissionen **je Sendung** bei ihren Lieferanten ab
+- Vergleich von Alternativen: Verkehrsträger, Antriebe, Touren
+- Dienstleister müssen ihren Kunden **vergleichbare** Werte liefern
+:::
+
+:::
+::: {.column width="49%"}
+
+::: {.callout-tip appearance="simple"}
+## ISO 14083:2023
+Internationale Norm zur Quantifizierung und Berichterstattung von Treibhausgasemissionen aus **Transportketten** [@iso2023_14083]:
+
+- alle Verkehrsträger **und** Umschlagpunkte (Hubs)
+- Personen- und Güterverkehr
+- **Well-to-Wheel**: Betrieb **und** Energiebereitstellung
+- löst die europäische Norm EN 16258 ab
+- Branchenleitfaden mit Default-Werten: **GLEC Framework** [@sfc2023glec]
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-important appearance="simple"}
+Kernidee: Emissionen werden für **Gruppen gleichartiger Transporte** ermittelt und anschließend über die **Transportleistung (tkm)** fair auf einzelne Sendungen verteilt.
+:::
+:::
+
+---
+
+## ISO 14083 {#tm-co2-begriffe}
+::: slide-subtitle
+Zentrale Begriffe
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.small-text}
+```{r tm-iso-tab}
+#| echo: false
+
+iso <- data.frame(
+  Begriff = c("Transportkette", "Transportkettenelement (TCE)",
+              "Transport-Vorgangskategorie (TOC)", "Hub-Vorgangskategorie (HOC)",
+              "Well-to-Tank (WTT)", "Tank-to-Wheel (TTW)", "Well-to-Wheel (WTW)",
+              "Transportaktivität"),
+  Bedeutung = c("alle Abschnitte einer Sendung vom Versender bis zum Empfänger",
+                "ein Abschnitt: eine Fahrt mit einem Verkehrsmittel oder ein Umschlag",
+                "Gruppe gleichartiger Transporte (z. B. alle Filialtouren des Kühl-Lkw)",
+                "Gruppe gleichartiger Umschlagvorgänge (z. B. Kühllager, Cross-Dock)",
+                "Emissionen der Energiebereitstellung (Förderung, Raffinerie, Kraftwerk)",
+                "Emissionen im Fahrzeug (Verbrennung)",
+                "WTT + TTW, verpflichtend auszuweisen",
+                "Masse × Distanz (tkm), Distanz = kürzeste realisierbare Entfernung (SFD), Luftverkehr: Großkreisdistanz (GCD)")
+)
+kbl_sf(iso, col.names = c("Begriff", "Bedeutung"), align = c("l", "l"),
+       font_size = 21)
+```
+:::
+
+:::
+::: {.column width="45%"}
+
+```{r tm-iso-kette}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 3.5
+
+el <- data.frame(
+  name = c("Lkw\nRaunheim–Hanau", "Cross-Dock\nHanau", "Tour\nHanau–Markt"),
+  typ = c("TCE 1", "TCE 2 (Hub)", "TCE 3"),
+  x = c(0.17, 0.5, 0.83), col = c("#2A7ACA", "#F4A259", "#2A7ACA")
+)
+shp <- lapply(1:3, function(i) list(type = "rect", x0 = el$x[i] - 0.14, x1 = el$x[i] + 0.14,
+                                    y0 = 0.3, y1 = 0.7, fillcolor = el$col[i],
+                                    line = list(color = "#2F3E46", width = 1.5)))
+p <- plot_ly(type = "scatter", mode = "markers")
+for (i in 1:2) p <- p |> add_annotations(x = el$x[i + 1] - 0.15, y = 0.5, ax = el$x[i] + 0.15,
+                                         ay = 0.5, xref = "x", yref = "y", axref = "x",
+                                         ayref = "y", text = "", showarrow = TRUE,
+                                         arrowhead = 2, arrowcolor = "#2F3E46")
+p |> add_annotations(x = el$x, y = 0.5, text = gsub("\n", "<br>", el$name),
+                     showarrow = FALSE, font = list(size = 19)) |>
+  add_annotations(x = el$x, y = 0.15, text = paste0("<b>", el$typ, "</b>"),
+                  showarrow = FALSE, font = list(size = 20)) |>
+  layout(shapes = shp, xaxis = list(visible = FALSE, range = c(0, 1)),
+         yaxis = list(visible = FALSE, range = c(0, 0.8)),
+         margin = list(l = 5, r = 5, t = 5, b = 5),
+         plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+         height = 230, width = 620)
+```
+
+::: {.smaller-text}
+Transportkette einer SushiFresh-Box zu RheinMarkt (Einheit Distributionssystem gestalten): zwei Transport-TCEs und ein Hub-TCE.
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Für die Verteilung zählt die **kürzeste realisierbare Distanz** (SFD), nicht der tatsächlich gefahrene Umweg in der Tour. So erhalten gleiche Sendungen unabhängig von der Tourenplanung gleiche Werte. Die tatsächlich gefahrenen km (inkl. Leerfahrten) stecken im **Energieverbrauch** der TOC.
+:::
+:::
+
+:::
+:::
+
+---
+
+## ISO 14083 {#tm-co2-schritte}
+::: slide-subtitle
+Berechnung in fünf Schritten
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-note appearance="simple"}
+## Vorgehen
+1. **Transportkette** in Transport- und Hub-Elemente zerlegen
+2. Elemente zu **TOC** bzw. **HOC** gruppieren
+3. **Energieverbrauch** je TOC/HOC bestimmen (Primärdaten bevorzugt: getankte Liter, geladene kWh; sonst Modell- oder Default-Werte)
+4. **Emissionen** = Energie × Emissionsfaktor (WTT und TTW getrennt)
+5. **Emissionsintensität** je TOC (g CO₂e/tkm) und **Zuordnung** auf die Sendung: Intensität × Sendungs-tkm, danach Summe über alle Elemente der Kette
+:::
+
+:::
+::: {.column width="45%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple" icon=false}
+#### Formeln
+$$E_{\text{TOC}} = \sum_k V_k \cdot f_k^{\text{WTW}} \qquad\quad \varepsilon_{\text{TOC}} = \frac{E_{\text{TOC}}}{\sum_s m_s \cdot d_s^{\text{SFD}}}$$
+$$E_s = \varepsilon_{\text{TOC}} \cdot m_s \cdot d_s^{\text{SFD}}$$
+Energiemenge $V_k$ je Energieträger $k$, Emissionsfaktor $f_k$, Sendungsmasse $m_s$
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Emissionsfaktoren (Annahmen, gerundet):** Diesel TTW ≈ 2,65 kg CO₂/l, WTW ≈ 3,2 kg CO₂e/l. Strom (Netz DE) ≈ 0,38 kg CO₂e/kWh inkl. Vorkette; der direkte Faktor des deutschen Strommix lag 2024 bei rund 363 g CO₂/kWh [@uba2025strommix].
+:::
+:::
+
+:::
+:::
+
+---
+
+## Fallstudie – CO₂ der Filialbelieferung {#tm-co2-bsp}
+::: slide-subtitle
+Emissionen je Box nach ISO 14083
+:::
+
+```{r tm-co2-calc}
+#| echo: false
+
+f_d_ttw <- 2.65; f_d_wtw <- 3.20          # kg CO2e/l
+f_strom <- 0.38; ladeverlust <- 0.10      # kg CO2e/kWh, Ladeverluste
+m_box   <- 0.35                           # kg je Box inkl. Verpackung
+hub_kwh <- 40                             # kWh/Tag Kühlung Versandzone Raunheim
+
+mu  <- c(C1 = 120, C2 = 150, C3 = 280, C4 = 90, C5 = 110, C6 = 95)
+dR  <- c(C1 = 26, C2 = 22, C3 = 28, C4 = 6, C5 = 39, C6 = 27)   # SFD (Einheit Kürzeste Wege)
+tkm <- sum(mu * m_box / 1000 * dR)
+
+szen_co2 <- data.frame(
+  Szenario = c("Diesel, Pendelverkehr", "Diesel, Rundtour", "E-Lkw, Rundtour"),
+  km = c(tour_km[["Pendel"]], tour_km[["2-opt"]], tour_km[["2-opt"]])
+) |>
+  mutate(energie = c(0.17 * km[1], 0.17 * km[2], 0.66 * km[3] * (1 + ladeverlust)),
+         einheit = c("l", "l", "kWh"),
+         ttw = c(energie[1:2] * f_d_ttw, 0),
+         wtw = c(energie[1:2] * f_d_wtw, energie[3] * f_strom),
+         eps = wtw / tkm,
+         je_box = wtw / sum(mu) * 1000)
+hub_co2 <- hub_kwh * f_strom
+hub_je_box <- hub_co2 / sum(mu) * 1000
+box_C5 <- szen_co2$eps[2] * m_box / 1000 * dR["C5"] * 1000
+box_C4 <- szen_co2$eps[2] * m_box / 1000 * dR["C4"] * 1000
+```
+
+::: columns
+::: {.column width="56%"}
+
+::: {.small-text}
+```{r tm-co2-tab}
+#| echo: false
+
+kbl_sf(szen_co2 |> transmute(Szenario, km = fmt(km, 0),
+                             energie = paste(fmt(energie, 0), einheit),
+                             ttw = fmt(ttw, 0), wtw = fmt(wtw, 0),
+                             eps = fmt(eps, 1), je_box = fmt(je_box, 0)),
+       col.names = c("Szenario (TOC)", "km/Tag", "Energie", "TTW (kg)", "WTW (kg)",
+                     "kg CO₂e/tkm", "g CO₂e/Box"),
+       align = c("l", rep("r", 6)), font_size = 22)
+```
+
+Transportaktivität: $\sum_j \mu_j \cdot m_{\text{Box}} \cdot d_{Rj}^{\text{SFD}} =$ `r fmt(tkm, 2)` tkm pro Tag (`r sum(mu)` Boxen à `r fmt(m_box)` kg, kürzeste Straßenentfernungen; wie man sie berechnet, zeigt die Einheit Kürzeste Wege). Rundtour: ca. `r tour_km[["2-opt"]]` km (Einheit Tourenplanung). **Hub** (Kühlung Versandzone, `r hub_kwh` kWh/Tag): `r fmt(hub_co2, 1)` kg CO₂e, also `r fmt(hub_je_box, 0)` g je Box.
+:::
+
+:::
+::: {.column width="42%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnis
+- Die **Rundtour** halbiert die Emissionen gegenüber dem Pendelverkehr, der **E-Lkw** halbiert sie noch einmal (beim heutigen Strommix).
+- Zuordnung nach SFD: Eine Box nach **Darmstadt** (39 km) trägt `r fmt(box_C5, 0)` g, eine nach **Rüsselsheim** (6 km) nur `r fmt(box_C4, 0)` g (Diesel, Rundtour).
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Die Intensität je tkm ist sehr hoch, weil der Lkw nur **leichte Ware** fährt (Volumen, nicht Gewicht begrenzt). ISO 14083 erlaubt in solchen Fällen auch andere Zuordnungsgrößen (z. B. Stück, Paletten), sofern sie einheitlich verwendet werden.
+:::
+:::
+
+:::
+:::
+
+---
+
 ## Kernaussagen {#tm-summary}
 
 ::: {.callout-tip appearance="simple"}
@@ -1548,8 +1933,10 @@ Preis = Kostensatz + Wagnis und Gewinn. Üblich sind Tarife je **Palette**, je *
 
 - Verkehrsträger unterscheiden sich in **Kosten, Geschwindigkeit, Netzdichte, Kapazität und Klimabilanz**. Der **kombinierte Verkehr** lohnt sich ab einer Break-even-Entfernung.
 - **Alternative Antriebe** verändern die Planung: Batterieelektrische Lkw bringen **Reichweiten-, Lade- und Gewichtsrestriktionen**, die in **E-VRP**-Modellen abgebildet werden.
-- Für SushiFresh ist der E-Kühl-Lkw nur mit **optimierter Tour** ganzjährig fahrbar. Tourenplanung wird zur **Machbarkeitsfrage**.
+- Mit dem E-Kühl-Lkw ist der heutige Pendelverkehr von SushiFresh **nicht fahrbar**. Ob eine Rundtour passt, wird zur **Machbarkeitsfrage** der Tourenplanung.
 - **Lastenrad, Mikrodepot und Drohne** führen zu zweistufigen bzw. synchronisierten Planungsproblemen. Auf der letzten Meile zählt **€ pro Stopp**.
+- **Fremdvergabe** wandelt Fixkosten in variable Kosten und lohnt sich bei geringer Auslastung. Dieselfloater teilen das Preisrisiko.
+- **ISO 14083** bilanziert Emissionen Well-to-Wheel je Transportkategorie und verteilt sie über tkm (kürzeste realisierbare Distanz) auf Sendungen. Tourenoptimierung und E-Lkw halbieren die Emissionen der Filialbelieferung jeweils.
 - **Transportkostensätze** entstehen aus Fixkosten (AfA, Zinsen, Versicherung, Personal) und variablen Kosten (Energie, Wartung, Maut). Fahrleistung, Auslastung und Leerfahrten bestimmen, was ein km, eine Stunde oder ein tkm kostet.
 :::
 
@@ -1564,11 +1951,12 @@ Kostensätze und Machbarkeit – SushiFresh im Dezember
 
 ::: {.columns .exercise-content}
 ::: {.column width="55%"}
-Im Dezember fährt SushiFresh zwei Touren (Einheit 11, Savings): West 62 km und Ost 101 km. Statt zweier Diesel-Kühlvans werden zwei **E-Transporter** (3,5 t, 75 kWh nutzbar, 0,30 kWh/km inkl. Kühlung, Kaufpreis 75.000 €, Restwert 15.000 €, 6 Jahre) erwogen.
+Für das Weihnachtsgeschäft sind zwei Touren geplant: West 62 km und Ost 101 km (wie man solche Touren bildet, zeigt die Einheit Tourenplanung). Statt zweier Diesel-Kühlvans werden zwei **E-Transporter** (3,5 t, 75 kWh nutzbar, 0,30 kWh/km inkl. Kühlung, Kaufpreis 75.000 €, Restwert 15.000 €, 6 Jahre) erwogen.
 
 - Prüfen Sie die Reichweite beider Touren. Kann **ein** E-Transporter beide Touren nacheinander fahren, wenn er dazwischen 45 min mit 22 kW am Depot lädt?
 - Berechnen Sie mit `fahrzeugkosten()` den Kostensatz in €/km bei 60.000 km/Jahr.
 - Wie verändert sich das Ergebnis, wenn 30 % öffentlich zu 0,50 €/kWh geladen werden?
+- Berechnen Sie nach ISO 14083 die WTW-Emissionen beider Touren (0,38 kg CO₂e/kWh, 10 % Ladeverluste).
 :::
 ::: {.column width="42%"}
 ```{r tm-exercise-hint}

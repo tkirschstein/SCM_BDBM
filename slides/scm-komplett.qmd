@@ -39,12 +39,26 @@ source("../R/scm_functions.R")
 
 {{< include lectures/03_ziele-zielkonflikte-und-logistikkosten.qmd >}}
 
+{{< include lectures/14a_distributionsstrukturen.qmd >}}
+
 {{< include lectures/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.qmd >}}
 
 {{< include lectures/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.qmd >}}
+
+{{< include lectures/09_transportplanung.qmd >}}
 
 {{< include lectures/06_unsicherheit-in-supply-chains-pooling.qmd >}}
 
 {{< include lectures/07_das-newsvendor-modell.qmd >}}
 
 {{< include lectures/08_der-bullwhip-effekt-und-das-beergame.qmd >}}
+
+{{< include lectures/13_lagerplanung-und-kommissionierung.qmd >}}
+
+{{< include lectures/12_transportmittel-und-antriebe.qmd >}}
+
+{{< include lectures/10_kuerzeste-wege.qmd >}}
+
+{{< include lectures/11_tourenplanung-tsp.qmd >}}
+
+{{< include lectures/14b_distributionssystem-gestalten.qmd >}}

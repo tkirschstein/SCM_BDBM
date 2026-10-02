@@ -626,7 +626,7 @@ Die Vorlesung stellt zu dieser Geschäftsidee zwei Gruppen von Leitfragen: zur *
 
 **Umgang mit Nachfrageschwankungen und Frische.** Da Fertigwaren nicht gelagert werden können, liegt der Entkopplungspunkt (Kapitel [-@sec-strategic-fit]) *vor* der Endmontage der Boxen: Vorgehalten werden allenfalls Rohwaren und vorbereitete Komponenten (gekochter Reis, geschnittenes Gemüse, portionierter Fisch), während die Boxen selbst täglich auf Basis einer Tagesprognose gefertigt werden. Die Kühlkette muss lückenlos dokumentiert werden, was für eine enge Anbindung der Logistik an SushiFresh spricht.
 
-**Zentralität versus Dezentralität.** Eine zentrale Küche nutzt Skaleneffekte, bündelt Know-how und Qualitätskontrolle und erlaubt — wie Kapitel [-@sec-unsicherheit-pooling] zeigen wird — erhebliche Einsparungen durch **Pooling** der Nachfrageunsicherheit. Dem stehen längere Transportwege, ein höheres Ausfallrisiko (ein Standort) und frühere Produktionszeitpunkte gegenüber. Mehrere kleine, filialnahe Küchen wären reaktionsfähiger, aber teurer. Wo genau Produktionsstandorte liegen sollten und wie viele es sein sollten, ist Gegenstand der Kapitel [-@sec-standort-1] und 5.
+**Zentralität versus Dezentralität.** Eine zentrale Küche nutzt Skaleneffekte, bündelt Know-how und Qualitätskontrolle und erlaubt — wie Kapitel [-@sec-unsicherheit-pooling] zeigen wird — erhebliche Einsparungen durch **Pooling** der Nachfrageunsicherheit. Dem stehen längere Transportwege, ein höheres Ausfallrisiko (ein Standort) und frühere Produktionszeitpunkte gegenüber. Mehrere kleine, filialnahe Küchen wären reaktionsfähiger, aber teurer. Wo genau Produktionsstandorte liegen sollten und wie viele es sein sollten, ist Gegenstand der Kapitel [-@sec-standort-1] und [-@sec-standort-2].
 
 **Wertschöpfungstiefe.** Die Kernkompetenz liegt in der Rezeptur, der Produktion und der Frischegarantie — diese Stufen gehören in eigene Hand (*Make*). Bei der Kühllogistik ist eine Make-or-Buy-Abwägung im Sinne von Kapitel [-@sec-strategic-fit] nötig: Ein spezialisierter Dienstleister bietet Skaleneffekte und variable statt fixer Kosten, eine eigene Flotte dagegen Kontrolle über Zeitfenster und Kühlkette — ein Argument, das angesichts des Frischeversprechens und der engen Anlieferzeit vor Ladenöffnung schwer wiegt. Beim Fischeinkauf spricht die Volatilität der Rohwarenpreise und -verfügbarkeit für langfristige Rahmenverträge mit wenigen, zuverlässigen Großhändlern.
 
@@ -637,11 +637,18 @@ Die folgenden Kapitel greifen jeweils eine der hier aufgeworfenen Fragen auf und
 | Kapitel | Fragestellung für SushiFresh | Methode |
 |:---|:---|:---|
 | [-@sec-nachhaltigkeit] | Welche ökologischen Zielkonflikte (Kühlkette, Lebensmittelabfall) entstehen? | Nachhaltigkeitsstrategien, Circular SCM |
+| [-@sec-distributionsstrukturen] | Über welche Kanäle und Strukturen soll die Distribution wachsen? | Absatz- und Logistikkanäle, Lieferservice, Lageranzahl |
 | [-@sec-standort-1] | Welcher von drei Kandidatenstandorten eignet sich für die Produktion? Wo läge der transportkostenminimale Punkt? | Nutzwertanalyse, AHP, Center of Gravity, Weiszfeld |
 | [-@sec-standort-2] | Welche Standorte sollten eröffnet und welche Filialen von wo beliefert werden? | Warehouse Location Problem, Add-/Drop-Heuristik |
+| [-@sec-transportplanung] | Wie wird die Ware im Weihnachtsgeschäft verteilt, wenn die Zentralküche nicht ausreicht? | Transportproblem, Vogel'sche Approximation |
 | [-@sec-unsicherheit-pooling] | Wie viel Sicherheitsbestand spart eine zentrale Versorgung gegenüber einer dezentralen? | Kapazitäts- und Lagerbestandspooling |
 | [-@sec-newsvendor] | Wie viele Boxen sollen jeden Morgen für eine Filiale produziert werden? | Newsvendor-Modell |
 | [-@sec-bullwhip] | Wie schaukeln sich Bestellschwankungen zwischen Filialen, SushiFresh und Fischgroßhändler auf? | Bullwhip-Effekt, Order-up-to-Politik |
+| [-@sec-lager] | Wie wird das Lager des Onlineshops Sushi@Home organisiert? | Lagerplatzvergabe, Picker Routing |
+| [-@sec-verkehrsmittel] | Diesel oder E-Kühl-Lkw? Was kostet eine Box auf der letzten Meile? | Kostensätze, TCO, ISO 14083 |
+| [-@sec-kuerzeste-wege] | Wie weit ist es im Straßennetz von der Küche zu den Filialen? | Dijkstra-Algorithmus |
+| [-@sec-tourenplanung] | In welcher Reihenfolge werden die Filialen beliefert? | TSP-Heuristiken, Savings-Verfahren |
+| [-@sec-distributionssystem] | Wie werden die 40 Märkte der Kette RheinMarkt beliefert? | Variantenvergleich, Cross-Docking, Mehrweg |
 
 ## Zusammenfassung
 

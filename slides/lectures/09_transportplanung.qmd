@@ -16,7 +16,7 @@ library(kableExtra)
 
 # ── Daten des Fallbeispiels ──────────────────────────────────────────────────
 
-# Filialen (Nachfrageknoten), identisch zu Einheit 5
+# Filialen (Nachfrageknoten), identisch zu Einheit Standortplanung II
 tp_filialen <- data.frame(
   ID     = paste0("C", 1:6),
   Ort    = c("Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim",
@@ -38,7 +38,7 @@ tp_kuechen <- data.frame(
   Kapazitaet = c(850, 200, 133)
 )
 
-# Transportkosten c_ij in EUR je Box (Zeilen aus der Kostenmatrix von Einheit 5)
+# Transportkosten c_ij in EUR je Box (Zeilen aus der Kostenmatrix von Einheit Standortplanung II)
 tp_cost <- matrix(
   c(0.48168, 0.27202, 0.17036, 0.54650, 0.44772, 0.12592,   # S3 Raunheim
     0.12348, 0.41478, 0.47474, 0.55152, 0.85996, 0.18220,   # S1 WI-Erbenheim
@@ -219,13 +219,12 @@ tp_nw_cost <- sum(tp_nw * tp_cost)
 tp_vam  <- vam_trace(tp_cost, tp_supply, tp_demand)
 ```
 
-# Transport- und Tourenplanung
+## Strategische Gestaltung von Supply Chains {#tp-outline}
 
-## Operative Distributionsplanung {#tp-outline}
-
+- Multikriterielle Standortplanung
+- Kontinuierliche Standortplanung
+- Diskrete Standortplanung
 - **Transportplanung**
-- Kürzeste Wege
-- Tourenplanung
 
 ---
 
@@ -239,7 +238,7 @@ Einordnung
 #| echo: false
 
 einordnung <- data.frame(
-  Ebene   = c("Standortplanung (Einheiten 4–5)", "Transportplanung",
+  Ebene   = c("Standortplanung", "Transportplanung",
               "Kürzeste Wege", "Tourenplanung"),
   Frage   = c("Wo produzieren/lagern wir?",
               "Welche Quelle beliefert welche Senke mit welcher Menge?",
@@ -260,7 +259,7 @@ kbl_sf(einordnung,
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Roter Faden
-Die Standortfrage für SushiFresh ist beantwortet: Die **Zentralküche Raunheim** beliefert die sechs Filialen. Jetzt geht es um den **täglichen Warenfluss**: Wie wird die Ware verteilt, auf welchen Wegen und in welcher Reihenfolge?
+Die Standortfrage für SushiFresh ist beantwortet: Die **Zentralküche Raunheim** beliefert die sechs Filialen. Das WLP hat Standorte gewählt **und** Filialen zugeordnet. Was passiert, wenn die Standorte feststehen, aber **Kapazitäten** knapp werden? Wege und Reihenfolgen der Touren folgen später im Block Distributionslogistik.
 :::
 :::
 
@@ -325,12 +324,12 @@ leaflet(options = leafletOptions(zoomControl = TRUE)) |>
 
 ::: {.callout-note appearance="simple"}
 ## Ausgangslage
-Im Normalbetrieb beliefert die **Zentralküche Raunheim** alle sechs Filialen. In der **Adventszeit** steigt die Nachfrage nach Sushi-Boxen um rund **40 %**. Raunheim kann im Schichtbetrieb höchstens **850 Boxen/Tag** produzieren.
+Im Normalbetrieb beliefert die **Zentralküche Raunheim** alle sechs Filialen. Die Planung für die **Adventszeit** steht an: Dann steigt die Nachfrage nach Sushi-Boxen um rund **40 %**. Raunheim kann im Schichtbetrieb höchstens **850 Boxen/Tag** produzieren.
 :::
 
 ::: {.callout-tip appearance="simple"}
 ## Idee der Geschäftsführung
-Für vier Wochen werden zwei **Cateringküchen** an früheren Kandidatenstandorten aus Einheit 5 angemietet: **Wiesbaden-Erbenheim** (200 Boxen/Tag) und **Neu-Isenburg** (133 Boxen/Tag).
+Für vier Wochen werden zwei **Cateringküchen** an früheren Kandidatenstandorten aus Einheit Standortplanung II angemietet: **Wiesbaden-Erbenheim** (200 Boxen/Tag) und **Neu-Isenburg** (133 Boxen/Tag).
 :::
 
 ::: {.fragment .fade-up}
@@ -380,7 +379,7 @@ kbl_sf(tp_filialen[, c("ID", "Ort", "mu", "Dez")],
 ::: {.column width="53%"}
 
 ::: small-text
-**Transportkosten $c_{ij}$ (€/Box, aus Einheit 5)**
+**Transportkosten $c_{ij}$ (€/Box, aus Einheit Standortplanung II)**
 
 ```{r tp-kosten-tab}
 #| echo: false
@@ -429,7 +428,7 @@ Gegeben sind $m$ **Quellen** (z. B. Werke, Küchen, Lager) mit **Angebotsmengen*
 - Transportkosten je Einheit von $i$ nach $j$: $c_{ij}$
 - Entscheidungsvariable: Transportmenge $x_{ij} \geq 0$
 
-**Unterschied zum WLP (Einheit 5)**
+**Unterschied zum WLP (Einheit Standortplanung II)**
 
 - keine Standortentscheidung $y_i$ – alle Quellen sind „geöffnet“
 - dafür **Kapazitäten** $s_i$ der Quellen
@@ -1127,7 +1126,7 @@ Grenzen des Modells und Ausblick
 ## Annahme 1: Kosten $c_{ij}$ sind gegeben
 Bisher wurden die Transportkosten je Box vorgegeben. In der Praxis müssen sie aus **Entfernungen im Straßennetz** abgeleitet werden.
 
-→ **Kürzeste-Wege-Probleme** (nächste Einheit)
+→ **Kürzeste-Wege-Probleme** (Einheit Kürzeste Wege)
 :::
 
 :::
@@ -1137,7 +1136,7 @@ Bisher wurden die Transportkosten je Box vorgegeben. In der Praxis müssen sie a
 ## Annahme 2: Kosten sind linear in der Menge
 Das Modell unterstellt **Direktverkehre** (Pendelfahrten) mit Kosten proportional zur Menge. Tatsächlich fährt ein Kühlfahrzeug **mehrere Filialen nacheinander** an, und die Kosten hängen von der **Fahrstrecke** ab.
 
-→ **Tourenplanung / TSP** (übernächste Einheit)
+→ **Tourenplanung / TSP** (Einheit Tourenplanung)
 :::
 
 :::

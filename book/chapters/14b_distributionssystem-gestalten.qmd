@@ -1,0 +1,340 @@
+# Distributionssystem gestalten {#sec-distributionssystem}
+
+```{r}
+#| label: chds2-setup
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden (u. a. haversine())
+source("../R/scm_functions.R")
+
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+# Inline-Zahlen im Fließtext deutsch formatieren (Dezimalkomma, Tausenderpunkt)
+knitr::knit_hooks$set(inline = function(x) {
+  if (is.numeric(x)) format(x, big.mark = ".", decimal.mark = ",") else x
+})
+```
+
+::: {.lernziele}
+**Lernziele**
+
+Nach der Bearbeitung dieses Kapitels können Sie …
+
+- Direktbelieferung, Zentrallager und **Cross-Docking** mit den Methoden des Readers (Savings-Verfahren, Kostensätze, Frischekosten) **durchrechnen** und vergleichen,
+- die Wirkung von **Haltbarkeit** und **Abschriften** auf die Wahl der Distributionsstruktur beurteilen,
+- **Hub-and-Spoke**-Netze und **Omnichannel**-Fulfillment einordnen,
+- **Retouren** und **Mehrwegkreisläufe** planen, Behälterbedarfe berechnen und eine Break-even-Schwundquote bestimmen,
+- Distanzmatrizen mit `outer()` und `Vectorize()` aus Koordinaten erzeugen.
+
+**Literatur zur Vertiefung**
+
+- **Distributionsnetzwerke:** [@chopra2025supply]; [@pfohl2018logistiksysteme].
+- **E-Fulfillment und Mehrkanalvertrieb:** [@agatz2008efulfillment].
+- **Reverse Logistics:** [@fleischmann1997quantitative].
+:::
+
+## Rückblick: drei Kanäle, eine offene Frage
+
+Kapitel [-@sec-distributionsstrukturen] hat zu Beginn des Readers drei Wachstumsideen von SushiFresh vorgestellt. Zwei davon sind inzwischen umgesetzt: Der Onlineshop **Sushi@Home** wird aus dem Kommissionierlager in Raunheim versorgt (Kapitel [-@sec-lager]), und der **Lieferdienst** stellt in Frankfurt per Lastenrad und E-Transporter zu (Kapitel [-@sec-verkehrsmittel]). Die sechs Supermärkte werden auf einer optimierten Rundtour beliefert (Kapitel [-@sec-tourenplanung]). Offen ist die dritte Idee: die Listung in den Märkten der Kette **RheinMarkt**. Sie ist ein guter Prüfstein, denn um sie zu bewerten, braucht man nahezu alle Methoden dieses Readers.
+
+::: {.fallstudie}
+**Fallstudie: Die Anfrage von RheinMarkt**
+
+RheinMarkt möchte SushiFresh-Boxen in **40 Märkten in Hessen** listen, zusammen rund 1.650 Boxen pro Tag. Die Boxen müssen morgens frisch im Regal stehen, ihre Haltbarkeit beträgt **zwei Tage**. Drei Varianten stehen zur Wahl:
+
+- **A – Direktbelieferung:** SushiFresh beliefert jeden Markt selbst mit Kühl-Lkw aus Raunheim. Absatzkanal (über den Handel) und Logistikkanal (direkt) fallen auseinander, wie heute bei den sechs Supermärkten.
+- **B – Zentrallager:** SushiFresh liefert in das Zentrallager von RheinMarkt in Bad Hersfeld. Der Händler lagert ein und verteilt **am Folgetag** mit seinen Frischetouren. Er verlangt dafür 0,20 € je Box.
+- **C – Cross-Docking:** SushiFresh liefert bis 22 Uhr in das Frische-Cross-Dock des Händlers in Hanau. Dort wird in der Nacht umgeschlagen und zusammen mit Obst, Gemüse und Molkereiprodukten anderer Lieferanten ausgeliefert. Entgelt: 0,12 € je Box.
+
+Die Entgelte, Abschriftquoten und Herstellkosten von 3,00 € je Box sind Annahmen für das Fallbeispiel. Die Marktstandorte sind zufällig über Hessen verteilt.
+:::
+
+## Die Daten
+
+```{r}
+#| label: chds2-daten
+
+set.seed(14)
+n_m <- 40
+maerkte <- tibble(id = sprintf("M%02d", seq_len(n_m)),
+                  lon = runif(n_m, 8.05, 9.75), lat = runif(n_m, 49.55, 51.35),
+                  boxen = sample(25:60, n_m, replace = TRUE))
+depot  <- c(lon = 8.465, lat = 50.000)   # Zentralküche Raunheim
+xdock  <- c(lon = 8.920, lat = 50.130)   # Frische-Cross-Dock Hanau
+zlager <- c(lon = 9.710, lat = 50.870)   # Zentrallager Bad Hersfeld
+n_boxen <- sum(maerkte$boxen)
+n_boxen
+```
+
+Für die Tourenplanung brauchen wir eine Distanzmatrix zwischen Raunheim und allen 40 Märkten. Ein Straßennetz wie in Kapitel [-@sec-kuerzeste-wege] liegt nicht vor. Wir nähern die Straßenentfernung deshalb über die Luftlinie mit einem **Umwegfaktor** von 1,3 an.
+
+::: {.r-exkurs}
+**R-Exkurs: Distanzmatrizen mit `outer()` und `Vectorize()`**
+
+`outer(x, y, f)` wendet eine Funktion `f` auf **alle Kombinationen** der Elemente von `x` und `y` an und liefert das Ergebnis als Matrix. Mit den Zeilenindizes aller Orte als `x` und `y` entsteht so die vollständige Distanzmatrix. Einen Haken gibt es: `outer()` übergibt die Indizes nicht einzeln, sondern als lange Vektoren und erwartet eine **vektorisierte** Funktion. Eine Funktion, die nur Einzelwerte verarbeiten kann, wird mit `Vectorize()` so umhüllt, dass sie elementweise auf Vektoren arbeitet.
+
+```{r}
+#| label: chds2-outer
+
+P <- rbind(depot, as.matrix(maerkte[, c("lon", "lat")]))
+umweg <- 1.3
+dist_ij <- function(i, j) umweg * haversine(P[i, 2], P[i, 1], P[j, 2], P[j, 1])
+D <- outer(seq_len(nrow(P)), seq_len(nrow(P)), Vectorize(dist_ij))
+dim(D)
+round(D[1:4, 1:4], 1)
+```
+:::
+
+## Variante A: Direktbelieferung mit dem Savings-Verfahren
+
+Für die Direktbelieferung plant SushiFresh Touren mit 7,5-t-Kühl-Lkw. Jedes Fahrzeug fasst **450 Boxen** (Rollcontainer im Kühlaufbau), eine Tour darf einschließlich Beladung (30 min) und Entladung (15 min je Markt) bei 60 km/h Durchschnittsgeschwindigkeit höchstens **9 Stunden** dauern. Das Savings-Verfahren aus Kapitel [-@sec-tourenplanung] wird dafür um eine **Dauerrestriktion** ergänzt: Vor dem Verbinden zweier Touren wird nicht nur die Kapazität, sondern auch die Dauer der gemeinsamen Tour geprüft.
+
+```{r}
+#| label: chds2-savings
+
+v_kmh <- 60; t_stopp <- 0.25; t_lade <- 0.5; kap <- 450; t_max <- 9
+
+tour_km <- function(t) { tt <- c(1, t, 1); sum(D[cbind(head(tt, -1), tt[-1])]) }
+dauer   <- function(t) tour_km(t) / v_kmh + length(t) * t_stopp + t_lade
+
+savings_vrp_dauer <- function(q) {
+  touren <- as.list(seq_along(q) + 1)               # Knoten 2..41 = Märkte
+  s <- expand.grid(i = seq_along(q) + 1, j = seq_along(q) + 1) |>
+    filter(i < j) |>
+    mutate(s = D[1, i] + D[1, j] - D[cbind(i, j)])
+  s <- s[order(-s$s), ]                              # absteigend nach Ersparnis
+  for (r in seq_len(nrow(s))) {
+    i <- s$i[r]; j <- s$j[r]
+    ti <- which(sapply(touren, function(t) i %in% t))
+    tj <- which(sapply(touren, function(t) j %in% t))
+    if (ti == tj) next
+    A <- touren[[ti]]; B <- touren[[tj]]
+    if (sum(q[c(A, B) - 1]) > kap) next             # Kapazität
+    neu <- if (tail(A, 1) == i && B[1] == j) c(A, B)
+      else if (A[1] == i && tail(B, 1) == j) c(B, A)
+      else if (tail(A, 1) == i && tail(B, 1) == j) c(A, rev(B))
+      else if (A[1] == i && B[1] == j) c(rev(A), B)
+      else NULL
+    if (is.null(neu) || dauer(neu) > t_max) next    # Tourende, Dauer
+    touren[[ti]] <- neu; touren <- touren[-tj]
+  }
+  touren
+}
+
+touren_A <- savings_vrp_dauer(maerkte$boxen)
+
+# Kostensätze 7,5-t-Kühl-Lkw (Kapitel Verkehrsmittel)
+fix_tag <- 90.28; k_km <- 0.536; k_h <- 31.52
+tab_A <- tibble(Tour = seq_along(touren_A),
+                Maerkte = lengths(touren_A),
+                Boxen = map_dbl(touren_A, ~ sum(maerkte$boxen[.x - 1])),
+                km = map_dbl(touren_A, tour_km),
+                Stunden = map_dbl(touren_A, dauer)) |>
+  mutate(Kosten = fix_tag + k_km * km + k_h * Stunden)
+tab_A |> mutate(across(c(km, Stunden, Kosten), ~ round(.x, 1)))
+```
+
+Das Verfahren bildet `r length(touren_A)` Touren mit zusammen `r round(sum(tab_A$km))` km pro Nacht. Der **Engpass ist die Tourdauer**, nicht die Kapazität: Die Fahrzeuge sind nur zu rund `r round(mean(tab_A$Boxen) / kap * 100)` % ausgelastet, aber die nordhessischen Märkte liegen bis zu `r round(max(D[1, -1]))` km von Raunheim entfernt, und jede Tour liegt nahe an der 9-Stunden-Grenze.
+
+```{r}
+#| label: chds2-karte
+#| fig-cap: "Variante A: Touren der Direktbelieferung"
+
+touren_df <- imap_dfr(touren_A, ~ tibble(Tour = factor(.y), knoten = c(1, .x, 1))) |>
+  mutate(lon = P[knoten, 1], lat = P[knoten, 2])
+
+ggplot() +
+  geom_path(data = touren_df, aes(x = lon, y = lat, colour = Tour), linewidth = 0.9) +
+  geom_point(data = maerkte, aes(x = lon, y = lat, size = boxen), colour = "#2D9E8E") +
+  annotate("point", x = depot["lon"], y = depot["lat"], shape = 23, size = 5, fill = "#2A7ACA") +
+  annotate("text", x = depot["lon"], y = depot["lat"] - 0.07, label = "Raunheim") +
+  coord_quickmap() +
+  labs(x = NULL, y = NULL, size = "Boxen/Tag") +
+  theme_minimal(base_size = 12)
+```
+
+## Varianten B und C: Hauptlauf zum Händler
+
+In den Varianten B und C fährt SushiFresh nur noch einen **Hauptlauf** zum Händler. Bei 900 Boxen je Lkw sind dafür zwei Fahrten nötig. Hinzu kommen das Logistikentgelt des Händlers und die **Abschriften**: Ware, die wegen abgelaufener Haltbarkeit nicht mehr verkauft werden kann. Bei Direktbelieferung und Cross-Docking erreicht die Box den Markt am Produktionstag, wir rechnen mit 4 % Abschrift. Über das Zentrallager verliert sie **einen ihrer zwei Haltbarkeitstage**, die Abschriftquote steigt auf 10 %. Das ist genau der Effekt, den das Newsvendor-Modell in Kapitel [-@sec-newsvendor] über die Überdeckungskosten abbildet.
+
+```{r}
+#| label: chds2-varianten
+
+hauptlauf <- function(ziel) {
+  d <- umweg * haversine(depot["lat"], depot["lon"], ziel["lat"], ziel["lon"])
+  fahrten <- ceiling(n_boxen / 900)
+  km <- 2 * d * fahrten; h <- km / v_kmh + fahrten * 2 * t_lade
+  c(d = unname(d), kosten = unname(fahrten * fix_tag + k_km * km + k_h * h))
+}
+hk_box <- 3.00
+
+varianten <- tibble(
+  Variante = c("A: Direktbelieferung", "B: Zentrallager", "C: Cross-Docking"),
+  Transport = c(sum(tab_A$Kosten), hauptlauf(zlager)["kosten"], hauptlauf(xdock)["kosten"]),
+  Entgelt = c(0, 0.20, 0.12) * n_boxen,
+  Abschrift = c(0.04, 0.10, 0.04) * hk_box * n_boxen,
+  Lieferzeit = c("gleicher Tag", "+1 Tag", "gleicher Tag")
+) |>
+  mutate(Gesamt = Transport + Entgelt + Abschrift, je_Box = Gesamt / n_boxen)
+varianten |> mutate(across(where(is.numeric), ~ round(.x, 2)))
+```
+
+```{r}
+#| label: chds2-vergleich-plot
+#| fig-cap: "Distributionskosten je Box nach Variante"
+
+varianten |>
+  select(Variante, Transport, Entgelt, Abschrift) |>
+  pivot_longer(-Variante, names_to = "Position", values_to = "Kosten") |>
+  mutate(Position = factor(Position, levels = c("Abschrift", "Entgelt", "Transport"))) |>
+  ggplot(aes(x = Variante, y = Kosten / n_boxen, fill = Position)) +
+  geom_col() +
+  scale_fill_manual(values = c(Transport = "#2F3E46", Entgelt = "#F4A259",
+                               Abschrift = "#C00000")) +
+  labs(x = NULL, y = "Kosten je Box (€)", fill = NULL) +
+  theme_minimal(base_size = 13) + theme(legend.position = "bottom")
+```
+
+**Cross-Docking** ist mit Abstand am günstigsten **und** liefert am selben Tag. Die Direktbelieferung scheitert an der Fläche: Viele Kilometer und Fahrerstunden für vergleichsweise wenige Boxen je Markt. Das Zentrallager scheitert an der **Haltbarkeit**: Die zusätzliche Lagerstufe kostet einen Verkaufstag, und die höheren Abschriften wiegen schwerer als der kurze Hauptlauf. Bei Frischware ist Zeit eine Kostenposition.
+
+Wie robust ist das Ergebnis? Die kritische Größe ist das Entgelt des Händlers. Bis zu welchem Entgelt bleibt Cross-Docking günstiger als die Direktbelieferung?
+
+```{r}
+#| label: chds2-breakeven
+
+entgelt_be <- (varianten$Gesamt[1] - varianten$Transport[3] - varianten$Abschrift[3]) / n_boxen
+round(entgelt_be, 2)
+```
+
+Erst ab einem Entgelt von rund `r round(entgelt_be, 2)` € je Box wäre die Direktbelieferung wirtschaftlich gleichwertig. Der Kostenvorteil ist also deutlich. Die Entscheidung hat aber auch **nicht-monetäre** Seiten: Bei Cross-Docking gibt SushiFresh die Kontrolle über die letzte Etappe der Kühlkette und den Kontakt zu den Märkten ab und wird von den Zeitfenstern des Händlers abhängig. Bei der Direktbelieferung behält es beides, zum Preis deutlich höherer Kosten.
+
+## Hub-and-Spoke-Netze
+
+Das Cross-Dock von RheinMarkt ist ein Beispiel für ein allgemeineres Prinzip: die **Bündelung** von Strömen in einem zentralen Knoten. Besonders ausgeprägt ist es in **Stückgut- und Paketnetzen**. Jedes Depot sammelt in seiner Region Sendungen ein (**Vorlauf**) und schickt alles zum **Hub**. Dort wird nach Zieldepots sortiert (**Hauptlauf**), und das Zieldepot stellt zu (**Nachlauf**).
+
+Der Vorteil zeigt sich an der Zahl der Relationen. In einem **Rasternetz**, in dem jedes der $n$ Depots jedes andere direkt beliefert, gibt es $n(n-1)$ gerichtete Relationen. Bei 8 Depots sind das 56, bei 40 Depots bereits 1.560. Im **Hub-and-Spoke-Netz** sind es nur $2n$, also 16 bzw. 80. Jede Relation wird dadurch deutlich besser ausgelastet. Der Preis sind **Umwege** über den Hub und ein zusätzlicher **Umschlag**. In der Praxis haben sich Mischformen durchgesetzt: Starke Relationen werden direkt gefahren, schwache über einen oder mehrere Hubs gebündelt. Für SushiFresh relevant ist das Prinzip beim Versand von Sushi@Home: Der Paketdienst bündelt die Sendungen vieler Versender in seinem Hub-Netz, und SushiFresh kauft die Zustellung als Leistung ein (Kapitel [-@sec-verkehrsmittel]).
+
+## Omnichannel-Distribution
+
+Wer über mehrere Kanäle verkauft, muss entscheiden, **aus welchem Bestand** ein Onlineauftrag bedient wird und **wer die letzte Meile** übernimmt. Daraus ergeben sich typische Fulfillment-Optionen [@agatz2008efulfillment]:
+
+```{r}
+#| label: chds2-omni
+#| echo: false
+
+om <- tibble(
+  Option = c("Zentrales E-Commerce-Lager", "Ship-from-Store", "Click & Collect",
+             "Dark Store / Mikrodepot", "Abholstation / Paketshop"),
+  Prinzip = c("eigenes Lager nur für Onlineaufträge, Versand per KEP",
+              "Filiale kommissioniert und versendet Onlineaufträge",
+              "online bestellen, in der Filiale abholen",
+              "städtisches Lager ohne Kundenverkehr, schnelle Zustellung",
+              "Kunde holt an Station oder Partnergeschäft ab"),
+  Vorteil = c("Skaleneffekte, hohe Kommissionierleistung",
+              "kurze Wege, Filialbestand wird genutzt",
+              "keine Zustellkosten, Zusatzkäufe in der Filiale",
+              "Lieferung in Minuten bis Stunden",
+              "gebündelte Zustellung, kein Nicht-Antreffen"),
+  SushiFresh = c("Sushi@Home ab Raunheim", "–", "Vorbestellung in den Supermärkten",
+                 "Mikrodepot für den Lastenrad-Lieferdienst", "Kühlfächer an Abholstationen?")
+)
+kbl(om, booktabs = TRUE) |>
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "condensed"))
+```
+
+Jede Option ist eine Kombination aus **Struktur** (wo liegt der Bestand?) und **letzter Meile** (wer überbrückt die letzten Kilometer?). Die Herausforderungen liegen in der **Bestandstransparenz** über alle Kanäle (ein online verkaufter Artikel darf nicht gleichzeitig im Regal liegen), in kleinen Aufträgen mit engen Zeitfenstern und in den Rückwärtsflüssen.
+
+## Retouren und Reverse Logistics
+
+Distribution endet nicht beim Kunden. **Reverse Logistics** umfasst alle Warenflüsse vom Kunden zurück in die Supply Chain [@fleischmann1997quantitative]: **Retouren** im Onlinehandel, **Rückrufe** bei Qualitätsmängeln, **Mehrwegbehälter** wie Paletten, Kisten und Pfandflaschen sowie **Altprodukte** zur Aufbereitung oder Entsorgung. Der Prozess folgt einer typischen Kette aus Rücknahme, Sammlung, Prüfung und **Disposition**, also der Entscheidung zwischen Wiederverkauf, Aufbereitung, Recycling und Entsorgung. Das knüpft an die Kreislaufwirtschaft aus Kapitel [-@sec-nachhaltigkeit] an. Rückwärtsflüsse sind schwerer zu planen als Vorwärtsflüsse, weil Zeitpunkt, Menge und Zustand der zurückkommenden Ware unsicher sind.
+
+### Fallbeispiel: ein Mehrwegkreislauf für Sushi-Boxen
+
+::: {.fallstudie}
+**Fallstudie: Die Pfandbox**
+
+Wer in Deutschland Speisen zum Mitnehmen in Einweg-Kunststoffverpackungen abgibt, muss seit 2023 auch eine **Mehrwegalternative** anbieten (Verpackungsgesetz, mit Ausnahmen für sehr kleine Betriebe). SushiFresh führt deshalb eine **Pfandbox** ein, die Kundinnen und Kunden in den Supermärkten zurückgeben. Der Kühl-Lkw nimmt die leeren Boxen bei der morgendlichen Belieferung mit zurück nach Raunheim, wo sie gespült werden. Wie viele Boxen braucht der Kreislauf, und lohnt sich Mehrweg gegenüber Einweg?
+:::
+
+Der **Behälterbedarf** eines Kreislaufs ergibt sich aus dem täglichen Bedarf und der **Umlaufzeit**, der Zeit vom Befüllen über Verkauf, Nutzung durch den Kunden, Rückgabe, Rücktransport und Spülung bis zum erneuten Befüllen. Hinzu kommt ein Sicherheitszuschlag für Schwankungen:
+
+$$\text{Bestand} = \text{Tagesbedarf} \cdot \text{Umlaufzeit} \cdot (1 + \text{Puffer})$$
+
+```{r}
+#| label: chds2-mehrweg-bestand
+
+bedarf_tag <- 845; quote_mw <- 0.30; umlauf <- 4; puffer <- 0.15
+mw_tag <- bedarf_tag * quote_mw
+c(Mehrweg_je_Tag = mw_tag, Bestand = ceiling(mw_tag * umlauf * (1 + puffer)))
+```
+
+Bei einer Mehrwegquote von 30 % und vier Tagen Umlaufzeit braucht der Kreislauf rund 1.170 Boxen. Jeder zusätzliche Tag Umlaufzeit, etwa weil Kunden die Box erst nach einer Woche zurückbringen, erhöht den Bestand um rund 250 Boxen.
+
+Für die **Wirtschaftlichkeit** zählen die Kosten je Nutzung. Eine Mehrwegbox kostet 3,50 € und hält technisch 200 Spülgänge, jede Spülung kostet 0,08 €. Entscheidend ist aber der **Schwund**: Kehrt jede Box mit Wahrscheinlichkeit $s$ nicht zurück, wird sie im Mittel nur $1/s$-mal genutzt (geometrische Verteilung). Die Kosten je Nutzung betragen dann
+
+$$k_{\text{MW}} = \frac{p_{\text{Box}}}{\min(L, 1/s)} + k_{\text{Spülen}}.$$
+
+```{r}
+#| label: chds2-mehrweg-kosten
+#| fig-cap: "Kosten je Nutzung in Abhängigkeit von der Schwundquote"
+
+p_box <- 3.50; L <- 200; k_spuelen <- 0.08; k_einweg <- 0.18
+k_mw <- function(s) p_box / pmin(L, 1 / s) + k_spuelen
+s_be <- uniroot(function(s) k_mw(s) - k_einweg, c(0.001, 0.2))$root
+c(Kosten_bei_5_Prozent = round(k_mw(0.05), 3), Break_even_Schwund = round(s_be, 3))
+
+tibble(s = seq(0.005, 0.10, by = 0.001)) |>
+  mutate(Mehrweg = k_mw(s)) |>
+  ggplot(aes(x = s * 100, y = Mehrweg)) +
+  geom_line(linewidth = 1.2, colour = "#0B6E4F") +
+  geom_hline(yintercept = k_einweg, linetype = "dashed") +
+  geom_vline(xintercept = s_be * 100, linetype = "dotted") +
+  annotate("text", x = 9, y = k_einweg + 0.012, label = "Einweg 0,18 €") +
+  labs(x = "Schwundquote je Umlauf (%)", y = "Kosten je Nutzung (€)") +
+  theme_minimal(base_size = 13)
+```
+
+Bei 5 % Schwund kostet eine Nutzung rund `r round(k_mw(0.05), 2)` € und damit mehr als die Einwegverpackung. Mehrweg lohnt sich erst unterhalb einer Schwundquote von rund **`r round(s_be * 100, 1)` %**. Der entscheidende Hebel ist also nicht der Preis der Box, sondern die **Rückgabequote**, die sich über die Höhe des Pfands und eine bequeme Rückgabe steuern lässt. Ökologisch gilt Ähnliches: Eine Mehrwegbox muss oft genug genutzt werden, um ihren höheren Material- und Spülaufwand auszugleichen.
+
+## Synthese: Was der Reader zur Distribution beiträgt
+
+Die RheinMarkt-Entscheidung zeigt, wie die Kapitel des Readers zusammenwirken. Jede Methode beantwortet eine Teilfrage der Distributionsgestaltung:
+
+| Frage | Methode | Kapitel |
+|:---|:---|:---|
+| Welche Struktur und welche Kanäle? | Distributionsstrukturen, Lieferservice | [-@sec-distributionsstrukturen] |
+| Wo stehen Produktion und Lager? | Nutzwertanalyse, AHP, Weiszfeld, WLP | [-@sec-standort-1], [-@sec-standort-2] |
+| Wie wird bei knapper Kapazität verteilt? | Transportproblem, VAM | [-@sec-transportplanung] |
+| Wie viel Bestand ist nötig? | Pooling, Sicherheitsbestand | [-@sec-unsicherheit-pooling] |
+| Wie viel soll produziert werden? | Newsvendor-Modell | [-@sec-newsvendor] |
+| Wie stabil ist die Kette? | Bullwhip-Analyse | [-@sec-bullwhip] |
+| Wie wird kommissioniert? | Lagerplatzvergabe, Picker Routing | [-@sec-lager] |
+| Womit wird transportiert, was kostet es? | Kostensätze, TCO, ISO 14083 | [-@sec-verkehrsmittel] |
+| Wie weit ist es im Netz? | Dijkstra | [-@sec-kuerzeste-wege] |
+| In welcher Reihenfolge wird geliefert? | TSP-Heuristiken, Savings | [-@sec-tourenplanung] |
+
+Kein Modell beantwortet die Gestaltungsfrage allein. Gute Distributionsentscheidungen entstehen, wenn strategische Strukturentscheidungen mit den Kosten und Restriktionen der operativen Ebene durchgerechnet werden. Im RheinMarkt-Fall waren das die Touren und Fahrzeiten der Direktbelieferung und die Haltbarkeit der Ware im Zentrallager.
+
+## Zusammenfassung
+
+Die Wahl der Distributionsstruktur lässt sich mit den Methoden des Readers **quantitativ** vergleichen. Für die RheinMarkt-Anfrage ergab das Savings-Verfahren mit Kapazitäts- und Dauerrestriktion hohe Kosten für die Direktbelieferung. Das Zentrallager verliert durch die zusätzliche Lagerstufe einen Haltbarkeitstag, **Cross-Docking** ist die günstigste und schnellste Option. Bei Frischware ist Zeit eine Kostenposition. **Hub-and-Spoke-Netze** bündeln Ströme zum Preis von Umwegen und zusätzlichem Umschlag. **Omnichannel**-Fulfillment kombiniert Bestandsort und letzte Meile. **Reverse Logistics** erweitert die Distribution um Rückwärtsflüsse. Bei Mehrwegkreisläufen bestimmen Umlaufzeit und Tagesbedarf den Behälterbestand, und die **Rückgabequote** entscheidet über die Wirtschaftlichkeit.
+
+Auf der R-Seite haben Sie Distanzmatrizen mit `outer()` und `Vectorize()` erzeugt, das Savings-Verfahren um eine zusätzliche Restriktion erweitert und Break-even-Werte mit `uniroot()` bestimmt.
+
+::: {.kontrollfragen}
+**Kontrollfragen**
+
+1. Warum ist bei der Direktbelieferung der RheinMarkt-Märkte die Tourdauer und nicht die Fahrzeugkapazität der Engpass?
+2. Erläutern Sie, wie die Haltbarkeit der Boxen die Wahl zwischen Zentrallager und Cross-Docking beeinflusst. Welche Rolle spielt dabei das Newsvendor-Modell?
+3. RheinMarkt möchte das Cross-Dock-Entgelt auf 0,35 € je Box erhöhen. Ist Variante C dann noch die günstigste? Welche Mischform aus Direktbelieferung naher Märkte und Cross-Docking wäre denkbar?
+4. Welche nicht-monetären Kriterien sprechen für bzw. gegen die Direktbelieferung?
+5. Wie viele gerichtete Relationen hat ein Rasternetz mit 12 Depots, wie viele ein Hub-and-Spoke-Netz? Welche Nachteile hat die Bündelung über einen Hub?
+6. Ordnen Sie die Fulfillment-Optionen des Omnichannel-Handels nach Lieferzeit und Kosten je Auftrag.
+7. Wie verändert sich der Behälterbestand der Pfandbox, wenn die Mehrwegquote auf 50 % steigt und die Umlaufzeit auf sechs Tage wächst?
+8. Leiten Sie her, warum eine Box bei einer Schwundquote $s$ im Mittel $1/s$-mal genutzt wird.
+9. Wählen Sie drei Kapitel des Readers und erläutern Sie, welchen Beitrag ihre Methoden zur Bewertung der RheinMarkt-Anfrage leisten.
+:::

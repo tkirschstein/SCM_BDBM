@@ -208,11 +208,13 @@ sp_tableau <- function(res, font_size = 20) {
 }
 ```
 
-## Transport- und Tourenplanung {#sp-outline}
+## Distributionslogistik {#sp-outline}
 
-- Transportplanung
+- Lager und Kommissionierung
+- Verkehrsmittel, Antriebe und Kosten
 - **Kürzeste Wege**
 - Tourenplanung
+- Distributionssystem gestalten
 
 ---
 
@@ -243,7 +245,7 @@ Woher kommen eigentlich die Transportkosten?
 
 ::: {.callout-note appearance="simple"}
 ## Rückblick
-In den Einheiten 5 und 9 waren die Transportkosten $c_{ij}$ **vorgegeben**. Im Januar endet das Weihnachtsgeschäft: Die Zentralküche **Raunheim** beliefert wieder alle sechs Filialen allein.
+In der Standort- und der Transportplanung waren die Transportkosten $c_{ij}$ **vorgegeben**. Aus der Einheit Verkehrsmittel und Antriebe kennen wir Kostensätze je km. Es fehlen die **Entfernungen**: $c_{ij}$ = Kostensatz × Entfernung. Im Januar endet das Weihnachtsgeschäft: Die Zentralküche **Raunheim** beliefert wieder alle sechs Filialen allein.
 :::
 
 ::: {.fragment .fade-up}
@@ -252,7 +254,7 @@ In den Einheiten 5 und 9 waren die Transportkosten $c_{ij}$ **vorgegeben**. Im J
 Die neue Disponentin möchte die Kostensätze **selbst nachvollziehen**. Dafür braucht sie die **Straßenentfernungen**
 
 - von Raunheim zu jeder Filiale und
-- zwischen allen Filialen (für die Tourenplanung in Einheit 11).
+- zwischen allen Filialen (für die Tourenplanung in Einheit Tourenplanung).
 :::
 :::
 
@@ -261,7 +263,7 @@ Die neue Disponentin möchte die Kostensätze **selbst nachvollziehen**. Dafür 
 
 ::: {.fragment .fade-up}
 ::: small-text
-**Erste Idee: Luftlinie (Haversine, Einheit 4)**
+**Erste Idee: Luftlinie (Haversine, Einheit Standortplanung I)**
 
 ```{r sp-luftlinie}
 #| echo: false
@@ -730,7 +732,7 @@ res$d[c("C1", "C2", "C3",
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Alternative mit Paketen
-`igraph::distances(g, weights = ...)` oder `osrm::osrmTable()` für echte Straßendaten (Einheit 5).
+`igraph::distances(g, weights = ...)` oder `osrm::osrmTable()` für echte Straßendaten (Einheit Standortplanung II).
 :::
 :::
 
@@ -785,7 +787,7 @@ D <- t(sapply(stops, function(s)
 
 ::: {.fragment .fade-up}
 ::: {.callout-important appearance="simple"}
-## Ausblick auf Einheit 11
+## Ausblick auf Einheit Tourenplanung
 Fährt der Kühltransporter jede Filiale einzeln an (**Pendelverkehr**), legt er täglich $2 \cdot \sum_j d_{Rj} =$ **`r 2 * sum(sp_D["R", -1])` km** zurück. Geht das mit einer **Rundtour** kürzer?
 :::
 :::
