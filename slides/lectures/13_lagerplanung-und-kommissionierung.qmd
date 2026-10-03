@@ -133,11 +133,9 @@ two_opt <- function(t, D) {
   }
   t
 }
-perms <- function(v){ if (length(v) <= 1) list(v) else
-  do.call(c, lapply(seq_along(v), function(i)
+perms <- function(v) if (length(v) <= 1) list(v) else
+  do.call(base::c, lapply(seq_along(v), function(i)
     lapply(perms(v[-i]), function(p) c(v[i], p))))
-}
-
 tour_wp <- function(t, P) {
   tt <- c(t, t[1]); wp <- list(P[tt[1], ])
   for (k in 2:length(tt)) {

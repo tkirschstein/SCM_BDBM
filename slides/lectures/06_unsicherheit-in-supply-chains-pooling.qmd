@@ -14,7 +14,7 @@ library(knitr)
 library(kableExtra)
 library(planr)
 library(dplyr)
-library(MASS)
+# MASS wird nicht geladen, um dplyr::select() nicht zu überdecken; Aufruf über MASS::mvrnorm()
 
 source("../R/scm_functions.R")
 ```
@@ -2515,8 +2515,6 @@ Empirische Illustration
 #| warning: false
 #| message: false
 
-library(MASS)
-
 set.seed(43)
 n    <- 12
 mu1  <- 120; mu2 <- 150   # Wiesbaden, Mainz
@@ -2527,7 +2525,7 @@ rhos <- c(-0.8, 0.0, 0.8)
 gen_biv <- function(rho, n, mu1, mu2, sig1, sig2) {
   Sigma <- matrix(c(sig1^2, rho*sig1*sig2,
                     rho*sig1*sig2, sig2^2), 2, 2)
-  raw   <- mvrnorm(n, mu = c(mu1, mu2), Sigma = Sigma)
+  raw   <- MASS::mvrnorm(n, mu = c(mu1, mu2), Sigma = Sigma)
   raw   <- round(raw)
   data.frame(t = 1:n, D1 = raw[,1], D2 = raw[,2])
 }

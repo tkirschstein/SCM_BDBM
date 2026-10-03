@@ -151,3 +151,15 @@
   max-height: 100%;
   object-fit: contain;
 }
+
+/* Hierarchische Nummerierung (1., 2.1., 2.2. …) für Listen im Block .gliederung */
+.reveal .gliederung ol { counter-reset: punkt; list-style-type: none; padding-left: 1.2em; margin: 0; }
+.reveal .gliederung ol > li { counter-increment: punkt; }
+.reveal .gliederung ol > li::before { content: counters(punkt, ".") ". "; font-weight: 600; }
+/* Unterliste mit i), ii) … behält die römischen Zahlen */
+.reveal .gliederung ol[type="i"] > li::before { content: counter(punkt, lower-roman) ") "; }
+/* Startnummer aus Markdown übernehmen (Zähler auf Startwert - 1 setzen) */
+.reveal .gliederung ol[start="2"] { counter-reset: punkt 1; }
+.reveal .gliederung ol[start="3"] { counter-reset: punkt 2; }
+.reveal .gliederung ol[start="4"] { counter-reset: punkt 3; }
+.reveal .gliederung ol[start="5"] { counter-reset: punkt 4; }

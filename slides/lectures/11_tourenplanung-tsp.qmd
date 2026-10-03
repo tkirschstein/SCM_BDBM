@@ -174,7 +174,7 @@ len_star <- 2 * sum(D["R", -1])
 
 # Exakte Lösung durch vollständige Enumeration (n = 7 → 360 Touren)
 perms <- function(v) if (length(v) <= 1) list(v) else
-  do.call(c, lapply(seq_along(v), function(i)
+  do.call(base::c, lapply(seq_along(v), function(i)
     lapply(perms(v[-i]), function(p) c(v[i], p))))
 alle_touren <- lapply(perms(stops[-1]), function(p) c("R", p))
 alle_len    <- sapply(alle_touren, tour_length, D = D)
@@ -898,7 +898,7 @@ plot_ly(vgl, x = ~factor(Variante, levels = Variante), y = ~km, type = "bar",
 ::: {.fragment .fade-up}
 ::: {.callout-warning appearance="simple"}
 ## Grenze von 2-opt
-Die optimale Tour unterscheidet sich von der 2-opt-Lösung durch das **Verschieben von Rüsselsheim** (C4). Das ist kein 2-opt-Zug, sondern ein **Or-opt-Zug**. 2-opt bleibt im lokalen Optimum stecken.
+Die optimale Tour unterscheidet sich von der 2-opt-Lösung in **drei Kanten**. Dafür ist ein **3-opt-Zug** nötig, jeder einzelne 2-opt-Zug verlängert die Tour. 2-opt bleibt im lokalen Optimum stecken.
 :::
 :::
 
@@ -1237,7 +1237,7 @@ p
 - Das **TSP** sucht die kürzeste Rundreise durch alle Orte. Es ist **NP-schwer**: Die Zahl der Touren wächst mit $(n-1)!/2$.
 - **Nearest Neighbor** konstruiert schnell eine Tour, neigt aber zu langen Sprüngen am Ende und zu Kreuzungen (SushiFresh: `r len_nn` km).
 - **2-opt** tauscht Kantenpaare, solange sich die Tour verkürzt, und entfernt dabei Kreuzungen (SushiFresh: `r len_2o` km).
-- Das Ergebnis ist ein **lokales Optimum**. Das globale Optimum (`r len_opt` km) erfordert hier einen Or-opt-Zug oder ein exaktes Verfahren.
+- Das Ergebnis ist ein **lokales Optimum**. Das globale Optimum (`r len_opt` km) erfordert hier einen 3-opt-Zug oder ein exaktes Verfahren.
 - Gegenüber dem **Pendelverkehr** (`r len_star` km) halbiert die Rundtour die Fahrstrecke nahezu.
 :::
 

@@ -21,13 +21,19 @@ library(plotly)
 
 ## Organisatorisches {#slide-2}
 
-Dozent: Prof. Dr. Thomas Kirschstein (HS RheinMain + Fraunhofer)
+Dozent: Prof. Dr. Thomas Kirschstein ([HS RheinMain](https://www.hs-rm.de/personen-detailseite/thomas-kirschstein) + [Fraunhofer](https://www.ikts.fraunhofer.de/de/abteilungen/umwelttechnik_verfahrenstechnik/technologieoekonomik_nachhaltigkeitsanalyse/technologie_prozessmanagement.html))
 
-Unterlagen + Materialien: StudIP , ILIAS
+Unterlagen + Materialien: https://github.com/tkirschstein/SCM_BDBM
 
-Übungen: Werden im Kurs eingeflochen
+Klausur: zusammen mit BBA-Kurs
 
-Klausur: zusammen mit Distribution & BBA-Kurs
+Inverted classroom: 
+  - Studium der Inhalte vor Veranstaltung mit Folien + Reader
+  - Ablauf Präsenz-Veranstaltungen: 
+      1. Input: Vertiefung methodischer Komponenten -> Diskussion im Plenum
+      2. Rückfragen: Unklarheiten klären auf Basis von Rückfragen
+      3. Fallstudienlösungen: Studenten präsentieren Lösungen
+  
 
 ## Literatur {#slide-3}
 
@@ -37,10 +43,36 @@ Klausur: zusammen mit Distribution & BBA-Kurs
 
 ## Aufbau der Vorlesung {#slide-4}
 
-1.  Grundlagen des Supply Chain Managements
+:::: columns
+::: {.column width="50%"}
+::: {.gliederung style="font-size: 0.6em;"}
+1.  Grundlagen von Supply Chain Management & Distribution
+    i) Aufgaben, Begriffe und Konzepte
+    ii) Ziele & Zielkonflikte
+    iii) Kosten & Management
+    iv) Distributionsstrukturen
 2.  Strategische Gestaltung von Supply Chains
-3.  Unsicherheits- und Risikomanagement in Supply Chains
+    1.  qualitative Standortplanung 
+    2.  diskrete Standortplanung 
+    3.  Transportplanung 
+:::
+:::
 
+::: {.column width="50%"}
+::: {.gliederung style="font-size: 0.6em;"}
+3.  Unsicherheits- und Risikomanagement in Supply Chains
+    1.  Kapazitäts-Pooling
+    2.  Location Pooling
+    3.  Newsvendor-Modell
+    4.  Bullwhip-Effekt
+4.  Operative Distributionsplanung
+    1.  Lager- und Kommissionierplanung
+    2.  Transportmittel und Kostenrechnung
+    3.  Kürzeste Wege
+    4.  Tourenplanung
+:::
+:::
+::::
 
 # Grundlagen des Supply Chain Managements 
 
@@ -49,6 +81,7 @@ Klausur: zusammen mit Distribution & BBA-Kurs
 - **Aufgaben, Begriffe und Konzepte**
 - Ziele & Zielkonflikte
 - Kosten & Management
+- Distributionsstrukturen
 
 ## Lernziele {#learning-objectives-introduction}
 
