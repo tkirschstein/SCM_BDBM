@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="description" content="Kursbegleitender Reader zur Vorlesung Supply Chain Management, Wintersemester 26/27">
+<title>14&nbsp; Kürzeste Wege – Supply Chain Management</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/11_tourenplanung-tsp.html" rel="next">
+<link href="../chapters/12_transportmittel-und-antriebe.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-81de787dd4773dbc0001c2dc1cc3016d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script><script src="../site_libs/kePrint-0.0.1/kePrint.js"></script><link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="../custom.css">
+</head>
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/13_lagerplanung-und-kommissionierung.html">Distributionslogistik</a></li><li class="breadcrumb-item"><a href="../chapters/10_kuerzeste-wege.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Kürzeste Wege</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Suchen" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Supply Chain Management</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Suchen"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Vorwort</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Grundlagen</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Einführung und Grundbegriffe des Supply Chain Managements</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Wertschöpfung, strategische Fertigung und Strategic Fit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03_ziele-zielkonflikte-und-logistikkosten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ziele, Zielkonflikte und Logistikkosten</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09_nachhaltigkeit-im-supply-chain-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Nachhaltigkeit im Supply Chain Management</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14a_distributionsstrukturen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Distributionsstrukturen und -kanäle</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Strategische Gestaltung von Supply Chains</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Standortplanung I – Qualitative und kontinuierliche Verfahren</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Standortplanung II – Diskrete Netzwerkplanungsmodelle</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09_transportplanung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transportplanung</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Unsicherheit und Koordination</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06_unsicherheit-in-supply-chains-pooling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Unsicherheit in Supply Chains und Pooling</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07_das-newsvendor-modell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Das Newsvendor-Modell</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/08_der-bullwhip-effekt-und-das-beergame.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Der Bullwhip-Effekt und das Beergame</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Distributionslogistik</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/13_lagerplanung-und-kommissionierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Lagerplanung und Kommissionierung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/12_transportmittel-und-antriebe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Verkehrsmittel, Antriebe und Transportkosten</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/10_kuerzeste-wege.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Kürzeste Wege</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/11_tourenplanung-tsp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Tourenplanung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14b_distributionssystem-gestalten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Distributionssystem gestalten</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literaturverzeichnis</span></a>
+  </div>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+<li><a href="#woher-kommen-die-transportkosten" id="toc-woher-kommen-die-transportkosten" class="nav-link active" data-scroll-target="#woher-kommen-die-transportkosten"><span class="header-section-number">14.1</span> Woher kommen die Transportkosten?</a></li>
+  <li><a href="#stra%C3%9Fennetze-als-graphen" id="toc-straßennetze-als-graphen" class="nav-link" data-scroll-target="#stra%C3%9Fennetze-als-graphen"><span class="header-section-number">14.2</span> Straßennetze als Graphen</a></li>
+  <li><a href="#k%C3%BCrzeste-wege-probleme" id="toc-kürzeste-wege-probleme" class="nav-link" data-scroll-target="#k%C3%BCrzeste-wege-probleme"><span class="header-section-number">14.3</span> Kürzeste-Wege-Probleme</a></li>
+  <li>
+<a href="#der-dijkstra-algorithmus" id="toc-der-dijkstra-algorithmus" class="nav-link" data-scroll-target="#der-dijkstra-algorithmus"><span class="header-section-number">14.4</span> Der Dijkstra-Algorithmus</a>
+  <ul class="collapse">
+<li><a href="#idee" id="toc-idee" class="nav-link" data-scroll-target="#idee"><span class="header-section-number">14.4.1</span> Idee</a></li>
+  <li><a href="#fallbeispiel-k%C3%BCrzeste-wege-ab-raunheim" id="toc-fallbeispiel-kürzeste-wege-ab-raunheim" class="nav-link" data-scroll-target="#fallbeispiel-k%C3%BCrzeste-wege-ab-raunheim"><span class="header-section-number">14.4.2</span> Fallbeispiel: Kürzeste Wege ab Raunheim</a></li>
+  <li><a href="#der-k%C3%BCrzeste-wege-baum" id="toc-der-kürzeste-wege-baum" class="nav-link" data-scroll-target="#der-k%C3%BCrzeste-wege-baum"><span class="header-section-number">14.4.3</span> Der Kürzeste-Wege-Baum</a></li>
+  </ul>
+</li>
+  <li><a href="#distanzmatrix-f%C3%BCr-die-tourenplanung" id="toc-distanzmatrix-für-die-tourenplanung" class="nav-link" data-scroll-target="#distanzmatrix-f%C3%BCr-die-tourenplanung"><span class="header-section-number">14.5</span> Distanzmatrix für die Tourenplanung</a></li>
+  <li><a href="#varianten-und-erweiterungen" id="toc-varianten-und-erweiterungen" class="nav-link" data-scroll-target="#varianten-und-erweiterungen"><span class="header-section-number">14.6</span> Varianten und Erweiterungen</a></li>
+  <li><a href="#zusammenfassung" id="toc-zusammenfassung" class="nav-link" data-scroll-target="#zusammenfassung"><span class="header-section-number">14.7</span> Zusammenfassung</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/13_lagerplanung-und-kommissionierung.html">Distributionslogistik</a></li><li class="breadcrumb-item"><a href="../chapters/10_kuerzeste-wege.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Kürzeste Wege</span></a></li></ol></nav><div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span id="sec-kuerzeste-wege" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Kürzeste Wege</span></span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Gesamten Code zeigen</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Gesamten Code verbergen</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">Quellcode anzeigen</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><div class="lernziele">
+<p><strong>Lernziele</strong></p>
+<p>Nach der Bearbeitung dieses Kapitels können Sie …</p>
+<ul>
+<li>Straßennetze als <strong>Graphen</strong> mit Knoten, Kanten und Kantengewichten modellieren,</li>
+<li>verschiedene Varianten des <strong>Kürzeste-Wege-Problems</strong> unterscheiden und es als Netzwerkflussproblem formulieren,</li>
+<li>den <strong>Dijkstra-Algorithmus</strong> von Hand im Tableau durchführen, seine Korrektheit begründen und ihn in R implementieren,</li>
+<li>aus kürzesten Wegen eine <strong>Distanzmatrix</strong> für Transport- und Tourenplanung ableiten und mit der Luftlinie vergleichen,</li>
+<li>Graphen in R als Kantenliste und Gewichtsmatrix darstellen und mit logischen Masken und benannten Vektoren arbeiten.</li>
+</ul>
+<p><strong>Literatur zur Vertiefung</strong></p>
+<ul>
+<li>
+<strong>Kürzeste Wege und Graphentheorie in der Logistik:</strong> <span class="citation" data-cites="domschke2007transport">(<a href="../references.html#ref-domschke2007transport" role="doc-biblioref">Domschke 2007</a>)</span>.</li>
+<li>
+<strong>Originalarbeit:</strong> <span class="citation" data-cites="dijkstra1959note">(<a href="../references.html#ref-dijkstra1959note" role="doc-biblioref">Dijkstra 1959</a>)</span>.</li>
+<li>
+<strong>Transport- und Tourenplanung im Überblick:</strong> <span class="citation" data-cites="guenther2012produktion">(<a href="../references.html#ref-guenther2012produktion" role="doc-biblioref">Günther und Tempelmeier 2012</a>)</span>.</li>
+</ul>
+</div>
+<section id="woher-kommen-die-transportkosten" class="level2" data-number="14.1"><h2 data-number="14.1" class="anchored" data-anchor-id="woher-kommen-die-transportkosten">
+<span class="header-section-number">14.1</span> Woher kommen die Transportkosten?</h2>
+<p>In der Standort- und der Transportplanung (Kapitel <a href="05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="quarto-xref"><span>7</span></a> und <a href="09_transportplanung.html" class="quarto-xref"><span>8</span></a>) waren die Transportkosten <span class="math inline">\(c_{ij}\)</span> einfach <strong>gegeben</strong>. Kapitel <a href="12_transportmittel-und-antriebe.html" class="quarto-xref"><span>13</span></a> hat gezeigt, wie sich Kostensätze je Kilometer aus einer Fahrzeugkostenrechnung ergeben. Um daraus Kosten je Verbindung zu machen, fehlt noch ein Baustein: die <strong>Entfernung</strong> zwischen zwei Orten im Straßennetz. Es gilt vereinfacht</p>
+<p><span class="math display">\[c_{ij} = \text{Kostensatz je km} \times \text{Entfernung}_{ij}.\]</span></p>
+<p>Die Luftlinie, die wir in Kapitel <a href="04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" class="quarto-xref"><span>6</span></a> mit der Haversine-Formel berechnet haben, ist dafür nur eine erste Näherung. Lkw fahren nicht Luftlinie: Rhein- und Mainbrücken, Autobahnkreuze und Ortsdurchfahrten bestimmen die tatsächliche Strecke. Gesucht ist der <strong>kürzeste Weg im Straßennetz</strong>.</p>
+<div class="fallstudie">
+<p><strong>Fallstudie: Entfernungen für die Disposition</strong></p>
+<p>Das Weihnachtsgeschäft ist vorbei, die Zentralküche <strong>Raunheim</strong> beliefert wieder alle sechs Filialen allein. Die neue Disponentin möchte die Kostensätze selbst nachvollziehen und eine Tourenplanung vorbereiten. Dafür braucht sie die Straßenentfernungen von Raunheim zu jeder Filiale und zwischen allen Filialen. Als Grundlage dient ein vereinfachtes Straßennetz des Rhein-Main-Gebiets mit zehn Knoten: der Zentralküche, den sechs Filialen und drei Autobahnknoten (Mönchhof-Dreieck, Wiesbadener Kreuz, Frankfurter Kreuz).</p>
+</div>
+</section><section id="straßennetze-als-graphen" class="level2" data-number="14.2"><h2 data-number="14.2" class="anchored" data-anchor-id="straßennetze-als-graphen">
+<span class="header-section-number">14.2</span> Straßennetze als Graphen</h2>
+<div class="definition">
+<p><strong>Definition: Graph</strong></p>
+<p>Ein <strong>Graph</strong> <span class="math inline">\(G = (V, E)\)</span> besteht aus einer Menge von <strong>Knoten</strong> <span class="math inline">\(V\)</span> und einer Menge von <strong>Kanten</strong> <span class="math inline">\(E\)</span>, die jeweils zwei Knoten verbinden. In einem <strong>gewichteten</strong> Graphen trägt jede Kante <span class="math inline">\((v, w)\)</span> ein Gewicht <span class="math inline">\(c_{vw}\)</span>, etwa eine Länge, eine Fahrzeit oder Kosten. Ein Graph ist <strong>ungerichtet</strong>, wenn jede Kante in beide Richtungen gleich befahrbar ist, sonst <strong>gerichtet</strong>. Ein <strong>Weg</strong> von <span class="math inline">\(s\)</span> nach <span class="math inline">\(t\)</span> ist eine Folge benachbarter Knoten, seine <strong>Länge</strong> die Summe der Kantengewichte.</p>
+</div>
+<p>In einem Straßennetz sind die Knoten Orte (Küche, Filialen) und Verknüpfungspunkte (Kreuzungen, Autobahnkreuze), die Kanten direkte Straßenverbindungen. Einbahnstraßen und Autobahnauffahrten machen reale Netze gerichtet. Unser vereinfachtes Netz behandeln wir als ungerichtet.</p>
+<div class="r-exkurs">
+<p><strong>R-Exkurs: Graphen als Kantenliste und Gewichtsmatrix</strong></p>
+<p>Ein Graph lässt sich in R auf zwei Arten speichern. Die <strong>Kantenliste</strong> ist ein Datenrahmen mit einer Zeile je Kante (Anfangsknoten, Endknoten, Gewicht). Sie ist kompakt und leicht zu pflegen. Die <strong>Gewichtsmatrix</strong> (Adjazenzmatrix) ist eine quadratische Matrix mit einer Zeile und einer Spalte je Knoten, deren Eintrag <span class="math inline">\((v, w)\)</span> das Gewicht der Kante von <span class="math inline">\(v\)</span> nach <span class="math inline">\(w\)</span> enthält, oder 0, wenn es keine direkte Kante gibt. Sie erlaubt schnellen Zugriff auf alle Nachbarn eines Knotens. Die Umwandlung gelingt mit der Indexmatrix aus Kapitel <a href="09_transportplanung.html" class="quarto-xref"><span>8</span></a>: <code>W[cbind(von, nach)] &lt;- km</code> setzt alle Kanten auf einmal. Für einen ungerichteten Graphen wird zusätzlich die Gegenrichtung gesetzt, sodass die Matrix symmetrisch wird.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">knoten</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  ID   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"R"</span>, <span class="st">"MH"</span>, <span class="st">"WK"</span>, <span class="st">"FK"</span>, <span class="st">"C1"</span>, <span class="st">"C2"</span>, <span class="st">"C3"</span>, <span class="st">"C4"</span>, <span class="st">"C5"</span>, <span class="st">"C6"</span><span class="op">)</span>,</span>
+<span>  Name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Raunheim (Zentralküche)"</span>, <span class="st">"Mönchhof-Dreieck"</span>, <span class="st">"Wiesbadener Kreuz"</span>,</span>
+<span>           <span class="st">"Frankfurter Kreuz"</span>, <span class="st">"Wiesbaden"</span>, <span class="st">"Mainz"</span>, <span class="st">"Frankfurt"</span>, <span class="st">"Rüsselsheim"</span>,</span>
+<span>           <span class="st">"Darmstadt"</span>, <span class="st">"Offenbach"</span><span class="op">)</span>,</span>
+<span>  Typ  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Küche"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"Autobahnknoten"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"Filiale"</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  Lon  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8.4650</span>, <span class="fl">8.4950</span>, <span class="fl">8.3720</span>, <span class="fl">8.5985</span>, <span class="fl">8.2398</span>, <span class="fl">8.2711</span>, <span class="fl">8.6821</span>, <span class="fl">8.4116</span>, <span class="fl">8.6512</span>, <span class="fl">8.7761</span><span class="op">)</span>,</span>
+<span>  Lat  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50.0000</span>, <span class="fl">50.0350</span>, <span class="fl">50.0620</span>, <span class="fl">50.0535</span>, <span class="fl">50.0782</span>, <span class="fl">50.0000</span>, <span class="fl">50.1109</span>, <span class="fl">49.9904</span>,</span>
+<span>           <span class="fl">49.8728</span>, <span class="fl">50.0956</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">kanten</span> <span class="op">&lt;-</span> <span class="fu">tribble</span><span class="op">(</span></span>
+<span>  <span class="op">~</span><span class="va">von</span>, <span class="op">~</span><span class="va">nach</span>, <span class="op">~</span><span class="va">km</span>,</span>
+<span>  <span class="st">"R"</span>,  <span class="st">"MH"</span>,   <span class="fl">5</span>,   <span class="st">"R"</span>,  <span class="st">"C4"</span>,  <span class="fl">6</span>,   <span class="st">"R"</span>,  <span class="st">"C3"</span>, <span class="fl">33</span>,</span>
+<span>  <span class="st">"MH"</span>, <span class="st">"WK"</span>,  <span class="fl">13</span>,   <span class="st">"MH"</span>, <span class="st">"FK"</span>, <span class="fl">10</span>,   <span class="st">"MH"</span>, <span class="st">"C4"</span>, <span class="fl">10</span>,</span>
+<span>  <span class="st">"WK"</span>, <span class="st">"C1"</span>,   <span class="fl">8</span>,   <span class="st">"WK"</span>, <span class="st">"C2"</span>, <span class="fl">15</span>,   <span class="st">"C1"</span>, <span class="st">"C2"</span>, <span class="fl">14</span>,</span>
+<span>  <span class="st">"C2"</span>, <span class="st">"C4"</span>,  <span class="fl">16</span>,   <span class="st">"C4"</span>, <span class="st">"C5"</span>, <span class="fl">33</span>,   <span class="st">"FK"</span>, <span class="st">"C3"</span>, <span class="fl">13</span>,</span>
+<span>  <span class="st">"FK"</span>, <span class="st">"C5"</span>,  <span class="fl">29</span>,   <span class="st">"FK"</span>, <span class="st">"C6"</span>, <span class="fl">12</span>,   <span class="st">"C3"</span>, <span class="st">"C6"</span>, <span class="fl">10</span>,</span>
+<span>  <span class="st">"C5"</span>, <span class="st">"C6"</span>,  <span class="fl">24</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">W</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">knoten</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">knoten</span><span class="op">)</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">knoten</span><span class="op">$</span><span class="va">ID</span>, <span class="va">knoten</span><span class="op">$</span><span class="va">ID</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">W</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">kanten</span><span class="op">$</span><span class="va">von</span>, <span class="va">kanten</span><span class="op">$</span><span class="va">nach</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">kanten</span><span class="op">$</span><span class="va">km</span></span>
+<span><span class="va">W</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">kanten</span><span class="op">$</span><span class="va">nach</span>, <span class="va">kanten</span><span class="op">$</span><span class="va">von</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">kanten</span><span class="op">$</span><span class="va">km</span>     <span class="co"># ungerichtet: symmetrisch</span></span>
+<span><span class="va">W</span><span class="op">[</span><span class="st">"R"</span>, <span class="va">W</span><span class="op">[</span><span class="st">"R"</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span>                               <span class="co"># Nachbarn von Raunheim</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>MH C3 C4 
+ 5 33  6 </code></pre>
+</div>
+</div>
+<p>Die letzte Zeile nutzt eine <strong>logische Maske</strong>: <code>W["R", ] &gt; 0</code> liefert einen logischen Vektor, der genau die Nachbarn von Raunheim markiert, und die eckigen Klammern wählen diese Einträge aus.</p>
+</div>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># planare Koordinaten in km für eine maßstabsgetreue Darstellung</span></span>
+<span><span class="va">knoten</span> <span class="op">&lt;-</span> <span class="va">knoten</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>x <span class="op">=</span> <span class="va">Lon</span> <span class="op">*</span> <span class="fl">111.32</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">cos</a></span><span class="op">(</span><span class="fl">50</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="fl">180</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">Lat</span> <span class="op">*</span> <span class="fl">111.32</span><span class="op">)</span></span>
+<span><span class="va">kanten_xy</span> <span class="op">&lt;-</span> <span class="va">kanten</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="fu">select</span><span class="op">(</span><span class="va">knoten</span>, von <span class="op">=</span> <span class="va">ID</span>, x1 <span class="op">=</span> <span class="va">x</span>, y1 <span class="op">=</span> <span class="va">y</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"von"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="fu">select</span><span class="op">(</span><span class="va">knoten</span>, nach <span class="op">=</span> <span class="va">ID</span>, x2 <span class="op">=</span> <span class="va">x</span>, y2 <span class="op">=</span> <span class="va">y</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"nach"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">netz_plot</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">kanten_farbe</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_segment</span><span class="op">(</span>data <span class="op">=</span> <span class="va">kanten_xy</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x1</span>, y <span class="op">=</span> <span class="va">y1</span>, xend <span class="op">=</span> <span class="va">x2</span>, yend <span class="op">=</span> <span class="va">y2</span><span class="op">)</span>,</span>
+<span>                 colour <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">kanten_farbe</span><span class="op">)</span><span class="op">)</span> <span class="st">"grey60"</span> <span class="kw">else</span> <span class="va">kanten_farbe</span>,</span>
+<span>                 linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_label</span><span class="op">(</span>data <span class="op">=</span> <span class="va">kanten_xy</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="op">(</span><span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span>, y <span class="op">=</span> <span class="op">(</span><span class="va">y1</span> <span class="op">+</span> <span class="va">y2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span>, label <span class="op">=</span> <span class="va">km</span><span class="op">)</span>,</span>
+<span>               size <span class="op">=</span> <span class="fl">3</span>, label.size <span class="op">=</span> <span class="fl">0</span>, label.padding <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0.1</span>, <span class="st">"lines"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_point</span><span class="op">(</span>data <span class="op">=</span> <span class="va">knoten</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, shape <span class="op">=</span> <span class="va">Typ</span>, fill <span class="op">=</span> <span class="va">Typ</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_text</span><span class="op">(</span>data <span class="op">=</span> <span class="va">knoten</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, label <span class="op">=</span> <span class="va">ID</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">2.8</span>, colour <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">scale_shape_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Autobahnknoten <span class="op">=</span> <span class="fl">23</span>, Filiale <span class="op">=</span> <span class="fl">21</span>, Küche <span class="op">=</span> <span class="fl">22</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Autobahnknoten <span class="op">=</span> <span class="st">"#6B7280"</span>, Filiale <span class="op">=</span> <span class="st">"#2D9E8E"</span>,</span>
+<span>                                 Küche <span class="op">=</span> <span class="st">"#2A7ACA"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">coord_equal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">theme_void</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>, legend.title <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">netz_plot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="10_kuerzeste-wege_files/figure-html/chkw-netzplot-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Vereinfachtes Straßennetz Rhein-Main (Kantenlängen in km)</figcaption></figure>
+</div>
+</div>
+</div>
+</section><section id="kürzeste-wege-probleme" class="level2" data-number="14.3"><h2 data-number="14.3" class="anchored" data-anchor-id="kürzeste-wege-probleme">
+<span class="header-section-number">14.3</span> Kürzeste-Wege-Probleme</h2>
+<p>Je nachdem, zwischen welchen Knoten kürzeste Wege gesucht werden, unterscheidet man drei Varianten:</p>
+<ul>
+<li>
+<strong>1 → 1:</strong> der kürzeste Weg von einem Startknoten <span class="math inline">\(s\)</span> zu einem Zielknoten <span class="math inline">\(t\)</span>, typisch für Navigationssysteme,</li>
+<li>
+<strong>1 → alle:</strong> die kürzesten Wege von <span class="math inline">\(s\)</span> zu allen anderen Knoten, typisch für die Kostensätze ab einem Depot,</li>
+<li>
+<strong>alle → alle:</strong> die kürzesten Wege zwischen allen Knotenpaaren, typisch für die Distanzmatrix der Tourenplanung.</li>
+</ul>
+<div class="vertiefung">
+<p><strong>Theorie-Vertiefung: Kürzeste Wege als Netzwerkflussproblem</strong></p>
+<p>Das Kürzeste-Wege-Problem von <span class="math inline">\(s\)</span> nach <span class="math inline">\(t\)</span> lässt sich als Spezialfall eines Transportproblems auf einem Netz formulieren: Eine Einheit fließt von <span class="math inline">\(s\)</span> nach <span class="math inline">\(t\)</span>. Mit der Flussvariable <span class="math inline">\(x_{vw} \geq 0\)</span> auf jeder (gerichteten) Kante gilt</p>
+<p><span class="math display">\[
+\min \sum_{(v,w) \in E} c_{vw} \, x_{vw} \qquad \text{u.d.N.} \qquad \sum_{w} x_{vw} - \sum_{w} x_{wv} = \begin{cases} 1 &amp; v = s \\ -1 &amp; v = t \\ 0 &amp; \text{sonst} \end{cases}
+\]</span></p>
+<p>Die Nebenbedingungen sind <strong>Flusserhaltungsbedingungen</strong>: Aus <span class="math inline">\(s\)</span> fließt eine Einheit mehr heraus als hinein, in <span class="math inline">\(t\)</span> eine mehr hinein als heraus, alle anderen Knoten werden nur durchflossen. Wie beim Transportproblem ist die Nebenbedingungsmatrix total unimodular, sodass die LP-Lösung ganzzahlig ist: Jede Kante wird ganz oder gar nicht benutzt. Man könnte das Problem also mit <code>ompr</code> lösen. Spezialisierte Algorithmen wie Dijkstra sind aber um Größenordnungen schneller.</p>
+</div>
+</section><section id="der-dijkstra-algorithmus" class="level2" data-number="14.4"><h2 data-number="14.4" class="anchored" data-anchor-id="der-dijkstra-algorithmus">
+<span class="header-section-number">14.4</span> Der Dijkstra-Algorithmus</h2>
+<section id="idee" class="level3" data-number="14.4.1"><h3 data-number="14.4.1" class="anchored" data-anchor-id="idee">
+<span class="header-section-number">14.4.1</span> Idee</h3>
+<p>Der Algorithmus von <span class="citation" data-cites="dijkstra1959note">Dijkstra (<a href="../references.html#ref-dijkstra1959note" role="doc-biblioref">1959</a>)</span> breitet sich vom Startknoten <span class="math inline">\(s\)</span> aus wie eine <strong>Welle</strong> aus. Jeder Knoten <span class="math inline">\(v\)</span> trägt eine <strong>Marke</strong> <span class="math inline">\(d(v)\)</span>, die bisher kürzeste bekannte Entfernung von <span class="math inline">\(s\)</span>, und einen <strong>Vorgänger</strong> <span class="math inline">\(p(v)\)</span>. Marken sind zunächst <strong>temporär</strong>, also vorläufig und noch verbesserbar. In jedem Schritt wird der temporär markierte Knoten mit der <strong>kleinsten</strong> Marke <strong>permanent</strong> markiert, und die Marken seiner Nachbarn werden korrigiert:</p>
+<p><span class="math display">\[d(w) \leftarrow \min\big(d(w),\; d(v) + c_{vw}\big)\]</span></p>
+<p>Verbessert sich <span class="math inline">\(d(w)\)</span>, wird <span class="math inline">\(v\)</span> zum neuen Vorgänger von <span class="math inline">\(w\)</span>. Diese Operation heißt <strong>Markenkorrektur</strong>.</p>
+<div class="definition">
+<p><strong>Algorithmus: Dijkstra</strong></p>
+<p><em>Initialisierung:</em> <span class="math inline">\(d(s) = 0\)</span>, <span class="math inline">\(d(v) = \infty\)</span> für alle <span class="math inline">\(v \neq s\)</span>; alle Marken temporär; <span class="math inline">\(p(v)\)</span> = –.</p>
+<p><em>Wiederhole</em>, bis alle Knoten permanent markiert sind:</p>
+<ol type="1">
+<li>Wähle den temporär markierten Knoten <span class="math inline">\(v\)</span> mit kleinstem <span class="math inline">\(d(v)\)</span>.</li>
+<li>Markiere <span class="math inline">\(v\)</span> permanent.</li>
+<li>Für jeden temporär markierten Nachbarn <span class="math inline">\(w\)</span> von <span class="math inline">\(v\)</span>: Falls <span class="math inline">\(d(v) + c_{vw} &lt; d(w)\)</span>, setze <span class="math inline">\(d(w) = d(v) + c_{vw}\)</span> und <span class="math inline">\(p(w) = v\)</span>.</li>
+</ol>
+<p><em>Ergebnis:</em> <span class="math inline">\(d(v)\)</span> ist die kürzeste Entfernung von <span class="math inline">\(s\)</span> nach <span class="math inline">\(v\)</span>. Der Weg ergibt sich durch Rückverfolgung der Vorgänger.</p>
+</div>
+<div class="vertiefung">
+<p><strong>Theorie-Vertiefung: Warum die kleinste temporäre Marke endgültig ist</strong></p>
+<p>Angenommen, <span class="math inline">\(v\)</span> ist der temporäre Knoten mit kleinster Marke <span class="math inline">\(d(v)\)</span>, und es gäbe einen kürzeren Weg von <span class="math inline">\(s\)</span> nach <span class="math inline">\(v\)</span>. Dieser Weg muss irgendwann die Menge der permanenten Knoten verlassen, und zwar über einen temporären Knoten <span class="math inline">\(u\)</span>. Bis <span class="math inline">\(u\)</span> ist er mindestens <span class="math inline">\(d(u) \geq d(v)\)</span> lang, denn <span class="math inline">\(d(v)\)</span> ist die kleinste temporäre Marke. Weil alle Kantengewichte <strong>nichtnegativ</strong> sind, kann der restliche Weg von <span class="math inline">\(u\)</span> nach <span class="math inline">\(v\)</span> ihn nicht mehr verkürzen. Also ist er mindestens <span class="math inline">\(d(v)\)</span> lang, ein Widerspruch. Diese Argumentation zeigt auch die zentrale <strong>Voraussetzung</strong>: Gibt es negative Kantengewichte, etwa Strecken mit Erlösen aus Rückladungen, versagt Dijkstra. Dann ist der Bellman-Ford-Algorithmus nötig.</p>
+</div>
+</section><section id="fallbeispiel-kürzeste-wege-ab-raunheim" class="level3" data-number="14.4.2"><h3 data-number="14.4.2" class="anchored" data-anchor-id="fallbeispiel-kürzeste-wege-ab-raunheim">
+<span class="header-section-number">14.4.2</span> Fallbeispiel: Kürzeste Wege ab Raunheim</h3>
+<p>Um den Algorithmus Schritt für Schritt zu verfolgen, implementieren wir eine Variante, die nach jeder Iteration ein <strong>Tableau</strong> protokolliert: In jeder Zeile steht, welcher Knoten permanent wird und welche Marken die übrigen Knoten tragen.</p>
+<div class="r-exkurs">
+<p><strong>R-Exkurs: Benannte Vektoren und <code>names(which.min())</code></strong></p>
+<p>Für Dijkstra verwalten wir drei <strong>benannte Vektoren</strong> mit einem Eintrag je Knoten: die Marken <code>d</code>, die Vorgänger <code>pred</code> und den logischen Vektor <code>perm</code>, der permanent markierte Knoten anzeigt. Weil die Vektoren dieselben Namen tragen, lassen sie sich direkt mit Knotennamen indizieren, etwa <code>d["C3"]</code>. Die kleinste <strong>temporäre</strong> Marke findet der Ausdruck <code>which.min(ifelse(perm, Inf, d))</code>: <code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code> ersetzt die Marken permanenter Knoten durch <code>Inf</code>, sodass sie nie gewählt werden. <code><a href="https://rdrr.io/r/base/which.min.html">which.min()</a></code> liefert die Position mit Namen, und <code><a href="https://rdrr.io/r/base/names.html">names()</a></code> extrahiert den Knotennamen.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dijkstra</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">W</span>, <span class="va">start</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">ids</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">W</span><span class="op">)</span></span>
+<span>  <span class="va">d</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span><span class="op">)</span>, <span class="va">ids</span><span class="op">)</span></span>
+<span>  <span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA_character_</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span><span class="op">)</span>, <span class="va">ids</span><span class="op">)</span></span>
+<span>  <span class="va">perm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span><span class="op">)</span>, <span class="va">ids</span><span class="op">)</span></span>
+<span>  <span class="va">d</span><span class="op">[</span><span class="va">start</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="va">tableau</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="va">perm</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html">which.min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">perm</span>, <span class="cn">Inf</span>, <span class="va">d</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>     <span class="co"># 1. kleinste temporäre Marke</span></span>
+<span>    <span class="va">perm</span><span class="op">[</span><span class="va">v</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span>                                 <span class="co"># 2. permanent markieren</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">w</span> <span class="kw">in</span> <span class="va">ids</span><span class="op">[</span><span class="va">W</span><span class="op">[</span><span class="va">v</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="op">!</span><span class="va">perm</span><span class="op">]</span><span class="op">)</span> <span class="op">{</span>            <span class="co"># 3. Markenkorrektur</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="va">d</span><span class="op">[</span><span class="va">v</span><span class="op">]</span> <span class="op">+</span> <span class="va">W</span><span class="op">[</span><span class="va">v</span>, <span class="va">w</span><span class="op">]</span> <span class="op">&lt;</span> <span class="va">d</span><span class="op">[</span><span class="va">w</span><span class="op">]</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">d</span><span class="op">[</span><span class="va">w</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[</span><span class="va">v</span><span class="op">]</span> <span class="op">+</span> <span class="va">W</span><span class="op">[</span><span class="va">v</span>, <span class="va">w</span><span class="op">]</span>; <span class="va">pred</span><span class="op">[</span><span class="va">w</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">v</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">tableau</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">tableau</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>permanent <span class="op">=</span> <span class="va">v</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">perm</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html">is.finite</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>,</span>
+<span>                                                <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">" | "</span>, <span class="va">pred</span><span class="op">)</span>, <span class="st">"∞"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, pred <span class="op">=</span> <span class="va">pred</span>, tableau <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">tableau</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ergebnis</span> <span class="op">&lt;-</span> <span class="fu">dijkstra</span><span class="op">(</span><span class="va">W</span>, <span class="st">"R"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">kbl</span><span class="op">(</span><span class="va">ergebnis</span><span class="op">$</span><span class="va">tableau</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Dijkstra-Tableau ab Raunheim (Einträge: Marke | Vorgänger; leer = bereits permanent)"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">kable_styling</span><span class="op">(</span>full_width <span class="op">=</span> <span class="cn">FALSE</span>, bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"condensed"</span><span class="op">)</span>,</span>
+<span>                font_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<table class="table table-striped table-condensed caption-top table-sm small">
+<caption>Dijkstra-Tableau ab Raunheim (Einträge: Marke | Vorgänger; leer = bereits permanent)</caption>
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">permanent</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">R</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">MH</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">WK</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">FK</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">C1</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">C2</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">C3</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">C4</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">C5</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">C6</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">R</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">5 | R</td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">33 | R</td>
+<td style="text-align: left;">6 | R</td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">∞</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MH</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">18 | MH</td>
+<td style="text-align: left;">15 | MH</td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">33 | R</td>
+<td style="text-align: left;">6 | R</td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">∞</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C4</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">18 | MH</td>
+<td style="text-align: left;">15 | MH</td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">22 | C4</td>
+<td style="text-align: left;">33 | R</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">39 | C4</td>
+<td style="text-align: left;">∞</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FK</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">18 | MH</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">∞</td>
+<td style="text-align: left;">22 | C4</td>
+<td style="text-align: left;">28 | FK</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">39 | C4</td>
+<td style="text-align: left;">27 | FK</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WK</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">26 | WK</td>
+<td style="text-align: left;">22 | C4</td>
+<td style="text-align: left;">28 | FK</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">39 | C4</td>
+<td style="text-align: left;">27 | FK</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">26 | WK</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">28 | FK</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">39 | C4</td>
+<td style="text-align: left;">27 | FK</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C1</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">28 | FK</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">39 | C4</td>
+<td style="text-align: left;">27 | FK</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C6</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">28 | FK</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">39 | C4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C3</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">39 | C4</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C5</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Das Tableau zeigt die Arbeitsweise. In der ersten Iteration wird Raunheim permanent, seine Nachbarn erhalten erste Marken: Mönchhof-Dreieck 5, Rüsselsheim 6 und Frankfurt 33 über die direkte Bundesstraße. Danach werden nacheinander Mönchhof (5) und Rüsselsheim (6) permanent. In der vierten Iteration wird das Frankfurter Kreuz (15) permanent, und dabei passiert etwas Wichtiges: Die Marke von <strong>Frankfurt</strong> sinkt von 33 auf <span class="math inline">\(15 + 13 = 28\)</span> km, der Vorgänger wechselt auf das Frankfurter Kreuz. Der Weg über die Autobahn ist kürzer als die direkte Bundesstraße. Temporäre Marken sind eben nur vorläufig. Nach zehn Iterationen sind alle Knoten permanent, und die Reihenfolge, in der sie permanent wurden, entspricht genau ihren aufsteigenden Entfernungen.</p>
+</section><section id="der-kürzeste-wege-baum" class="level3" data-number="14.4.3"><h3 data-number="14.4.3" class="anchored" data-anchor-id="der-kürzeste-wege-baum">
+<span class="header-section-number">14.4.3</span> Der Kürzeste-Wege-Baum</h3>
+<p>Die Vorgänger bilden einen <strong>Baum</strong>: Von jedem Knoten führt genau ein kürzester Weg zurück zum Start. Den vollständigen Weg erhält man durch Rückverfolgung der Vorgänger, bis der Startknoten erreicht ist.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pfad</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">pred</span>, <span class="va">ziel</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">ziel</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">pred</span><span class="op">[</span><span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">pred</span><span class="op">[</span><span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">p</span><span class="op">)</span>   <span class="co"># Vorgänger voranstellen</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">p</span>, collapse <span class="op">=</span> <span class="st">" → "</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">luftlinie</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">knoten</span>, <span class="fu">haversine</span><span class="op">(</span><span class="va">Lat</span><span class="op">[</span><span class="va">ID</span> <span class="op">==</span> <span class="st">"R"</span><span class="op">]</span>, <span class="va">Lon</span><span class="op">[</span><span class="va">ID</span> <span class="op">==</span> <span class="st">"R"</span><span class="op">]</span>, <span class="va">Lat</span>, <span class="va">Lon</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">luftlinie</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">knoten</span><span class="op">$</span><span class="va">ID</span></span>
+<span></span>
+<span><span class="va">wege</span> <span class="op">&lt;-</span> <span class="va">knoten</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Typ</span> <span class="op">==</span> <span class="st">"Filiale"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">transmute</span><span class="op">(</span>Filiale <span class="op">=</span> <span class="va">Name</span>,</span>
+<span>            Weg <span class="op">=</span> <span class="fu">map_chr</span><span class="op">(</span><span class="va">ID</span>, <span class="op">~</span> <span class="fu">pfad</span><span class="op">(</span><span class="va">ergebnis</span><span class="op">$</span><span class="va">pred</span>, <span class="va">.x</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            km <span class="op">=</span> <span class="va">ergebnis</span><span class="op">$</span><span class="va">d</span><span class="op">[</span><span class="va">ID</span><span class="op">]</span>,</span>
+<span>            Luftlinie <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">luftlinie</span><span class="op">[</span><span class="va">ID</span><span class="op">]</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>            Umwegfaktor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">km</span> <span class="op">/</span> <span class="va">Luftlinie</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">wege</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  Filiale     Weg                 km Luftlinie Umwegfaktor
+  &lt;chr&gt;       &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+1 Wiesbaden   R → MH → WK → C1    26      18.3        1.42
+2 Mainz       R → C4 → C2         22      13.9        1.58
+3 Frankfurt   R → MH → FK → C3    28      19.8        1.41
+4 Rüsselsheim R → C4               6       4          1.5 
+5 Darmstadt   R → C4 → C5         39      19.4        2.01
+6 Offenbach   R → MH → FK → C6    27      24.6        1.1 </code></pre>
+</div>
+</div>
+<p>Der <strong>Umwegfaktor</strong>, das Verhältnis von Straßenentfernung zu Luftlinie, liegt im Mittel bei 1,5. Für Deutschland sind Werte von etwa 1,2 bis 1,4 typisch. Unser vereinfachtes Netz mit wenigen Kanten erzwingt größere Umwege, besonders nach Darmstadt und Rüsselsheim. Wer in einer Standortplanung mit Luftlinien rechnet, sollte deshalb zumindest mit einem pauschalen Umwegfaktor korrigieren.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">baum</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>nach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">ergebnis</span><span class="op">$</span><span class="va">pred</span><span class="op">)</span>, von <span class="op">=</span> <span class="va">ergebnis</span><span class="op">$</span><span class="va">pred</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">von</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>schluessel <span class="op">=</span> <span class="fu">map2_chr</span><span class="op">(</span><span class="va">von</span>, <span class="va">nach</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">.y</span><span class="op">)</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">kanten_xy</span> <span class="op">&lt;-</span> <span class="va">kanten_xy</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>schluessel <span class="op">=</span> <span class="fu">map2_chr</span><span class="op">(</span><span class="va">von</span>, <span class="va">nach</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">.y</span><span class="op">)</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         im_baum <span class="op">=</span> <span class="va">schluessel</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">baum</span><span class="op">$</span><span class="va">schluessel</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">netz_plot</span><span class="op">(</span>kanten_farbe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">kanten_xy</span><span class="op">$</span><span class="va">im_baum</span>, <span class="st">"#0B6E4F"</span>, <span class="st">"grey80"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="10_kuerzeste-wege_files/figure-html/chkw-baum-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Kürzeste-Wege-Baum ab Raunheim (grün)</figcaption></figure>
+</div>
+</div>
+</div>
+</section></section><section id="distanzmatrix-für-die-tourenplanung" class="level2" data-number="14.5"><h2 data-number="14.5" class="anchored" data-anchor-id="distanzmatrix-für-die-tourenplanung">
+<span class="header-section-number">14.5</span> Distanzmatrix für die Tourenplanung</h2>
+<p>Für die Tourenplanung (Kapitel <a href="11_tourenplanung-tsp.html" class="quarto-xref"><span>15</span></a>) braucht die Disponentin nicht nur die Entfernungen ab Raunheim, sondern zwischen <strong>allen</strong> relevanten Orten. Dafür wird Dijkstra einfach von jedem dieser Orte aus gestartet. <code><a href="https://rdrr.io/r/base/lapply.html">sapply()</a></code> ruft die Funktion für jeden Startknoten auf und fügt die Ergebnisse spaltenweise zu einer Matrix zusammen. <code><a href="https://rdrr.io/r/base/t.html">t()</a></code> transponiert sie, sodass Zeilen die Startorte sind.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">orte</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"R"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"C"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">orte</span>, <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="fu">dijkstra</span><span class="op">(</span><span class="va">W</span>, <span class="va">s</span><span class="op">)</span><span class="op">$</span><span class="va">d</span><span class="op">[</span><span class="va">orte</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">D</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>    R C1 C2 C3 C4 C5 C6
+R   0 26 22 28  6 39 27
+C1 26  0 14 44 30 60 43
+C2 22 14  0 49 16 49 48
+C3 28 44 49  0 33 34 10
+C4  6 30 16 33  0 33 32
+C5 39 60 49 34 33  0 24
+C6 27 43 48 10 32 24  0</code></pre>
+</div>
+</div>
+<p>Die Autobahnknoten sind aus der Matrix „herausgerechnet“, sie enthält nur noch die relevanten Orte. Die Matrix ist <strong>symmetrisch</strong>, weil das Netz ungerichtet ist, und sie erfüllt die <strong>Dreiecksungleichung</strong> <span class="math inline">\(d_{ik} \leq d_{ij} + d_{jk}\)</span>: Gäbe es über einen Zwischenort einen kürzeren Weg, hätte Dijkstra ihn gefunden. Solche Matrizen heißen <strong>metrisch</strong>. Die Tourenplanung wird diese Eigenschaft nutzen.</p>
+<p>Mit der Distanzmatrix lässt sich bereits eine erste Kennzahl berechnen: Im heutigen <strong>Pendelverkehr</strong>, bei dem jede Filiale einzeln angefahren wird, legt der Kühl-Lkw täglich <span class="math inline">\(2 \cdot \sum_j d_{Rj}\)</span> = 296 km zurück. Kapitel <a href="12_transportmittel-und-antriebe.html" class="quarto-xref"><span>13</span></a> hat gezeigt, dass ein E-Kühl-Lkw im Winter höchstens rund 157 km schafft. Ob eine Rundtour durch alle Filialen kürzer sein kann, ist die Frage des nächsten Kapitels.</p>
+</section><section id="varianten-und-erweiterungen" class="level2" data-number="14.6"><h2 data-number="14.6" class="anchored" data-anchor-id="varianten-und-erweiterungen">
+<span class="header-section-number">14.6</span> Varianten und Erweiterungen</h2>
+<p>Der Aufwand von Dijkstra wächst in der einfachen Form mit dem Quadrat der Knotenzahl, <span class="math inline">\(\mathcal{O}(n^2)\)</span>, mit einer Prioritätswarteschlange mit <span class="math inline">\(\mathcal{O}(|E| + n \log n)\)</span>. Für spezielle Situationen gibt es andere Verfahren:</p>
+<ul>
+<li>
+<strong>Bellman-Ford</strong> erlaubt negative Kantengewichte, ist aber langsamer (<span class="math inline">\(\mathcal{O}(n \cdot |E|)\)</span>).</li>
+<li>
+<strong>Floyd-Warshall</strong> berechnet alle Paare auf einmal (<span class="math inline">\(\mathcal{O}(n^3)\)</span>) und ist für dichte Netze eine Alternative zu <span class="math inline">\(n\)</span>-maligem Dijkstra.</li>
+<li>
+<strong>A*</strong> ergänzt Dijkstra um eine Schätzung der Restentfernung, etwa die Luftlinie zum Ziel, und durchsucht dadurch viel weniger Knoten. Navigationssysteme nutzen solche Beschleunigungen, um Wege in Netzen mit Millionen Knoten in Millisekunden zu finden.</li>
+</ul>
+<p>Wichtig ist auch die Frage, was „kurz“ bedeutet. Wird nach <strong>Distanz</strong> optimiert, spart man Kraftstoff und Verschleiß. Wird nach <strong>Fahrzeit</strong> optimiert, spart man Personalkosten und schont die Frische der Ware. Wird nach <strong>Kosten</strong> optimiert, gehen Maut und Fahrzeugkosten ein. Fahrzeiten sind zudem <strong>zeitabhängig</strong>: Die A3 um 7 Uhr ist eine andere Strecke als um 4 Uhr. Je nach Zielgröße ergeben sich unterschiedliche kürzeste Wege. Für reale Straßennetze greift man in R auf Pakete wie <code>igraph</code> (Graphalgorithmen) oder <code>osrm</code> (Routing auf OpenStreetMap-Daten, Kapitel <a href="05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="quarto-xref"><span>7</span></a>) zurück.</p>
+</section><section id="zusammenfassung" class="level2" data-number="14.7"><h2 data-number="14.7" class="anchored" data-anchor-id="zusammenfassung">
+<span class="header-section-number">14.7</span> Zusammenfassung</h2>
+<p>Straßennetze werden als <strong>Graphen</strong> mit Knoten, Kanten und Kantengewichten modelliert. Transportkosten ergeben sich aus Kostensatz und <strong>kürzester Entfernung im Netz</strong>, nicht aus der Luftlinie. Der <strong>Dijkstra-Algorithmus</strong> markiert schrittweise den nächstgelegenen offenen Knoten permanent und korrigiert die Marken seiner Nachbarn. Voraussetzung sind nichtnegative Kantengewichte. Temporäre Marken können sich noch verbessern, wie die Korrektur der Entfernung nach Frankfurt von 33 auf 28 km zeigt. Die Vorgänger bilden einen Kürzeste-Wege-Baum. Durch wiederholtes Anwenden entsteht eine symmetrische, metrische <strong>Distanzmatrix</strong>, die Grundlage der Tourenplanung.</p>
+<p>Auf der R-Seite haben Sie Graphen als Kantenliste und Gewichtsmatrix gespeichert, mit logischen Masken Nachbarn ausgewählt, benannte Vektoren als Marken verwaltet und Wege mit einer <code>while</code>-Schleife zurückverfolgt.</p>
+<div class="kontrollfragen">
+<p><strong>Kontrollfragen</strong></p>
+<ol type="1">
+<li>Erläutern Sie die Begriffe Graph, Kante, Kantengewicht, gerichtet und ungerichtet am Beispiel eines Straßennetzes.</li>
+<li>Welche drei Varianten des Kürzeste-Wege-Problems gibt es, und für welche Planungsaufgabe wird jeweils welche benötigt?</li>
+<li>Formulieren Sie das Kürzeste-Wege-Problem als Netzwerkflussproblem. Welche Bedeutung haben die Flusserhaltungsbedingungen?</li>
+<li>Warum ist beim Dijkstra-Algorithmus die kleinste temporäre Marke endgültig? Welche Voraussetzung ist dafür nötig?</li>
+<li>Die Verbindung Mönchhof-Dreieck – Frankfurter Kreuz ist wegen einer Baustelle drei Wochen gesperrt. Führen Sie Dijkstra ab Raunheim von Hand im Tableau durch. Welche Filialen sind betroffen? Prüfen Sie Ihr Ergebnis, indem Sie in R die entsprechenden Einträge von <code>W</code> auf 0 setzen.</li>
+<li>Wie viele Kilometer mehr fährt der Kühl-Lkw im Pendelverkehr während der Sperrung?</li>
+<li>Was ist ein Umwegfaktor, und wofür lässt er sich in der Standortplanung nutzen?</li>
+<li>Warum erfüllt eine aus kürzesten Wegen berechnete Distanzmatrix immer die Dreiecksungleichung?</li>
+<li>Nennen Sie zwei Zielgrößen für „kurz“ neben der Distanz und eine Situation, in der sie zu einem anderen Weg führen.</li>
+</ol>
+</div>
+
+
+<!-- -->
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-dijkstra1959note" class="csl-entry" role="listitem">
+Dijkstra, Edsger W. 1959. <span>„A Note on Two Problems in Connexion with Graphs“</span>. <em>Numerische Mathematik</em> 1 (1): 269–71.
+</div>
+<div id="ref-domschke2007transport" class="csl-entry" role="listitem">
+Domschke, Wolfgang. 2007. <em>Logistik: Transport. Grundlagen, lineare Transport- und Umladeprobleme</em>. 5. Aufl. Oldenbourg.
+</div>
+<div id="ref-guenther2012produktion" class="csl-entry" role="listitem">
+Günther, Hans-Otto, und Horst Tempelmeier. 2012. <em>Produktion und Logistik</em>. 9. Aufl. Springer-Lehrbuch. Springer.
+</div>
+</div>
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopiert");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopiert");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../chapters/12_transportmittel-und-antriebe.html" class="pagination-link" aria-label="Verkehrsmittel, Antriebe und Transportkosten">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Verkehrsmittel, Antriebe und Transportkosten</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/11_tourenplanung-tsp.html" class="pagination-link" aria-label="Tourenplanung">
+        <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Tourenplanung</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Quellcode</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Kürzeste Wege {#sec-kuerzeste-wege}</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chkw-setup</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Funktionen aus scm_functions.R einbinden (u. a. haversine())</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../R/scm_functions.R"</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Inline-Zahlen im Fließtext deutsch formatieren (Dezimalkomma, Tausenderpunkt)</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>knit_hooks<span class="sc">$</span><span class="fu">set</span>(<span class="at">inline =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.numeric</span>(x)) <span class="fu">format</span>(x, <span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>) <span class="cf">else</span> x</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>::: {.lernziele}</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>**Lernziele**</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>Nach der Bearbeitung dieses Kapitels können Sie …</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Straßennetze als **Graphen** mit Knoten, Kanten und Kantengewichten modellieren,</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>verschiedene Varianten des **Kürzeste-Wege-Problems** unterscheiden und es als Netzwerkflussproblem formulieren,</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>den **Dijkstra-Algorithmus** von Hand im Tableau durchführen, seine Korrektheit begründen und ihn in R implementieren,</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>aus kürzesten Wegen eine **Distanzmatrix** für Transport- und Tourenplanung ableiten und mit der Luftlinie vergleichen,</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Graphen in R als Kantenliste und Gewichtsmatrix darstellen und mit logischen Masken und benannten Vektoren arbeiten.</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>**Literatur zur Vertiefung**</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kürzeste Wege und Graphentheorie in der Logistik:** <span class="co">[</span><span class="ot">@domschke2007transport</span><span class="co">]</span>.</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Originalarbeit:** <span class="co">[</span><span class="ot">@dijkstra1959note</span><span class="co">]</span>.</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Transport- und Tourenplanung im Überblick:** <span class="co">[</span><span class="ot">@guenther2012produktion</span><span class="co">]</span>.</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a><span class="fu">## Woher kommen die Transportkosten?</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>In der Standort- und der Transportplanung (Kapitel <span class="co">[</span><span class="ot">-@sec-standort-2</span><span class="co">]</span> und <span class="co">[</span><span class="ot">-@sec-transportplanung</span><span class="co">]</span>) waren die Transportkosten $c_{ij}$ einfach **gegeben**. Kapitel [-@sec-verkehrsmittel] hat gezeigt, wie sich Kostensätze je Kilometer aus einer Fahrzeugkostenrechnung ergeben. Um daraus Kosten je Verbindung zu machen, fehlt noch ein Baustein: die **Entfernung** zwischen zwei Orten im Straßennetz. Es gilt vereinfacht</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>$$c_{ij} = \text{Kostensatz je km} \times \text{Entfernung}_{ij}.$$</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>Die Luftlinie, die wir in Kapitel <span class="co">[</span><span class="ot">-@sec-standort-1</span><span class="co">]</span> mit der Haversine-Formel berechnet haben, ist dafür nur eine erste Näherung. Lkw fahren nicht Luftlinie: Rhein- und Mainbrücken, Autobahnkreuze und Ortsdurchfahrten bestimmen die tatsächliche Strecke. Gesucht ist der **kürzeste Weg im Straßennetz**.</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>::: {.fallstudie}</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>**Fallstudie: Entfernungen für die Disposition**</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>Das Weihnachtsgeschäft ist vorbei, die Zentralküche **Raunheim** beliefert wieder alle sechs Filialen allein. Die neue Disponentin möchte die Kostensätze selbst nachvollziehen und eine Tourenplanung vorbereiten. Dafür braucht sie die Straßenentfernungen von Raunheim zu jeder Filiale und zwischen allen Filialen. Als Grundlage dient ein vereinfachtes Straßennetz des Rhein-Main-Gebiets mit zehn Knoten: der Zentralküche, den sechs Filialen und drei Autobahnknoten (Mönchhof-Dreieck, Wiesbadener Kreuz, Frankfurter Kreuz).</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a><span class="fu">## Straßennetze als Graphen</span></span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>::: {.definition}</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>**Definition: Graph**</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>Ein **Graph** $G = (V, E)$ besteht aus einer Menge von **Knoten** $V$ und einer Menge von **Kanten** $E$, die jeweils zwei Knoten verbinden. In einem **gewichteten** Graphen trägt jede Kante $(v, w)$ ein Gewicht $c_{vw}$, etwa eine Länge, eine Fahrzeit oder Kosten. Ein Graph ist **ungerichtet**, wenn jede Kante in beide Richtungen gleich befahrbar ist, sonst **gerichtet**. Ein **Weg** von $s$ nach $t$ ist eine Folge benachbarter Knoten, seine **Länge** die Summe der Kantengewichte.</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>In einem Straßennetz sind die Knoten Orte (Küche, Filialen) und Verknüpfungspunkte (Kreuzungen, Autobahnkreuze), die Kanten direkte Straßenverbindungen. Einbahnstraßen und Autobahnauffahrten machen reale Netze gerichtet. Unser vereinfachtes Netz behandeln wir als ungerichtet.</span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>::: {.r-exkurs}</span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>**R-Exkurs: Graphen als Kantenliste und Gewichtsmatrix**</span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>Ein Graph lässt sich in R auf zwei Arten speichern. Die **Kantenliste** ist ein Datenrahmen mit einer Zeile je Kante (Anfangsknoten, Endknoten, Gewicht). Sie ist kompakt und leicht zu pflegen. Die **Gewichtsmatrix** (Adjazenzmatrix) ist eine quadratische Matrix mit einer Zeile und einer Spalte je Knoten, deren Eintrag $(v, w)$ das Gewicht der Kante von $v$ nach $w$ enthält, oder 0, wenn es keine direkte Kante gibt. Sie erlaubt schnellen Zugriff auf alle Nachbarn eines Knotens. Die Umwandlung gelingt mit der Indexmatrix aus Kapitel <span class="co">[</span><span class="ot">-@sec-transportplanung</span><span class="co">]</span>: <span class="in">`W[cbind(von, nach)] &lt;- km`</span> setzt alle Kanten auf einmal. Für einen ungerichteten Graphen wird zusätzlich die Gegenrichtung gesetzt, sodass die Matrix symmetrisch wird.</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chkw-graph</span></span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>knoten <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID   =</span> <span class="fu">c</span>(<span class="st">"R"</span>, <span class="st">"MH"</span>, <span class="st">"WK"</span>, <span class="st">"FK"</span>, <span class="st">"C1"</span>, <span class="st">"C2"</span>, <span class="st">"C3"</span>, <span class="st">"C4"</span>, <span class="st">"C5"</span>, <span class="st">"C6"</span>),</span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>  <span class="at">Name =</span> <span class="fu">c</span>(<span class="st">"Raunheim (Zentralküche)"</span>, <span class="st">"Mönchhof-Dreieck"</span>, <span class="st">"Wiesbadener Kreuz"</span>,</span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Frankfurter Kreuz"</span>, <span class="st">"Wiesbaden"</span>, <span class="st">"Mainz"</span>, <span class="st">"Frankfurt"</span>, <span class="st">"Rüsselsheim"</span>,</span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Darmstadt"</span>, <span class="st">"Offenbach"</span>),</span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>  <span class="at">Typ  =</span> <span class="fu">c</span>(<span class="st">"Küche"</span>, <span class="fu">rep</span>(<span class="st">"Autobahnknoten"</span>, <span class="dv">3</span>), <span class="fu">rep</span>(<span class="st">"Filiale"</span>, <span class="dv">6</span>)),</span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lon  =</span> <span class="fu">c</span>(<span class="fl">8.4650</span>, <span class="fl">8.4950</span>, <span class="fl">8.3720</span>, <span class="fl">8.5985</span>, <span class="fl">8.2398</span>, <span class="fl">8.2711</span>, <span class="fl">8.6821</span>, <span class="fl">8.4116</span>, <span class="fl">8.6512</span>, <span class="fl">8.7761</span>),</span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lat  =</span> <span class="fu">c</span>(<span class="fl">50.0000</span>, <span class="fl">50.0350</span>, <span class="fl">50.0620</span>, <span class="fl">50.0535</span>, <span class="fl">50.0782</span>, <span class="fl">50.0000</span>, <span class="fl">50.1109</span>, <span class="fl">49.9904</span>,</span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>           <span class="fl">49.8728</span>, <span class="fl">50.0956</span>)</span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a>kanten <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>von, <span class="sc">~</span>nach, <span class="sc">~</span>km,</span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>  <span class="st">"R"</span>,  <span class="st">"MH"</span>,   <span class="dv">5</span>,   <span class="st">"R"</span>,  <span class="st">"C4"</span>,  <span class="dv">6</span>,   <span class="st">"R"</span>,  <span class="st">"C3"</span>, <span class="dv">33</span>,</span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>  <span class="st">"MH"</span>, <span class="st">"WK"</span>,  <span class="dv">13</span>,   <span class="st">"MH"</span>, <span class="st">"FK"</span>, <span class="dv">10</span>,   <span class="st">"MH"</span>, <span class="st">"C4"</span>, <span class="dv">10</span>,</span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>  <span class="st">"WK"</span>, <span class="st">"C1"</span>,   <span class="dv">8</span>,   <span class="st">"WK"</span>, <span class="st">"C2"</span>, <span class="dv">15</span>,   <span class="st">"C1"</span>, <span class="st">"C2"</span>, <span class="dv">14</span>,</span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C2"</span>, <span class="st">"C4"</span>,  <span class="dv">16</span>,   <span class="st">"C4"</span>, <span class="st">"C5"</span>, <span class="dv">33</span>,   <span class="st">"FK"</span>, <span class="st">"C3"</span>, <span class="dv">13</span>,</span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>  <span class="st">"FK"</span>, <span class="st">"C5"</span>,  <span class="dv">29</span>,   <span class="st">"FK"</span>, <span class="st">"C6"</span>, <span class="dv">12</span>,   <span class="st">"C3"</span>, <span class="st">"C6"</span>, <span class="dv">10</span>,</span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C5"</span>, <span class="st">"C6"</span>,  <span class="dv">24</span></span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>W <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(knoten), <span class="fu">nrow</span>(knoten), <span class="at">dimnames =</span> <span class="fu">list</span>(knoten<span class="sc">$</span>ID, knoten<span class="sc">$</span>ID))</span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>W[<span class="fu">cbind</span>(kanten<span class="sc">$</span>von, kanten<span class="sc">$</span>nach)] <span class="ot">&lt;-</span> kanten<span class="sc">$</span>km</span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>W[<span class="fu">cbind</span>(kanten<span class="sc">$</span>nach, kanten<span class="sc">$</span>von)] <span class="ot">&lt;-</span> kanten<span class="sc">$</span>km     <span class="co"># ungerichtet: symmetrisch</span></span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>W[<span class="st">"R"</span>, W[<span class="st">"R"</span>, ] <span class="sc">&gt;</span> <span class="dv">0</span>]                               <span class="co"># Nachbarn von Raunheim</span></span>
+<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a>Die letzte Zeile nutzt eine **logische Maske**: <span class="in">`W["R", ] &gt; 0`</span> liefert einen logischen Vektor, der genau die Nachbarn von Raunheim markiert, und die eckigen Klammern wählen diese Einträge aus.</span>
+<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chkw-netzplot</span></span>
+<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Vereinfachtes Straßennetz Rhein-Main (Kantenlängen in km)"</span></span>
+<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a><span class="co"># planare Koordinaten in km für eine maßstabsgetreue Darstellung</span></span>
+<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>knoten <span class="ot">&lt;-</span> knoten <span class="sc">|&gt;</span></span>
+<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">x =</span> Lon <span class="sc">*</span> <span class="fl">111.32</span> <span class="sc">*</span> <span class="fu">cos</span>(<span class="dv">50</span> <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>), <span class="at">y =</span> Lat <span class="sc">*</span> <span class="fl">111.32</span>)</span>
+<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>kanten_xy <span class="ot">&lt;-</span> kanten <span class="sc">|&gt;</span></span>
+<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(knoten, <span class="at">von =</span> ID, <span class="at">x1 =</span> x, <span class="at">y1 =</span> y), <span class="at">by =</span> <span class="st">"von"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(knoten, <span class="at">nach =</span> ID, <span class="at">x2 =</span> x, <span class="at">y2 =</span> y), <span class="at">by =</span> <span class="st">"nach"</span>)</span>
+<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a>netz_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">kanten_farbe =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_segment</span>(<span class="at">data =</span> kanten_xy, <span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> y1, <span class="at">xend =</span> x2, <span class="at">yend =</span> y2),</span>
+<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colour =</span> <span class="cf">if</span> (<span class="fu">is.null</span>(kanten_farbe)) <span class="st">"grey60"</span> <span class="cf">else</span> kanten_farbe,</span>
+<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>                 <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label</span>(<span class="at">data =</span> kanten_xy, <span class="fu">aes</span>(<span class="at">x =</span> (x1 <span class="sc">+</span> x2) <span class="sc">/</span> <span class="dv">2</span>, <span class="at">y =</span> (y1 <span class="sc">+</span> y2) <span class="sc">/</span> <span class="dv">2</span>, <span class="at">label =</span> km),</span>
+<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>               <span class="at">size =</span> <span class="dv">3</span>, <span class="at">label.size =</span> <span class="dv">0</span>, <span class="at">label.padding =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"lines"</span>)) <span class="sc">+</span></span>
+<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> knoten, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">shape =</span> Typ, <span class="at">fill =</span> Typ), <span class="at">size =</span> <span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="at">data =</span> knoten, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> ID), <span class="at">size =</span> <span class="fl">2.8</span>, <span class="at">colour =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">Autobahnknoten =</span> <span class="dv">23</span>, <span class="at">Filiale =</span> <span class="dv">21</span>, Küche <span class="ot">=</span> <span class="dv">22</span>)) <span class="sc">+</span></span>
+<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">Autobahnknoten =</span> <span class="st">"#6B7280"</span>, <span class="at">Filiale =</span> <span class="st">"#2D9E8E"</span>,</span>
+<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>                                 Küche <span class="ot">=</span> <span class="st">"#2A7ACA"</span>)) <span class="sc">+</span></span>
+<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_void</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>, <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a><span class="fu">netz_plot</span>()</span>
+<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a><span class="fu">## Kürzeste-Wege-Probleme</span></span>
+<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>Je nachdem, zwischen welchen Knoten kürzeste Wege gesucht werden, unterscheidet man drei Varianten:</span>
+<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**1 → 1:** der kürzeste Weg von einem Startknoten $s$ zu einem Zielknoten $t$, typisch für Navigationssysteme,</span>
+<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**1 → alle:** die kürzesten Wege von $s$ zu allen anderen Knoten, typisch für die Kostensätze ab einem Depot,</span>
+<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**alle → alle:** die kürzesten Wege zwischen allen Knotenpaaren, typisch für die Distanzmatrix der Tourenplanung.</span>
+<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>::: {.vertiefung}</span>
+<span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>**Theorie-Vertiefung: Kürzeste Wege als Netzwerkflussproblem**</span>
+<span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>Das Kürzeste-Wege-Problem von $s$ nach $t$ lässt sich als Spezialfall eines Transportproblems auf einem Netz formulieren: Eine Einheit fließt von $s$ nach $t$. Mit der Flussvariable $x_{vw} \geq 0$ auf jeder (gerichteten) Kante gilt</span>
+<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a>\min \sum_{(v,w) \in E} c_{vw} \, x_{vw} \qquad \text{u.d.N.} \qquad \sum_{w} x_{vw} - \sum_{w} x_{wv} = \begin{cases} 1 &amp; v = s <span class="sc">\\</span> -1 &amp; v = t <span class="sc">\\</span> 0 &amp; \text{sonst} \end{cases}</span>
+<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>Die Nebenbedingungen sind **Flusserhaltungsbedingungen**: Aus $s$ fließt eine Einheit mehr heraus als hinein, in $t$ eine mehr hinein als heraus, alle anderen Knoten werden nur durchflossen. Wie beim Transportproblem ist die Nebenbedingungsmatrix total unimodular, sodass die LP-Lösung ganzzahlig ist: Jede Kante wird ganz oder gar nicht benutzt. Man könnte das Problem also mit <span class="in">`ompr`</span> lösen. Spezialisierte Algorithmen wie Dijkstra sind aber um Größenordnungen schneller.</span>
+<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a><span class="fu">## Der Dijkstra-Algorithmus</span></span>
+<span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a><span class="fu">### Idee</span></span>
+<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a>Der Algorithmus von @dijkstra1959note breitet sich vom Startknoten $s$ aus wie eine **Welle** aus. Jeder Knoten $v$ trägt eine **Marke** $d(v)$, die bisher kürzeste bekannte Entfernung von $s$, und einen **Vorgänger** $p(v)$. Marken sind zunächst **temporär**, also vorläufig und noch verbesserbar. In jedem Schritt wird der temporär markierte Knoten mit der **kleinsten** Marke **permanent** markiert, und die Marken seiner Nachbarn werden korrigiert:</span>
+<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a>$$d(w) \leftarrow \min\big(d(w),\; d(v) + c_{vw}\big)$$</span>
+<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>Verbessert sich $d(w)$, wird $v$ zum neuen Vorgänger von $w$. Diese Operation heißt **Markenkorrektur**.</span>
+<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a>::: {.definition}</span>
+<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a>**Algorithmus: Dijkstra**</span>
+<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a>*Initialisierung:* $d(s) = 0$, $d(v) = \infty$ für alle $v \neq s$; alle Marken temporär; $p(v)$ = –.</span>
+<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>*Wiederhole*, bis alle Knoten permanent markiert sind:</span>
+<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Wähle den temporär markierten Knoten $v$ mit kleinstem $d(v)$.</span>
+<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Markiere $v$ permanent.</span>
+<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Für jeden temporär markierten Nachbarn $w$ von $v$: Falls $d(v) + c_{vw} &lt; d(w)$, setze $d(w) = d(v) + c_{vw}$ und $p(w) = v$.</span>
+<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>*Ergebnis:* $d(v)$ ist die kürzeste Entfernung von $s$ nach $v$. Der Weg ergibt sich durch Rückverfolgung der Vorgänger.</span>
+<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a>::: {.vertiefung}</span>
+<span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a>**Theorie-Vertiefung: Warum die kleinste temporäre Marke endgültig ist**</span>
+<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>Angenommen, $v$ ist der temporäre Knoten mit kleinster Marke $d(v)$, und es gäbe einen kürzeren Weg von $s$ nach $v$. Dieser Weg muss irgendwann die Menge der permanenten Knoten verlassen, und zwar über einen temporären Knoten $u$. Bis $u$ ist er mindestens $d(u) \geq d(v)$ lang, denn $d(v)$ ist die kleinste temporäre Marke. Weil alle Kantengewichte **nichtnegativ** sind, kann der restliche Weg von $u$ nach $v$ ihn nicht mehr verkürzen. Also ist er mindestens $d(v)$ lang, ein Widerspruch. Diese Argumentation zeigt auch die zentrale **Voraussetzung**: Gibt es negative Kantengewichte, etwa Strecken mit Erlösen aus Rückladungen, versagt Dijkstra. Dann ist der Bellman-Ford-Algorithmus nötig.</span>
+<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a><span class="fu">### Fallbeispiel: Kürzeste Wege ab Raunheim</span></span>
+<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a>Um den Algorithmus Schritt für Schritt zu verfolgen, implementieren wir eine Variante, die nach jeder Iteration ein **Tableau** protokolliert: In jeder Zeile steht, welcher Knoten permanent wird und welche Marken die übrigen Knoten tragen.</span>
+<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-191"><a href="#cb11-191" aria-hidden="true" tabindex="-1"></a>::: {.r-exkurs}</span>
+<span id="cb11-192"><a href="#cb11-192" aria-hidden="true" tabindex="-1"></a>**R-Exkurs: Benannte Vektoren und `names(which.min())`**</span>
+<span id="cb11-193"><a href="#cb11-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-194"><a href="#cb11-194" aria-hidden="true" tabindex="-1"></a>Für Dijkstra verwalten wir drei **benannte Vektoren** mit einem Eintrag je Knoten: die Marken `d`, die Vorgänger `pred` und den logischen Vektor `perm`, der permanent markierte Knoten anzeigt. Weil die Vektoren dieselben Namen tragen, lassen sie sich direkt mit Knotennamen indizieren, etwa `d["C3"]`. Die kleinste **temporäre** Marke findet der Ausdruck <span class="in">`which.min(ifelse(perm, Inf, d))`</span>: <span class="in">`ifelse()`</span> ersetzt die Marken permanenter Knoten durch <span class="in">`Inf`</span>, sodass sie nie gewählt werden. <span class="in">`which.min()`</span> liefert die Position mit Namen, und <span class="in">`names()`</span> extrahiert den Knotennamen.</span>
+<span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-199"><a href="#cb11-199" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chkw-dijkstra</span></span>
+<span id="cb11-200"><a href="#cb11-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-201"><a href="#cb11-201" aria-hidden="true" tabindex="-1"></a>dijkstra <span class="ot">&lt;-</span> <span class="cf">function</span>(W, start) {</span>
+<span id="cb11-202"><a href="#cb11-202" aria-hidden="true" tabindex="-1"></a>  ids  <span class="ot">&lt;-</span> <span class="fu">rownames</span>(W)</span>
+<span id="cb11-203"><a href="#cb11-203" aria-hidden="true" tabindex="-1"></a>  d    <span class="ot">&lt;-</span> <span class="fu">setNames</span>(<span class="fu">rep</span>(<span class="cn">Inf</span>, <span class="fu">length</span>(ids)), ids)</span>
+<span id="cb11-204"><a href="#cb11-204" aria-hidden="true" tabindex="-1"></a>  pred <span class="ot">&lt;-</span> <span class="fu">setNames</span>(<span class="fu">rep</span>(<span class="cn">NA_character_</span>, <span class="fu">length</span>(ids)), ids)</span>
+<span id="cb11-205"><a href="#cb11-205" aria-hidden="true" tabindex="-1"></a>  perm <span class="ot">&lt;-</span> <span class="fu">setNames</span>(<span class="fu">rep</span>(<span class="cn">FALSE</span>, <span class="fu">length</span>(ids)), ids)</span>
+<span id="cb11-206"><a href="#cb11-206" aria-hidden="true" tabindex="-1"></a>  d[start] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-207"><a href="#cb11-207" aria-hidden="true" tabindex="-1"></a>  tableau <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb11-208"><a href="#cb11-208" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (<span class="sc">!</span><span class="fu">all</span>(perm)) {</span>
+<span id="cb11-209"><a href="#cb11-209" aria-hidden="true" tabindex="-1"></a>    v <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">which.min</span>(<span class="fu">ifelse</span>(perm, <span class="cn">Inf</span>, d)))     <span class="co"># 1. kleinste temporäre Marke</span></span>
+<span id="cb11-210"><a href="#cb11-210" aria-hidden="true" tabindex="-1"></a>    perm[v] <span class="ot">&lt;-</span> <span class="cn">TRUE</span>                                 <span class="co"># 2. permanent markieren</span></span>
+<span id="cb11-211"><a href="#cb11-211" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (w <span class="cf">in</span> ids[W[v, ] <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> <span class="sc">!</span>perm]) {            <span class="co"># 3. Markenkorrektur</span></span>
+<span id="cb11-212"><a href="#cb11-212" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (d[v] <span class="sc">+</span> W[v, w] <span class="sc">&lt;</span> d[w]) {</span>
+<span id="cb11-213"><a href="#cb11-213" aria-hidden="true" tabindex="-1"></a>        d[w] <span class="ot">&lt;-</span> d[v] <span class="sc">+</span> W[v, w]; pred[w] <span class="ot">&lt;-</span> v</span>
+<span id="cb11-214"><a href="#cb11-214" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb11-215"><a href="#cb11-215" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-216"><a href="#cb11-216" aria-hidden="true" tabindex="-1"></a>    tableau[[<span class="fu">length</span>(tableau) <span class="sc">+</span> <span class="dv">1</span>]] <span class="ot">&lt;-</span></span>
+<span id="cb11-217"><a href="#cb11-217" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="at">permanent =</span> v, <span class="fu">ifelse</span>(perm, <span class="st">""</span>, <span class="fu">ifelse</span>(<span class="fu">is.finite</span>(d),</span>
+<span id="cb11-218"><a href="#cb11-218" aria-hidden="true" tabindex="-1"></a>                                                <span class="fu">paste0</span>(d, <span class="st">" | "</span>, pred), <span class="st">"∞"</span>)))</span>
+<span id="cb11-219"><a href="#cb11-219" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-220"><a href="#cb11-220" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">d =</span> d, <span class="at">pred =</span> pred, <span class="at">tableau =</span> <span class="fu">do.call</span>(rbind, tableau))</span>
+<span id="cb11-221"><a href="#cb11-221" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-222"><a href="#cb11-222" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-223"><a href="#cb11-223" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb11-224"><a href="#cb11-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-227"><a href="#cb11-227" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-228"><a href="#cb11-228" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chkw-tableau</span></span>
+<span id="cb11-229"><a href="#cb11-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-230"><a href="#cb11-230" aria-hidden="true" tabindex="-1"></a>ergebnis <span class="ot">&lt;-</span> <span class="fu">dijkstra</span>(W, <span class="st">"R"</span>)</span>
+<span id="cb11-231"><a href="#cb11-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-232"><a href="#cb11-232" aria-hidden="true" tabindex="-1"></a><span class="fu">kbl</span>(ergebnis<span class="sc">$</span>tableau, <span class="at">booktabs =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-233"><a href="#cb11-233" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Dijkstra-Tableau ab Raunheim (Einträge: Marke | Vorgänger; leer = bereits permanent)"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-234"><a href="#cb11-234" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"condensed"</span>),</span>
+<span id="cb11-235"><a href="#cb11-235" aria-hidden="true" tabindex="-1"></a>                <span class="at">font_size =</span> <span class="dv">12</span>)</span>
+<span id="cb11-236"><a href="#cb11-236" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-237"><a href="#cb11-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-238"><a href="#cb11-238" aria-hidden="true" tabindex="-1"></a>Das Tableau zeigt die Arbeitsweise. In der ersten Iteration wird Raunheim permanent, seine Nachbarn erhalten erste Marken: Mönchhof-Dreieck 5, Rüsselsheim 6 und Frankfurt 33 über die direkte Bundesstraße. Danach werden nacheinander Mönchhof (5) und Rüsselsheim (6) permanent. In der vierten Iteration wird das Frankfurter Kreuz (15) permanent, und dabei passiert etwas Wichtiges: Die Marke von **Frankfurt** sinkt von 33 auf $15 + 13 = 28$ km, der Vorgänger wechselt auf das Frankfurter Kreuz. Der Weg über die Autobahn ist kürzer als die direkte Bundesstraße. Temporäre Marken sind eben nur vorläufig. Nach zehn Iterationen sind alle Knoten permanent, und die Reihenfolge, in der sie permanent wurden, entspricht genau ihren aufsteigenden Entfernungen.</span>
+<span id="cb11-239"><a href="#cb11-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-240"><a href="#cb11-240" aria-hidden="true" tabindex="-1"></a><span class="fu">### Der Kürzeste-Wege-Baum</span></span>
+<span id="cb11-241"><a href="#cb11-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-242"><a href="#cb11-242" aria-hidden="true" tabindex="-1"></a>Die Vorgänger bilden einen **Baum**: Von jedem Knoten führt genau ein kürzester Weg zurück zum Start. Den vollständigen Weg erhält man durch Rückverfolgung der Vorgänger, bis der Startknoten erreicht ist.</span>
+<span id="cb11-243"><a href="#cb11-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-246"><a href="#cb11-246" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-247"><a href="#cb11-247" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chkw-pfade</span></span>
+<span id="cb11-248"><a href="#cb11-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-249"><a href="#cb11-249" aria-hidden="true" tabindex="-1"></a>pfad <span class="ot">&lt;-</span> <span class="cf">function</span>(pred, ziel) {</span>
+<span id="cb11-250"><a href="#cb11-250" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> ziel</span>
+<span id="cb11-251"><a href="#cb11-251" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (<span class="sc">!</span><span class="fu">is.na</span>(pred[p[<span class="dv">1</span>]])) p <span class="ot">&lt;-</span> <span class="fu">c</span>(pred[p[<span class="dv">1</span>]], p)   <span class="co"># Vorgänger voranstellen</span></span>
+<span id="cb11-252"><a href="#cb11-252" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(p, <span class="at">collapse =</span> <span class="st">" → "</span>)</span>
+<span id="cb11-253"><a href="#cb11-253" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-254"><a href="#cb11-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-255"><a href="#cb11-255" aria-hidden="true" tabindex="-1"></a>luftlinie <span class="ot">&lt;-</span> <span class="fu">with</span>(knoten, <span class="fu">haversine</span>(Lat[ID <span class="sc">==</span> <span class="st">"R"</span>], Lon[ID <span class="sc">==</span> <span class="st">"R"</span>], Lat, Lon))</span>
+<span id="cb11-256"><a href="#cb11-256" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(luftlinie) <span class="ot">&lt;-</span> knoten<span class="sc">$</span>ID</span>
+<span id="cb11-257"><a href="#cb11-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-258"><a href="#cb11-258" aria-hidden="true" tabindex="-1"></a>wege <span class="ot">&lt;-</span> knoten <span class="sc">|&gt;</span></span>
+<span id="cb11-259"><a href="#cb11-259" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Typ <span class="sc">==</span> <span class="st">"Filiale"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-260"><a href="#cb11-260" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">Filiale =</span> Name,</span>
+<span id="cb11-261"><a href="#cb11-261" aria-hidden="true" tabindex="-1"></a>            <span class="at">Weg =</span> <span class="fu">map_chr</span>(ID, <span class="sc">~</span> <span class="fu">pfad</span>(ergebnis<span class="sc">$</span>pred, .x)),</span>
+<span id="cb11-262"><a href="#cb11-262" aria-hidden="true" tabindex="-1"></a>            <span class="at">km =</span> ergebnis<span class="sc">$</span>d[ID],</span>
+<span id="cb11-263"><a href="#cb11-263" aria-hidden="true" tabindex="-1"></a>            <span class="at">Luftlinie =</span> <span class="fu">round</span>(luftlinie[ID], <span class="dv">1</span>),</span>
+<span id="cb11-264"><a href="#cb11-264" aria-hidden="true" tabindex="-1"></a>            <span class="at">Umwegfaktor =</span> <span class="fu">round</span>(km <span class="sc">/</span> Luftlinie, <span class="dv">2</span>))</span>
+<span id="cb11-265"><a href="#cb11-265" aria-hidden="true" tabindex="-1"></a>wege</span>
+<span id="cb11-266"><a href="#cb11-266" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-267"><a href="#cb11-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-268"><a href="#cb11-268" aria-hidden="true" tabindex="-1"></a>Der **Umwegfaktor**, das Verhältnis von Straßenentfernung zu Luftlinie, liegt im Mittel bei <span class="in">`r round(mean(wege$Umwegfaktor), 2)`</span>. Für Deutschland sind Werte von etwa 1,2 bis 1,4 typisch. Unser vereinfachtes Netz mit wenigen Kanten erzwingt größere Umwege, besonders nach Darmstadt und Rüsselsheim. Wer in einer Standortplanung mit Luftlinien rechnet, sollte deshalb zumindest mit einem pauschalen Umwegfaktor korrigieren.</span>
+<span id="cb11-269"><a href="#cb11-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-272"><a href="#cb11-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-273"><a href="#cb11-273" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chkw-baum</span></span>
+<span id="cb11-274"><a href="#cb11-274" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Kürzeste-Wege-Baum ab Raunheim (grün)"</span></span>
+<span id="cb11-275"><a href="#cb11-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-276"><a href="#cb11-276" aria-hidden="true" tabindex="-1"></a>baum <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">nach =</span> <span class="fu">names</span>(ergebnis<span class="sc">$</span>pred), <span class="at">von =</span> ergebnis<span class="sc">$</span>pred) <span class="sc">|&gt;</span></span>
+<span id="cb11-277"><a href="#cb11-277" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(von)) <span class="sc">|&gt;</span></span>
+<span id="cb11-278"><a href="#cb11-278" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">schluessel =</span> <span class="fu">map2_chr</span>(von, nach, <span class="sc">~</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">c</span>(.x, .y)), <span class="at">collapse =</span> <span class="st">"-"</span>)))</span>
+<span id="cb11-279"><a href="#cb11-279" aria-hidden="true" tabindex="-1"></a>kanten_xy <span class="ot">&lt;-</span> kanten_xy <span class="sc">|&gt;</span></span>
+<span id="cb11-280"><a href="#cb11-280" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">schluessel =</span> <span class="fu">map2_chr</span>(von, nach, <span class="sc">~</span> <span class="fu">paste</span>(<span class="fu">sort</span>(<span class="fu">c</span>(.x, .y)), <span class="at">collapse =</span> <span class="st">"-"</span>)),</span>
+<span id="cb11-281"><a href="#cb11-281" aria-hidden="true" tabindex="-1"></a>         <span class="at">im_baum =</span> schluessel <span class="sc">%in%</span> baum<span class="sc">$</span>schluessel)</span>
+<span id="cb11-282"><a href="#cb11-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-283"><a href="#cb11-283" aria-hidden="true" tabindex="-1"></a><span class="fu">netz_plot</span>(<span class="at">kanten_farbe =</span> <span class="fu">ifelse</span>(kanten_xy<span class="sc">$</span>im_baum, <span class="st">"#0B6E4F"</span>, <span class="st">"grey80"</span>))</span>
+<span id="cb11-284"><a href="#cb11-284" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-285"><a href="#cb11-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-286"><a href="#cb11-286" aria-hidden="true" tabindex="-1"></a><span class="fu">## Distanzmatrix für die Tourenplanung</span></span>
+<span id="cb11-287"><a href="#cb11-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-288"><a href="#cb11-288" aria-hidden="true" tabindex="-1"></a>Für die Tourenplanung (Kapitel <span class="co">[</span><span class="ot">-@sec-tourenplanung</span><span class="co">]</span>) braucht die Disponentin nicht nur die Entfernungen ab Raunheim, sondern zwischen **allen** relevanten Orten. Dafür wird Dijkstra einfach von jedem dieser Orte aus gestartet. <span class="in">`sapply()`</span> ruft die Funktion für jeden Startknoten auf und fügt die Ergebnisse spaltenweise zu einer Matrix zusammen. <span class="in">`t()`</span> transponiert sie, sodass Zeilen die Startorte sind.</span>
+<span id="cb11-289"><a href="#cb11-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-292"><a href="#cb11-292" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-293"><a href="#cb11-293" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chkw-distanzmatrix</span></span>
+<span id="cb11-294"><a href="#cb11-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-295"><a href="#cb11-295" aria-hidden="true" tabindex="-1"></a>orte <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"R"</span>, <span class="fu">paste0</span>(<span class="st">"C"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>))</span>
+<span id="cb11-296"><a href="#cb11-296" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(orte, <span class="cf">function</span>(s) <span class="fu">dijkstra</span>(W, s)<span class="sc">$</span>d[orte]))</span>
+<span id="cb11-297"><a href="#cb11-297" aria-hidden="true" tabindex="-1"></a>D</span>
+<span id="cb11-298"><a href="#cb11-298" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-299"><a href="#cb11-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-300"><a href="#cb11-300" aria-hidden="true" tabindex="-1"></a>Die Autobahnknoten sind aus der Matrix „herausgerechnet“, sie enthält nur noch die relevanten Orte. Die Matrix ist **symmetrisch**, weil das Netz ungerichtet ist, und sie erfüllt die **Dreiecksungleichung** $d_{ik} \leq d_{ij} + d_{jk}$: Gäbe es über einen Zwischenort einen kürzeren Weg, hätte Dijkstra ihn gefunden. Solche Matrizen heißen **metrisch**. Die Tourenplanung wird diese Eigenschaft nutzen.</span>
+<span id="cb11-301"><a href="#cb11-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-302"><a href="#cb11-302" aria-hidden="true" tabindex="-1"></a>Mit der Distanzmatrix lässt sich bereits eine erste Kennzahl berechnen: Im heutigen **Pendelverkehr**, bei dem jede Filiale einzeln angefahren wird, legt der Kühl-Lkw täglich $2 \cdot \sum_j d_{Rj}$ = <span class="in">`r 2 * sum(D["R", -1])`</span> km zurück. Kapitel <span class="co">[</span><span class="ot">-@sec-verkehrsmittel</span><span class="co">]</span> hat gezeigt, dass ein E-Kühl-Lkw im Winter höchstens rund 157 km schafft. Ob eine Rundtour durch alle Filialen kürzer sein kann, ist die Frage des nächsten Kapitels.</span>
+<span id="cb11-303"><a href="#cb11-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-304"><a href="#cb11-304" aria-hidden="true" tabindex="-1"></a><span class="fu">## Varianten und Erweiterungen</span></span>
+<span id="cb11-305"><a href="#cb11-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-306"><a href="#cb11-306" aria-hidden="true" tabindex="-1"></a>Der Aufwand von Dijkstra wächst in der einfachen Form mit dem Quadrat der Knotenzahl, $\mathcal{O}(n^2)$, mit einer Prioritätswarteschlange mit $\mathcal{O}(|E| + n \log n)$. Für spezielle Situationen gibt es andere Verfahren:</span>
+<span id="cb11-307"><a href="#cb11-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-308"><a href="#cb11-308" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Bellman-Ford** erlaubt negative Kantengewichte, ist aber langsamer ($\mathcal{O}(n \cdot |E|)$).</span>
+<span id="cb11-309"><a href="#cb11-309" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Floyd-Warshall** berechnet alle Paare auf einmal ($\mathcal{O}(n^3)$) und ist für dichte Netze eine Alternative zu $n$-maligem Dijkstra.</span>
+<span id="cb11-310"><a href="#cb11-310" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**A\*** ergänzt Dijkstra um eine Schätzung der Restentfernung, etwa die Luftlinie zum Ziel, und durchsucht dadurch viel weniger Knoten. Navigationssysteme nutzen solche Beschleunigungen, um Wege in Netzen mit Millionen Knoten in Millisekunden zu finden.</span>
+<span id="cb11-311"><a href="#cb11-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-312"><a href="#cb11-312" aria-hidden="true" tabindex="-1"></a>Wichtig ist auch die Frage, was „kurz“ bedeutet. Wird nach **Distanz** optimiert, spart man Kraftstoff und Verschleiß. Wird nach **Fahrzeit** optimiert, spart man Personalkosten und schont die Frische der Ware. Wird nach **Kosten** optimiert, gehen Maut und Fahrzeugkosten ein. Fahrzeiten sind zudem **zeitabhängig**: Die A3 um 7 Uhr ist eine andere Strecke als um 4 Uhr. Je nach Zielgröße ergeben sich unterschiedliche kürzeste Wege. Für reale Straßennetze greift man in R auf Pakete wie <span class="in">`igraph`</span> (Graphalgorithmen) oder <span class="in">`osrm`</span> (Routing auf OpenStreetMap-Daten, Kapitel <span class="co">[</span><span class="ot">-@sec-standort-2</span><span class="co">]</span>) zurück.</span>
+<span id="cb11-313"><a href="#cb11-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-314"><a href="#cb11-314" aria-hidden="true" tabindex="-1"></a><span class="fu">## Zusammenfassung</span></span>
+<span id="cb11-315"><a href="#cb11-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-316"><a href="#cb11-316" aria-hidden="true" tabindex="-1"></a>Straßennetze werden als **Graphen** mit Knoten, Kanten und Kantengewichten modelliert. Transportkosten ergeben sich aus Kostensatz und **kürzester Entfernung im Netz**, nicht aus der Luftlinie. Der **Dijkstra-Algorithmus** markiert schrittweise den nächstgelegenen offenen Knoten permanent und korrigiert die Marken seiner Nachbarn. Voraussetzung sind nichtnegative Kantengewichte. Temporäre Marken können sich noch verbessern, wie die Korrektur der Entfernung nach Frankfurt von 33 auf 28 km zeigt. Die Vorgänger bilden einen Kürzeste-Wege-Baum. Durch wiederholtes Anwenden entsteht eine symmetrische, metrische **Distanzmatrix**, die Grundlage der Tourenplanung.</span>
+<span id="cb11-317"><a href="#cb11-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-318"><a href="#cb11-318" aria-hidden="true" tabindex="-1"></a>Auf der R-Seite haben Sie Graphen als Kantenliste und Gewichtsmatrix gespeichert, mit logischen Masken Nachbarn ausgewählt, benannte Vektoren als Marken verwaltet und Wege mit einer <span class="in">`while`</span>-Schleife zurückverfolgt.</span>
+<span id="cb11-319"><a href="#cb11-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-320"><a href="#cb11-320" aria-hidden="true" tabindex="-1"></a>::: {.kontrollfragen}</span>
+<span id="cb11-321"><a href="#cb11-321" aria-hidden="true" tabindex="-1"></a>**Kontrollfragen**</span>
+<span id="cb11-322"><a href="#cb11-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-323"><a href="#cb11-323" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Erläutern Sie die Begriffe Graph, Kante, Kantengewicht, gerichtet und ungerichtet am Beispiel eines Straßennetzes.</span>
+<span id="cb11-324"><a href="#cb11-324" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Welche drei Varianten des Kürzeste-Wege-Problems gibt es, und für welche Planungsaufgabe wird jeweils welche benötigt?</span>
+<span id="cb11-325"><a href="#cb11-325" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Formulieren Sie das Kürzeste-Wege-Problem als Netzwerkflussproblem. Welche Bedeutung haben die Flusserhaltungsbedingungen?</span>
+<span id="cb11-326"><a href="#cb11-326" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Warum ist beim Dijkstra-Algorithmus die kleinste temporäre Marke endgültig? Welche Voraussetzung ist dafür nötig?</span>
+<span id="cb11-327"><a href="#cb11-327" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Die Verbindung Mönchhof-Dreieck – Frankfurter Kreuz ist wegen einer Baustelle drei Wochen gesperrt. Führen Sie Dijkstra ab Raunheim von Hand im Tableau durch. Welche Filialen sind betroffen? Prüfen Sie Ihr Ergebnis, indem Sie in R die entsprechenden Einträge von <span class="in">`W`</span> auf 0 setzen.</span>
+<span id="cb11-328"><a href="#cb11-328" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Wie viele Kilometer mehr fährt der Kühl-Lkw im Pendelverkehr während der Sperrung?</span>
+<span id="cb11-329"><a href="#cb11-329" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Was ist ein Umwegfaktor, und wofür lässt er sich in der Standortplanung nutzen?</span>
+<span id="cb11-330"><a href="#cb11-330" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>Warum erfüllt eine aus kürzesten Wegen berechnete Distanzmatrix immer die Dreiecksungleichung?</span>
+<span id="cb11-331"><a href="#cb11-331" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>Nennen Sie zwei Zielgrößen für „kurz“ neben der Distanz und eine Situation, in der sie zu einem anderen Weg führen.</span>
+<span id="cb11-332"><a href="#cb11-332" aria-hidden="true" tabindex="-1"></a>:::</span>
+</code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Supply Chain Management — Lehrbuch</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+</body></html>

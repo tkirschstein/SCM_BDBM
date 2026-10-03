@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="description" content="Kursbegleitender Reader zur Vorlesung Supply Chain Management, Wintersemester 26/27">
+<title>16&nbsp; Distributionssystem gestalten – Supply Chain Management</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../references.html" rel="next">
+<link href="../chapters/11_tourenplanung-tsp.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-81de787dd4773dbc0001c2dc1cc3016d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script><script src="../site_libs/kePrint-0.0.1/kePrint.js"></script><link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="../custom.css">
+</head>
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/13_lagerplanung-und-kommissionierung.html">Distributionslogistik</a></li><li class="breadcrumb-item"><a href="../chapters/14b_distributionssystem-gestalten.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Distributionssystem gestalten</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Suchen" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Supply Chain Management</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Suchen"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Vorwort</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Grundlagen</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Einführung und Grundbegriffe des Supply Chain Managements</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Wertschöpfung, strategische Fertigung und Strategic Fit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03_ziele-zielkonflikte-und-logistikkosten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ziele, Zielkonflikte und Logistikkosten</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09_nachhaltigkeit-im-supply-chain-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Nachhaltigkeit im Supply Chain Management</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14a_distributionsstrukturen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Distributionsstrukturen und -kanäle</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Strategische Gestaltung von Supply Chains</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Standortplanung I – Qualitative und kontinuierliche Verfahren</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Standortplanung II – Diskrete Netzwerkplanungsmodelle</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09_transportplanung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transportplanung</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Unsicherheit und Koordination</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06_unsicherheit-in-supply-chains-pooling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Unsicherheit in Supply Chains und Pooling</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07_das-newsvendor-modell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Das Newsvendor-Modell</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/08_der-bullwhip-effekt-und-das-beergame.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Der Bullwhip-Effekt und das Beergame</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Distributionslogistik</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/13_lagerplanung-und-kommissionierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Lagerplanung und Kommissionierung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/12_transportmittel-und-antriebe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Verkehrsmittel, Antriebe und Transportkosten</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/10_kuerzeste-wege.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Kürzeste Wege</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/11_tourenplanung-tsp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Tourenplanung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14b_distributionssystem-gestalten.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Distributionssystem gestalten</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literaturverzeichnis</span></a>
+  </div>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+<li><a href="#r%C3%BCckblick-drei-kan%C3%A4le-eine-offene-frage" id="toc-rückblick-drei-kanäle-eine-offene-frage" class="nav-link active" data-scroll-target="#r%C3%BCckblick-drei-kan%C3%A4le-eine-offene-frage"><span class="header-section-number">16.1</span> Rückblick: drei Kanäle, eine offene Frage</a></li>
+  <li><a href="#die-daten" id="toc-die-daten" class="nav-link" data-scroll-target="#die-daten"><span class="header-section-number">16.2</span> Die Daten</a></li>
+  <li><a href="#variante-a-direktbelieferung-mit-dem-savings-verfahren" id="toc-variante-a-direktbelieferung-mit-dem-savings-verfahren" class="nav-link" data-scroll-target="#variante-a-direktbelieferung-mit-dem-savings-verfahren"><span class="header-section-number">16.3</span> Variante A: Direktbelieferung mit dem Savings-Verfahren</a></li>
+  <li><a href="#varianten-b-und-c-hauptlauf-zum-h%C3%A4ndler" id="toc-varianten-b-und-c-hauptlauf-zum-händler" class="nav-link" data-scroll-target="#varianten-b-und-c-hauptlauf-zum-h%C3%A4ndler"><span class="header-section-number">16.4</span> Varianten B und C: Hauptlauf zum Händler</a></li>
+  <li><a href="#hub-and-spoke-netze" id="toc-hub-and-spoke-netze" class="nav-link" data-scroll-target="#hub-and-spoke-netze"><span class="header-section-number">16.5</span> Hub-and-Spoke-Netze</a></li>
+  <li><a href="#omnichannel-distribution" id="toc-omnichannel-distribution" class="nav-link" data-scroll-target="#omnichannel-distribution"><span class="header-section-number">16.6</span> Omnichannel-Distribution</a></li>
+  <li>
+<a href="#retouren-und-reverse-logistics" id="toc-retouren-und-reverse-logistics" class="nav-link" data-scroll-target="#retouren-und-reverse-logistics"><span class="header-section-number">16.7</span> Retouren und Reverse Logistics</a>
+  <ul class="collapse">
+<li><a href="#fallbeispiel-ein-mehrwegkreislauf-f%C3%BCr-sushi-boxen" id="toc-fallbeispiel-ein-mehrwegkreislauf-für-sushi-boxen" class="nav-link" data-scroll-target="#fallbeispiel-ein-mehrwegkreislauf-f%C3%BCr-sushi-boxen"><span class="header-section-number">16.7.1</span> Fallbeispiel: ein Mehrwegkreislauf für Sushi-Boxen</a></li>
+  </ul>
+</li>
+  <li><a href="#synthese-was-der-reader-zur-distribution-beitr%C3%A4gt" id="toc-synthese-was-der-reader-zur-distribution-beiträgt" class="nav-link" data-scroll-target="#synthese-was-der-reader-zur-distribution-beitr%C3%A4gt"><span class="header-section-number">16.8</span> Synthese: Was der Reader zur Distribution beiträgt</a></li>
+  <li><a href="#zusammenfassung" id="toc-zusammenfassung" class="nav-link" data-scroll-target="#zusammenfassung"><span class="header-section-number">16.9</span> Zusammenfassung</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/13_lagerplanung-und-kommissionierung.html">Distributionslogistik</a></li><li class="breadcrumb-item"><a href="../chapters/14b_distributionssystem-gestalten.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Distributionssystem gestalten</span></a></li></ol></nav><div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span id="sec-distributionssystem" class="quarto-section-identifier"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Distributionssystem gestalten</span></span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Gesamten Code zeigen</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Gesamten Code verbergen</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">Quellcode anzeigen</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><div class="lernziele">
+<p><strong>Lernziele</strong></p>
+<p>Nach der Bearbeitung dieses Kapitels können Sie …</p>
+<ul>
+<li>Direktbelieferung, Zentrallager und <strong>Cross-Docking</strong> mit den Methoden des Readers (Savings-Verfahren, Kostensätze, Frischekosten) <strong>durchrechnen</strong> und vergleichen,</li>
+<li>die Wirkung von <strong>Haltbarkeit</strong> und <strong>Abschriften</strong> auf die Wahl der Distributionsstruktur beurteilen,</li>
+<li>
+<strong>Hub-and-Spoke</strong>-Netze und <strong>Omnichannel</strong>-Fulfillment einordnen,</li>
+<li>
+<strong>Retouren</strong> und <strong>Mehrwegkreisläufe</strong> planen, Behälterbedarfe berechnen und eine Break-even-Schwundquote bestimmen,</li>
+<li>Distanzmatrizen mit <code><a href="https://rdrr.io/r/base/outer.html">outer()</a></code> und <code><a href="https://rdrr.io/r/base/Vectorize.html">Vectorize()</a></code> aus Koordinaten erzeugen.</li>
+</ul>
+<p><strong>Literatur zur Vertiefung</strong></p>
+<ul>
+<li>
+<strong>Distributionsnetzwerke:</strong> <span class="citation" data-cites="chopra2025supply">(<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">Chopra und Meindl 2025</a>)</span>; <span class="citation" data-cites="pfohl2018logistiksysteme">(<a href="../references.html#ref-pfohl2018logistiksysteme" role="doc-biblioref"><strong>pfohl2018logistiksysteme?</strong></a>)</span>.</li>
+<li>
+<strong>E-Fulfillment und Mehrkanalvertrieb:</strong> <span class="citation" data-cites="agatz2008efulfillment">(<a href="../references.html#ref-agatz2008efulfillment" role="doc-biblioref"><strong>agatz2008efulfillment?</strong></a>)</span>.</li>
+<li>
+<strong>Reverse Logistics:</strong> <span class="citation" data-cites="fleischmann1997quantitative">(<a href="../references.html#ref-fleischmann1997quantitative" role="doc-biblioref"><strong>fleischmann1997quantitative?</strong></a>)</span>.</li>
+</ul>
+</div>
+<section id="rückblick-drei-kanäle-eine-offene-frage" class="level2" data-number="16.1"><h2 data-number="16.1" class="anchored" data-anchor-id="rückblick-drei-kanäle-eine-offene-frage">
+<span class="header-section-number">16.1</span> Rückblick: drei Kanäle, eine offene Frage</h2>
+<p>Kapitel <a href="14a_distributionsstrukturen.html" class="quarto-xref"><span>5</span></a> hat zu Beginn des Readers drei Wachstumsideen von SushiFresh vorgestellt. Zwei davon sind inzwischen umgesetzt: Der Onlineshop <strong>Sushi@Home</strong> wird aus dem Kommissionierlager in Raunheim versorgt (Kapitel <a href="13_lagerplanung-und-kommissionierung.html" class="quarto-xref"><span>12</span></a>), und der <strong>Lieferdienst</strong> stellt in Frankfurt per Lastenrad und E-Transporter zu (Kapitel <a href="12_transportmittel-und-antriebe.html" class="quarto-xref"><span>13</span></a>). Die sechs Supermärkte werden auf einer optimierten Rundtour beliefert (Kapitel <a href="11_tourenplanung-tsp.html" class="quarto-xref"><span>15</span></a>). Offen ist die dritte Idee: die Listung in den Märkten der Kette <strong>RheinMarkt</strong>. Sie ist ein guter Prüfstein, denn um sie zu bewerten, braucht man nahezu alle Methoden dieses Readers.</p>
+<div class="fallstudie">
+<p><strong>Fallstudie: Die Anfrage von RheinMarkt</strong></p>
+<p>RheinMarkt möchte SushiFresh-Boxen in <strong>40 Märkten in Hessen</strong> listen, zusammen rund 1.650 Boxen pro Tag. Die Boxen müssen morgens frisch im Regal stehen, ihre Haltbarkeit beträgt <strong>zwei Tage</strong>. Drei Varianten stehen zur Wahl:</p>
+<ul>
+<li>
+<strong>A – Direktbelieferung:</strong> SushiFresh beliefert jeden Markt selbst mit Kühl-Lkw aus Raunheim. Absatzkanal (über den Handel) und Logistikkanal (direkt) fallen auseinander, wie heute bei den sechs Supermärkten.</li>
+<li>
+<strong>B – Zentrallager:</strong> SushiFresh liefert in das Zentrallager von RheinMarkt in Bad Hersfeld. Der Händler lagert ein und verteilt <strong>am Folgetag</strong> mit seinen Frischetouren. Er verlangt dafür 0,20 € je Box.</li>
+<li>
+<strong>C – Cross-Docking:</strong> SushiFresh liefert bis 22 Uhr in das Frische-Cross-Dock des Händlers in Hanau. Dort wird in der Nacht umgeschlagen und zusammen mit Obst, Gemüse und Molkereiprodukten anderer Lieferanten ausgeliefert. Entgelt: 0,12 € je Box.</li>
+</ul>
+<p>Die Entgelte, Abschriftquoten und Herstellkosten von 3,00 € je Box sind Annahmen für das Fallbeispiel. Die Marktstandorte sind zufällig über Hessen verteilt.</p>
+</div>
+</section><section id="die-daten" class="level2" data-number="16.2"><h2 data-number="16.2" class="anchored" data-anchor-id="die-daten">
+<span class="header-section-number">16.2</span> Die Daten</h2>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">14</span><span class="op">)</span></span>
+<span><span class="va">n_m</span> <span class="op">&lt;-</span> <span class="fl">40</span></span>
+<span><span class="va">maerkte</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"M%02d"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="va">n_m</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                  lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_m</span>, <span class="fl">8.05</span>, <span class="fl">9.75</span><span class="op">)</span>, lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_m</span>, <span class="fl">49.55</span>, <span class="fl">51.35</span><span class="op">)</span>,</span>
+<span>                  boxen <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">25</span><span class="op">:</span><span class="fl">60</span>, <span class="va">n_m</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">depot</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="fl">8.465</span>, lat <span class="op">=</span> <span class="fl">50.000</span><span class="op">)</span>   <span class="co"># Zentralküche Raunheim</span></span>
+<span><span class="va">xdock</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="fl">8.920</span>, lat <span class="op">=</span> <span class="fl">50.130</span><span class="op">)</span>   <span class="co"># Frische-Cross-Dock Hanau</span></span>
+<span><span class="va">zlager</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="fl">9.710</span>, lat <span class="op">=</span> <span class="fl">50.870</span><span class="op">)</span>   <span class="co"># Zentrallager Bad Hersfeld</span></span>
+<span><span class="va">n_boxen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">maerkte</span><span class="op">$</span><span class="va">boxen</span><span class="op">)</span></span>
+<span><span class="va">n_boxen</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>[1] 1652</code></pre>
+</div>
+</div>
+<p>Für die Tourenplanung brauchen wir eine Distanzmatrix zwischen Raunheim und allen 40 Märkten. Ein Straßennetz wie in Kapitel <a href="10_kuerzeste-wege.html" class="quarto-xref"><span>14</span></a> liegt nicht vor. Wir nähern die Straßenentfernung deshalb über die Luftlinie mit einem <strong>Umwegfaktor</strong> von 1,3 an.</p>
+<div class="r-exkurs">
+<p><strong>R-Exkurs: Distanzmatrizen mit <code><a href="https://rdrr.io/r/base/outer.html">outer()</a></code> und <code><a href="https://rdrr.io/r/base/Vectorize.html">Vectorize()</a></code></strong></p>
+<p><code>outer(x, y, f)</code> wendet eine Funktion <code>f</code> auf <strong>alle Kombinationen</strong> der Elemente von <code>x</code> und <code>y</code> an und liefert das Ergebnis als Matrix. Mit den Zeilenindizes aller Orte als <code>x</code> und <code>y</code> entsteht so die vollständige Distanzmatrix. Einen Haken gibt es: <code><a href="https://rdrr.io/r/base/outer.html">outer()</a></code> übergibt die Indizes nicht einzeln, sondern als lange Vektoren und erwartet eine <strong>vektorisierte</strong> Funktion. Eine Funktion, die nur Einzelwerte verarbeiten kann, wird mit <code><a href="https://rdrr.io/r/base/Vectorize.html">Vectorize()</a></code> so umhüllt, dass sie elementweise auf Vektoren arbeitet.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">depot</span>, <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">maerkte</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lon"</span>, <span class="st">"lat"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">umweg</span> <span class="op">&lt;-</span> <span class="fl">1.3</span></span>
+<span><span class="va">dist_ij</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span>, <span class="va">j</span><span class="op">)</span> <span class="va">umweg</span> <span class="op">*</span> <span class="fu">haversine</span><span class="op">(</span><span class="va">P</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">]</span>, <span class="va">P</span><span class="op">[</span><span class="va">i</span>, <span class="fl">1</span><span class="op">]</span>, <span class="va">P</span><span class="op">[</span><span class="va">j</span>, <span class="fl">2</span><span class="op">]</span>, <span class="va">P</span><span class="op">[</span><span class="va">j</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/outer.html">outer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Vectorize.html">Vectorize</a></span><span class="op">(</span><span class="va">dist_ij</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>[1] 41 41</code></pre>
+</div>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">D</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>      [,1]  [,2]  [,3]  [,4]
+[1,]   0.0  38.4 195.4 120.8
+[2,]  38.4   0.0 231.8 138.6
+[3,] 195.4 231.8   0.0 149.4
+[4,] 120.8 138.6 149.4   0.0</code></pre>
+</div>
+</div>
+</div>
+</section><section id="variante-a-direktbelieferung-mit-dem-savings-verfahren" class="level2" data-number="16.3"><h2 data-number="16.3" class="anchored" data-anchor-id="variante-a-direktbelieferung-mit-dem-savings-verfahren">
+<span class="header-section-number">16.3</span> Variante A: Direktbelieferung mit dem Savings-Verfahren</h2>
+<p>Für die Direktbelieferung plant SushiFresh Touren mit 7,5-t-Kühl-Lkw. Jedes Fahrzeug fasst <strong>450 Boxen</strong> (Rollcontainer im Kühlaufbau), eine Tour darf einschließlich Beladung (30 min) und Entladung (15 min je Markt) bei 60 km/h Durchschnittsgeschwindigkeit höchstens <strong>9 Stunden</strong> dauern. Das Savings-Verfahren aus Kapitel <a href="11_tourenplanung-tsp.html" class="quarto-xref"><span>15</span></a> wird dafür um eine <strong>Dauerrestriktion</strong> ergänzt: Vor dem Verbinden zweier Touren wird nicht nur die Kapazität, sondern auch die Dauer der gemeinsamen Tour geprüft.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">v_kmh</span> <span class="op">&lt;-</span> <span class="fl">60</span>; <span class="va">t_stopp</span> <span class="op">&lt;-</span> <span class="fl">0.25</span>; <span class="va">t_lade</span> <span class="op">&lt;-</span> <span class="fl">0.5</span>; <span class="va">kap</span> <span class="op">&lt;-</span> <span class="fl">450</span>; <span class="va">t_max</span> <span class="op">&lt;-</span> <span class="fl">9</span></span>
+<span></span>
+<span><span class="va">tour_km</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">{</span> <span class="va">tt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">t</span>, <span class="fl">1</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">D</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">tt</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, <span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op">}</span></span>
+<span><span class="va">dauer</span>   <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="fu">tour_km</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">/</span> <span class="va">v_kmh</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="op">*</span> <span class="va">t_stopp</span> <span class="op">+</span> <span class="va">t_lade</span></span>
+<span></span>
+<span><span class="va">savings_vrp_dauer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">q</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">touren</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>               <span class="co"># Knoten 2..41 = Märkte</span></span>
+<span>  <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span><span class="op">(</span>i <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>, j <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">i</span> <span class="op">&lt;</span> <span class="va">j</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">mutate</span><span class="op">(</span>s <span class="op">=</span> <span class="va">D</span><span class="op">[</span><span class="fl">1</span>, <span class="va">i</span><span class="op">]</span> <span class="op">+</span> <span class="va">D</span><span class="op">[</span><span class="fl">1</span>, <span class="va">j</span><span class="op">]</span> <span class="op">-</span> <span class="va">D</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">i</span>, <span class="va">j</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">s</span> <span class="op">&lt;-</span> <span class="va">s</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">s</span><span class="op">$</span><span class="va">s</span><span class="op">)</span>, <span class="op">]</span>                              <span class="co"># absteigend nach Ersparnis</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">r</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="va">s</span><span class="op">$</span><span class="va">i</span><span class="op">[</span><span class="va">r</span><span class="op">]</span>; <span class="va">j</span> <span class="op">&lt;-</span> <span class="va">s</span><span class="op">$</span><span class="va">j</span><span class="op">[</span><span class="va">r</span><span class="op">]</span></span>
+<span>    <span class="va">ti</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">touren</span>, <span class="kw">function</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="va">i</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">t</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">tj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">touren</span>, <span class="kw">function</span><span class="op">(</span><span class="va">t</span><span class="op">)</span> <span class="va">j</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">t</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">ti</span> <span class="op">==</span> <span class="va">tj</span><span class="op">)</span> <span class="kw">next</span></span>
+<span>    <span class="va">A</span> <span class="op">&lt;-</span> <span class="va">touren</span><span class="op">[[</span><span class="va">ti</span><span class="op">]</span><span class="op">]</span>; <span class="va">B</span> <span class="op">&lt;-</span> <span class="va">touren</span><span class="op">[[</span><span class="va">tj</span><span class="op">]</span><span class="op">]</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">q</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">A</span>, <span class="va">B</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">kap</span><span class="op">)</span> <span class="kw">next</span>             <span class="co"># Kapazität</span></span>
+<span>    <span class="va">neu</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">A</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">==</span> <span class="va">i</span> <span class="op">&amp;&amp;</span> <span class="va">B</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="va">j</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">A</span>, <span class="va">B</span><span class="op">)</span></span>
+<span>      <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">A</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="va">i</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">B</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">==</span> <span class="va">j</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">B</span>, <span class="va">A</span><span class="op">)</span></span>
+<span>      <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">A</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">==</span> <span class="va">i</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">B</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">==</span> <span class="va">j</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">A</span>, <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="va">B</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">A</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="va">i</span> <span class="op">&amp;&amp;</span> <span class="va">B</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="va">j</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span>, <span class="va">B</span><span class="op">)</span></span>
+<span>      <span class="kw">else</span> <span class="cn">NULL</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">neu</span><span class="op">)</span> <span class="op">||</span> <span class="fu">dauer</span><span class="op">(</span><span class="va">neu</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">t_max</span><span class="op">)</span> <span class="kw">next</span>    <span class="co"># Tourende, Dauer</span></span>
+<span>    <span class="va">touren</span><span class="op">[[</span><span class="va">ti</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">neu</span>; <span class="va">touren</span> <span class="op">&lt;-</span> <span class="va">touren</span><span class="op">[</span><span class="op">-</span><span class="va">tj</span><span class="op">]</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">touren</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">touren_A</span> <span class="op">&lt;-</span> <span class="fu">savings_vrp_dauer</span><span class="op">(</span><span class="va">maerkte</span><span class="op">$</span><span class="va">boxen</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Kostensätze 7,5-t-Kühl-Lkw (Kapitel Verkehrsmittel)</span></span>
+<span><span class="va">fix_tag</span> <span class="op">&lt;-</span> <span class="fl">90.28</span>; <span class="va">k_km</span> <span class="op">&lt;-</span> <span class="fl">0.536</span>; <span class="va">k_h</span> <span class="op">&lt;-</span> <span class="fl">31.52</span></span>
+<span><span class="va">tab_A</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>Tour <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">touren_A</span><span class="op">)</span>,</span>
+<span>                Maerkte <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lengths.html">lengths</a></span><span class="op">(</span><span class="va">touren_A</span><span class="op">)</span>,</span>
+<span>                Boxen <span class="op">=</span> <span class="fu">map_dbl</span><span class="op">(</span><span class="va">touren_A</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">maerkte</span><span class="op">$</span><span class="va">boxen</span><span class="op">[</span><span class="va">.x</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                km <span class="op">=</span> <span class="fu">map_dbl</span><span class="op">(</span><span class="va">touren_A</span>, <span class="va">tour_km</span><span class="op">)</span>,</span>
+<span>                Stunden <span class="op">=</span> <span class="fu">map_dbl</span><span class="op">(</span><span class="va">touren_A</span>, <span class="va">dauer</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>Kosten <span class="op">=</span> <span class="va">fix_tag</span> <span class="op">+</span> <span class="va">k_km</span> <span class="op">*</span> <span class="va">km</span> <span class="op">+</span> <span class="va">k_h</span> <span class="op">*</span> <span class="va">Stunden</span><span class="op">)</span></span>
+<span><span class="va">tab_A</span> <span class="op">|&gt;</span> <span class="fu">mutate</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">km</span>, <span class="va">Stunden</span>, <span class="va">Kosten</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">.x</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 6
+   Tour Maerkte Boxen    km Stunden Kosten
+  &lt;int&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+1     1       7   299  384.     8.7   569.
+2     2      10   392  359.     9     566.
+3     3       7   307  404.     9     590.
+4     4       7   297  399.     8.9   585.
+5     5       9   357  366.     8.8   565.</code></pre>
+</div>
+</div>
+<p>Das Verfahren bildet 5 Touren mit zusammen 1.912 km pro Nacht. Der <strong>Engpass ist die Tourdauer</strong>, nicht die Kapazität: Die Fahrzeuge sind nur zu rund 73 % ausgelastet, aber die nordhessischen Märkte liegen bis zu 195 km von Raunheim entfernt, und jede Tour liegt nahe an der 9-Stunden-Grenze.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">touren_df</span> <span class="op">&lt;-</span> <span class="fu">imap_dfr</span><span class="op">(</span><span class="va">touren_A</span>, <span class="op">~</span> <span class="fu">tibble</span><span class="op">(</span>Tour <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">.y</span><span class="op">)</span>, knoten <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">.x</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>lon <span class="op">=</span> <span class="va">P</span><span class="op">[</span><span class="va">knoten</span>, <span class="fl">1</span><span class="op">]</span>, lat <span class="op">=</span> <span class="va">P</span><span class="op">[</span><span class="va">knoten</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_path</span><span class="op">(</span>data <span class="op">=</span> <span class="va">touren_df</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">lon</span>, y <span class="op">=</span> <span class="va">lat</span>, colour <span class="op">=</span> <span class="va">Tour</span><span class="op">)</span>, linewidth <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span>data <span class="op">=</span> <span class="va">maerkte</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">lon</span>, y <span class="op">=</span> <span class="va">lat</span>, size <span class="op">=</span> <span class="va">boxen</span><span class="op">)</span>, colour <span class="op">=</span> <span class="st">"#2D9E8E"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">annotate</span><span class="op">(</span><span class="st">"point"</span>, x <span class="op">=</span> <span class="va">depot</span><span class="op">[</span><span class="st">"lon"</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">depot</span><span class="op">[</span><span class="st">"lat"</span><span class="op">]</span>, shape <span class="op">=</span> <span class="fl">23</span>, size <span class="op">=</span> <span class="fl">5</span>, fill <span class="op">=</span> <span class="st">"#2A7ACA"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">annotate</span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="va">depot</span><span class="op">[</span><span class="st">"lon"</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">depot</span><span class="op">[</span><span class="st">"lat"</span><span class="op">]</span> <span class="op">-</span> <span class="fl">0.07</span>, label <span class="op">=</span> <span class="st">"Raunheim"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">coord_quickmap</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span>, size <span class="op">=</span> <span class="st">"Boxen/Tag"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="14b_distributionssystem-gestalten_files/figure-html/chds2-karte-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Variante A: Touren der Direktbelieferung</figcaption></figure>
+</div>
+</div>
+</div>
+</section><section id="varianten-b-und-c-hauptlauf-zum-händler" class="level2" data-number="16.4"><h2 data-number="16.4" class="anchored" data-anchor-id="varianten-b-und-c-hauptlauf-zum-händler">
+<span class="header-section-number">16.4</span> Varianten B und C: Hauptlauf zum Händler</h2>
+<p>In den Varianten B und C fährt SushiFresh nur noch einen <strong>Hauptlauf</strong> zum Händler. Bei 900 Boxen je Lkw sind dafür zwei Fahrten nötig. Hinzu kommen das Logistikentgelt des Händlers und die <strong>Abschriften</strong>: Ware, die wegen abgelaufener Haltbarkeit nicht mehr verkauft werden kann. Bei Direktbelieferung und Cross-Docking erreicht die Box den Markt am Produktionstag, wir rechnen mit 4 % Abschrift. Über das Zentrallager verliert sie <strong>einen ihrer zwei Haltbarkeitstage</strong>, die Abschriftquote steigt auf 10 %. Das ist genau der Effekt, den das Newsvendor-Modell in Kapitel <a href="07_das-newsvendor-modell.html" class="quarto-xref"><span>10</span></a> über die Überdeckungskosten abbildet.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hauptlauf</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ziel</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="va">umweg</span> <span class="op">*</span> <span class="fu">haversine</span><span class="op">(</span><span class="va">depot</span><span class="op">[</span><span class="st">"lat"</span><span class="op">]</span>, <span class="va">depot</span><span class="op">[</span><span class="st">"lon"</span><span class="op">]</span>, <span class="va">ziel</span><span class="op">[</span><span class="st">"lat"</span><span class="op">]</span>, <span class="va">ziel</span><span class="op">[</span><span class="st">"lon"</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">fahrten</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">ceiling</a></span><span class="op">(</span><span class="va">n_boxen</span> <span class="op">/</span> <span class="fl">900</span><span class="op">)</span></span>
+<span>  <span class="va">km</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">d</span> <span class="op">*</span> <span class="va">fahrten</span>; <span class="va">h</span> <span class="op">&lt;-</span> <span class="va">km</span> <span class="op">/</span> <span class="va">v_kmh</span> <span class="op">+</span> <span class="va">fahrten</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">t_lade</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>d <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html">unname</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, kosten <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html">unname</a></span><span class="op">(</span><span class="va">fahrten</span> <span class="op">*</span> <span class="va">fix_tag</span> <span class="op">+</span> <span class="va">k_km</span> <span class="op">*</span> <span class="va">km</span> <span class="op">+</span> <span class="va">k_h</span> <span class="op">*</span> <span class="va">h</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">hk_box</span> <span class="op">&lt;-</span> <span class="fl">3.00</span></span>
+<span></span>
+<span><span class="va">varianten</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  Variante <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A: Direktbelieferung"</span>, <span class="st">"B: Zentrallager"</span>, <span class="st">"C: Cross-Docking"</span><span class="op">)</span>,</span>
+<span>  Transport <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">tab_A</span><span class="op">$</span><span class="va">Kosten</span><span class="op">)</span>, <span class="fu">hauptlauf</span><span class="op">(</span><span class="va">zlager</span><span class="op">)</span><span class="op">[</span><span class="st">"kosten"</span><span class="op">]</span>, <span class="fu">hauptlauf</span><span class="op">(</span><span class="va">xdock</span><span class="op">)</span><span class="op">[</span><span class="st">"kosten"</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  Entgelt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.20</span>, <span class="fl">0.12</span><span class="op">)</span> <span class="op">*</span> <span class="va">n_boxen</span>,</span>
+<span>  Abschrift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.04</span>, <span class="fl">0.10</span>, <span class="fl">0.04</span><span class="op">)</span> <span class="op">*</span> <span class="va">hk_box</span> <span class="op">*</span> <span class="va">n_boxen</span>,</span>
+<span>  Lieferzeit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gleicher Tag"</span>, <span class="st">"+1 Tag"</span>, <span class="st">"gleicher Tag"</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>Gesamt <span class="op">=</span> <span class="va">Transport</span> <span class="op">+</span> <span class="va">Entgelt</span> <span class="op">+</span> <span class="va">Abschrift</span>, je_Box <span class="op">=</span> <span class="va">Gesamt</span> <span class="op">/</span> <span class="va">n_boxen</span><span class="op">)</span></span>
+<span><span class="va">varianten</span> <span class="op">|&gt;</span> <span class="fu">mutate</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is.numeric</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">.x</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 7
+  Variante             Transport Entgelt Abschrift Lieferzeit   Gesamt je_Box
+  &lt;chr&gt;                    &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;
+1 A: Direktbelieferung     2875.      0       198. gleicher Tag  3073.   1.86
+2 B: Zentrallager           966.    330.      496. +1 Tag        1792.   1.08
+3 C: Cross-Docking          440.    198.      198. gleicher Tag   836.   0.51</code></pre>
+</div>
+</div>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">varianten</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">Variante</span>, <span class="va">Transport</span>, <span class="va">Entgelt</span>, <span class="va">Abschrift</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">pivot_longer</span><span class="op">(</span><span class="op">-</span><span class="va">Variante</span>, names_to <span class="op">=</span> <span class="st">"Position"</span>, values_to <span class="op">=</span> <span class="st">"Kosten"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>Position <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">Position</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Abschrift"</span>, <span class="st">"Entgelt"</span>, <span class="st">"Transport"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">Variante</span>, y <span class="op">=</span> <span class="va">Kosten</span> <span class="op">/</span> <span class="va">n_boxen</span>, fill <span class="op">=</span> <span class="va">Position</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_col</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Transport <span class="op">=</span> <span class="st">"#2F3E46"</span>, Entgelt <span class="op">=</span> <span class="st">"#F4A259"</span>,</span>
+<span>                               Abschrift <span class="op">=</span> <span class="st">"#C00000"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Kosten je Box (€)"</span>, fill <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">13</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="14b_distributionssystem-gestalten_files/figure-html/chds2-vergleich-plot-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Distributionskosten je Box nach Variante</figcaption></figure>
+</div>
+</div>
+</div>
+<p><strong>Cross-Docking</strong> ist mit Abstand am günstigsten <strong>und</strong> liefert am selben Tag. Die Direktbelieferung scheitert an der Fläche: Viele Kilometer und Fahrerstunden für vergleichsweise wenige Boxen je Markt. Das Zentrallager scheitert an der <strong>Haltbarkeit</strong>: Die zusätzliche Lagerstufe kostet einen Verkaufstag, und die höheren Abschriften wiegen schwerer als der kurze Hauptlauf. Bei Frischware ist Zeit eine Kostenposition.</p>
+<p>Wie robust ist das Ergebnis? Die kritische Größe ist das Entgelt des Händlers. Bis zu welchem Entgelt bleibt Cross-Docking günstiger als die Direktbelieferung?</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">entgelt_be</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">varianten</span><span class="op">$</span><span class="va">Gesamt</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">varianten</span><span class="op">$</span><span class="va">Transport</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">-</span> <span class="va">varianten</span><span class="op">$</span><span class="va">Abschrift</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="va">n_boxen</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">entgelt_be</span>, <span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>     
+1.47 </code></pre>
+</div>
+</div>
+<p>Erst ab einem Entgelt von rund 1,47 € je Box wäre die Direktbelieferung wirtschaftlich gleichwertig. Der Kostenvorteil ist also deutlich. Die Entscheidung hat aber auch <strong>nicht-monetäre</strong> Seiten: Bei Cross-Docking gibt SushiFresh die Kontrolle über die letzte Etappe der Kühlkette und den Kontakt zu den Märkten ab und wird von den Zeitfenstern des Händlers abhängig. Bei der Direktbelieferung behält es beides, zum Preis deutlich höherer Kosten.</p>
+</section><section id="hub-and-spoke-netze" class="level2" data-number="16.5"><h2 data-number="16.5" class="anchored" data-anchor-id="hub-and-spoke-netze">
+<span class="header-section-number">16.5</span> Hub-and-Spoke-Netze</h2>
+<p>Das Cross-Dock von RheinMarkt ist ein Beispiel für ein allgemeineres Prinzip: die <strong>Bündelung</strong> von Strömen in einem zentralen Knoten. Besonders ausgeprägt ist es in <strong>Stückgut- und Paketnetzen</strong>. Jedes Depot sammelt in seiner Region Sendungen ein (<strong>Vorlauf</strong>) und schickt alles zum <strong>Hub</strong>. Dort wird nach Zieldepots sortiert (<strong>Hauptlauf</strong>), und das Zieldepot stellt zu (<strong>Nachlauf</strong>).</p>
+<p>Der Vorteil zeigt sich an der Zahl der Relationen. In einem <strong>Rasternetz</strong>, in dem jedes der <span class="math inline">\(n\)</span> Depots jedes andere direkt beliefert, gibt es <span class="math inline">\(n(n-1)\)</span> gerichtete Relationen. Bei 8 Depots sind das 56, bei 40 Depots bereits 1.560. Im <strong>Hub-and-Spoke-Netz</strong> sind es nur <span class="math inline">\(2n\)</span>, also 16 bzw. 80. Jede Relation wird dadurch deutlich besser ausgelastet. Der Preis sind <strong>Umwege</strong> über den Hub und ein zusätzlicher <strong>Umschlag</strong>. In der Praxis haben sich Mischformen durchgesetzt: Starke Relationen werden direkt gefahren, schwache über einen oder mehrere Hubs gebündelt. Für SushiFresh relevant ist das Prinzip beim Versand von Sushi@Home: Der Paketdienst bündelt die Sendungen vieler Versender in seinem Hub-Netz, und SushiFresh kauft die Zustellung als Leistung ein (Kapitel <a href="12_transportmittel-und-antriebe.html" class="quarto-xref"><span>13</span></a>).</p>
+</section><section id="omnichannel-distribution" class="level2" data-number="16.6"><h2 data-number="16.6" class="anchored" data-anchor-id="omnichannel-distribution">
+<span class="header-section-number">16.6</span> Omnichannel-Distribution</h2>
+<p>Wer über mehrere Kanäle verkauft, muss entscheiden, <strong>aus welchem Bestand</strong> ein Onlineauftrag bedient wird und <strong>wer die letzte Meile</strong> übernimmt. Daraus ergeben sich typische Fulfillment-Optionen <span class="citation" data-cites="agatz2008efulfillment">(<a href="../references.html#ref-agatz2008efulfillment" role="doc-biblioref"><strong>agatz2008efulfillment?</strong></a>)</span>:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-condensed caption-top table-sm small">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Option</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Prinzip</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Vorteil</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">SushiFresh</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Zentrales E-Commerce-Lager</td>
+<td style="text-align: left;">eigenes Lager nur für Onlineaufträge, Versand per KEP</td>
+<td style="text-align: left;">Skaleneffekte, hohe Kommissionierleistung</td>
+<td style="text-align: left;">Sushi@Home ab Raunheim</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ship-from-Store</td>
+<td style="text-align: left;">Filiale kommissioniert und versendet Onlineaufträge</td>
+<td style="text-align: left;">kurze Wege, Filialbestand wird genutzt</td>
+<td style="text-align: left;">–</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Click &amp; Collect</td>
+<td style="text-align: left;">online bestellen, in der Filiale abholen</td>
+<td style="text-align: left;">keine Zustellkosten, Zusatzkäufe in der Filiale</td>
+<td style="text-align: left;">Vorbestellung in den Supermärkten</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dark Store / Mikrodepot</td>
+<td style="text-align: left;">städtisches Lager ohne Kundenverkehr, schnelle Zustellung</td>
+<td style="text-align: left;">Lieferung in Minuten bis Stunden</td>
+<td style="text-align: left;">Mikrodepot für den Lastenrad-Lieferdienst</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Abholstation / Paketshop</td>
+<td style="text-align: left;">Kunde holt an Station oder Partnergeschäft ab</td>
+<td style="text-align: left;">gebündelte Zustellung, kein Nicht-Antreffen</td>
+<td style="text-align: left;">Kühlfächer an Abholstationen?</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Jede Option ist eine Kombination aus <strong>Struktur</strong> (wo liegt der Bestand?) und <strong>letzter Meile</strong> (wer überbrückt die letzten Kilometer?). Die Herausforderungen liegen in der <strong>Bestandstransparenz</strong> über alle Kanäle (ein online verkaufter Artikel darf nicht gleichzeitig im Regal liegen), in kleinen Aufträgen mit engen Zeitfenstern und in den Rückwärtsflüssen.</p>
+</section><section id="retouren-und-reverse-logistics" class="level2" data-number="16.7"><h2 data-number="16.7" class="anchored" data-anchor-id="retouren-und-reverse-logistics">
+<span class="header-section-number">16.7</span> Retouren und Reverse Logistics</h2>
+<p>Distribution endet nicht beim Kunden. <strong>Reverse Logistics</strong> umfasst alle Warenflüsse vom Kunden zurück in die Supply Chain <span class="citation" data-cites="fleischmann1997quantitative">(<a href="../references.html#ref-fleischmann1997quantitative" role="doc-biblioref"><strong>fleischmann1997quantitative?</strong></a>)</span>: <strong>Retouren</strong> im Onlinehandel, <strong>Rückrufe</strong> bei Qualitätsmängeln, <strong>Mehrwegbehälter</strong> wie Paletten, Kisten und Pfandflaschen sowie <strong>Altprodukte</strong> zur Aufbereitung oder Entsorgung. Der Prozess folgt einer typischen Kette aus Rücknahme, Sammlung, Prüfung und <strong>Disposition</strong>, also der Entscheidung zwischen Wiederverkauf, Aufbereitung, Recycling und Entsorgung. Das knüpft an die Kreislaufwirtschaft aus Kapitel <a href="09_nachhaltigkeit-im-supply-chain-management.html" class="quarto-xref"><span>4</span></a> an. Rückwärtsflüsse sind schwerer zu planen als Vorwärtsflüsse, weil Zeitpunkt, Menge und Zustand der zurückkommenden Ware unsicher sind.</p>
+<section id="fallbeispiel-ein-mehrwegkreislauf-für-sushi-boxen" class="level3" data-number="16.7.1"><h3 data-number="16.7.1" class="anchored" data-anchor-id="fallbeispiel-ein-mehrwegkreislauf-für-sushi-boxen">
+<span class="header-section-number">16.7.1</span> Fallbeispiel: ein Mehrwegkreislauf für Sushi-Boxen</h3>
+<div class="fallstudie">
+<p><strong>Fallstudie: Die Pfandbox</strong></p>
+<p>Wer in Deutschland Speisen zum Mitnehmen in Einweg-Kunststoffverpackungen abgibt, muss seit 2023 auch eine <strong>Mehrwegalternative</strong> anbieten (Verpackungsgesetz, mit Ausnahmen für sehr kleine Betriebe). SushiFresh führt deshalb eine <strong>Pfandbox</strong> ein, die Kundinnen und Kunden in den Supermärkten zurückgeben. Der Kühl-Lkw nimmt die leeren Boxen bei der morgendlichen Belieferung mit zurück nach Raunheim, wo sie gespült werden. Wie viele Boxen braucht der Kreislauf, und lohnt sich Mehrweg gegenüber Einweg?</p>
+</div>
+<p>Der <strong>Behälterbedarf</strong> eines Kreislaufs ergibt sich aus dem täglichen Bedarf und der <strong>Umlaufzeit</strong>, der Zeit vom Befüllen über Verkauf, Nutzung durch den Kunden, Rückgabe, Rücktransport und Spülung bis zum erneuten Befüllen. Hinzu kommt ein Sicherheitszuschlag für Schwankungen:</p>
+<p><span class="math display">\[\text{Bestand} = \text{Tagesbedarf} \cdot \text{Umlaufzeit} \cdot (1 + \text{Puffer})\]</span></p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bedarf_tag</span> <span class="op">&lt;-</span> <span class="fl">845</span>; <span class="va">quote_mw</span> <span class="op">&lt;-</span> <span class="fl">0.30</span>; <span class="va">umlauf</span> <span class="op">&lt;-</span> <span class="fl">4</span>; <span class="va">puffer</span> <span class="op">&lt;-</span> <span class="fl">0.15</span></span>
+<span><span class="va">mw_tag</span> <span class="op">&lt;-</span> <span class="va">bedarf_tag</span> <span class="op">*</span> <span class="va">quote_mw</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Mehrweg_je_Tag <span class="op">=</span> <span class="va">mw_tag</span>, Bestand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">ceiling</a></span><span class="op">(</span><span class="va">mw_tag</span> <span class="op">*</span> <span class="va">umlauf</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">puffer</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>Mehrweg_je_Tag        Bestand 
+         253.5         1167.0 </code></pre>
+</div>
+</div>
+<p>Bei einer Mehrwegquote von 30 % und vier Tagen Umlaufzeit braucht der Kreislauf rund 1.170 Boxen. Jeder zusätzliche Tag Umlaufzeit, etwa weil Kunden die Box erst nach einer Woche zurückbringen, erhöht den Bestand um rund 250 Boxen.</p>
+<p>Für die <strong>Wirtschaftlichkeit</strong> zählen die Kosten je Nutzung. Eine Mehrwegbox kostet 3,50 € und hält technisch 200 Spülgänge, jede Spülung kostet 0,08 €. Entscheidend ist aber der <strong>Schwund</strong>: Kehrt jede Box mit Wahrscheinlichkeit <span class="math inline">\(s\)</span> nicht zurück, wird sie im Mittel nur <span class="math inline">\(1/s\)</span>-mal genutzt (geometrische Verteilung). Die Kosten je Nutzung betragen dann</p>
+<p><span class="math display">\[k_{\text{MW}} = \frac{p_{\text{Box}}}{\min(L, 1/s)} + k_{\text{Spülen}}.\]</span></p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p_box</span> <span class="op">&lt;-</span> <span class="fl">3.50</span>; <span class="va">L</span> <span class="op">&lt;-</span> <span class="fl">200</span>; <span class="va">k_spuelen</span> <span class="op">&lt;-</span> <span class="fl">0.08</span>; <span class="va">k_einweg</span> <span class="op">&lt;-</span> <span class="fl">0.18</span></span>
+<span><span class="va">k_mw</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="va">p_box</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmin</a></span><span class="op">(</span><span class="va">L</span>, <span class="fl">1</span> <span class="op">/</span> <span class="va">s</span><span class="op">)</span> <span class="op">+</span> <span class="va">k_spuelen</span></span>
+<span><span class="va">s_be</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/uniroot.html">uniroot</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="fu">k_mw</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">-</span> <span class="va">k_einweg</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">root</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Kosten_bei_5_Prozent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu">k_mw</span><span class="op">(</span><span class="fl">0.05</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, Break_even_Schwund <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">s_be</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>Kosten_bei_5_Prozent   Break_even_Schwund 
+               0.255                0.029 </code></pre>
+</div>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tibble</span><span class="op">(</span>s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.005</span>, <span class="fl">0.10</span>, by <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>Mehrweg <span class="op">=</span> <span class="fu">k_mw</span><span class="op">(</span><span class="va">s</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">s</span> <span class="op">*</span> <span class="fl">100</span>, y <span class="op">=</span> <span class="va">Mehrweg</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span>, colour <span class="op">=</span> <span class="st">"#0B6E4F"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">k_einweg</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">s_be</span> <span class="op">*</span> <span class="fl">100</span>, linetype <span class="op">=</span> <span class="st">"dotted"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">annotate</span><span class="op">(</span><span class="st">"text"</span>, x <span class="op">=</span> <span class="fl">9</span>, y <span class="op">=</span> <span class="va">k_einweg</span> <span class="op">+</span> <span class="fl">0.012</span>, label <span class="op">=</span> <span class="st">"Einweg 0,18 €"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Schwundquote je Umlauf (%)"</span>, y <span class="op">=</span> <span class="st">"Kosten je Nutzung (€)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">13</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="14b_distributionssystem-gestalten_files/figure-html/chds2-mehrweg-kosten-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Kosten je Nutzung in Abhängigkeit von der Schwundquote</figcaption></figure>
+</div>
+</div>
+</div>
+<p>Bei 5 % Schwund kostet eine Nutzung rund 0,26 € und damit mehr als die Einwegverpackung. Mehrweg lohnt sich erst unterhalb einer Schwundquote von rund <strong>2,9 %</strong>. Der entscheidende Hebel ist also nicht der Preis der Box, sondern die <strong>Rückgabequote</strong>, die sich über die Höhe des Pfands und eine bequeme Rückgabe steuern lässt. Ökologisch gilt Ähnliches: Eine Mehrwegbox muss oft genug genutzt werden, um ihren höheren Material- und Spülaufwand auszugleichen.</p>
+</section></section><section id="synthese-was-der-reader-zur-distribution-beiträgt" class="level2" data-number="16.8"><h2 data-number="16.8" class="anchored" data-anchor-id="synthese-was-der-reader-zur-distribution-beiträgt">
+<span class="header-section-number">16.8</span> Synthese: Was der Reader zur Distribution beiträgt</h2>
+<p>Die RheinMarkt-Entscheidung zeigt, wie die Kapitel des Readers zusammenwirken. Jede Methode beantwortet eine Teilfrage der Distributionsgestaltung:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Frage</th>
+<th style="text-align: left;">Methode</th>
+<th style="text-align: left;">Kapitel</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Welche Struktur und welche Kanäle?</td>
+<td style="text-align: left;">Distributionsstrukturen, Lieferservice</td>
+<td style="text-align: left;"><a href="14a_distributionsstrukturen.html" class="quarto-xref"><span>5</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wo stehen Produktion und Lager?</td>
+<td style="text-align: left;">Nutzwertanalyse, AHP, Weiszfeld, WLP</td>
+<td style="text-align: left;">
+<a href="04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" class="quarto-xref"><span>6</span></a>, <a href="05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="quarto-xref"><span>7</span></a>
+</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wie wird bei knapper Kapazität verteilt?</td>
+<td style="text-align: left;">Transportproblem, VAM</td>
+<td style="text-align: left;"><a href="09_transportplanung.html" class="quarto-xref"><span>8</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wie viel Bestand ist nötig?</td>
+<td style="text-align: left;">Pooling, Sicherheitsbestand</td>
+<td style="text-align: left;"><a href="06_unsicherheit-in-supply-chains-pooling.html" class="quarto-xref"><span>9</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wie viel soll produziert werden?</td>
+<td style="text-align: left;">Newsvendor-Modell</td>
+<td style="text-align: left;"><a href="07_das-newsvendor-modell.html" class="quarto-xref"><span>10</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wie stabil ist die Kette?</td>
+<td style="text-align: left;">Bullwhip-Analyse</td>
+<td style="text-align: left;"><a href="08_der-bullwhip-effekt-und-das-beergame.html" class="quarto-xref"><span>11</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wie wird kommissioniert?</td>
+<td style="text-align: left;">Lagerplatzvergabe, Picker Routing</td>
+<td style="text-align: left;"><a href="13_lagerplanung-und-kommissionierung.html" class="quarto-xref"><span>12</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Womit wird transportiert, was kostet es?</td>
+<td style="text-align: left;">Kostensätze, TCO, ISO 14083</td>
+<td style="text-align: left;"><a href="12_transportmittel-und-antriebe.html" class="quarto-xref"><span>13</span></a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wie weit ist es im Netz?</td>
+<td style="text-align: left;">Dijkstra</td>
+<td style="text-align: left;"><a href="10_kuerzeste-wege.html" class="quarto-xref"><span>14</span></a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">In welcher Reihenfolge wird geliefert?</td>
+<td style="text-align: left;">TSP-Heuristiken, Savings</td>
+<td style="text-align: left;"><a href="11_tourenplanung-tsp.html" class="quarto-xref"><span>15</span></a></td>
+</tr>
+</tbody>
+</table>
+<p>Kein Modell beantwortet die Gestaltungsfrage allein. Gute Distributionsentscheidungen entstehen, wenn strategische Strukturentscheidungen mit den Kosten und Restriktionen der operativen Ebene durchgerechnet werden. Im RheinMarkt-Fall waren das die Touren und Fahrzeiten der Direktbelieferung und die Haltbarkeit der Ware im Zentrallager.</p>
+</section><section id="zusammenfassung" class="level2" data-number="16.9"><h2 data-number="16.9" class="anchored" data-anchor-id="zusammenfassung">
+<span class="header-section-number">16.9</span> Zusammenfassung</h2>
+<p>Die Wahl der Distributionsstruktur lässt sich mit den Methoden des Readers <strong>quantitativ</strong> vergleichen. Für die RheinMarkt-Anfrage ergab das Savings-Verfahren mit Kapazitäts- und Dauerrestriktion hohe Kosten für die Direktbelieferung. Das Zentrallager verliert durch die zusätzliche Lagerstufe einen Haltbarkeitstag, <strong>Cross-Docking</strong> ist die günstigste und schnellste Option. Bei Frischware ist Zeit eine Kostenposition. <strong>Hub-and-Spoke-Netze</strong> bündeln Ströme zum Preis von Umwegen und zusätzlichem Umschlag. <strong>Omnichannel</strong>-Fulfillment kombiniert Bestandsort und letzte Meile. <strong>Reverse Logistics</strong> erweitert die Distribution um Rückwärtsflüsse. Bei Mehrwegkreisläufen bestimmen Umlaufzeit und Tagesbedarf den Behälterbestand, und die <strong>Rückgabequote</strong> entscheidet über die Wirtschaftlichkeit.</p>
+<p>Auf der R-Seite haben Sie Distanzmatrizen mit <code><a href="https://rdrr.io/r/base/outer.html">outer()</a></code> und <code><a href="https://rdrr.io/r/base/Vectorize.html">Vectorize()</a></code> erzeugt, das Savings-Verfahren um eine zusätzliche Restriktion erweitert und Break-even-Werte mit <code><a href="https://rdrr.io/r/stats/uniroot.html">uniroot()</a></code> bestimmt.</p>
+<div class="kontrollfragen">
+<p><strong>Kontrollfragen</strong></p>
+<ol type="1">
+<li>Warum ist bei der Direktbelieferung der RheinMarkt-Märkte die Tourdauer und nicht die Fahrzeugkapazität der Engpass?</li>
+<li>Erläutern Sie, wie die Haltbarkeit der Boxen die Wahl zwischen Zentrallager und Cross-Docking beeinflusst. Welche Rolle spielt dabei das Newsvendor-Modell?</li>
+<li>RheinMarkt möchte das Cross-Dock-Entgelt auf 0,35 € je Box erhöhen. Ist Variante C dann noch die günstigste? Welche Mischform aus Direktbelieferung naher Märkte und Cross-Docking wäre denkbar?</li>
+<li>Welche nicht-monetären Kriterien sprechen für bzw. gegen die Direktbelieferung?</li>
+<li>Wie viele gerichtete Relationen hat ein Rasternetz mit 12 Depots, wie viele ein Hub-and-Spoke-Netz? Welche Nachteile hat die Bündelung über einen Hub?</li>
+<li>Ordnen Sie die Fulfillment-Optionen des Omnichannel-Handels nach Lieferzeit und Kosten je Auftrag.</li>
+<li>Wie verändert sich der Behälterbestand der Pfandbox, wenn die Mehrwegquote auf 50 % steigt und die Umlaufzeit auf sechs Tage wächst?</li>
+<li>Leiten Sie her, warum eine Box bei einer Schwundquote <span class="math inline">\(s\)</span> im Mittel <span class="math inline">\(1/s\)</span>-mal genutzt wird.</li>
+<li>Wählen Sie drei Kapitel des Readers und erläutern Sie, welchen Beitrag ihre Methoden zur Bewertung der RheinMarkt-Anfrage leisten.</li>
+</ol>
+</div>
+
+
+<!-- -->
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-chopra2025supply" class="csl-entry" role="listitem">
+Chopra, Sunil, und Peter Meindl. 2025. <em>Supply Chain Management: Strategy, Planning, and Operation</em>. 8. Aufl. Pearson.
+</div>
+</div>
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopiert");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopiert");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../chapters/11_tourenplanung-tsp.html" class="pagination-link" aria-label="Tourenplanung">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Tourenplanung</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../references.html" class="pagination-link" aria-label="Literaturverzeichnis">
+        <span class="nav-page-text">Literaturverzeichnis</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Quellcode</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Distributionssystem gestalten {#sec-distributionssystem}</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-setup</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Funktionen aus scm_functions.R einbinden (u. a. haversine())</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../R/scm_functions.R"</span>)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Inline-Zahlen im Fließtext deutsch formatieren (Dezimalkomma, Tausenderpunkt)</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>knit_hooks<span class="sc">$</span><span class="fu">set</span>(<span class="at">inline =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.numeric</span>(x)) <span class="fu">format</span>(x, <span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>) <span class="cf">else</span> x</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>::: {.lernziele}</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>**Lernziele**</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>Nach der Bearbeitung dieses Kapitels können Sie …</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Direktbelieferung, Zentrallager und **Cross-Docking** mit den Methoden des Readers (Savings-Verfahren, Kostensätze, Frischekosten) **durchrechnen** und vergleichen,</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>die Wirkung von **Haltbarkeit** und **Abschriften** auf die Wahl der Distributionsstruktur beurteilen,</span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Hub-and-Spoke**-Netze und **Omnichannel**-Fulfillment einordnen,</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Retouren** und **Mehrwegkreisläufe** planen, Behälterbedarfe berechnen und eine Break-even-Schwundquote bestimmen,</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Distanzmatrizen mit <span class="in">`outer()`</span> und <span class="in">`Vectorize()`</span> aus Koordinaten erzeugen.</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>**Literatur zur Vertiefung**</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Distributionsnetzwerke:** <span class="co">[</span><span class="ot">@chopra2025supply</span><span class="co">]</span>; <span class="co">[</span><span class="ot">@pfohl2018logistiksysteme</span><span class="co">]</span>.</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**E-Fulfillment und Mehrkanalvertrieb:** <span class="co">[</span><span class="ot">@agatz2008efulfillment</span><span class="co">]</span>.</span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Reverse Logistics:** <span class="co">[</span><span class="ot">@fleischmann1997quantitative</span><span class="co">]</span>.</span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a><span class="fu">## Rückblick: drei Kanäle, eine offene Frage</span></span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>Kapitel <span class="co">[</span><span class="ot">-@sec-distributionsstrukturen</span><span class="co">]</span> hat zu Beginn des Readers drei Wachstumsideen von SushiFresh vorgestellt. Zwei davon sind inzwischen umgesetzt: Der Onlineshop **Sushi@Home** wird aus dem Kommissionierlager in Raunheim versorgt (Kapitel [-@sec-lager]), und der **Lieferdienst** stellt in Frankfurt per Lastenrad und E-Transporter zu (Kapitel [-@sec-verkehrsmittel]). Die sechs Supermärkte werden auf einer optimierten Rundtour beliefert (Kapitel [-@sec-tourenplanung]). Offen ist die dritte Idee: die Listung in den Märkten der Kette **RheinMarkt**. Sie ist ein guter Prüfstein, denn um sie zu bewerten, braucht man nahezu alle Methoden dieses Readers.</span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>::: {.fallstudie}</span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>**Fallstudie: Die Anfrage von RheinMarkt**</span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>RheinMarkt möchte SushiFresh-Boxen in **40 Märkten in Hessen** listen, zusammen rund 1.650 Boxen pro Tag. Die Boxen müssen morgens frisch im Regal stehen, ihre Haltbarkeit beträgt **zwei Tage**. Drei Varianten stehen zur Wahl:</span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**A – Direktbelieferung:** SushiFresh beliefert jeden Markt selbst mit Kühl-Lkw aus Raunheim. Absatzkanal (über den Handel) und Logistikkanal (direkt) fallen auseinander, wie heute bei den sechs Supermärkten.</span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**B – Zentrallager:** SushiFresh liefert in das Zentrallager von RheinMarkt in Bad Hersfeld. Der Händler lagert ein und verteilt **am Folgetag** mit seinen Frischetouren. Er verlangt dafür 0,20 € je Box.</span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**C – Cross-Docking:** SushiFresh liefert bis 22 Uhr in das Frische-Cross-Dock des Händlers in Hanau. Dort wird in der Nacht umgeschlagen und zusammen mit Obst, Gemüse und Molkereiprodukten anderer Lieferanten ausgeliefert. Entgelt: 0,12 € je Box.</span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>Die Entgelte, Abschriftquoten und Herstellkosten von 3,00 € je Box sind Annahmen für das Fallbeispiel. Die Marktstandorte sind zufällig über Hessen verteilt.</span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a><span class="fu">## Die Daten</span></span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-daten</span></span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">14</span>)</span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>n_m <span class="ot">&lt;-</span> <span class="dv">40</span></span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>maerkte <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">id =</span> <span class="fu">sprintf</span>(<span class="st">"M%02d"</span>, <span class="fu">seq_len</span>(n_m)),</span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>                  <span class="at">lon =</span> <span class="fu">runif</span>(n_m, <span class="fl">8.05</span>, <span class="fl">9.75</span>), <span class="at">lat =</span> <span class="fu">runif</span>(n_m, <span class="fl">49.55</span>, <span class="fl">51.35</span>),</span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a>                  <span class="at">boxen =</span> <span class="fu">sample</span>(<span class="dv">25</span><span class="sc">:</span><span class="dv">60</span>, n_m, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>depot  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">lon =</span> <span class="fl">8.465</span>, <span class="at">lat =</span> <span class="fl">50.000</span>)   <span class="co"># Zentralküche Raunheim</span></span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>xdock  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">lon =</span> <span class="fl">8.920</span>, <span class="at">lat =</span> <span class="fl">50.130</span>)   <span class="co"># Frische-Cross-Dock Hanau</span></span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>zlager <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">lon =</span> <span class="fl">9.710</span>, <span class="at">lat =</span> <span class="fl">50.870</span>)   <span class="co"># Zentrallager Bad Hersfeld</span></span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>n_boxen <span class="ot">&lt;-</span> <span class="fu">sum</span>(maerkte<span class="sc">$</span>boxen)</span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a>n_boxen</span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a>Für die Tourenplanung brauchen wir eine Distanzmatrix zwischen Raunheim und allen 40 Märkten. Ein Straßennetz wie in Kapitel <span class="co">[</span><span class="ot">-@sec-kuerzeste-wege</span><span class="co">]</span> liegt nicht vor. Wir nähern die Straßenentfernung deshalb über die Luftlinie mit einem **Umwegfaktor** von 1,3 an.</span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>::: {.r-exkurs}</span>
+<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a>**R-Exkurs: Distanzmatrizen mit `outer()` und `Vectorize()`**</span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a><span class="in">`outer(x, y, f)`</span> wendet eine Funktion <span class="in">`f`</span> auf **alle Kombinationen** der Elemente von `x` und `y` an und liefert das Ergebnis als Matrix. Mit den Zeilenindizes aller Orte als `x` und `y` entsteht so die vollständige Distanzmatrix. Einen Haken gibt es: `outer()` übergibt die Indizes nicht einzeln, sondern als lange Vektoren und erwartet eine **vektorisierte** Funktion. Eine Funktion, die nur Einzelwerte verarbeiten kann, wird mit <span class="in">`Vectorize()`</span> so umhüllt, dass sie elementweise auf Vektoren arbeitet.</span>
+<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-outer</span></span>
+<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-89"><a href="#cb20-89" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="fu">rbind</span>(depot, <span class="fu">as.matrix</span>(maerkte[, <span class="fu">c</span>(<span class="st">"lon"</span>, <span class="st">"lat"</span>)]))</span>
+<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a>umweg <span class="ot">&lt;-</span> <span class="fl">1.3</span></span>
+<span id="cb20-91"><a href="#cb20-91" aria-hidden="true" tabindex="-1"></a>dist_ij <span class="ot">&lt;-</span> <span class="cf">function</span>(i, j) umweg <span class="sc">*</span> <span class="fu">haversine</span>(P[i, <span class="dv">2</span>], P[i, <span class="dv">1</span>], P[j, <span class="dv">2</span>], P[j, <span class="dv">1</span>])</span>
+<span id="cb20-92"><a href="#cb20-92" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">outer</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(P)), <span class="fu">seq_len</span>(<span class="fu">nrow</span>(P)), <span class="fu">Vectorize</span>(dist_ij))</span>
+<span id="cb20-93"><a href="#cb20-93" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(D)</span>
+<span id="cb20-94"><a href="#cb20-94" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(D[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="dv">1</span>)</span>
+<span id="cb20-95"><a href="#cb20-95" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-96"><a href="#cb20-96" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-97"><a href="#cb20-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-98"><a href="#cb20-98" aria-hidden="true" tabindex="-1"></a><span class="fu">## Variante A: Direktbelieferung mit dem Savings-Verfahren</span></span>
+<span id="cb20-99"><a href="#cb20-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-100"><a href="#cb20-100" aria-hidden="true" tabindex="-1"></a>Für die Direktbelieferung plant SushiFresh Touren mit 7,5-t-Kühl-Lkw. Jedes Fahrzeug fasst **450 Boxen** (Rollcontainer im Kühlaufbau), eine Tour darf einschließlich Beladung (30 min) und Entladung (15 min je Markt) bei 60 km/h Durchschnittsgeschwindigkeit höchstens **9 Stunden** dauern. Das Savings-Verfahren aus Kapitel [-@sec-tourenplanung] wird dafür um eine **Dauerrestriktion** ergänzt: Vor dem Verbinden zweier Touren wird nicht nur die Kapazität, sondern auch die Dauer der gemeinsamen Tour geprüft.</span>
+<span id="cb20-101"><a href="#cb20-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-104"><a href="#cb20-104" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-105"><a href="#cb20-105" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-savings</span></span>
+<span id="cb20-106"><a href="#cb20-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-107"><a href="#cb20-107" aria-hidden="true" tabindex="-1"></a>v_kmh <span class="ot">&lt;-</span> <span class="dv">60</span>; t_stopp <span class="ot">&lt;-</span> <span class="fl">0.25</span>; t_lade <span class="ot">&lt;-</span> <span class="fl">0.5</span>; kap <span class="ot">&lt;-</span> <span class="dv">450</span>; t_max <span class="ot">&lt;-</span> <span class="dv">9</span></span>
+<span id="cb20-108"><a href="#cb20-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-109"><a href="#cb20-109" aria-hidden="true" tabindex="-1"></a>tour_km <span class="ot">&lt;-</span> <span class="cf">function</span>(t) { tt <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, t, <span class="dv">1</span>); <span class="fu">sum</span>(D[<span class="fu">cbind</span>(<span class="fu">head</span>(tt, <span class="sc">-</span><span class="dv">1</span>), tt[<span class="sc">-</span><span class="dv">1</span>])]) }</span>
+<span id="cb20-110"><a href="#cb20-110" aria-hidden="true" tabindex="-1"></a>dauer   <span class="ot">&lt;-</span> <span class="cf">function</span>(t) <span class="fu">tour_km</span>(t) <span class="sc">/</span> v_kmh <span class="sc">+</span> <span class="fu">length</span>(t) <span class="sc">*</span> t_stopp <span class="sc">+</span> t_lade</span>
+<span id="cb20-111"><a href="#cb20-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-112"><a href="#cb20-112" aria-hidden="true" tabindex="-1"></a>savings_vrp_dauer <span class="ot">&lt;-</span> <span class="cf">function</span>(q) {</span>
+<span id="cb20-113"><a href="#cb20-113" aria-hidden="true" tabindex="-1"></a>  touren <span class="ot">&lt;-</span> <span class="fu">as.list</span>(<span class="fu">seq_along</span>(q) <span class="sc">+</span> <span class="dv">1</span>)               <span class="co"># Knoten 2..41 = Märkte</span></span>
+<span id="cb20-114"><a href="#cb20-114" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">i =</span> <span class="fu">seq_along</span>(q) <span class="sc">+</span> <span class="dv">1</span>, <span class="at">j =</span> <span class="fu">seq_along</span>(q) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-115"><a href="#cb20-115" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(i <span class="sc">&lt;</span> j) <span class="sc">|&gt;</span></span>
+<span id="cb20-116"><a href="#cb20-116" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">s =</span> D[<span class="dv">1</span>, i] <span class="sc">+</span> D[<span class="dv">1</span>, j] <span class="sc">-</span> D[<span class="fu">cbind</span>(i, j)])</span>
+<span id="cb20-117"><a href="#cb20-117" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">&lt;-</span> s[<span class="fu">order</span>(<span class="sc">-</span>s<span class="sc">$</span>s), ]                              <span class="co"># absteigend nach Ersparnis</span></span>
+<span id="cb20-118"><a href="#cb20-118" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (r <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(s))) {</span>
+<span id="cb20-119"><a href="#cb20-119" aria-hidden="true" tabindex="-1"></a>    i <span class="ot">&lt;-</span> s<span class="sc">$</span>i[r]; j <span class="ot">&lt;-</span> s<span class="sc">$</span>j[r]</span>
+<span id="cb20-120"><a href="#cb20-120" aria-hidden="true" tabindex="-1"></a>    ti <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">sapply</span>(touren, <span class="cf">function</span>(t) i <span class="sc">%in%</span> t))</span>
+<span id="cb20-121"><a href="#cb20-121" aria-hidden="true" tabindex="-1"></a>    tj <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">sapply</span>(touren, <span class="cf">function</span>(t) j <span class="sc">%in%</span> t))</span>
+<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (ti <span class="sc">==</span> tj) <span class="cf">next</span></span>
+<span id="cb20-123"><a href="#cb20-123" aria-hidden="true" tabindex="-1"></a>    A <span class="ot">&lt;-</span> touren[[ti]]; B <span class="ot">&lt;-</span> touren[[tj]]</span>
+<span id="cb20-124"><a href="#cb20-124" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">sum</span>(q[<span class="fu">c</span>(A, B) <span class="sc">-</span> <span class="dv">1</span>]) <span class="sc">&gt;</span> kap) <span class="cf">next</span>             <span class="co"># Kapazität</span></span>
+<span id="cb20-125"><a href="#cb20-125" aria-hidden="true" tabindex="-1"></a>    neu <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">tail</span>(A, <span class="dv">1</span>) <span class="sc">==</span> i <span class="sc">&amp;&amp;</span> B[<span class="dv">1</span>] <span class="sc">==</span> j) <span class="fu">c</span>(A, B)</span>
+<span id="cb20-126"><a href="#cb20-126" aria-hidden="true" tabindex="-1"></a>      <span class="cf">else</span> <span class="cf">if</span> (A[<span class="dv">1</span>] <span class="sc">==</span> i <span class="sc">&amp;&amp;</span> <span class="fu">tail</span>(B, <span class="dv">1</span>) <span class="sc">==</span> j) <span class="fu">c</span>(B, A)</span>
+<span id="cb20-127"><a href="#cb20-127" aria-hidden="true" tabindex="-1"></a>      <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">tail</span>(A, <span class="dv">1</span>) <span class="sc">==</span> i <span class="sc">&amp;&amp;</span> <span class="fu">tail</span>(B, <span class="dv">1</span>) <span class="sc">==</span> j) <span class="fu">c</span>(A, <span class="fu">rev</span>(B))</span>
+<span id="cb20-128"><a href="#cb20-128" aria-hidden="true" tabindex="-1"></a>      <span class="cf">else</span> <span class="cf">if</span> (A[<span class="dv">1</span>] <span class="sc">==</span> i <span class="sc">&amp;&amp;</span> B[<span class="dv">1</span>] <span class="sc">==</span> j) <span class="fu">c</span>(<span class="fu">rev</span>(A), B)</span>
+<span id="cb20-129"><a href="#cb20-129" aria-hidden="true" tabindex="-1"></a>      <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb20-130"><a href="#cb20-130" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(neu) <span class="sc">||</span> <span class="fu">dauer</span>(neu) <span class="sc">&gt;</span> t_max) <span class="cf">next</span>    <span class="co"># Tourende, Dauer</span></span>
+<span id="cb20-131"><a href="#cb20-131" aria-hidden="true" tabindex="-1"></a>    touren[[ti]] <span class="ot">&lt;-</span> neu; touren <span class="ot">&lt;-</span> touren[<span class="sc">-</span>tj]</span>
+<span id="cb20-132"><a href="#cb20-132" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb20-133"><a href="#cb20-133" aria-hidden="true" tabindex="-1"></a>  touren</span>
+<span id="cb20-134"><a href="#cb20-134" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-135"><a href="#cb20-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-136"><a href="#cb20-136" aria-hidden="true" tabindex="-1"></a>touren_A <span class="ot">&lt;-</span> <span class="fu">savings_vrp_dauer</span>(maerkte<span class="sc">$</span>boxen)</span>
+<span id="cb20-137"><a href="#cb20-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-138"><a href="#cb20-138" aria-hidden="true" tabindex="-1"></a><span class="co"># Kostensätze 7,5-t-Kühl-Lkw (Kapitel Verkehrsmittel)</span></span>
+<span id="cb20-139"><a href="#cb20-139" aria-hidden="true" tabindex="-1"></a>fix_tag <span class="ot">&lt;-</span> <span class="fl">90.28</span>; k_km <span class="ot">&lt;-</span> <span class="fl">0.536</span>; k_h <span class="ot">&lt;-</span> <span class="fl">31.52</span></span>
+<span id="cb20-140"><a href="#cb20-140" aria-hidden="true" tabindex="-1"></a>tab_A <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">Tour =</span> <span class="fu">seq_along</span>(touren_A),</span>
+<span id="cb20-141"><a href="#cb20-141" aria-hidden="true" tabindex="-1"></a>                <span class="at">Maerkte =</span> <span class="fu">lengths</span>(touren_A),</span>
+<span id="cb20-142"><a href="#cb20-142" aria-hidden="true" tabindex="-1"></a>                <span class="at">Boxen =</span> <span class="fu">map_dbl</span>(touren_A, <span class="sc">~</span> <span class="fu">sum</span>(maerkte<span class="sc">$</span>boxen[.x <span class="sc">-</span> <span class="dv">1</span>])),</span>
+<span id="cb20-143"><a href="#cb20-143" aria-hidden="true" tabindex="-1"></a>                <span class="at">km =</span> <span class="fu">map_dbl</span>(touren_A, tour_km),</span>
+<span id="cb20-144"><a href="#cb20-144" aria-hidden="true" tabindex="-1"></a>                <span class="at">Stunden =</span> <span class="fu">map_dbl</span>(touren_A, dauer)) <span class="sc">|&gt;</span></span>
+<span id="cb20-145"><a href="#cb20-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Kosten =</span> fix_tag <span class="sc">+</span> k_km <span class="sc">*</span> km <span class="sc">+</span> k_h <span class="sc">*</span> Stunden)</span>
+<span id="cb20-146"><a href="#cb20-146" aria-hidden="true" tabindex="-1"></a>tab_A <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(km, Stunden, Kosten), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">1</span>)))</span>
+<span id="cb20-147"><a href="#cb20-147" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-148"><a href="#cb20-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-149"><a href="#cb20-149" aria-hidden="true" tabindex="-1"></a>Das Verfahren bildet <span class="in">`r length(touren_A)`</span> Touren mit zusammen <span class="in">`r round(sum(tab_A$km))`</span> km pro Nacht. Der **Engpass ist die Tourdauer**, nicht die Kapazität: Die Fahrzeuge sind nur zu rund <span class="in">`r round(mean(tab_A$Boxen) / kap * 100)`</span> % ausgelastet, aber die nordhessischen Märkte liegen bis zu <span class="in">`r round(max(D[1, -1]))`</span> km von Raunheim entfernt, und jede Tour liegt nahe an der 9-Stunden-Grenze.</span>
+<span id="cb20-150"><a href="#cb20-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-153"><a href="#cb20-153" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-154"><a href="#cb20-154" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-karte</span></span>
+<span id="cb20-155"><a href="#cb20-155" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Variante A: Touren der Direktbelieferung"</span></span>
+<span id="cb20-156"><a href="#cb20-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-157"><a href="#cb20-157" aria-hidden="true" tabindex="-1"></a>touren_df <span class="ot">&lt;-</span> <span class="fu">imap_dfr</span>(touren_A, <span class="sc">~</span> <span class="fu">tibble</span>(<span class="at">Tour =</span> <span class="fu">factor</span>(.y), <span class="at">knoten =</span> <span class="fu">c</span>(<span class="dv">1</span>, .x, <span class="dv">1</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb20-158"><a href="#cb20-158" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lon =</span> P[knoten, <span class="dv">1</span>], <span class="at">lat =</span> P[knoten, <span class="dv">2</span>])</span>
+<span id="cb20-159"><a href="#cb20-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-160"><a href="#cb20-160" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb20-161"><a href="#cb20-161" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="at">data =</span> touren_df, <span class="fu">aes</span>(<span class="at">x =</span> lon, <span class="at">y =</span> lat, <span class="at">colour =</span> Tour), <span class="at">linewidth =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb20-162"><a href="#cb20-162" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> maerkte, <span class="fu">aes</span>(<span class="at">x =</span> lon, <span class="at">y =</span> lat, <span class="at">size =</span> boxen), <span class="at">colour =</span> <span class="st">"#2D9E8E"</span>) <span class="sc">+</span></span>
+<span id="cb20-163"><a href="#cb20-163" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"point"</span>, <span class="at">x =</span> depot[<span class="st">"lon"</span>], <span class="at">y =</span> depot[<span class="st">"lat"</span>], <span class="at">shape =</span> <span class="dv">23</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">fill =</span> <span class="st">"#2A7ACA"</span>) <span class="sc">+</span></span>
+<span id="cb20-164"><a href="#cb20-164" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> depot[<span class="st">"lon"</span>], <span class="at">y =</span> depot[<span class="st">"lat"</span>] <span class="sc">-</span> <span class="fl">0.07</span>, <span class="at">label =</span> <span class="st">"Raunheim"</span>) <span class="sc">+</span></span>
+<span id="cb20-165"><a href="#cb20-165" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_quickmap</span>() <span class="sc">+</span></span>
+<span id="cb20-166"><a href="#cb20-166" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">size =</span> <span class="st">"Boxen/Tag"</span>) <span class="sc">+</span></span>
+<span id="cb20-167"><a href="#cb20-167" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span>
+<span id="cb20-168"><a href="#cb20-168" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-169"><a href="#cb20-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-170"><a href="#cb20-170" aria-hidden="true" tabindex="-1"></a><span class="fu">## Varianten B und C: Hauptlauf zum Händler</span></span>
+<span id="cb20-171"><a href="#cb20-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-172"><a href="#cb20-172" aria-hidden="true" tabindex="-1"></a>In den Varianten B und C fährt SushiFresh nur noch einen **Hauptlauf** zum Händler. Bei 900 Boxen je Lkw sind dafür zwei Fahrten nötig. Hinzu kommen das Logistikentgelt des Händlers und die **Abschriften**: Ware, die wegen abgelaufener Haltbarkeit nicht mehr verkauft werden kann. Bei Direktbelieferung und Cross-Docking erreicht die Box den Markt am Produktionstag, wir rechnen mit 4 % Abschrift. Über das Zentrallager verliert sie **einen ihrer zwei Haltbarkeitstage**, die Abschriftquote steigt auf 10 %. Das ist genau der Effekt, den das Newsvendor-Modell in Kapitel <span class="co">[</span><span class="ot">-@sec-newsvendor</span><span class="co">]</span> über die Überdeckungskosten abbildet.</span>
+<span id="cb20-173"><a href="#cb20-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-176"><a href="#cb20-176" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-177"><a href="#cb20-177" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-varianten</span></span>
+<span id="cb20-178"><a href="#cb20-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-179"><a href="#cb20-179" aria-hidden="true" tabindex="-1"></a>hauptlauf <span class="ot">&lt;-</span> <span class="cf">function</span>(ziel) {</span>
+<span id="cb20-180"><a href="#cb20-180" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> umweg <span class="sc">*</span> <span class="fu">haversine</span>(depot[<span class="st">"lat"</span>], depot[<span class="st">"lon"</span>], ziel[<span class="st">"lat"</span>], ziel[<span class="st">"lon"</span>])</span>
+<span id="cb20-181"><a href="#cb20-181" aria-hidden="true" tabindex="-1"></a>  fahrten <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(n_boxen <span class="sc">/</span> <span class="dv">900</span>)</span>
+<span id="cb20-182"><a href="#cb20-182" aria-hidden="true" tabindex="-1"></a>  km <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> d <span class="sc">*</span> fahrten; h <span class="ot">&lt;-</span> km <span class="sc">/</span> v_kmh <span class="sc">+</span> fahrten <span class="sc">*</span> <span class="dv">2</span> <span class="sc">*</span> t_lade</span>
+<span id="cb20-183"><a href="#cb20-183" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">d =</span> <span class="fu">unname</span>(d), <span class="at">kosten =</span> <span class="fu">unname</span>(fahrten <span class="sc">*</span> fix_tag <span class="sc">+</span> k_km <span class="sc">*</span> km <span class="sc">+</span> k_h <span class="sc">*</span> h))</span>
+<span id="cb20-184"><a href="#cb20-184" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-185"><a href="#cb20-185" aria-hidden="true" tabindex="-1"></a>hk_box <span class="ot">&lt;-</span> <span class="fl">3.00</span></span>
+<span id="cb20-186"><a href="#cb20-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-187"><a href="#cb20-187" aria-hidden="true" tabindex="-1"></a>varianten <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb20-188"><a href="#cb20-188" aria-hidden="true" tabindex="-1"></a>  <span class="at">Variante =</span> <span class="fu">c</span>(<span class="st">"A: Direktbelieferung"</span>, <span class="st">"B: Zentrallager"</span>, <span class="st">"C: Cross-Docking"</span>),</span>
+<span id="cb20-189"><a href="#cb20-189" aria-hidden="true" tabindex="-1"></a>  <span class="at">Transport =</span> <span class="fu">c</span>(<span class="fu">sum</span>(tab_A<span class="sc">$</span>Kosten), <span class="fu">hauptlauf</span>(zlager)[<span class="st">"kosten"</span>], <span class="fu">hauptlauf</span>(xdock)[<span class="st">"kosten"</span>]),</span>
+<span id="cb20-190"><a href="#cb20-190" aria-hidden="true" tabindex="-1"></a>  <span class="at">Entgelt =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.20</span>, <span class="fl">0.12</span>) <span class="sc">*</span> n_boxen,</span>
+<span id="cb20-191"><a href="#cb20-191" aria-hidden="true" tabindex="-1"></a>  <span class="at">Abschrift =</span> <span class="fu">c</span>(<span class="fl">0.04</span>, <span class="fl">0.10</span>, <span class="fl">0.04</span>) <span class="sc">*</span> hk_box <span class="sc">*</span> n_boxen,</span>
+<span id="cb20-192"><a href="#cb20-192" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lieferzeit =</span> <span class="fu">c</span>(<span class="st">"gleicher Tag"</span>, <span class="st">"+1 Tag"</span>, <span class="st">"gleicher Tag"</span>)</span>
+<span id="cb20-193"><a href="#cb20-193" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb20-194"><a href="#cb20-194" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Gesamt =</span> Transport <span class="sc">+</span> Entgelt <span class="sc">+</span> Abschrift, <span class="at">je_Box =</span> Gesamt <span class="sc">/</span> n_boxen)</span>
+<span id="cb20-195"><a href="#cb20-195" aria-hidden="true" tabindex="-1"></a>varianten <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">2</span>)))</span>
+<span id="cb20-196"><a href="#cb20-196" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-197"><a href="#cb20-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-200"><a href="#cb20-200" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-201"><a href="#cb20-201" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-vergleich-plot</span></span>
+<span id="cb20-202"><a href="#cb20-202" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Distributionskosten je Box nach Variante"</span></span>
+<span id="cb20-203"><a href="#cb20-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-204"><a href="#cb20-204" aria-hidden="true" tabindex="-1"></a>varianten <span class="sc">|&gt;</span></span>
+<span id="cb20-205"><a href="#cb20-205" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Variante, Transport, Entgelt, Abschrift) <span class="sc">|&gt;</span></span>
+<span id="cb20-206"><a href="#cb20-206" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>Variante, <span class="at">names_to =</span> <span class="st">"Position"</span>, <span class="at">values_to =</span> <span class="st">"Kosten"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-207"><a href="#cb20-207" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Position =</span> <span class="fu">factor</span>(Position, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Abschrift"</span>, <span class="st">"Entgelt"</span>, <span class="st">"Transport"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb20-208"><a href="#cb20-208" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Variante, <span class="at">y =</span> Kosten <span class="sc">/</span> n_boxen, <span class="at">fill =</span> Position)) <span class="sc">+</span></span>
+<span id="cb20-209"><a href="#cb20-209" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb20-210"><a href="#cb20-210" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="at">Transport =</span> <span class="st">"#2F3E46"</span>, <span class="at">Entgelt =</span> <span class="st">"#F4A259"</span>,</span>
+<span id="cb20-211"><a href="#cb20-211" aria-hidden="true" tabindex="-1"></a>                               <span class="at">Abschrift =</span> <span class="st">"#C00000"</span>)) <span class="sc">+</span></span>
+<span id="cb20-212"><a href="#cb20-212" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Kosten je Box (€)"</span>, <span class="at">fill =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb20-213"><a href="#cb20-213" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb20-214"><a href="#cb20-214" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-215"><a href="#cb20-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-216"><a href="#cb20-216" aria-hidden="true" tabindex="-1"></a>**Cross-Docking** ist mit Abstand am günstigsten **und** liefert am selben Tag. Die Direktbelieferung scheitert an der Fläche: Viele Kilometer und Fahrerstunden für vergleichsweise wenige Boxen je Markt. Das Zentrallager scheitert an der **Haltbarkeit**: Die zusätzliche Lagerstufe kostet einen Verkaufstag, und die höheren Abschriften wiegen schwerer als der kurze Hauptlauf. Bei Frischware ist Zeit eine Kostenposition.</span>
+<span id="cb20-217"><a href="#cb20-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-218"><a href="#cb20-218" aria-hidden="true" tabindex="-1"></a>Wie robust ist das Ergebnis? Die kritische Größe ist das Entgelt des Händlers. Bis zu welchem Entgelt bleibt Cross-Docking günstiger als die Direktbelieferung?</span>
+<span id="cb20-219"><a href="#cb20-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-222"><a href="#cb20-222" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-223"><a href="#cb20-223" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-breakeven</span></span>
+<span id="cb20-224"><a href="#cb20-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-225"><a href="#cb20-225" aria-hidden="true" tabindex="-1"></a>entgelt_be <span class="ot">&lt;-</span> (varianten<span class="sc">$</span>Gesamt[<span class="dv">1</span>] <span class="sc">-</span> varianten<span class="sc">$</span>Transport[<span class="dv">3</span>] <span class="sc">-</span> varianten<span class="sc">$</span>Abschrift[<span class="dv">3</span>]) <span class="sc">/</span> n_boxen</span>
+<span id="cb20-226"><a href="#cb20-226" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(entgelt_be, <span class="dv">2</span>)</span>
+<span id="cb20-227"><a href="#cb20-227" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-228"><a href="#cb20-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-229"><a href="#cb20-229" aria-hidden="true" tabindex="-1"></a>Erst ab einem Entgelt von rund <span class="in">`r round(entgelt_be, 2)`</span> € je Box wäre die Direktbelieferung wirtschaftlich gleichwertig. Der Kostenvorteil ist also deutlich. Die Entscheidung hat aber auch **nicht-monetäre** Seiten: Bei Cross-Docking gibt SushiFresh die Kontrolle über die letzte Etappe der Kühlkette und den Kontakt zu den Märkten ab und wird von den Zeitfenstern des Händlers abhängig. Bei der Direktbelieferung behält es beides, zum Preis deutlich höherer Kosten.</span>
+<span id="cb20-230"><a href="#cb20-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-231"><a href="#cb20-231" aria-hidden="true" tabindex="-1"></a><span class="fu">## Hub-and-Spoke-Netze</span></span>
+<span id="cb20-232"><a href="#cb20-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-233"><a href="#cb20-233" aria-hidden="true" tabindex="-1"></a>Das Cross-Dock von RheinMarkt ist ein Beispiel für ein allgemeineres Prinzip: die **Bündelung** von Strömen in einem zentralen Knoten. Besonders ausgeprägt ist es in **Stückgut- und Paketnetzen**. Jedes Depot sammelt in seiner Region Sendungen ein (**Vorlauf**) und schickt alles zum **Hub**. Dort wird nach Zieldepots sortiert (**Hauptlauf**), und das Zieldepot stellt zu (**Nachlauf**).</span>
+<span id="cb20-234"><a href="#cb20-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-235"><a href="#cb20-235" aria-hidden="true" tabindex="-1"></a>Der Vorteil zeigt sich an der Zahl der Relationen. In einem **Rasternetz**, in dem jedes der $n$ Depots jedes andere direkt beliefert, gibt es $n(n-1)$ gerichtete Relationen. Bei 8 Depots sind das 56, bei 40 Depots bereits 1.560. Im **Hub-and-Spoke-Netz** sind es nur $2n$, also 16 bzw. 80. Jede Relation wird dadurch deutlich besser ausgelastet. Der Preis sind **Umwege** über den Hub und ein zusätzlicher **Umschlag**. In der Praxis haben sich Mischformen durchgesetzt: Starke Relationen werden direkt gefahren, schwache über einen oder mehrere Hubs gebündelt. Für SushiFresh relevant ist das Prinzip beim Versand von Sushi@Home: Der Paketdienst bündelt die Sendungen vieler Versender in seinem Hub-Netz, und SushiFresh kauft die Zustellung als Leistung ein (Kapitel <span class="co">[</span><span class="ot">-@sec-verkehrsmittel</span><span class="co">]</span>).</span>
+<span id="cb20-236"><a href="#cb20-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-237"><a href="#cb20-237" aria-hidden="true" tabindex="-1"></a><span class="fu">## Omnichannel-Distribution</span></span>
+<span id="cb20-238"><a href="#cb20-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-239"><a href="#cb20-239" aria-hidden="true" tabindex="-1"></a>Wer über mehrere Kanäle verkauft, muss entscheiden, **aus welchem Bestand** ein Onlineauftrag bedient wird und **wer die letzte Meile** übernimmt. Daraus ergeben sich typische Fulfillment-Optionen <span class="co">[</span><span class="ot">@agatz2008efulfillment</span><span class="co">]</span>:</span>
+<span id="cb20-240"><a href="#cb20-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-243"><a href="#cb20-243" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-244"><a href="#cb20-244" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-omni</span></span>
+<span id="cb20-245"><a href="#cb20-245" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb20-246"><a href="#cb20-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-247"><a href="#cb20-247" aria-hidden="true" tabindex="-1"></a>om <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb20-248"><a href="#cb20-248" aria-hidden="true" tabindex="-1"></a>  <span class="at">Option =</span> <span class="fu">c</span>(<span class="st">"Zentrales E-Commerce-Lager"</span>, <span class="st">"Ship-from-Store"</span>, <span class="st">"Click &amp; Collect"</span>,</span>
+<span id="cb20-249"><a href="#cb20-249" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Dark Store / Mikrodepot"</span>, <span class="st">"Abholstation / Paketshop"</span>),</span>
+<span id="cb20-250"><a href="#cb20-250" aria-hidden="true" tabindex="-1"></a>  <span class="at">Prinzip =</span> <span class="fu">c</span>(<span class="st">"eigenes Lager nur für Onlineaufträge, Versand per KEP"</span>,</span>
+<span id="cb20-251"><a href="#cb20-251" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Filiale kommissioniert und versendet Onlineaufträge"</span>,</span>
+<span id="cb20-252"><a href="#cb20-252" aria-hidden="true" tabindex="-1"></a>              <span class="st">"online bestellen, in der Filiale abholen"</span>,</span>
+<span id="cb20-253"><a href="#cb20-253" aria-hidden="true" tabindex="-1"></a>              <span class="st">"städtisches Lager ohne Kundenverkehr, schnelle Zustellung"</span>,</span>
+<span id="cb20-254"><a href="#cb20-254" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Kunde holt an Station oder Partnergeschäft ab"</span>),</span>
+<span id="cb20-255"><a href="#cb20-255" aria-hidden="true" tabindex="-1"></a>  <span class="at">Vorteil =</span> <span class="fu">c</span>(<span class="st">"Skaleneffekte, hohe Kommissionierleistung"</span>,</span>
+<span id="cb20-256"><a href="#cb20-256" aria-hidden="true" tabindex="-1"></a>              <span class="st">"kurze Wege, Filialbestand wird genutzt"</span>,</span>
+<span id="cb20-257"><a href="#cb20-257" aria-hidden="true" tabindex="-1"></a>              <span class="st">"keine Zustellkosten, Zusatzkäufe in der Filiale"</span>,</span>
+<span id="cb20-258"><a href="#cb20-258" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Lieferung in Minuten bis Stunden"</span>,</span>
+<span id="cb20-259"><a href="#cb20-259" aria-hidden="true" tabindex="-1"></a>              <span class="st">"gebündelte Zustellung, kein Nicht-Antreffen"</span>),</span>
+<span id="cb20-260"><a href="#cb20-260" aria-hidden="true" tabindex="-1"></a>  <span class="at">SushiFresh =</span> <span class="fu">c</span>(<span class="st">"Sushi@Home ab Raunheim"</span>, <span class="st">"–"</span>, <span class="st">"Vorbestellung in den Supermärkten"</span>,</span>
+<span id="cb20-261"><a href="#cb20-261" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Mikrodepot für den Lastenrad-Lieferdienst"</span>, <span class="st">"Kühlfächer an Abholstationen?"</span>)</span>
+<span id="cb20-262"><a href="#cb20-262" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-263"><a href="#cb20-263" aria-hidden="true" tabindex="-1"></a><span class="fu">kbl</span>(om, <span class="at">booktabs =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-264"><a href="#cb20-264" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb20-265"><a href="#cb20-265" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-266"><a href="#cb20-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-267"><a href="#cb20-267" aria-hidden="true" tabindex="-1"></a>Jede Option ist eine Kombination aus **Struktur** (wo liegt der Bestand?) und **letzter Meile** (wer überbrückt die letzten Kilometer?). Die Herausforderungen liegen in der **Bestandstransparenz** über alle Kanäle (ein online verkaufter Artikel darf nicht gleichzeitig im Regal liegen), in kleinen Aufträgen mit engen Zeitfenstern und in den Rückwärtsflüssen.</span>
+<span id="cb20-268"><a href="#cb20-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-269"><a href="#cb20-269" aria-hidden="true" tabindex="-1"></a><span class="fu">## Retouren und Reverse Logistics</span></span>
+<span id="cb20-270"><a href="#cb20-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-271"><a href="#cb20-271" aria-hidden="true" tabindex="-1"></a>Distribution endet nicht beim Kunden. **Reverse Logistics** umfasst alle Warenflüsse vom Kunden zurück in die Supply Chain [@fleischmann1997quantitative]: **Retouren** im Onlinehandel, **Rückrufe** bei Qualitätsmängeln, **Mehrwegbehälter** wie Paletten, Kisten und Pfandflaschen sowie **Altprodukte** zur Aufbereitung oder Entsorgung. Der Prozess folgt einer typischen Kette aus Rücknahme, Sammlung, Prüfung und **Disposition**, also der Entscheidung zwischen Wiederverkauf, Aufbereitung, Recycling und Entsorgung. Das knüpft an die Kreislaufwirtschaft aus Kapitel <span class="co">[</span><span class="ot">-@sec-nachhaltigkeit</span><span class="co">]</span> an. Rückwärtsflüsse sind schwerer zu planen als Vorwärtsflüsse, weil Zeitpunkt, Menge und Zustand der zurückkommenden Ware unsicher sind.</span>
+<span id="cb20-272"><a href="#cb20-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-273"><a href="#cb20-273" aria-hidden="true" tabindex="-1"></a><span class="fu">### Fallbeispiel: ein Mehrwegkreislauf für Sushi-Boxen</span></span>
+<span id="cb20-274"><a href="#cb20-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-275"><a href="#cb20-275" aria-hidden="true" tabindex="-1"></a>::: {.fallstudie}</span>
+<span id="cb20-276"><a href="#cb20-276" aria-hidden="true" tabindex="-1"></a>**Fallstudie: Die Pfandbox**</span>
+<span id="cb20-277"><a href="#cb20-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-278"><a href="#cb20-278" aria-hidden="true" tabindex="-1"></a>Wer in Deutschland Speisen zum Mitnehmen in Einweg-Kunststoffverpackungen abgibt, muss seit 2023 auch eine **Mehrwegalternative** anbieten (Verpackungsgesetz, mit Ausnahmen für sehr kleine Betriebe). SushiFresh führt deshalb eine **Pfandbox** ein, die Kundinnen und Kunden in den Supermärkten zurückgeben. Der Kühl-Lkw nimmt die leeren Boxen bei der morgendlichen Belieferung mit zurück nach Raunheim, wo sie gespült werden. Wie viele Boxen braucht der Kreislauf, und lohnt sich Mehrweg gegenüber Einweg?</span>
+<span id="cb20-279"><a href="#cb20-279" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb20-280"><a href="#cb20-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-281"><a href="#cb20-281" aria-hidden="true" tabindex="-1"></a>Der **Behälterbedarf** eines Kreislaufs ergibt sich aus dem täglichen Bedarf und der **Umlaufzeit**, der Zeit vom Befüllen über Verkauf, Nutzung durch den Kunden, Rückgabe, Rücktransport und Spülung bis zum erneuten Befüllen. Hinzu kommt ein Sicherheitszuschlag für Schwankungen:</span>
+<span id="cb20-282"><a href="#cb20-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-283"><a href="#cb20-283" aria-hidden="true" tabindex="-1"></a>$$\text{Bestand} = \text{Tagesbedarf} \cdot \text{Umlaufzeit} \cdot (1 + \text{Puffer})$$</span>
+<span id="cb20-284"><a href="#cb20-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-287"><a href="#cb20-287" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-288"><a href="#cb20-288" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-mehrweg-bestand</span></span>
+<span id="cb20-289"><a href="#cb20-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-290"><a href="#cb20-290" aria-hidden="true" tabindex="-1"></a>bedarf_tag <span class="ot">&lt;-</span> <span class="dv">845</span>; quote_mw <span class="ot">&lt;-</span> <span class="fl">0.30</span>; umlauf <span class="ot">&lt;-</span> <span class="dv">4</span>; puffer <span class="ot">&lt;-</span> <span class="fl">0.15</span></span>
+<span id="cb20-291"><a href="#cb20-291" aria-hidden="true" tabindex="-1"></a>mw_tag <span class="ot">&lt;-</span> bedarf_tag <span class="sc">*</span> quote_mw</span>
+<span id="cb20-292"><a href="#cb20-292" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">Mehrweg_je_Tag =</span> mw_tag, <span class="at">Bestand =</span> <span class="fu">ceiling</span>(mw_tag <span class="sc">*</span> umlauf <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">+</span> puffer)))</span>
+<span id="cb20-293"><a href="#cb20-293" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-294"><a href="#cb20-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-295"><a href="#cb20-295" aria-hidden="true" tabindex="-1"></a>Bei einer Mehrwegquote von 30 % und vier Tagen Umlaufzeit braucht der Kreislauf rund 1.170 Boxen. Jeder zusätzliche Tag Umlaufzeit, etwa weil Kunden die Box erst nach einer Woche zurückbringen, erhöht den Bestand um rund 250 Boxen.</span>
+<span id="cb20-296"><a href="#cb20-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-297"><a href="#cb20-297" aria-hidden="true" tabindex="-1"></a>Für die **Wirtschaftlichkeit** zählen die Kosten je Nutzung. Eine Mehrwegbox kostet 3,50 € und hält technisch 200 Spülgänge, jede Spülung kostet 0,08 €. Entscheidend ist aber der **Schwund**: Kehrt jede Box mit Wahrscheinlichkeit $s$ nicht zurück, wird sie im Mittel nur $1/s$-mal genutzt (geometrische Verteilung). Die Kosten je Nutzung betragen dann</span>
+<span id="cb20-298"><a href="#cb20-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-299"><a href="#cb20-299" aria-hidden="true" tabindex="-1"></a>$$k_{\text{MW}} = \frac{p_{\text{Box}}}{\min(L, 1/s)} + k_{\text{Spülen}}.$$</span>
+<span id="cb20-300"><a href="#cb20-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-303"><a href="#cb20-303" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-304"><a href="#cb20-304" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds2-mehrweg-kosten</span></span>
+<span id="cb20-305"><a href="#cb20-305" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Kosten je Nutzung in Abhängigkeit von der Schwundquote"</span></span>
+<span id="cb20-306"><a href="#cb20-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-307"><a href="#cb20-307" aria-hidden="true" tabindex="-1"></a>p_box <span class="ot">&lt;-</span> <span class="fl">3.50</span>; L <span class="ot">&lt;-</span> <span class="dv">200</span>; k_spuelen <span class="ot">&lt;-</span> <span class="fl">0.08</span>; k_einweg <span class="ot">&lt;-</span> <span class="fl">0.18</span></span>
+<span id="cb20-308"><a href="#cb20-308" aria-hidden="true" tabindex="-1"></a>k_mw <span class="ot">&lt;-</span> <span class="cf">function</span>(s) p_box <span class="sc">/</span> <span class="fu">pmin</span>(L, <span class="dv">1</span> <span class="sc">/</span> s) <span class="sc">+</span> k_spuelen</span>
+<span id="cb20-309"><a href="#cb20-309" aria-hidden="true" tabindex="-1"></a>s_be <span class="ot">&lt;-</span> <span class="fu">uniroot</span>(<span class="cf">function</span>(s) <span class="fu">k_mw</span>(s) <span class="sc">-</span> k_einweg, <span class="fu">c</span>(<span class="fl">0.001</span>, <span class="fl">0.2</span>))<span class="sc">$</span>root</span>
+<span id="cb20-310"><a href="#cb20-310" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">Kosten_bei_5_Prozent =</span> <span class="fu">round</span>(<span class="fu">k_mw</span>(<span class="fl">0.05</span>), <span class="dv">3</span>), <span class="at">Break_even_Schwund =</span> <span class="fu">round</span>(s_be, <span class="dv">3</span>))</span>
+<span id="cb20-311"><a href="#cb20-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-312"><a href="#cb20-312" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">s =</span> <span class="fu">seq</span>(<span class="fl">0.005</span>, <span class="fl">0.10</span>, <span class="at">by =</span> <span class="fl">0.001</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb20-313"><a href="#cb20-313" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Mehrweg =</span> <span class="fu">k_mw</span>(s)) <span class="sc">|&gt;</span></span>
+<span id="cb20-314"><a href="#cb20-314" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> s <span class="sc">*</span> <span class="dv">100</span>, <span class="at">y =</span> Mehrweg)) <span class="sc">+</span></span>
+<span id="cb20-315"><a href="#cb20-315" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>, <span class="at">colour =</span> <span class="st">"#0B6E4F"</span>) <span class="sc">+</span></span>
+<span id="cb20-316"><a href="#cb20-316" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> k_einweg, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb20-317"><a href="#cb20-317" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> s_be <span class="sc">*</span> <span class="dv">100</span>, <span class="at">linetype =</span> <span class="st">"dotted"</span>) <span class="sc">+</span></span>
+<span id="cb20-318"><a href="#cb20-318" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">9</span>, <span class="at">y =</span> k_einweg <span class="sc">+</span> <span class="fl">0.012</span>, <span class="at">label =</span> <span class="st">"Einweg 0,18 €"</span>) <span class="sc">+</span></span>
+<span id="cb20-319"><a href="#cb20-319" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Schwundquote je Umlauf (%)"</span>, <span class="at">y =</span> <span class="st">"Kosten je Nutzung (€)"</span>) <span class="sc">+</span></span>
+<span id="cb20-320"><a href="#cb20-320" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span>
+<span id="cb20-321"><a href="#cb20-321" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-322"><a href="#cb20-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-323"><a href="#cb20-323" aria-hidden="true" tabindex="-1"></a>Bei 5 % Schwund kostet eine Nutzung rund <span class="in">`r round(k_mw(0.05), 2)`</span> € und damit mehr als die Einwegverpackung. Mehrweg lohnt sich erst unterhalb einer Schwundquote von rund **`r round(s_be * 100, 1)` %**. Der entscheidende Hebel ist also nicht der Preis der Box, sondern die **Rückgabequote**, die sich über die Höhe des Pfands und eine bequeme Rückgabe steuern lässt. Ökologisch gilt Ähnliches: Eine Mehrwegbox muss oft genug genutzt werden, um ihren höheren Material- und Spülaufwand auszugleichen.</span>
+<span id="cb20-324"><a href="#cb20-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-325"><a href="#cb20-325" aria-hidden="true" tabindex="-1"></a><span class="fu">## Synthese: Was der Reader zur Distribution beiträgt</span></span>
+<span id="cb20-326"><a href="#cb20-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-327"><a href="#cb20-327" aria-hidden="true" tabindex="-1"></a>Die RheinMarkt-Entscheidung zeigt, wie die Kapitel des Readers zusammenwirken. Jede Methode beantwortet eine Teilfrage der Distributionsgestaltung:</span>
+<span id="cb20-328"><a href="#cb20-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-329"><a href="#cb20-329" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Frage <span class="pp">|</span> Methode <span class="pp">|</span> Kapitel <span class="pp">|</span></span>
+<span id="cb20-330"><a href="#cb20-330" aria-hidden="true" tabindex="-1"></a><span class="pp">|:---|:---|:---|</span></span>
+<span id="cb20-331"><a href="#cb20-331" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Welche Struktur und welche Kanäle? <span class="pp">|</span> Distributionsstrukturen, Lieferservice <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-distributionsstrukturen</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-332"><a href="#cb20-332" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Wo stehen Produktion und Lager? <span class="pp">|</span> Nutzwertanalyse, AHP, Weiszfeld, WLP <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-standort-1</span><span class="co">]</span>, <span class="co">[</span><span class="ot">-@sec-standort-2</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-333"><a href="#cb20-333" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Wie wird bei knapper Kapazität verteilt? <span class="pp">|</span> Transportproblem, VAM <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-transportplanung</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-334"><a href="#cb20-334" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Wie viel Bestand ist nötig? <span class="pp">|</span> Pooling, Sicherheitsbestand <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-unsicherheit-pooling</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-335"><a href="#cb20-335" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Wie viel soll produziert werden? <span class="pp">|</span> Newsvendor-Modell <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-newsvendor</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-336"><a href="#cb20-336" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Wie stabil ist die Kette? <span class="pp">|</span> Bullwhip-Analyse <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-bullwhip</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-337"><a href="#cb20-337" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Wie wird kommissioniert? <span class="pp">|</span> Lagerplatzvergabe, Picker Routing <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-lager</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-338"><a href="#cb20-338" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Womit wird transportiert, was kostet es? <span class="pp">|</span> Kostensätze, TCO, ISO 14083 <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-verkehrsmittel</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-339"><a href="#cb20-339" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Wie weit ist es im Netz? <span class="pp">|</span> Dijkstra <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-kuerzeste-wege</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-340"><a href="#cb20-340" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> In welcher Reihenfolge wird geliefert? <span class="pp">|</span> TSP-Heuristiken, Savings <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-tourenplanung</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb20-341"><a href="#cb20-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-342"><a href="#cb20-342" aria-hidden="true" tabindex="-1"></a>Kein Modell beantwortet die Gestaltungsfrage allein. Gute Distributionsentscheidungen entstehen, wenn strategische Strukturentscheidungen mit den Kosten und Restriktionen der operativen Ebene durchgerechnet werden. Im RheinMarkt-Fall waren das die Touren und Fahrzeiten der Direktbelieferung und die Haltbarkeit der Ware im Zentrallager.</span>
+<span id="cb20-343"><a href="#cb20-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-344"><a href="#cb20-344" aria-hidden="true" tabindex="-1"></a><span class="fu">## Zusammenfassung</span></span>
+<span id="cb20-345"><a href="#cb20-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-346"><a href="#cb20-346" aria-hidden="true" tabindex="-1"></a>Die Wahl der Distributionsstruktur lässt sich mit den Methoden des Readers **quantitativ** vergleichen. Für die RheinMarkt-Anfrage ergab das Savings-Verfahren mit Kapazitäts- und Dauerrestriktion hohe Kosten für die Direktbelieferung. Das Zentrallager verliert durch die zusätzliche Lagerstufe einen Haltbarkeitstag, **Cross-Docking** ist die günstigste und schnellste Option. Bei Frischware ist Zeit eine Kostenposition. **Hub-and-Spoke-Netze** bündeln Ströme zum Preis von Umwegen und zusätzlichem Umschlag. **Omnichannel**-Fulfillment kombiniert Bestandsort und letzte Meile. **Reverse Logistics** erweitert die Distribution um Rückwärtsflüsse. Bei Mehrwegkreisläufen bestimmen Umlaufzeit und Tagesbedarf den Behälterbestand, und die **Rückgabequote** entscheidet über die Wirtschaftlichkeit.</span>
+<span id="cb20-347"><a href="#cb20-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-348"><a href="#cb20-348" aria-hidden="true" tabindex="-1"></a>Auf der R-Seite haben Sie Distanzmatrizen mit <span class="in">`outer()`</span> und <span class="in">`Vectorize()`</span> erzeugt, das Savings-Verfahren um eine zusätzliche Restriktion erweitert und Break-even-Werte mit <span class="in">`uniroot()`</span> bestimmt.</span>
+<span id="cb20-349"><a href="#cb20-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-350"><a href="#cb20-350" aria-hidden="true" tabindex="-1"></a>::: {.kontrollfragen}</span>
+<span id="cb20-351"><a href="#cb20-351" aria-hidden="true" tabindex="-1"></a>**Kontrollfragen**</span>
+<span id="cb20-352"><a href="#cb20-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-353"><a href="#cb20-353" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Warum ist bei der Direktbelieferung der RheinMarkt-Märkte die Tourdauer und nicht die Fahrzeugkapazität der Engpass?</span>
+<span id="cb20-354"><a href="#cb20-354" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Erläutern Sie, wie die Haltbarkeit der Boxen die Wahl zwischen Zentrallager und Cross-Docking beeinflusst. Welche Rolle spielt dabei das Newsvendor-Modell?</span>
+<span id="cb20-355"><a href="#cb20-355" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>RheinMarkt möchte das Cross-Dock-Entgelt auf 0,35 € je Box erhöhen. Ist Variante C dann noch die günstigste? Welche Mischform aus Direktbelieferung naher Märkte und Cross-Docking wäre denkbar?</span>
+<span id="cb20-356"><a href="#cb20-356" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Welche nicht-monetären Kriterien sprechen für bzw. gegen die Direktbelieferung?</span>
+<span id="cb20-357"><a href="#cb20-357" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Wie viele gerichtete Relationen hat ein Rasternetz mit 12 Depots, wie viele ein Hub-and-Spoke-Netz? Welche Nachteile hat die Bündelung über einen Hub?</span>
+<span id="cb20-358"><a href="#cb20-358" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Ordnen Sie die Fulfillment-Optionen des Omnichannel-Handels nach Lieferzeit und Kosten je Auftrag.</span>
+<span id="cb20-359"><a href="#cb20-359" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Wie verändert sich der Behälterbestand der Pfandbox, wenn die Mehrwegquote auf 50 % steigt und die Umlaufzeit auf sechs Tage wächst?</span>
+<span id="cb20-360"><a href="#cb20-360" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>Leiten Sie her, warum eine Box bei einer Schwundquote $s$ im Mittel $1/s$-mal genutzt wird.</span>
+<span id="cb20-361"><a href="#cb20-361" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>Wählen Sie drei Kapitel des Readers und erläutern Sie, welchen Beitrag ihre Methoden zur Bewertung der RheinMarkt-Anfrage leisten.</span>
+<span id="cb20-362"><a href="#cb20-362" aria-hidden="true" tabindex="-1"></a>:::</span>
+</code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Supply Chain Management — Lehrbuch</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+</body></html>

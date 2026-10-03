@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="description" content="Kursbegleitender Reader zur Vorlesung Supply Chain Management, Wintersemester 26/27">
+<title>2&nbsp; Wertschöpfung, strategische Fertigung und Strategic Fit – Supply Chain Management</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/03_ziele-zielkonflikte-und-logistikkosten.html" rel="next">
+<link href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-81de787dd4773dbc0001c2dc1cc3016d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="../custom.css">
+</head>
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html">Grundlagen</a></li><li class="breadcrumb-item"><a href="../chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Wertschöpfung, strategische Fertigung und Strategic Fit</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Suchen" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Supply Chain Management</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Suchen"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Vorwort</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Grundlagen</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Einführung und Grundbegriffe des Supply Chain Managements</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Wertschöpfung, strategische Fertigung und Strategic Fit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03_ziele-zielkonflikte-und-logistikkosten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ziele, Zielkonflikte und Logistikkosten</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09_nachhaltigkeit-im-supply-chain-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Nachhaltigkeit im Supply Chain Management</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14a_distributionsstrukturen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Distributionsstrukturen und -kanäle</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Strategische Gestaltung von Supply Chains</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Standortplanung I – Qualitative und kontinuierliche Verfahren</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Standortplanung II – Diskrete Netzwerkplanungsmodelle</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09_transportplanung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transportplanung</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Unsicherheit und Koordination</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06_unsicherheit-in-supply-chains-pooling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Unsicherheit in Supply Chains und Pooling</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07_das-newsvendor-modell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Das Newsvendor-Modell</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/08_der-bullwhip-effekt-und-das-beergame.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Der Bullwhip-Effekt und das Beergame</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Distributionslogistik</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/13_lagerplanung-und-kommissionierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Lagerplanung und Kommissionierung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/12_transportmittel-und-antriebe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Verkehrsmittel, Antriebe und Transportkosten</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/10_kuerzeste-wege.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Kürzeste Wege</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/11_tourenplanung-tsp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Tourenplanung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14b_distributionssystem-gestalten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Distributionssystem gestalten</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literaturverzeichnis</span></a>
+  </div>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+<li><a href="#einleitung" id="toc-einleitung" class="nav-link active" data-scroll-target="#einleitung"><span class="header-section-number">2.1</span> Einleitung</a></li>
+  <li><a href="#wertsch%C3%B6pfung-als-prozess" id="toc-wertschöpfung-als-prozess" class="nav-link" data-scroll-target="#wertsch%C3%B6pfung-als-prozess"><span class="header-section-number">2.2</span> Wertschöpfung als Prozess</a></li>
+  <li>
+<a href="#strategische-fertigung-make-or-buy" id="toc-strategische-fertigung-make-or-buy" class="nav-link" data-scroll-target="#strategische-fertigung-make-or-buy"><span class="header-section-number">2.3</span> Strategische Fertigung: Make-or-Buy</a>
+  <ul class="collapse">
+<li><a href="#denken-in-zyklen" id="toc-denken-in-zyklen" class="nav-link" data-scroll-target="#denken-in-zyklen"><span class="header-section-number">2.3.1</span> Denken in Zyklen</a></li>
+  <li><a href="#make-to-stock-vs.-make-to-order" id="toc-make-to-stock-vs.-make-to-order" class="nav-link" data-scroll-target="#make-to-stock-vs.-make-to-order"><span class="header-section-number">2.3.2</span> Make-to-stock vs.&nbsp;Make-to-order</a></li>
+  </ul>
+</li>
+  <li><a href="#strategische-ziele-kundenzufriedenheit-unter-unsicherheit" id="toc-strategische-ziele-kundenzufriedenheit-unter-unsicherheit" class="nav-link" data-scroll-target="#strategische-ziele-kundenzufriedenheit-unter-unsicherheit"><span class="header-section-number">2.4</span> Strategische Ziele: Kundenzufriedenheit unter Unsicherheit</a></li>
+  <li><a href="#reaktionsf%C3%A4higkeit-und-effizienz" id="toc-reaktionsfähigkeit-und-effizienz" class="nav-link" data-scroll-target="#reaktionsf%C3%A4higkeit-und-effizienz"><span class="header-section-number">2.5</span> Reaktionsfähigkeit und Effizienz</a></li>
+  <li>
+<a href="#strategic-fit" id="toc-strategic-fit" class="nav-link" data-scroll-target="#strategic-fit"><span class="header-section-number">2.6</span> Strategic Fit</a>
+  <ul class="collapse">
+<li><a href="#effiziente-vs.-reaktive-teilstrategien" id="toc-effiziente-vs.-reaktive-teilstrategien" class="nav-link" data-scroll-target="#effiziente-vs.-reaktive-teilstrategien"><span class="header-section-number">2.6.1</span> Effiziente vs.&nbsp;reaktive Teilstrategien</a></li>
+  <li><a href="#normstrategien-und-der-beitrag-des-scm" id="toc-normstrategien-und-der-beitrag-des-scm" class="nav-link" data-scroll-target="#normstrategien-und-der-beitrag-des-scm"><span class="header-section-number">2.6.2</span> Normstrategien und der Beitrag des SCM</a></li>
+  <li><a href="#strategic-fit-und-die-fertigungsentscheidung" id="toc-strategic-fit-und-die-fertigungsentscheidung" class="nav-link" data-scroll-target="#strategic-fit-und-die-fertigungsentscheidung"><span class="header-section-number">2.6.3</span> Strategic Fit und die Fertigungsentscheidung</a></li>
+  </ul>
+</li>
+  <li><a href="#zusammenfassung" id="toc-zusammenfassung" class="nav-link" data-scroll-target="#zusammenfassung"><span class="header-section-number">2.7</span> Zusammenfassung</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html">Grundlagen</a></li><li class="breadcrumb-item"><a href="../chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Wertschöpfung, strategische Fertigung und Strategic Fit</span></a></li></ol></nav><div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span id="sec-strategic-fit" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Wertschöpfung, strategische Fertigung und Strategic Fit</span></span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Gesamten Code zeigen</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Gesamten Code verbergen</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">Quellcode anzeigen</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><div class="lernziele">
+<p><strong>Lernziele</strong></p>
+<ul>
+<li>Sie können den Wertschöpfungsprozess einer Supply Chain in die Stufen Beschaffung, Produktion, Distribution und Absatz <strong>strukturieren</strong>.</li>
+<li>Sie können die strategische Fertigungsentscheidung (Make-or-Buy) und die Lage des Entkopplungspunkts (Make-to-stock vs.&nbsp;Make-to-order) <strong>erläutern</strong>.</li>
+<li>Sie können implizierte Nachfrageunsicherheit und die Reaktionsfähigkeit einer Supply Chain <strong>gegenüberstellen</strong>.</li>
+<li>Sie können den Strategic Fit einer Supply-Chain-Konfiguration anhand von Wettbewerbsstrategie und implizierter Unsicherheit <strong>beurteilen</strong>.</li>
+<li>Sie können in R eigene Funktionen schreiben, Kontrollfluss mit <code>if</code>/<code>else</code> einsetzen und Tabellen mit <code>mutate()</code>, <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> und <code>select()</code> auswerten.</li>
+</ul>
+</div>
+<section id="einleitung" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="einleitung">
+<span class="header-section-number">2.1</span> Einleitung</h2>
+<p>Im ersten Kapitel wurde eine Supply Chain als Netzwerk von Akteuren beschrieben, die Material-, Informations- und Finanzflüsse austauschen, um ein Produkt vom Rohstoff bis zum Endkunden zu bringen. Diese Definition beantwortet jedoch noch nicht die Frage, <em>warum</em> eine Supply Chain überhaupt existiert und <em>wie</em> sie so gestaltet werden sollte, dass sie zum Geschäftsmodell eines Unternehmens passt. Genau hier setzt dieses Kapitel an: Zunächst wird der Wertschöpfungsprozess als Kette aufeinander aufbauender Aktivitäten eingeführt, die aus Vorleistungen einen Kundennutzen erzeugen. Anschließend wird die strategische Fertigungsentscheidung betrachtet, also die Frage, welche Wertschöpfungsstufen ein Unternehmen selbst durchführt (<strong>Make</strong>) und welche es von Dritten bezieht (<strong>Buy</strong>), sowie an welcher Stelle der Kette Produktion auf konkrete Kundenaufträge trifft. Den Abschluss bildet das zentrale Konzept des Kapitels: der <strong>Strategic Fit</strong> nach <span class="citation" data-cites="chopra2025supply">Chopra und Meindl (<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">2025</a>)</span> — die Forderung, dass die Wettbewerbsstrategie eines Unternehmens und die Strategie seiner Supply Chain konsistent aufeinander abgestimmt sein müssen.</p>
+<p>Diese drei Bausteine hängen eng zusammen: Erst wenn man die Wertschöpfungskette kennt, kann man entscheiden, welche Stufen intern und welche extern erbracht werden. Und erst wenn man weiß, wie eine Supply Chain aufgebaut ist, kann man beurteilen, ob sie zur Unsicherheit des bedienten Marktes passt.</p>
+</section><section id="wertschöpfung-als-prozess" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="wertschöpfung-als-prozess">
+<span class="header-section-number">2.2</span> Wertschöpfung als Prozess</h2>
+<p>Eine Supply Chain lässt sich als eine Abfolge von <strong>wertschöpfenden Aktivitäten</strong> verstehen, die Vorprodukte und Dienstleistungen Schritt für Schritt in ein Produkt überführen, für das ein Kunde bereit ist zu zahlen. Diese Kette lässt sich grob in vier aufeinanderfolgende Prozessphasen gliedern:</p>
+<div class="definition">
+<p><strong>Definition: Wertschöpfungsprozess</strong></p>
+<p>Die <strong>Beschaffung</strong> ist der Prozess zum Einkauf und zur Bereitstellung von Rohstoffen, Komponenten und Dienstleistungen von externen Partnern, die für die Produktion von Waren und Dienstleistungen erforderlich sind.</p>
+<p>Die <strong>Produktion</strong> ist ein zielgerichteter Prozess der Kombination von Gütern und Dienstleistungen zu höherwertigen Produkten.</p>
+<p>Die <strong>Distribution</strong> umfasst die physische Verteilung von Waren vom Hersteller zum Endkunden, insbesondere Lagerhaltung, Transport und Logistik von Fertigprodukten.</p>
+<p>Der <strong>Absatz</strong> ist der Prozess des Verkaufs der Endprodukte an Konsumenten oder Handelspartner.</p>
+</div>
+<p>Diese vier Phasen sind analytisch, nicht organisatorisch zu verstehen: In der Praxis überlappen sie sich, laufen teilweise parallel und werden häufig von unterschiedlichen Unternehmen entlang der Kette übernommen. Ein Automobilzulieferer etwa betreibt gleichzeitig Beschaffung (Rohstahl, Elektronikkomponenten), Produktion (Fertigung von Baugruppen) und Distribution (Anlieferung “just-in-sequence” an den OEM) — sein Absatz ist zugleich die Beschaffung des nächsten Kettenglieds. Wertschöpfung ist also kein Merkmal eines einzelnen Unternehmens, sondern eine Eigenschaft der gesamten Kette: Jede Stufe nimmt Inputs entgegen, veredelt sie und gibt sie an die nächste Stufe weiter, wobei mit jedem Schritt der Wert aus Sicht des Endkunden steigt (siehe <span class="citation" data-cites="chopra2025supply">Chopra und Meindl (<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">2025</a>)</span>, Kapitel 1.5).</p>
+<p>Diese Kettenperspektive ist die Grundlage für die strategische Fertigungsentscheidung, mit der sich der nächste Abschnitt beschäftigt: Für jede Wertschöpfungsstufe muss ein Unternehmen entscheiden, ob es sie selbst betreibt oder extern vergibt.</p>
+</section><section id="strategische-fertigung-make-or-buy" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="strategische-fertigung-make-or-buy">
+<span class="header-section-number">2.3</span> Strategische Fertigung: Make-or-Buy</h2>
+<p>Die <strong>strategische Fertigungsentscheidung</strong> — im angelsächsischen Sprachraum als <em>make-or-buy decision</em> bezeichnet — betrifft die Frage, welche Wertschöpfungsstufen ein Unternehmen selbst ausführt und welche es an externe Partner auslagert (Fremdbezug). Diese Entscheidung ist strategisch, weil sie nicht kurzfristig revidierbar ist: Eigene Fertigungskapazitäten erfordern Investitionen in Anlagen, Personal und Know-how, während Fremdbezug Abhängigkeiten von Lieferanten und einen Verlust an direkter Kontrolle über Qualität und Lieferfähigkeit mit sich bringt.</p>
+<p>Klassische Kriterien für die Make-or-Buy-Entscheidung sind unter anderem:</p>
+<ul>
+<li>
+<strong>Kernkompetenz</strong>: Aktivitäten, die einen Wettbewerbsvorteil begründen (z. B. proprietäre Fertigungstechnologie), werden eher intern (Make) gehalten; standardisierte Commodity-Prozesse eignen sich eher für Fremdbezug (Buy).</li>
+<li>
+<strong>Kosten</strong>: Skaleneffekte externer Spezialanbieter können die Fremdvergabe günstiger machen als die eigene, kleinvolumigere Fertigung.</li>
+<li>
+<strong>Kapitalbindung und Flexibilität</strong>: Eigene Anlagen binden Kapital und erhöhen Fixkosten; Fremdbezug verschiebt Kosten in variable Bestandteile und erhöht die Flexibilität bei Nachfrageschwankungen.</li>
+<li>
+<strong>Risiko und Kontrolle</strong>: Eigene Fertigung sichert Kontrolle über Qualität, Termine und geistiges Eigentum, erhöht aber das unternehmerische Risiko (z. B. Auslastungsrisiko).</li>
+</ul>
+<p>Eng mit der Make-or-Buy-Frage verknüpft ist die Frage, <em>wo</em> innerhalb der Wertschöpfungskette die Produktion auf den konkreten Kundenauftrag trifft — der sogenannte <strong>Entkopplungspunkt</strong> (auch <em>Customer Order Decoupling Point</em>, CODP). Er markiert die Stelle, ab der ein Produkt kundenauftragsspezifisch wird, während vorgelagerte Stufen auf Basis von Prognosen (anonym, auf Lager) produzieren.</p>
+<section id="denken-in-zyklen" class="level3" data-number="2.3.1"><h3 data-number="2.3.1" class="anchored" data-anchor-id="denken-in-zyklen">
+<span class="header-section-number">2.3.1</span> Denken in Zyklen</h3>
+<p>Eine hilfreiche Systematik zur Analyse der Wertschöpfungskette bietet die Betrachtung in vier <strong>Prozesszyklen</strong>, die jeweils zwei benachbarte Stufen der Kette verbinden (vgl. <span class="citation" data-cites="kummer2018grundzuge">Kummer u.&nbsp;a. (<a href="../references.html#ref-kummer2018grundzuge" role="doc-biblioref">2018</a>)</span>, S. 45):</p>
+<ol type="1">
+<li>
+<strong>Kundenbestellzyklus</strong>: Verarbeitung externer Kundenbedarfe (zwischen Kunde und Händler).</li>
+<li>
+<strong>Distributions-/Versorgungszyklus</strong>: Umwandlung von Kundenbedarfen in interne Bedarfe an Fertigprodukten (zwischen Händler und Produzent).</li>
+<li>
+<strong>Produktionszyklus</strong>: Umwandlung interner Bedarfe in Produktionsbedarfe von Zwischenprodukten und Rohstoffen (innerhalb der Produktion).</li>
+<li>
+<strong>Beschaffungszyklus</strong>: Gestaltung von Bestell- und Versorgungsprozessen für extern zu beziehende Rohstoffe und Dienstleistungen (zwischen Produzent und Lieferant).</li>
+</ol>
+<p>Jeder dieser Zyklen kann entweder <strong>kundenauftragsgetrieben</strong> (“pull”, ausgelöst durch einen konkreten Bedarf) oder <strong>prognosegetrieben</strong> (“push”, ausgelöst durch eine Vorhersage) ablaufen. Die Grenze zwischen Push- und Pull-Bereich der Kette ist genau der Entkopplungspunkt. Je weiter dieser Punkt stromaufwärts (in Richtung Rohstoffe) liegt, desto größer ist der Anteil der Kette, der erst nach Auftragseingang aktiv wird — und desto geringer das Risiko, für einen anonymen Markt auf Vorrat zu produzieren. Allerdings steigt damit in der Regel auch die Lieferzeit, die der Kunde in Kauf nehmen muss.</p>
+</section><section id="make-to-stock-vs.-make-to-order" class="level3" data-number="2.3.2"><h3 data-number="2.3.2" class="anchored" data-anchor-id="make-to-stock-vs.-make-to-order">
+<span class="header-section-number">2.3.2</span> Make-to-stock vs.&nbsp;Make-to-order</h3>
+<p>Zwei Grenzfälle der Entkopplung sind in der Praxis besonders bekannt:</p>
+<p>Bei <strong>Make-to-stock</strong> (MTS, Lagerfertigung) liegt der Entkopplungspunkt ganz am Ende der Kette: Fertigprodukte werden anonym auf Basis von Absatzprognosen produziert und in einem Fertigwarenlager bereitgehalten. Der Kunde kauft aus dem Bestand und erhält die Ware sofort oder nach sehr kurzer Lieferzeit. Typische Beispiele sind der Lebensmitteleinzelhandel oder Drogerien: Hier ist die Produktvielfalt vergleichsweise gering standardisiert, die Nachfrage recht gut prognostizierbar, und Kunden erwarten sofortige Verfügbarkeit.</p>
+<p>Bei <strong>Make-to-order</strong> (MTO, Auftragsfertigung) liegt der Entkopplungspunkt hingegen ganz am Anfang der Kette: Die Produktion beginnt erst, wenn ein konkreter Kundenauftrag vorliegt. Typische Beispiele sind Gebäude, Flugzeuge oder Gemälde — hochgradig individualisierte, seltene und margenstarke Güter, bei denen Lagerfertigung entweder unmöglich (weil jedes Produkt einzigartig ist) oder wirtschaftlich unsinnig wäre (zu hohe Kapitalbindung für ein Flugzeug “auf Vorrat”). Der Kunde akzeptiert hier eine deutlich längere Lieferzeit als Preis für Individualisierung (vgl. <span class="citation" data-cites="chopra2025supply">Chopra und Meindl (<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">2025</a>)</span>).</p>
+<p>Zwischen diesen Polen liegen hybride Strategien wie <em>Assemble-to-order</em> (Endmontage erst nach Auftragseingang, z. B. bei individuell konfigurierten PCs oder Fahrzeugen) — hier werden Komponenten prognosebasiert vorproduziert, die Endkonfiguration erfolgt jedoch kundenauftragsspezifisch. Die Wahl des Entkopplungspunkts ist damit selbst eine strategische Fertigungsentscheidung, die eng mit der im folgenden Abschnitt behandelten Frage nach Reaktionsfähigkeit und Effizienz verknüpft ist.</p>
+<div class="r-exkurs">
+<p><strong>R-Exkurs: Eigene Funktionen definieren</strong></p>
+<p>In Kapitel <a href="01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" class="quarto-xref"><span>1</span></a> haben Sie mit Vektoren, <code>data.frame</code>/<code>tibble</code> und Basisfunktionen wie <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> oder <code><a href="https://rdrr.io/r/base/sum.html">sum()</a></code> gearbeitet. Häufig möchte man eine Berechnung, die mehrfach benötigt wird, nicht jedes Mal neu ausschreiben, sondern in einer <strong>eigenen Funktion</strong> kapseln. Eine Funktion wird mit dem Schlüsselwort <code>function()</code> definiert; ihr Rumpf steht in geschweiften Klammern <code><a href="https://rdrr.io/r/base/Paren.html">{ }</a></code>, und der letzte ausgewertete Ausdruck (oder ein expliziter <code><a href="https://rdrr.io/r/base/function.html">return()</a></code>-Aufruf) ist der Rückgabewert.</p>
+<p>Als Beispiel: Eine einfache Faustregel für die Make-or-Buy-Entscheidung lautet, eine Aktivität dann intern zu fertigen (Make), wenn die eigenen Herstellkosten je Einheit niedriger sind als der Angebotspreis eines externen Zulieferers zuzüglich Beschaffungskosten. Wir bilden das als Funktion ab:</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Funktion: vergleicht interne Herstellkosten mit externem Bezugspreis</span></span>
+<span><span class="va">make_or_buy</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">kosten_intern</span>, <span class="va">preis_extern</span>, <span class="va">beschaffungskosten</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span></span>
+<span>  <span class="co"># Gesamtkosten des Fremdbezugs: Einkaufspreis plus Beschaffungsnebenkosten</span></span>
+<span>  <span class="va">kosten_extern_gesamt</span> <span class="op">&lt;-</span> <span class="va">preis_extern</span> <span class="op">+</span> <span class="va">beschaffungskosten</span></span>
+<span></span>
+<span>  <span class="co"># Rückgabewert: character-Skalar mit der Empfehlung</span></span>
+<span>  <span class="va">kosten_extern_gesamt</span>  <span class="co"># letzter Ausdruck wird NICHT automatisch zurückgegeben,</span></span>
+<span>  <span class="co"># da wir noch eine Entscheidung treffen wollen - siehe unten</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Im obigen Entwurf wird nur der externe Gesamtpreis berechnet, aber noch keine Entscheidung getroffen. Dafür benötigen wir Kontrollfluss mit <code>if</code>/<code>else</code>, der im nächsten Exkurs eingeführt wird.</p>
+</div>
+<div class="r-exkurs">
+<p><strong>R-Exkurs: Kontrollfluss mit <code>if</code>/<code>else</code></strong></p>
+<p>Mit <code>if (Bedingung) { ... } else { ... }</code> lässt sich der Programmablauf verzweigen: Ist die Bedingung <code>TRUE</code>, wird der erste Block ausgeführt, sonst der <code>else</code>-Block. Wir erweitern die Funktion <code>make_or_buy()</code> aus dem vorherigen Exkurs um eine echte Entscheidungslogik:</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Erweiterte Funktion mit Entscheidungslogik über if/else</span></span>
+<span><span class="va">make_or_buy</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">kosten_intern</span>, <span class="va">preis_extern</span>, <span class="va">beschaffungskosten</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span></span>
+<span>  <span class="co"># Gesamtkosten des Fremdbezugs berechnen</span></span>
+<span>  <span class="va">kosten_extern_gesamt</span> <span class="op">&lt;-</span> <span class="va">preis_extern</span> <span class="op">+</span> <span class="va">beschaffungskosten</span></span>
+<span></span>
+<span>  <span class="co"># Entscheidungsregel: Make, wenn intern guenstiger als extern</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">kosten_intern</span> <span class="op">&lt;</span> <span class="va">kosten_extern_gesamt</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">entscheidung</span> <span class="op">&lt;-</span> <span class="st">"Make (Eigenfertigung)"</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">kosten_intern</span> <span class="op">&gt;</span> <span class="va">kosten_extern_gesamt</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">entscheidung</span> <span class="op">&lt;-</span> <span class="st">"Buy (Fremdbezug)"</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">entscheidung</span> <span class="op">&lt;-</span> <span class="st">"Indifferent - weitere Kriterien pruefen"</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="co"># Rueckgabe als benannte Liste: Zahlen und Empfehlung zusammen</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    kosten_intern <span class="op">=</span> <span class="va">kosten_intern</span>,</span>
+<span>    kosten_extern_gesamt <span class="op">=</span> <span class="va">kosten_extern_gesamt</span>,</span>
+<span>    empfehlung <span class="op">=</span> <span class="va">entscheidung</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Beispielaufruf: Bauteil kostet intern 18.50 EUR,</span></span>
+<span><span class="co"># ein Zulieferer bietet es fuer 15 EUR zzgl. 2 EUR Beschaffungskosten an</span></span>
+<span><span class="fu">make_or_buy</span><span class="op">(</span>kosten_intern <span class="op">=</span> <span class="fl">18.50</span>, preis_extern <span class="op">=</span> <span class="fl">15</span>, beschaffungskosten <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>$kosten_intern
+[1] 18.5
+
+$kosten_extern_gesamt
+[1] 17
+
+$empfehlung
+[1] "Buy (Fremdbezug)"</code></pre>
+</div>
+</div>
+<p>Wichtig: Eine solche Kostenfaustregel greift zu kurz, wenn Kernkompetenz, Kapazitätsrisiko oder strategische Abhängigkeit im Vordergrund stehen — sie ist ein erster quantitativer Anhaltspunkt, kein vollständiges Entscheidungsmodell.</p>
+</div>
+</section></section><section id="strategische-ziele-kundenzufriedenheit-unter-unsicherheit" class="level2" data-number="2.4"><h2 data-number="2.4" class="anchored" data-anchor-id="strategische-ziele-kundenzufriedenheit-unter-unsicherheit">
+<span class="header-section-number">2.4</span> Strategische Ziele: Kundenzufriedenheit unter Unsicherheit</h2>
+<p>Jede Supply Chain wird letztlich daran gemessen, wie gut sie Kundenerwartungen erfüllt — und Kundenerwartungen sind vielschichtig. Sie lassen sich entlang von fünf Dimensionen beschreiben:</p>
+<ul>
+<li>
+<strong>Kosten</strong>: der Preis, den der Kunde für die Leistung insgesamt zu zahlen bereit ist (einschließlich Liefer- und Nebenkosten),</li>
+<li>
+<strong>Qualität</strong>: die Übereinstimmung des Produkts mit den zugesagten Eigenschaften — bei Lebensmitteln etwa Frische und Hygiene,</li>
+<li>
+<strong>Zeit</strong>: die Lieferzeit zwischen Bestellung und Verfügbarkeit bzw. bei Handelsware die sofortige Verfügbarkeit im Regal,</li>
+<li>
+<strong>Zuverlässigkeit</strong>: die Verlässlichkeit, mit der Zusagen zu Menge, Termin und Qualität eingehalten werden,</li>
+<li>
+<strong>Zugänglichkeit</strong>: wie leicht der Kunde an das Produkt gelangt (Zahl und Lage der Verkaufsstellen, Öffnungszeiten, Vertriebskanäle).</li>
+</ul>
+<p>Die Dimensionen Zeit und Zuverlässigkeit werden in den Folien als <strong>Servicedimensionen</strong> hervorgehoben: Sie werden nicht durch das Produkt selbst, sondern durch die Supply Chain erbracht und hängen unmittelbar mit der <strong>Kunden- und Supply-Chain-Unsicherheit</strong> zusammen. Ein Produkt kann qualitativ hervorragend und günstig sein — ist es nicht rechtzeitig und verlässlich verfügbar, verfehlt die Supply Chain dennoch die Kundenerwartung. Diese Unsicherheit äußert sich unter anderem in:</p>
+<ul>
+<li>der Nachfragemenge je Kundenauftrag,</li>
+<li>der vom Kunden akzeptierten Lieferzeit,</li>
+<li>der erwarteten Produktvielfalt,</li>
+<li>der erwarteten Lieferbereitschaft,</li>
+<li>der Preis- bzw. Zahlungsbereitschaft und</li>
+<li>dem Innovationsgrad der Produkte.</li>
+</ul>
+<p>Um diese Unsicherheit zu strukturieren, unterscheidet man zwei eng verwandte, aber nicht identische Begriffe:</p>
+<div class="definition">
+<p><strong>Definition: Nachfrageunsicherheit und implizierte Nachfrageunsicherheit</strong></p>
+<p>Die <strong>Nachfrageunsicherheit</strong> ist die Unsicherheit über die tatsächliche Nachfrage nach einem Produkt am Gesamtmarkt.</p>
+<p>Die <strong>implizierte Nachfrageunsicherheit</strong> ist die Unsicherheit desjenigen Nachfragesegments, das durch <em>eine konkrete</em> Supply Chain bedient werden soll, basierend auf den von dieser Supply Chain adressierten Nachfrageattributen (z. B. Lieferzeit, Produktvielfalt, Servicelevel).</p>
+</div>
+<p>Der Unterschied ist wichtig: Ein und dasselbe Produkt kann über verschiedene Supply Chains vertrieben werden, die jeweils unterschiedliche Nachfrageattribute bedienen — und damit unterschiedlichen <em>implizierten</em> Unsicherheiten ausgesetzt sind, obwohl die zugrunde liegende Marktnachfrage identisch ist. Ein Beispiel: Ein Hersteller kann dasselbe Produkt über einen Onlineshop mit garantierter 24-Stunden-Lieferung und über den stationären Handel mit mehrwöchiger Vorbestellzeit vertreiben. Der Onlinekanal hat eine deutlich höhere implizierte Unsicherheit, weil er kurzfristig auf individuelle Bestellungen reagieren muss, während der stationäre Kanal durch die lange Vorlaufzeit Nachfrageschwankungen besser ausgleichen kann.</p>
+<p>Die folgende Tabelle systematisiert, wie unterschiedliche Kundenbedürfnisse die implizierte Unsicherheit einer Supply Chain erhöhen:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Kundenbedürfnis ändert sich …</th>
+<th style="text-align: left;">… wodurch die implizierte Unsicherheit steigt, weil …</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(maximale) Nachfragemenge steigt</td>
+<td style="text-align: left;">die Spannweite des Bedarfs zunimmt und eine größere Varianz der Nachfragemengen entsteht</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lieferzeit sinkt</td>
+<td style="text-align: left;">weniger Zeit bleibt, um auf Nachfrageschwankungen zu reagieren</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Anzahl angebotener Produkte steigt</td>
+<td style="text-align: left;">die Nachfrage der einzelnen Produkte schwieriger zu prognostizieren ist</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lieferbereitschaftsgrad steigt</td>
+<td style="text-align: left;">Nachfragespitzen zuverlässig abgefedert werden müssen</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Innovationsgrad steigt</td>
+<td style="text-align: left;">die Nachfrage neuer Produkte in der Regel unbekannt oder schwer zu prognostizieren ist</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Anzahl der Vertriebskanäle steigt</td>
+<td style="text-align: left;">die Nachfrage der einzelnen Kanäle schwieriger zu prognostizieren ist</td>
+</tr>
+</tbody>
+</table>
+<p>Diese implizierte Unsicherheit ist nicht gleichmäßig über die Supply Chain verteilt: Je nachdem, wo Lager- und Kapazitätspuffer positioniert sind, tragen unterschiedliche Akteure einen unterschiedlichen Anteil der <strong>gesamten implizierten Unsicherheit der Supply Chain</strong>. In einer Kette, in der der Händler große Sicherheitsbestände hält, ist der Produzent von kurzfristigen Nachfrageschwankungen weitgehend abgeschirmt; verschiebt sich diese Pufferfunktion Richtung Produzent, trägt dieser einen größeren Anteil der Unsicherheit (vgl. <span class="citation" data-cites="chopra2025supply">Chopra und Meindl (<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">2025</a>)</span>, S. 57).</p>
+<p>Die Folien veranschaulichen dies mit zwei Ketten, die <strong>dieselbe gesamte implizierte Unsicherheit</strong> bewältigen müssen, sie aber unterschiedlich aufteilen. In <em>Supply Chain I</em> übernimmt der Händler den größten Teil: Er hält ein breites Sortiment vorrätig und puffert Nachfrageschwankungen über Bestände ab, sodass Produzent und Lieferant mit einer vergleichsweise stabilen Nachfrage planen können und sich auf Effizienz konzentrieren dürfen. In <em>Supply Chain II</em> übernimmt der Produzent den größten Teil — etwa weil er kundenindividuell fertigt (Make-to-order) und der Händler nur noch als Verkaufs- und Auslieferungspunkt fungiert. Daraus folgt eine wichtige Präzisierung des Strategic-Fit-Gedankens: Nicht jede Stufe einer Kette muss gleich reaktionsfähig sein. Entscheidend ist, dass die Stufe, die einen großen Anteil der Unsicherheit trägt, reaktionsfähig ausgelegt ist, während Stufen, die durch vor- oder nachgelagerte Puffer abgeschirmt werden, effizient arbeiten können. Ein Frischehersteller wie die SushiFresh GmbH, die uns ab Kapitel <a href="03_ziele-zielkonflikte-und-logistikkosten.html" class="quarto-xref"><span>3</span></a> begleitet, kann diese Unsicherheit übrigens kaum an den Handel weiterreichen: Sushi-Boxen sind nicht lagerfähig, sodass die Mengenentscheidung jeden Morgen beim Hersteller neu getroffen werden muss (vgl. das Newsvendor-Modell in Kapitel <a href="07_das-newsvendor-modell.html" class="quarto-xref"><span>10</span></a>).</p>
+<div class="r-exkurs">
+<p><strong>R-Exkurs: <code>dplyr</code>-Grundverben — <code>mutate()</code>, <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code>, <code>select()</code></strong></p>
+<p>Aus Kapitel <a href="01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" class="quarto-xref"><span>1</span></a> kennen Sie bereits <code>tibble()</code> zur Erstellung von Datentabellen. Das Paket <code>dplyr</code> (Teil des <code>tidyverse</code>) stellt einige wenige, gut kombinierbare “Verben” bereit, um solche Tabellen zu transformieren:</p>
+<ul>
+<li>
+<code>mutate()</code> erzeugt neue Spalten (oder verändert bestehende),</li>
+<li>
+<code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> behält nur Zeilen, die eine Bedingung erfüllen,</li>
+<li>
+<code>select()</code> wählt eine Teilmenge der Spalten aus.</li>
+</ul>
+<p>Wir bauen eine kleine Beispieltabelle mit Wertschöpfungsstufen, ihren Kosten je Einheit und dem erzielten Verkaufspreis, und berechnen daraus Marge und Marginalität:</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Kleine Beispieltabelle: vier Wertschoepfungsstufen einer Supply Chain</span></span>
+<span><span class="va">wertschoepfung</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  stufe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Beschaffung"</span>, <span class="st">"Produktion"</span>, <span class="st">"Distribution"</span>, <span class="st">"Absatz"</span><span class="op">)</span>,</span>
+<span>  kosten_je_einheit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">12.0</span>, <span class="fl">8.5</span>, <span class="fl">3.0</span>, <span class="fl">1.5</span><span class="op">)</span>,   <span class="co"># EUR je Stueck, kumulativ zurechenbar</span></span>
+<span>  preis_je_einheit  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">15.0</span>, <span class="fl">24.0</span>, <span class="fl">27.5</span>, <span class="fl">32.0</span><span class="op">)</span> <span class="co"># kumulierter Verkaufs-/Verrechnungspreis</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wertschoepfung_erweitert</span> <span class="op">&lt;-</span> <span class="va">wertschoepfung</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># neue Spalte: absolute Marge je Stufe</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>marge_absolut <span class="op">=</span> <span class="va">preis_je_einheit</span> <span class="op">-</span> <span class="va">kosten_je_einheit</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># neue Spalte: relative Marge (Marge bezogen auf den Preis)</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>marge_relativ <span class="op">=</span> <span class="va">marge_absolut</span> <span class="op">/</span> <span class="va">preis_je_einheit</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wertschoepfung_erweitert</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 5
+  stufe        kosten_je_einheit preis_je_einheit marge_absolut marge_relativ
+  &lt;chr&gt;                    &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+1 Beschaffung               12               15             3           0.2  
+2 Produktion                 8.5             24            15.5         0.646
+3 Distribution               3               27.5          24.5         0.891
+4 Absatz                     1.5             32            30.5         0.953</code></pre>
+</div>
+</div>
+<p><code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> reduziert die Tabelle auf Zeilen, die eine logische Bedingung erfüllen — etwa alle Stufen mit einer relativen Marge über 30 %:</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Nur Stufen mit relativer Marge &gt; 0.30 behalten</span></span>
+<span><span class="va">wertschoepfung_erweitert</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">marge_relativ</span> <span class="op">&gt;</span> <span class="fl">0.30</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  stufe        kosten_je_einheit preis_je_einheit marge_absolut marge_relativ
+  &lt;chr&gt;                    &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+1 Produktion                 8.5             24            15.5         0.646
+2 Distribution               3               27.5          24.5         0.891
+3 Absatz                     1.5             32            30.5         0.953</code></pre>
+</div>
+</div>
+<p><code>select()</code> wiederum wählt gezielt Spalten aus, etwa wenn nur Stufenname und relative Marge interessieren:</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Nur die Spalten 'stufe' und 'marge_relativ' behalten</span></span>
+<span><span class="va">wertschoepfung_erweitert</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">stufe</span>, <span class="va">marge_relativ</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  stufe        marge_relativ
+  &lt;chr&gt;                &lt;dbl&gt;
+1 Beschaffung          0.2  
+2 Produktion           0.646
+3 Distribution         0.891
+4 Absatz               0.953</code></pre>
+</div>
+</div>
+<p>Der Pipe-Operator <code>|&gt;</code> (aus Kapitel <a href="01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" class="quarto-xref"><span>1</span></a> bereits bekannt) verkettet diese Schritte lesbar von links nach rechts: “Nimm die Tabelle, dann erzeuge neue Spalten, dann filtere, dann wähle Spalten aus.” Diese drei Verben — zusammen mit <code>arrange()</code> (Sortieren) und <code>summarise()</code> (Aggregieren), die in späteren Kapiteln folgen — bilden das Rückgrat der Datenanalyse mit <code>dplyr</code>.</p>
+</div>
+</section><section id="reaktionsfähigkeit-und-effizienz" class="level2" data-number="2.5"><h2 data-number="2.5" class="anchored" data-anchor-id="reaktionsfähigkeit-und-effizienz">
+<span class="header-section-number">2.5</span> Reaktionsfähigkeit und Effizienz</h2>
+<p>Nachdem die implizierte Unsicherheit als Eigenschaft der Nachfrageseite eingeführt wurde, stellt sich die Frage, wie eine Supply Chain darauf reagieren sollte. Hier kommen zwei gegensätzliche strategische Grundausrichtungen ins Spiel:</p>
+<div class="definition">
+<p><strong>Definition: Reaktionsfähigkeit und Effizienz</strong></p>
+<p>Die <strong>Reaktionsfähigkeit</strong> (<em>responsiveness</em>) einer Supply Chain ist ihre Fähigkeit, mit Nachfrageunsicherheit umzugehen — etwa durch schnelle Reaktion auf Nachfrageschwankungen, kurze Lieferzeiten oder hohe Produktvielfalt.</p>
+<p>Die <strong>Effizienz</strong> einer Supply Chain ist das Inverse ihrer Gesamtkosten, das heißt aller Kosten, die anfallen, um ein Produkt von der Rohstoffgewinnung bis zum Endkunden zu bringen.</p>
+</div>
+<p>Reaktionsfähigkeit lässt sich unter anderem erreichen durch hohe Lagerbestände, kurze Reaktions- und Lieferzeiten, hohe Produktvielfalt, kurze Entwicklungszyklen neuer Produkte, hohe Lieferbereitschaftsgrade und die Reduktion von Versorgungsunsicherheiten. Jede dieser Maßnahmen verursacht jedoch zusätzliche Kosten: Höhere Lagerbestände binden Kapital, kurze Lieferzeiten erfordern Kapazitätsreserven, und eine hohe Produktvielfalt erschwert Skaleneffekte in der Fertigung. Reaktionsfähigkeit und Effizienz stehen deshalb in einem grundsätzlichen <strong>Zielkonflikt</strong> (<em>trade-off</em>): Jede zusätzliche Einheit an Reaktionsfähigkeit ist nur zu höheren Kosten zu haben, und umgekehrt lässt sich Kosteneffizienz meist nur auf Kosten von Reaktionsfähigkeit erhöhen.</p>
+<p>Formal lässt sich dieser Zusammenhang als <strong>Kosten-Reaktionsfähigkeits-Grenze</strong> (<em>efficient frontier</em>) darstellen: Für ein gegebenes Prozessdesign existiert eine Menge von Kombinationen aus Reaktionsfähigkeit und Kosten, die mit den verfügbaren Ressourcen bestmöglich erreichbar sind. Punkte auf dieser Grenze sind effizient in dem Sinne, dass keine Kombination aus Reaktionsfähigkeit und Kosten erreichbar ist, die gleichzeitig reaktionsfähiger <em>und</em> günstiger wäre. Nur durch Investitionen in bessere Prozesse, Technologien oder Informationssysteme lässt sich die gesamte Grenze nach außen verschieben — nicht aber ein einzelner Punkt darauf ohne Kompromiss verbessern.</p>
+<p>Dieser Trade-off wird von fünf <strong>strategischen Treibern</strong> (<em>supply chain drivers</em>) operationalisiert, über die ein Unternehmen die Position seiner Supply Chain auf dem Kontinuum zwischen Effizienz und Reaktionsfähigkeit aktiv gestalten kann:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Treiber</th>
+<th style="text-align: left;">Typische Stellhebel</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Produktion</strong></td>
+<td style="text-align: left;">Produktionstechnologie, Produktportfolio, Fertigungstiefe</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Logistik</strong></td>
+<td style="text-align: left;">Transportmodi, Lagerkapazitäten, Sicherheitsbestände</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Struktur</strong></td>
+<td style="text-align: left;">Lieferantenauswahl, Standortkapazitäten, Stufen und Verbindungen der Kette</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Preis</strong></td>
+<td style="text-align: left;">Preisgestaltung, Nachfragesteuerung, Rabattierung</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Information</strong></td>
+<td style="text-align: left;">Informationsteilung, Systemintegration, kollaborative Prognose und Planung</td>
+</tr>
+</tbody>
+</table>
+<p>Jeder dieser Treiber kann auf einer Skala zwischen “kostenoptimiert” und “reaktionsoptimiert” konfiguriert werden. Ein Unternehmen, das etwa hohe Maschinenauslastung anstrebt (Produktionstreiber Richtung Effizienz), minimale Sicherheitsbestände hält (Logistiktreiber Richtung Effizienz) und Lieferanten primär nach Kosten auswählt (Struktur Richtung Effizienz), positioniert seine gesamte Supply Chain deutlich auf der Effizienzseite des Spektrums — und umgekehrt.</p>
+</section><section id="strategic-fit" class="level2" data-number="2.6"><h2 data-number="2.6" class="anchored" data-anchor-id="strategic-fit">
+<span class="header-section-number">2.6</span> Strategic Fit</h2>
+<p>Damit sind alle Bausteine vorhanden, um das zentrale Konzept dieses Kapitels einzuführen: den <strong>Strategic Fit</strong>.</p>
+<div class="definition">
+<p><strong>Definition: Strategic Fit</strong></p>
+<p><strong>Strategic Fit</strong> bezeichnet die konsistente Abstimmung zwischen der Wettbewerbsstrategie eines Unternehmens (was der Kunde erwarten kann) und seiner Supply-Chain-Strategie (wie die Supply Chain konfiguriert ist), sodass die implizierte Unsicherheit, die die Supply Chain bewältigen muss, mit dem Grad an Reaktionsfähigkeit übereinstimmt, für den die Supply Chain ausgelegt ist <span class="citation" data-cites="chopra2025supply">(<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">Chopra und Meindl 2025, 56</a>)</span>.</p>
+</div>
+<p>Grafisch lässt sich Strategic Fit als Diagonale in einem Koordinatensystem darstellen, dessen horizontale Achse die Nachfrageunsicherheit (von niedrig bis hoch) und dessen vertikale Achse das Supply-Chain-Optimierungsziel (von Effizienz bis Reaktionsfähigkeit) abbildet. Produkte mit niedriger Nachfrageunsicherheit — etwa etablierte Grundstoffe wie Salz oder Grundnahrungsmittel — werden am besten von einer primär auf <strong>Effizienz</strong> ausgelegten Supply Chain bedient: Die Nachfrage ist gut prognostizierbar, sodass Kosteneinsparungen durch hohe Auslastung, geringe Bestände und lange Produktionsläufe kaum durch Fehlmengen oder Überbestände erkauft werden. Produkte mit hoher Nachfrageunsicherheit — etwa ein neues Produkt in einem neuen Markt — erfordern hingegen eine primär auf <strong>Reaktionsfähigkeit</strong> ausgelegte Supply Chain: Da sich die Nachfrage kaum verlässlich prognostizieren lässt, muss die Kette flexibel auf tatsächliche Bestellungen reagieren können, auch wenn dies höhere Kosten verursacht.</p>
+<p>Strategic Fit ist erreicht, wenn eine Supply-Chain-Konfiguration nahe dieser Diagonalen liegt. Abweichungen von der Diagonalen sind strategisch riskant, aber in unterschiedliche Richtungen problematisch:</p>
+<ul>
+<li>Eine <strong>zu effiziente</strong> Supply Chain für ein Produkt mit hoher Nachfrageunsicherheit führt zu Fehlmengen, verpassten Verkaufschancen und unzufriedenen Kunden, weil die Kette nicht schnell genug auf Nachfrageschwankungen reagieren kann.</li>
+<li>Eine <strong>zu reaktionsfähige</strong> (und damit teure) Supply Chain für ein Produkt mit niedriger Nachfrageunsicherheit verursacht unnötige Kosten, die im Wettbewerb um preissensitive Kunden nicht wettgemacht werden können.</li>
+</ul>
+<div class="vertiefung">
+<p><strong>Theorie-Vertiefung: Funktionale und innovative Produkte nach Fisher</strong></p>
+<p>Der Strategic-Fit-Gedanke geht wesentlich auf <span class="citation" data-cites="fisher1997right">Fisher (<a href="../references.html#ref-fisher1997right" role="doc-biblioref">1997</a>)</span> zurück. Fisher unterscheidet <strong>funktionale Produkte</strong> — Güter des Grundbedarfs mit langen Lebenszyklen, stabiler, gut prognostizierbarer Nachfrage und geringen Margen (z. B. Grundnahrungsmittel, Standardverbrauchsgüter) — von <strong>innovativen Produkten</strong> mit kurzen Lebenszyklen, hoher Variantenvielfalt, schwer prognostizierbarer Nachfrage und hohen Margen (z. B. Mode, Unterhaltungselektronik). Seine zentrale These lautet, dass beide Produkttypen <strong>unterschiedliche Supply Chains</strong> erfordern: Funktionale Produkte gehören in eine <em>physisch effiziente</em> Kette, deren Aufgabe es ist, die gut vorhersagbare Nachfrage zu minimalen Kosten zu bedienen. Innovative Produkte gehören in eine <em>marktreaktionsfähige</em> Kette, deren Aufgabe es ist, Angebot und Nachfrage auch bei großer Prognoseunsicherheit rasch in Einklang zu bringen.</p>
+<p>Die ökonomische Begründung liegt in den Kosten der beiden möglichen Fehler: Bei funktionalen Produkten sind die Margen klein, sodass jeder zusätzliche Euro an Bestand oder Kapazitätsreserve den Gewinn unmittelbar schmälert — Effizienz lohnt sich. Bei innovativen Produkten sind die Margen hoch, sodass eine verpasste Verkaufschance (Fehlmenge) sehr teuer ist, während übrig gebliebene Ware am Saisonende oft nur mit hohem Abschlag abgesetzt werden kann. Hier lohnt es sich, in Reaktionsfähigkeit zu investieren. Genau diese Abwägung zwischen den Kosten einer Fehlmenge und den Kosten eines Überbestands wird in Kapitel <a href="07_das-newsvendor-modell.html" class="quarto-xref"><span>10</span></a> mit dem Newsvendor-Modell formal gefasst: Das dort hergeleitete kritische Verhältnis <span class="math inline">\(c^u/(c^u+c^o)\)</span> steigt mit der Marge und begründet damit quantitativ, warum margenstarke Produkte höhere Servicegrade und mehr Puffer rechtfertigen.</p>
+<p>Chopra und Meindl verallgemeinern Fishers Zweiteilung zum Kontinuum der implizierten Unsicherheit, weil nicht nur das Produkt, sondern auch die bedienten Kundenanforderungen (Lieferzeit, Servicegrad, Kanäle) die Unsicherheit bestimmen <span class="citation" data-cites="chopra2025supply">(<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">Chopra und Meindl 2025</a>)</span>. Dasselbe Produkt kann deshalb je nach Marktsegment eine effiziente oder eine reaktionsfähige Kette erfordern.</p>
+</div>
+<p>Die praktische Konsequenz: Supply-Chain-Design ist kein universelles Optimierungsproblem mit einer einzigen “besten” Lösung, sondern muss stets im Kontext der bedienten Nachfrage und der Wettbewerbsstrategie des Unternehmens beurteilt werden. Zwei Unternehmen mit identischem Produkt, aber unterschiedlicher Wettbewerbspositionierung (etwa Kostenführer vs.&nbsp;Serviceführer), sollten folgerichtig auch unterschiedliche Supply-Chain-Strategien verfolgen.</p>
+<section id="effiziente-vs.-reaktive-teilstrategien" class="level3" data-number="2.6.1"><h3 data-number="2.6.1" class="anchored" data-anchor-id="effiziente-vs.-reaktive-teilstrategien">
+<span class="header-section-number">2.6.1</span> Effiziente vs.&nbsp;reaktive Teilstrategien</h3>
+<p>Der Strategic-Fit-Gedanke lässt sich bis auf die Ebene konkreter Teilstrategien herunterbrechen. Die folgende Tabelle stellt typische Ausprägungen effizienter und reaktiver Supply Chains gegenüber:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Dimension</th>
+<th style="text-align: left;">Effiziente Supply Chain</th>
+<th style="text-align: left;">Reaktive Supply Chain</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Primärziel</strong></td>
+<td style="text-align: left;">Nachfragebefriedigung zu niedrigsten Kosten</td>
+<td style="text-align: left;">Schnellstmögliche Nachfragebefriedigung</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Produkt-Design-Strategie</strong></td>
+<td style="text-align: left;">Geringe Produktvielfalt, einfaches Design, hohe Durchsätze</td>
+<td style="text-align: left;">Modulare Produktentwicklung und Postponement</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Preisstrategie</strong></td>
+<td style="text-align: left;">Niedrige Preise und Margen (preissensitive Kunden)</td>
+<td style="text-align: left;">Höhere Preise und Margen (wenig preissensitive Kunden)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Fertigungsstrategie</strong></td>
+<td style="text-align: left;">Hohe Maschinenauslastung</td>
+<td style="text-align: left;">Freie Kapazitäten für kurzfristige Mengenausweitung</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Lagerstrategie</strong></td>
+<td style="text-align: left;">Minimierung von (Sicherheits-)Beständen</td>
+<td style="text-align: left;">Sicherheitsbestände zur Absicherung von Nachfrageschwankungen</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Versorgungsstrategie</strong></td>
+<td style="text-align: left;">Zykluszeiten nur reduzieren, wenn Kosten nicht steigen</td>
+<td style="text-align: left;">Zykluszeiten reduzieren, auch wenn Kosten steigen</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Beschaffungsstrategie</strong></td>
+<td style="text-align: left;">Lieferantenauswahl nach Kosten und Verlässlichkeit</td>
+<td style="text-align: left;">Lieferantenauswahl nach Reaktionsfähigkeit, Geschwindigkeit, Flexibilität, Qualität</td>
+</tr>
+</tbody>
+</table>
+<p>Diese Tabelle macht deutlich, dass Strategic Fit keine abstrakte Größe ist, sondern sich in sehr konkreten operativen Entscheidungen niederschlägt — von der Lieferantenauswahl über die Bestandspolitik bis zur Produktarchitektur. Ein Unternehmen, das etwa Postponement betreibt (die endgültige Produktkonfiguration möglichst lange hinauszögert, siehe die Diskussion des Entkopplungspunkts weiter oben), verschiebt seine Supply Chain aktiv in Richtung Reaktionsfähigkeit.</p>
+</section><section id="normstrategien-und-der-beitrag-des-scm" class="level3" data-number="2.6.2"><h3 data-number="2.6.2" class="anchored" data-anchor-id="normstrategien-und-der-beitrag-des-scm">
+<span class="header-section-number">2.6.2</span> Normstrategien und der Beitrag des SCM</h3>
+<p>Auf einer höheren Abstraktionsebene lässt sich Strategic Fit auch mit klassischen wettbewerbsstrategischen <strong>Normstrategien</strong> verknüpfen. Für jede Normstrategie lässt sich ein spezifischer Beitrag formulieren, den das Supply Chain Management zur Umsetzung dieser Strategie leisten muss:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Normstrategie</th>
+<th style="text-align: left;">Strategischer Vorteil</th>
+<th style="text-align: left;">Wettbewerbsbasis</th>
+<th style="text-align: left;">Beitrag des SCM</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Kostenführer</td>
+<td style="text-align: left;">Kosteneffiziente Produktion</td>
+<td style="text-align: left;">Niedrigste Preise in der Produktkategorie</td>
+<td style="text-align: left;">Effiziente, kostengünstige Infrastruktur</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Innovationsführer</td>
+<td style="text-align: left;">Marktstärke und singuläre Technologie</td>
+<td style="text-align: left;">Begehrte, innovative Produkte</td>
+<td style="text-align: left;">Kurze Time-to-Market, Volumensteigerung</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Serviceführer</td>
+<td style="text-align: left;">Konsequente Kundenorientierung</td>
+<td style="text-align: left;">Kundenspezifische Erwartungserfüllung</td>
+<td style="text-align: left;">Kundenorientierte Entwicklung ermöglichen</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Qualitätsführer</td>
+<td style="text-align: left;">Sichere, zuverlässige Produkte</td>
+<td style="text-align: left;">Singuläre Produkteigenschaften</td>
+<td style="text-align: left;">Verlässliche Supply Chain, Quality Assurance</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nachhaltigkeitsführer</td>
+<td style="text-align: left;">Nachhaltige Produkte und Prozesse</td>
+<td style="text-align: left;">Erfüllung von Nachhaltigkeitserwartungen</td>
+<td style="text-align: left;">CO2-Neutralität, Ressourcenschonung</td>
+</tr>
+</tbody>
+</table>
+<p>Auch hier zeigt sich derselbe Grundgedanke: Ein Kostenführer benötigt eine primär effiziente Supply Chain, während ein Service- oder Innovationsführer eine primär reaktionsfähige Supply Chain benötigt — unabhängig davon, ob es sich um dasselbe Produkt handelt. Strategic Fit ist damit weniger eine Eigenschaft des Produkts selbst als eine Eigenschaft der Passung zwischen Marktversprechen und Kettenkonfiguration.</p>
+</section><section id="strategic-fit-und-die-fertigungsentscheidung" class="level3" data-number="2.6.3"><h3 data-number="2.6.3" class="anchored" data-anchor-id="strategic-fit-und-die-fertigungsentscheidung">
+<span class="header-section-number">2.6.3</span> Strategic Fit und die Fertigungsentscheidung</h3>
+<p>Die eingangs behandelte Make-or-Buy-Entscheidung lässt sich nun in den Strategic-Fit-Rahmen einordnen. Eine rein kostenbasierte Fertigungsentscheidung (wie im ersten R-Exkurs dieses Kapitels) berücksichtigt nur eine Dimension — die Effizienz —, blendet aber die Auswirkung auf die Reaktionsfähigkeit der gesamten Kette aus. Ein Beispiel: Die Auslagerung der Fertigung an einen kostengünstigen, aber weit entfernten Lieferanten mag die Herstellkosten senken, verlängert aber typischerweise die Wiederbeschaffungszeit und reduziert damit die Fähigkeit, kurzfristig auf Nachfrageschwankungen zu reagieren. Für ein Produkt mit niedriger Nachfrageunsicherheit (Effizienzseite der Diagonalen) kann das strategisch sinnvoll sein; für ein Produkt mit hoher Nachfrageunsicherheit (Reaktionsfähigkeitsseite) verschlechtert dieselbe Entscheidung den Strategic Fit.</p>
+<p>Ein Analysewerkzeug, das dabei hilft, die <em>finanzielle</em> Wirkung solcher Fertigungsentscheidungen zu quantifizieren, ist der <strong>DuPont-Kennzahlenbaum</strong>. Er zerlegt die Gesamtkapitalrentabilität (<em>Return on Investment</em>, ROI) multiplikativ in Umsatzrentabilität (<em>Return on Sales</em>, ROS) und Kapitalumschlag:</p>
+<p><span class="math display">\[
+\text{ROI} = \text{ROS} \times \text{Kapitalumschlag} = \frac{\text{Gewinn}}{\text{Umsatz}} \times \frac{\text{Umsatz}}{\text{Gesamtvermögen}}
+\]</span></p>
+<p>Eine Make-Entscheidung erhöht typischerweise das gebundene Kapital (eigene Anlagen, höhere Bestände an Rohstoffen und Zwischenprodukten) und senkt damit tendenziell den Kapitalumschlag, kann aber über geringere Stückkosten die Umsatzrentabilität verbessern. Eine Buy-Entscheidung wirkt tendenziell umgekehrt: geringere Kapitalbindung, aber oft geringere Marge durch den Einkaufspreis des Zulieferers. Der DuPont-Baum macht diesen Zielkonflikt zwischen ROS und Kapitalumschlag explizit und erlaubt, unterschiedliche Fertigungsszenarien konsistent zu vergleichen.</p>
+<div class="r-exkurs">
+<p><strong>R-Exkurs: Fallbeispiel mit <code>dupont_roi()</code>, <code>if</code>/<code>else</code> und <code>dplyr</code></strong></p>
+<p>Die Funktion <code>dupont_roi()</code> aus <code>R/scm_functions.R</code> berechnet den vollständigen DuPont-Kennzahlenbaum aus Umsatz, Kosten und Bilanzpositionen. Wir nutzen sie, um zwei Fertigungsszenarien zu vergleichen: <strong>Make</strong> (Eigenfertigung, höhere Kapitalbindung, geringere variable Kosten) gegenüber <strong>Buy</strong> (Fremdbezug, geringere Kapitalbindung, höhere variable Kosten):</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Szenario "Make": Eigenfertigung mit hoeherer Kapitalbindung</span></span>
+<span><span class="va">make_szenario</span> <span class="op">&lt;-</span> <span class="fu">dupont_roi</span><span class="op">(</span></span>
+<span>  revenue      <span class="op">=</span> <span class="fl">11000</span>,  <span class="co"># Umsatz in Tsd. EUR</span></span>
+<span>  mat_cost     <span class="op">=</span> <span class="fl">5500</span>,   <span class="co"># Materialkosten (guenstiger durch Eigenfertigung)</span></span>
+<span>  pers_cost    <span class="op">=</span> <span class="fl">4950</span>,   <span class="co"># Personalkosten (hoeher: eigene Fertigungskapazitaet)</span></span>
+<span>  fixed_assets <span class="op">=</span> <span class="fl">3500</span>,   <span class="co"># hoehere Anlagenbindung durch eigene Maschinen</span></span>
+<span>  cash         <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  inventory    <span class="op">=</span> <span class="fl">3300</span>,   <span class="co"># hoehere Bestaende an Rohstoffen/Zwischenprodukten</span></span>
+<span>  receivables  <span class="op">=</span> <span class="fl">1075</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Szenario "Buy": Fremdbezug mit geringerer Kapitalbindung</span></span>
+<span><span class="va">buy_szenario</span> <span class="op">&lt;-</span> <span class="fu">dupont_roi</span><span class="op">(</span></span>
+<span>  revenue      <span class="op">=</span> <span class="fl">11000</span>,  <span class="co"># gleicher Umsatz zum Vergleich</span></span>
+<span>  mat_cost     <span class="op">=</span> <span class="fl">6800</span>,   <span class="co"># hoehere Materialkosten durch Einkaufspreis des Zulieferers</span></span>
+<span>  pers_cost    <span class="op">=</span> <span class="fl">3200</span>,   <span class="co"># geringere Personalkosten (keine eigene Fertigung)</span></span>
+<span>  fixed_assets <span class="op">=</span> <span class="fl">1200</span>,   <span class="co"># kaum eigene Anlagen</span></span>
+<span>  cash         <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  inventory    <span class="op">=</span> <span class="fl">1100</span>,   <span class="co"># geringere Bestaende</span></span>
+<span>  receivables  <span class="op">=</span> <span class="fl">1075</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Vergleichstabelle bauen: relevante Kennzahlen beider Szenarien</span></span>
+<span><span class="va">vergleich</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  szenario <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Make"</span>, <span class="st">"Buy"</span><span class="op">)</span>,</span>
+<span>  ros            <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">make_szenario</span><span class="op">$</span><span class="va">ros</span>, <span class="va">buy_szenario</span><span class="op">$</span><span class="va">ros</span><span class="op">)</span>,</span>
+<span>  asset_turnover <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">make_szenario</span><span class="op">$</span><span class="va">asset_turnover</span>, <span class="va">buy_szenario</span><span class="op">$</span><span class="va">asset_turnover</span><span class="op">)</span>,</span>
+<span>  roi            <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">make_szenario</span><span class="op">$</span><span class="va">roi</span>, <span class="va">buy_szenario</span><span class="op">$</span><span class="va">roi</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="co"># Prozentwerte fuer bessere Lesbarkeit ergaenzen</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>roi_prozent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">roi</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">vergleich</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  szenario    ros asset_turnover    roi roi_prozent
+  &lt;chr&gt;     &lt;dbl&gt;          &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;
+1 Make     0.05             1.31 0.0657         6.6
+2 Buy      0.0909           2.84 0.258         25.8</code></pre>
+</div>
+</div>
+<p>Auf Basis dieser Kennzahlen lässt sich mit <code>if</code>/<code>else</code> eine einfache Entscheidungsregel formulieren, die zusätzlich zur reinen ROI-Höhe auch die strategische Positionierung (Effizienz vs.&nbsp;Reaktionsfähigkeit) berücksichtigt:</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Funktion: empfiehlt Make oder Buy je nach ROI-Differenz und</span></span>
+<span><span class="co"># strategischer Ausrichtung (reaktionsfaehig vs. effizient)</span></span>
+<span><span class="va">empfehle_fertigung</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">roi_make</span>, <span class="va">roi_buy</span>, <span class="va">strategie</span> <span class="op">=</span> <span class="st">"effizient"</span><span class="op">)</span> <span class="op">{</span></span>
+<span></span>
+<span>  <span class="co"># Differenz der Kapitalrentabilitaeten</span></span>
+<span>  <span class="va">roi_differenz</span> <span class="op">&lt;-</span> <span class="va">roi_make</span> <span class="op">-</span> <span class="va">roi_buy</span></span>
+<span></span>
+<span>  <span class="co"># Wenn ROI-Differenz sehr gering ist, gibt die Strategie den Ausschlag</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">roi_differenz</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">strategie</span> <span class="op">==</span> <span class="st">"reaktionsfaehig"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Buy - bei aehnlichem ROI flexiblere Kapazitaet bevorzugen"</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Make - bei aehnlichem ROI hoehere Kontrolle/Effizienz nutzen"</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="co"># Ansonsten: hoeherer ROI entscheidet</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">roi_differenz</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="st">"Make - deutlich hoehere Kapitalrentabilitaet"</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="st">"Buy - deutlich hoehere Kapitalrentabilitaet"</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Anwendung auf unser Zahlenbeispiel</span></span>
+<span><span class="fu">empfehle_fertigung</span><span class="op">(</span></span>
+<span>  roi_make  <span class="op">=</span> <span class="va">make_szenario</span><span class="op">$</span><span class="va">roi</span>,</span>
+<span>  roi_buy   <span class="op">=</span> <span class="va">buy_szenario</span><span class="op">$</span><span class="va">roi</span>,</span>
+<span>  strategie <span class="op">=</span> <span class="st">"effizient"</span></span>
+<span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>[1] "Buy - deutlich hoehere Kapitalrentabilitaet"</code></pre>
+</div>
+</div>
+<p>Dieses kleine Beispiel verdeutlicht, wie sich eigene Funktionen, Kontrollfluss und <code>dplyr</code>-Verben kombinieren lassen, um eine strategische Fragestellung — hier die Make-or-Buy-Entscheidung im Licht des Strategic Fit — nachvollziehbar und wiederverwendbar zu quantifizieren. In der Praxis wären weitere Kriterien (Kapazitätsrisiko, Abhängigkeit von Lieferanten, Auswirkung auf die Lieferzeit) zu ergänzen, bevor eine solche Empfehlung tragfähig ist.</p>
+</div>
+</section></section><section id="zusammenfassung" class="level2" data-number="2.7"><h2 data-number="2.7" class="anchored" data-anchor-id="zusammenfassung">
+<span class="header-section-number">2.7</span> Zusammenfassung</h2>
+<p>Dieses Kapitel hat die Wertschöpfungskette als Abfolge von Beschaffung, Produktion, Distribution und Absatz eingeführt und gezeigt, wie sich diese Kette in vier Prozesszyklen (Kundenbestellung, Distribution, Produktion, Beschaffung) gliedern lässt, die jeweils durch den Entkopplungspunkt in einen prognosegetriebenen und einen auftragsgetriebenen Teil zerfallen. Darauf aufbauend wurde die strategische Fertigungsentscheidung (Make-or-Buy) sowie die Positionierung zwischen Make-to-stock und Make-to-order diskutiert.</p>
+<p>Im zweiten Teil des Kapitels stand das Konzept des <strong>Strategic Fit</strong> im Mittelpunkt: die Forderung, dass die Reaktionsfähigkeit einer Supply Chain mit der implizierten Unsicherheit des bedienten Marktes übereinstimmen muss. Effizienz und Reaktionsfähigkeit wurden dabei als gegensätzliche, aber gleichermaßen legitime strategische Grundausrichtungen eingeführt, die über fünf Treiber — Produktion, Logistik, Struktur, Preis und Information — operationalisiert werden können. Der DuPont-Kennzahlenbaum wurde als quantitatives Werkzeug vorgestellt, um die finanzielle Wirkung unterschiedlicher Fertigungsentscheidungen (Make vs.&nbsp;Buy) vergleichbar zu machen.</p>
+<p>In R haben Sie in diesem Kapitel gelernt, eigene Funktionen mit <code>function() { ... }</code> zu definieren, mit <code>if</code>/<code>else</code> bedingte Logik zu implementieren und mit den <code>dplyr</code>-Grundverben <code>mutate()</code>, <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> und <code>select()</code> Tabellen gezielt zu transformieren und auszuwerten — Werkzeuge, die in den folgenden Kapiteln bei der Modellierung von Standortentscheidungen, Bestandspolitiken und dem Bullwhip-Effekt regelmäßig wiederkehren werden.</p>
+<div class="kontrollfragen">
+<p><strong>Kontrollfragen</strong></p>
+<ol type="1">
+<li>Nennen und erläutern Sie die vier Phasen des Wertschöpfungsprozesses einer Supply Chain.</li>
+<li>Was versteht man unter dem Entkopplungspunkt (Customer Order Decoupling Point), und wie unterscheiden sich Make-to-stock und Make-to-order hinsichtlich seiner Lage?</li>
+<li>Nennen Sie drei Kriterien, die bei einer Make-or-Buy-Entscheidung neben den reinen Herstell- bzw. Bezugskosten zu berücksichtigen sind.</li>
+<li>Erläutern Sie den Unterschied zwischen Nachfrageunsicherheit und implizierter Nachfrageunsicherheit anhand eines eigenen Beispiels.</li>
+<li>Definieren Sie Reaktionsfähigkeit und Effizienz einer Supply Chain und erklären Sie, warum zwischen beiden ein Zielkonflikt besteht.</li>
+<li>Was besagt das Konzept des Strategic Fit, und wie lässt es sich grafisch anhand von Nachfrageunsicherheit und Supply-Chain-Optimierungsziel darstellen?</li>
+<li>Nennen Sie die fünf strategischen Treiber, über die eine Supply Chain zwischen Effizienz und Reaktionsfähigkeit positioniert werden kann, und je ein Beispiel für einen Stellhebel je Treiber.</li>
+<li>Wie verändert sich die für einen Kostenführer sinnvolle Supply-Chain-Konfiguration im Vergleich zu einem Serviceführer, und warum?</li>
+</ol>
+</div>
+
+
+<!-- -->
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-chopra2025supply" class="csl-entry" role="listitem">
+Chopra, Sunil, und Peter Meindl. 2025. <em>Supply Chain Management: Strategy, Planning, and Operation</em>. 8. Aufl. Pearson.
+</div>
+<div id="ref-fisher1997right" class="csl-entry" role="listitem">
+Fisher, Marshall L. 1997. <span>„What Is the Right Supply Chain for Your Product?“</span> <em>Harvard Business Review</em> 75 (2): 105–16.
+</div>
+<div id="ref-kummer2018grundzuge" class="csl-entry" role="listitem">
+Kummer, Sebastian, Oskar Grün, und Werner Jammernegg. 2018. <em>Grundz<span>ü</span>ge der Beschaffung, Produktion und Logistik</em>. 4. Aufl. Pearson Deutschland GmbH.
+</div>
+</div>
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopiert");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopiert");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" class="pagination-link" aria-label="Einführung und Grundbegriffe des Supply Chain Managements">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Einführung und Grundbegriffe des Supply Chain Managements</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/03_ziele-zielkonflikte-und-logistikkosten.html" class="pagination-link" aria-label="Ziele, Zielkonflikte und Logistikkosten">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ziele, Zielkonflikte und Logistikkosten</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Quellcode</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Wertschöpfung, strategische Fertigung und Strategic Fit {#sec-strategic-fit}</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ch2-setup</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Funktionen aus scm_functions.R einbinden (u. a. dupont_roi(), Farbpalette cols)</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../R/scm_functions.R"</span>)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)   <span class="co"># dplyr, ggplot2, tibble usw.</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)       <span class="co"># kable() für Tabellen</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>::: {.lernziele}</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>**Lernziele**</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sie können den Wertschöpfungsprozess einer Supply Chain in die Stufen Beschaffung, Produktion, Distribution und Absatz **strukturieren**.</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sie können die strategische Fertigungsentscheidung (Make-or-Buy) und die Lage des Entkopplungspunkts (Make-to-stock vs. Make-to-order) **erläutern**.</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sie können implizierte Nachfrageunsicherheit und die Reaktionsfähigkeit einer Supply Chain **gegenüberstellen**.</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sie können den Strategic Fit einer Supply-Chain-Konfiguration anhand von Wettbewerbsstrategie und implizierter Unsicherheit **beurteilen**.</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sie können in R eigene Funktionen schreiben, Kontrollfluss mit <span class="in">`if`</span>/<span class="in">`else`</span> einsetzen und Tabellen mit <span class="in">`mutate()`</span>, <span class="in">`filter()`</span> und <span class="in">`select()`</span> auswerten.</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="fu">## Einleitung</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>Im ersten Kapitel wurde eine Supply Chain als Netzwerk von Akteuren beschrieben, die Material-, Informations- und Finanzflüsse austauschen, um ein Produkt vom Rohstoff bis zum Endkunden zu bringen. Diese Definition beantwortet jedoch noch nicht die Frage, *warum* eine Supply Chain überhaupt existiert und *wie* sie so gestaltet werden sollte, dass sie zum Geschäftsmodell eines Unternehmens passt. Genau hier setzt dieses Kapitel an: Zunächst wird der Wertschöpfungsprozess als Kette aufeinander aufbauender Aktivitäten eingeführt, die aus Vorleistungen einen Kundennutzen erzeugen. Anschließend wird die strategische Fertigungsentscheidung betrachtet, also die Frage, welche Wertschöpfungsstufen ein Unternehmen selbst durchführt (**Make**) und welche es von Dritten bezieht (**Buy**), sowie an welcher Stelle der Kette Produktion auf konkrete Kundenaufträge trifft. Den Abschluss bildet das zentrale Konzept des Kapitels: der **Strategic Fit** nach @chopra2025supply — die Forderung, dass die Wettbewerbsstrategie eines Unternehmens und die Strategie seiner Supply Chain konsistent aufeinander abgestimmt sein müssen.</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>Diese drei Bausteine hängen eng zusammen: Erst wenn man die Wertschöpfungskette kennt, kann man entscheiden, welche Stufen intern und welche extern erbracht werden. Und erst wenn man weiß, wie eine Supply Chain aufgebaut ist, kann man beurteilen, ob sie zur Unsicherheit des bedienten Marktes passt.</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## Wertschöpfung als Prozess</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>Eine Supply Chain lässt sich als eine Abfolge von **wertschöpfenden Aktivitäten** verstehen, die Vorprodukte und Dienstleistungen Schritt für Schritt in ein Produkt überführen, für das ein Kunde bereit ist zu zahlen. Diese Kette lässt sich grob in vier aufeinanderfolgende Prozessphasen gliedern:</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>::: {.definition}</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>**Definition: Wertschöpfungsprozess**</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>Die **Beschaffung** ist der Prozess zum Einkauf und zur Bereitstellung von Rohstoffen, Komponenten und Dienstleistungen von externen Partnern, die für die Produktion von Waren und Dienstleistungen erforderlich sind.</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>Die **Produktion** ist ein zielgerichteter Prozess der Kombination von Gütern und Dienstleistungen zu höherwertigen Produkten.</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>Die **Distribution** umfasst die physische Verteilung von Waren vom Hersteller zum Endkunden, insbesondere Lagerhaltung, Transport und Logistik von Fertigprodukten.</span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>Der **Absatz** ist der Prozess des Verkaufs der Endprodukte an Konsumenten oder Handelspartner.</span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>Diese vier Phasen sind analytisch, nicht organisatorisch zu verstehen: In der Praxis überlappen sie sich, laufen teilweise parallel und werden häufig von unterschiedlichen Unternehmen entlang der Kette übernommen. Ein Automobilzulieferer etwa betreibt gleichzeitig Beschaffung (Rohstahl, Elektronikkomponenten), Produktion (Fertigung von Baugruppen) und Distribution (Anlieferung "just-in-sequence" an den OEM) — sein Absatz ist zugleich die Beschaffung des nächsten Kettenglieds. Wertschöpfung ist also kein Merkmal eines einzelnen Unternehmens, sondern eine Eigenschaft der gesamten Kette: Jede Stufe nimmt Inputs entgegen, veredelt sie und gibt sie an die nächste Stufe weiter, wobei mit jedem Schritt der Wert aus Sicht des Endkunden steigt (siehe @chopra2025supply, Kapitel 1.5).</span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>Diese Kettenperspektive ist die Grundlage für die strategische Fertigungsentscheidung, mit der sich der nächste Abschnitt beschäftigt: Für jede Wertschöpfungsstufe muss ein Unternehmen entscheiden, ob es sie selbst betreibt oder extern vergibt.</span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a><span class="fu">## Strategische Fertigung: Make-or-Buy</span></span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>Die **strategische Fertigungsentscheidung** — im angelsächsischen Sprachraum als *make-or-buy decision* bezeichnet — betrifft die Frage, welche Wertschöpfungsstufen ein Unternehmen selbst ausführt und welche es an externe Partner auslagert (Fremdbezug). Diese Entscheidung ist strategisch, weil sie nicht kurzfristig revidierbar ist: Eigene Fertigungskapazitäten erfordern Investitionen in Anlagen, Personal und Know-how, während Fremdbezug Abhängigkeiten von Lieferanten und einen Verlust an direkter Kontrolle über Qualität und Lieferfähigkeit mit sich bringt.</span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>Klassische Kriterien für die Make-or-Buy-Entscheidung sind unter anderem:</span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kernkompetenz**: Aktivitäten, die einen Wettbewerbsvorteil begründen (z. B. proprietäre Fertigungstechnologie), werden eher intern (Make) gehalten; standardisierte Commodity-Prozesse eignen sich eher für Fremdbezug (Buy).</span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kosten**: Skaleneffekte externer Spezialanbieter können die Fremdvergabe günstiger machen als die eigene, kleinvolumigere Fertigung.</span>
+<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kapitalbindung und Flexibilität**: Eigene Anlagen binden Kapital und erhöhen Fixkosten; Fremdbezug verschiebt Kosten in variable Bestandteile und erhöht die Flexibilität bei Nachfrageschwankungen.</span>
+<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Risiko und Kontrolle**: Eigene Fertigung sichert Kontrolle über Qualität, Termine und geistiges Eigentum, erhöht aber das unternehmerische Risiko (z. B. Auslastungsrisiko).</span>
+<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a>Eng mit der Make-or-Buy-Frage verknüpft ist die Frage, *wo* innerhalb der Wertschöpfungskette die Produktion auf den konkreten Kundenauftrag trifft — der sogenannte **Entkopplungspunkt** (auch *Customer Order Decoupling Point*, CODP). Er markiert die Stelle, ab der ein Produkt kundenauftragsspezifisch wird, während vorgelagerte Stufen auf Basis von Prognosen (anonym, auf Lager) produzieren.</span>
+<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-67"><a href="#cb14-67" aria-hidden="true" tabindex="-1"></a><span class="fu">### Denken in Zyklen</span></span>
+<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a>Eine hilfreiche Systematik zur Analyse der Wertschöpfungskette bietet die Betrachtung in vier **Prozesszyklen**, die jeweils zwei benachbarte Stufen der Kette verbinden (vgl. @kummer2018grundzuge, S. 45):</span>
+<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Kundenbestellzyklus**: Verarbeitung externer Kundenbedarfe (zwischen Kunde und Händler).</span>
+<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Distributions-/Versorgungszyklus**: Umwandlung von Kundenbedarfen in interne Bedarfe an Fertigprodukten (zwischen Händler und Produzent).</span>
+<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Produktionszyklus**: Umwandlung interner Bedarfe in Produktionsbedarfe von Zwischenprodukten und Rohstoffen (innerhalb der Produktion).</span>
+<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Beschaffungszyklus**: Gestaltung von Bestell- und Versorgungsprozessen für extern zu beziehende Rohstoffe und Dienstleistungen (zwischen Produzent und Lieferant).</span>
+<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a>Jeder dieser Zyklen kann entweder **kundenauftragsgetrieben** ("pull", ausgelöst durch einen konkreten Bedarf) oder **prognosegetrieben** ("push", ausgelöst durch eine Vorhersage) ablaufen. Die Grenze zwischen Push- und Pull-Bereich der Kette ist genau der Entkopplungspunkt. Je weiter dieser Punkt stromaufwärts (in Richtung Rohstoffe) liegt, desto größer ist der Anteil der Kette, der erst nach Auftragseingang aktiv wird — und desto geringer das Risiko, für einen anonymen Markt auf Vorrat zu produzieren. Allerdings steigt damit in der Regel auch die Lieferzeit, die der Kunde in Kauf nehmen muss.</span>
+<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a><span class="fu">### Make-to-stock vs. Make-to-order</span></span>
+<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a>Zwei Grenzfälle der Entkopplung sind in der Praxis besonders bekannt:</span>
+<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a>Bei **Make-to-stock** (MTS, Lagerfertigung) liegt der Entkopplungspunkt ganz am Ende der Kette: Fertigprodukte werden anonym auf Basis von Absatzprognosen produziert und in einem Fertigwarenlager bereitgehalten. Der Kunde kauft aus dem Bestand und erhält die Ware sofort oder nach sehr kurzer Lieferzeit. Typische Beispiele sind der Lebensmitteleinzelhandel oder Drogerien: Hier ist die Produktvielfalt vergleichsweise gering standardisiert, die Nachfrage recht gut prognostizierbar, und Kunden erwarten sofortige Verfügbarkeit.</span>
+<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a>Bei **Make-to-order** (MTO, Auftragsfertigung) liegt der Entkopplungspunkt hingegen ganz am Anfang der Kette: Die Produktion beginnt erst, wenn ein konkreter Kundenauftrag vorliegt. Typische Beispiele sind Gebäude, Flugzeuge oder Gemälde — hochgradig individualisierte, seltene und margenstarke Güter, bei denen Lagerfertigung entweder unmöglich (weil jedes Produkt einzigartig ist) oder wirtschaftlich unsinnig wäre (zu hohe Kapitalbindung für ein Flugzeug "auf Vorrat"). Der Kunde akzeptiert hier eine deutlich längere Lieferzeit als Preis für Individualisierung (vgl. @chopra2025supply).</span>
+<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a>Zwischen diesen Polen liegen hybride Strategien wie *Assemble-to-order* (Endmontage erst nach Auftragseingang, z. B. bei individuell konfigurierten PCs oder Fahrzeugen) — hier werden Komponenten prognosebasiert vorproduziert, die Endkonfiguration erfolgt jedoch kundenauftragsspezifisch. Die Wahl des Entkopplungspunkts ist damit selbst eine strategische Fertigungsentscheidung, die eng mit der im folgenden Abschnitt behandelten Frage nach Reaktionsfähigkeit und Effizienz verknüpft ist.</span>
+<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a>::: {.r-exkurs}</span>
+<span id="cb14-89"><a href="#cb14-89" aria-hidden="true" tabindex="-1"></a>**R-Exkurs: Eigene Funktionen definieren**</span>
+<span id="cb14-90"><a href="#cb14-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a>In Kapitel <span class="co">[</span><span class="ot">-@sec-einfuehrung</span><span class="co">]</span> haben Sie mit Vektoren, <span class="in">`data.frame`</span>/<span class="in">`tibble`</span> und Basisfunktionen wie <span class="in">`mean()`</span> oder <span class="in">`sum()`</span> gearbeitet. Häufig möchte man eine Berechnung, die mehrfach benötigt wird, nicht jedes Mal neu ausschreiben, sondern in einer **eigenen Funktion** kapseln. Eine Funktion wird mit dem Schlüsselwort <span class="in">`function()`</span> definiert; ihr Rumpf steht in geschweiften Klammern <span class="in">`{ }`</span>, und der letzte ausgewertete Ausdruck (oder ein expliziter <span class="in">`return()`</span>-Aufruf) ist der Rückgabewert.</span>
+<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a>Als Beispiel: Eine einfache Faustregel für die Make-or-Buy-Entscheidung lautet, eine Aktivität dann intern zu fertigen (Make), wenn die eigenen Herstellkosten je Einheit niedriger sind als der Angebotspreis eines externen Zulieferers zuzüglich Beschaffungskosten. Wir bilden das als Funktion ab:</span>
+<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ch2-make-or-buy-funktion</span></span>
+<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-100"><a href="#cb14-100" aria-hidden="true" tabindex="-1"></a><span class="co"># Funktion: vergleicht interne Herstellkosten mit externem Bezugspreis</span></span>
+<span id="cb14-101"><a href="#cb14-101" aria-hidden="true" tabindex="-1"></a>make_or_buy <span class="ot">&lt;-</span> <span class="cf">function</span>(kosten_intern, preis_extern, <span class="at">beschaffungskosten =</span> <span class="dv">0</span>) {</span>
+<span id="cb14-102"><a href="#cb14-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Gesamtkosten des Fremdbezugs: Einkaufspreis plus Beschaffungsnebenkosten</span></span>
+<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a>  kosten_extern_gesamt <span class="ot">&lt;-</span> preis_extern <span class="sc">+</span> beschaffungskosten</span>
+<span id="cb14-105"><a href="#cb14-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-106"><a href="#cb14-106" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rückgabewert: character-Skalar mit der Empfehlung</span></span>
+<span id="cb14-107"><a href="#cb14-107" aria-hidden="true" tabindex="-1"></a>  kosten_extern_gesamt  <span class="co"># letzter Ausdruck wird NICHT automatisch zurückgegeben,</span></span>
+<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a>  <span class="co"># da wir noch eine Entscheidung treffen wollen - siehe unten</span></span>
+<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-110"><a href="#cb14-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-111"><a href="#cb14-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a>Im obigen Entwurf wird nur der externe Gesamtpreis berechnet, aber noch keine Entscheidung getroffen. Dafür benötigen wir Kontrollfluss mit <span class="in">`if`</span>/<span class="in">`else`</span>, der im nächsten Exkurs eingeführt wird.</span>
+<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-114"><a href="#cb14-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a>::: {.r-exkurs}</span>
+<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a>**R-Exkurs: Kontrollfluss mit `if`/`else`**</span>
+<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-118"><a href="#cb14-118" aria-hidden="true" tabindex="-1"></a>Mit <span class="in">`if (Bedingung) { ... } else { ... }`</span> lässt sich der Programmablauf verzweigen: Ist die Bedingung <span class="in">`TRUE`</span>, wird der erste Block ausgeführt, sonst der <span class="in">`else`</span>-Block. Wir erweitern die Funktion <span class="in">`make_or_buy()`</span> aus dem vorherigen Exkurs um eine echte Entscheidungslogik:</span>
+<span id="cb14-119"><a href="#cb14-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ch2-make-or-buy-if</span></span>
+<span id="cb14-124"><a href="#cb14-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-125"><a href="#cb14-125" aria-hidden="true" tabindex="-1"></a><span class="co"># Erweiterte Funktion mit Entscheidungslogik über if/else</span></span>
+<span id="cb14-126"><a href="#cb14-126" aria-hidden="true" tabindex="-1"></a>make_or_buy <span class="ot">&lt;-</span> <span class="cf">function</span>(kosten_intern, preis_extern, <span class="at">beschaffungskosten =</span> <span class="dv">0</span>) {</span>
+<span id="cb14-127"><a href="#cb14-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-128"><a href="#cb14-128" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Gesamtkosten des Fremdbezugs berechnen</span></span>
+<span id="cb14-129"><a href="#cb14-129" aria-hidden="true" tabindex="-1"></a>  kosten_extern_gesamt <span class="ot">&lt;-</span> preis_extern <span class="sc">+</span> beschaffungskosten</span>
+<span id="cb14-130"><a href="#cb14-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-131"><a href="#cb14-131" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Entscheidungsregel: Make, wenn intern guenstiger als extern</span></span>
+<span id="cb14-132"><a href="#cb14-132" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (kosten_intern <span class="sc">&lt;</span> kosten_extern_gesamt) {</span>
+<span id="cb14-133"><a href="#cb14-133" aria-hidden="true" tabindex="-1"></a>    entscheidung <span class="ot">&lt;-</span> <span class="st">"Make (Eigenfertigung)"</span></span>
+<span id="cb14-134"><a href="#cb14-134" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (kosten_intern <span class="sc">&gt;</span> kosten_extern_gesamt) {</span>
+<span id="cb14-135"><a href="#cb14-135" aria-hidden="true" tabindex="-1"></a>    entscheidung <span class="ot">&lt;-</span> <span class="st">"Buy (Fremdbezug)"</span></span>
+<span id="cb14-136"><a href="#cb14-136" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb14-137"><a href="#cb14-137" aria-hidden="true" tabindex="-1"></a>    entscheidung <span class="ot">&lt;-</span> <span class="st">"Indifferent - weitere Kriterien pruefen"</span></span>
+<span id="cb14-138"><a href="#cb14-138" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-139"><a href="#cb14-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-140"><a href="#cb14-140" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rueckgabe als benannte Liste: Zahlen und Empfehlung zusammen</span></span>
+<span id="cb14-141"><a href="#cb14-141" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb14-142"><a href="#cb14-142" aria-hidden="true" tabindex="-1"></a>    <span class="at">kosten_intern =</span> kosten_intern,</span>
+<span id="cb14-143"><a href="#cb14-143" aria-hidden="true" tabindex="-1"></a>    <span class="at">kosten_extern_gesamt =</span> kosten_extern_gesamt,</span>
+<span id="cb14-144"><a href="#cb14-144" aria-hidden="true" tabindex="-1"></a>    <span class="at">empfehlung =</span> entscheidung</span>
+<span id="cb14-145"><a href="#cb14-145" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-146"><a href="#cb14-146" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-147"><a href="#cb14-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-148"><a href="#cb14-148" aria-hidden="true" tabindex="-1"></a><span class="co"># Beispielaufruf: Bauteil kostet intern 18.50 EUR,</span></span>
+<span id="cb14-149"><a href="#cb14-149" aria-hidden="true" tabindex="-1"></a><span class="co"># ein Zulieferer bietet es fuer 15 EUR zzgl. 2 EUR Beschaffungskosten an</span></span>
+<span id="cb14-150"><a href="#cb14-150" aria-hidden="true" tabindex="-1"></a><span class="fu">make_or_buy</span>(<span class="at">kosten_intern =</span> <span class="fl">18.50</span>, <span class="at">preis_extern =</span> <span class="dv">15</span>, <span class="at">beschaffungskosten =</span> <span class="dv">2</span>)</span>
+<span id="cb14-151"><a href="#cb14-151" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-152"><a href="#cb14-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-153"><a href="#cb14-153" aria-hidden="true" tabindex="-1"></a>Wichtig: Eine solche Kostenfaustregel greift zu kurz, wenn Kernkompetenz, Kapazitätsrisiko oder strategische Abhängigkeit im Vordergrund stehen — sie ist ein erster quantitativer Anhaltspunkt, kein vollständiges Entscheidungsmodell.</span>
+<span id="cb14-154"><a href="#cb14-154" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-155"><a href="#cb14-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-156"><a href="#cb14-156" aria-hidden="true" tabindex="-1"></a><span class="fu">## Strategische Ziele: Kundenzufriedenheit unter Unsicherheit</span></span>
+<span id="cb14-157"><a href="#cb14-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-158"><a href="#cb14-158" aria-hidden="true" tabindex="-1"></a>Jede Supply Chain wird letztlich daran gemessen, wie gut sie Kundenerwartungen erfüllt — und Kundenerwartungen sind vielschichtig. Sie lassen sich entlang von fünf Dimensionen beschreiben:</span>
+<span id="cb14-159"><a href="#cb14-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-160"><a href="#cb14-160" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kosten**: der Preis, den der Kunde für die Leistung insgesamt zu zahlen bereit ist (einschließlich Liefer- und Nebenkosten),</span>
+<span id="cb14-161"><a href="#cb14-161" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Qualität**: die Übereinstimmung des Produkts mit den zugesagten Eigenschaften — bei Lebensmitteln etwa Frische und Hygiene,</span>
+<span id="cb14-162"><a href="#cb14-162" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Zeit**: die Lieferzeit zwischen Bestellung und Verfügbarkeit bzw. bei Handelsware die sofortige Verfügbarkeit im Regal,</span>
+<span id="cb14-163"><a href="#cb14-163" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Zuverlässigkeit**: die Verlässlichkeit, mit der Zusagen zu Menge, Termin und Qualität eingehalten werden,</span>
+<span id="cb14-164"><a href="#cb14-164" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Zugänglichkeit**: wie leicht der Kunde an das Produkt gelangt (Zahl und Lage der Verkaufsstellen, Öffnungszeiten, Vertriebskanäle).</span>
+<span id="cb14-165"><a href="#cb14-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-166"><a href="#cb14-166" aria-hidden="true" tabindex="-1"></a>Die Dimensionen Zeit und Zuverlässigkeit werden in den Folien als **Servicedimensionen** hervorgehoben: Sie werden nicht durch das Produkt selbst, sondern durch die Supply Chain erbracht und hängen unmittelbar mit der **Kunden- und Supply-Chain-Unsicherheit** zusammen. Ein Produkt kann qualitativ hervorragend und günstig sein — ist es nicht rechtzeitig und verlässlich verfügbar, verfehlt die Supply Chain dennoch die Kundenerwartung. Diese Unsicherheit äußert sich unter anderem in:</span>
+<span id="cb14-167"><a href="#cb14-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-168"><a href="#cb14-168" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>der Nachfragemenge je Kundenauftrag,</span>
+<span id="cb14-169"><a href="#cb14-169" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>der vom Kunden akzeptierten Lieferzeit,</span>
+<span id="cb14-170"><a href="#cb14-170" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>der erwarteten Produktvielfalt,</span>
+<span id="cb14-171"><a href="#cb14-171" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>der erwarteten Lieferbereitschaft,</span>
+<span id="cb14-172"><a href="#cb14-172" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>der Preis- bzw. Zahlungsbereitschaft und</span>
+<span id="cb14-173"><a href="#cb14-173" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>dem Innovationsgrad der Produkte.</span>
+<span id="cb14-174"><a href="#cb14-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-175"><a href="#cb14-175" aria-hidden="true" tabindex="-1"></a>Um diese Unsicherheit zu strukturieren, unterscheidet man zwei eng verwandte, aber nicht identische Begriffe:</span>
+<span id="cb14-176"><a href="#cb14-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-177"><a href="#cb14-177" aria-hidden="true" tabindex="-1"></a>::: {.definition}</span>
+<span id="cb14-178"><a href="#cb14-178" aria-hidden="true" tabindex="-1"></a>**Definition: Nachfrageunsicherheit und implizierte Nachfrageunsicherheit**</span>
+<span id="cb14-179"><a href="#cb14-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-180"><a href="#cb14-180" aria-hidden="true" tabindex="-1"></a>Die **Nachfrageunsicherheit** ist die Unsicherheit über die tatsächliche Nachfrage nach einem Produkt am Gesamtmarkt.</span>
+<span id="cb14-181"><a href="#cb14-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-182"><a href="#cb14-182" aria-hidden="true" tabindex="-1"></a>Die **implizierte Nachfrageunsicherheit** ist die Unsicherheit desjenigen Nachfragesegments, das durch *eine konkrete* Supply Chain bedient werden soll, basierend auf den von dieser Supply Chain adressierten Nachfrageattributen (z. B. Lieferzeit, Produktvielfalt, Servicelevel).</span>
+<span id="cb14-183"><a href="#cb14-183" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-184"><a href="#cb14-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-185"><a href="#cb14-185" aria-hidden="true" tabindex="-1"></a>Der Unterschied ist wichtig: Ein und dasselbe Produkt kann über verschiedene Supply Chains vertrieben werden, die jeweils unterschiedliche Nachfrageattribute bedienen — und damit unterschiedlichen *implizierten* Unsicherheiten ausgesetzt sind, obwohl die zugrunde liegende Marktnachfrage identisch ist. Ein Beispiel: Ein Hersteller kann dasselbe Produkt über einen Onlineshop mit garantierter 24-Stunden-Lieferung und über den stationären Handel mit mehrwöchiger Vorbestellzeit vertreiben. Der Onlinekanal hat eine deutlich höhere implizierte Unsicherheit, weil er kurzfristig auf individuelle Bestellungen reagieren muss, während der stationäre Kanal durch die lange Vorlaufzeit Nachfrageschwankungen besser ausgleichen kann.</span>
+<span id="cb14-186"><a href="#cb14-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-187"><a href="#cb14-187" aria-hidden="true" tabindex="-1"></a>Die folgende Tabelle systematisiert, wie unterschiedliche Kundenbedürfnisse die implizierte Unsicherheit einer Supply Chain erhöhen:</span>
+<span id="cb14-188"><a href="#cb14-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-189"><a href="#cb14-189" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Kundenbedürfnis ändert sich ... <span class="pp">|</span> ... wodurch die implizierte Unsicherheit steigt, weil ... <span class="pp">|</span></span>
+<span id="cb14-190"><a href="#cb14-190" aria-hidden="true" tabindex="-1"></a><span class="pp">|:---|:---|</span></span>
+<span id="cb14-191"><a href="#cb14-191" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> (maximale) Nachfragemenge steigt <span class="pp">|</span> die Spannweite des Bedarfs zunimmt und eine größere Varianz der Nachfragemengen entsteht <span class="pp">|</span></span>
+<span id="cb14-192"><a href="#cb14-192" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Lieferzeit sinkt <span class="pp">|</span> weniger Zeit bleibt, um auf Nachfrageschwankungen zu reagieren <span class="pp">|</span></span>
+<span id="cb14-193"><a href="#cb14-193" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Anzahl angebotener Produkte steigt <span class="pp">|</span> die Nachfrage der einzelnen Produkte schwieriger zu prognostizieren ist <span class="pp">|</span></span>
+<span id="cb14-194"><a href="#cb14-194" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Lieferbereitschaftsgrad steigt <span class="pp">|</span> Nachfragespitzen zuverlässig abgefedert werden müssen <span class="pp">|</span></span>
+<span id="cb14-195"><a href="#cb14-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Innovationsgrad steigt <span class="pp">|</span> die Nachfrage neuer Produkte in der Regel unbekannt oder schwer zu prognostizieren ist <span class="pp">|</span></span>
+<span id="cb14-196"><a href="#cb14-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Anzahl der Vertriebskanäle steigt <span class="pp">|</span> die Nachfrage der einzelnen Kanäle schwieriger zu prognostizieren ist <span class="pp">|</span></span>
+<span id="cb14-197"><a href="#cb14-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-198"><a href="#cb14-198" aria-hidden="true" tabindex="-1"></a>Diese implizierte Unsicherheit ist nicht gleichmäßig über die Supply Chain verteilt: Je nachdem, wo Lager- und Kapazitätspuffer positioniert sind, tragen unterschiedliche Akteure einen unterschiedlichen Anteil der **gesamten implizierten Unsicherheit der Supply Chain**. In einer Kette, in der der Händler große Sicherheitsbestände hält, ist der Produzent von kurzfristigen Nachfrageschwankungen weitgehend abgeschirmt; verschiebt sich diese Pufferfunktion Richtung Produzent, trägt dieser einen größeren Anteil der Unsicherheit (vgl. @chopra2025supply, S. 57).</span>
+<span id="cb14-199"><a href="#cb14-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-200"><a href="#cb14-200" aria-hidden="true" tabindex="-1"></a>Die Folien veranschaulichen dies mit zwei Ketten, die **dieselbe gesamte implizierte Unsicherheit** bewältigen müssen, sie aber unterschiedlich aufteilen. In *Supply Chain I* übernimmt der Händler den größten Teil: Er hält ein breites Sortiment vorrätig und puffert Nachfrageschwankungen über Bestände ab, sodass Produzent und Lieferant mit einer vergleichsweise stabilen Nachfrage planen können und sich auf Effizienz konzentrieren dürfen. In *Supply Chain II* übernimmt der Produzent den größten Teil — etwa weil er kundenindividuell fertigt (Make-to-order) und der Händler nur noch als Verkaufs- und Auslieferungspunkt fungiert. Daraus folgt eine wichtige Präzisierung des Strategic-Fit-Gedankens: Nicht jede Stufe einer Kette muss gleich reaktionsfähig sein. Entscheidend ist, dass die Stufe, die einen großen Anteil der Unsicherheit trägt, reaktionsfähig ausgelegt ist, während Stufen, die durch vor- oder nachgelagerte Puffer abgeschirmt werden, effizient arbeiten können. Ein Frischehersteller wie die SushiFresh GmbH, die uns ab Kapitel <span class="co">[</span><span class="ot">-@sec-logistikkosten</span><span class="co">]</span> begleitet, kann diese Unsicherheit übrigens kaum an den Handel weiterreichen: Sushi-Boxen sind nicht lagerfähig, sodass die Mengenentscheidung jeden Morgen beim Hersteller neu getroffen werden muss (vgl. das Newsvendor-Modell in Kapitel <span class="co">[</span><span class="ot">-@sec-newsvendor</span><span class="co">]</span>).</span>
+<span id="cb14-201"><a href="#cb14-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-202"><a href="#cb14-202" aria-hidden="true" tabindex="-1"></a>::: {.r-exkurs}</span>
+<span id="cb14-203"><a href="#cb14-203" aria-hidden="true" tabindex="-1"></a>**R-Exkurs: `dplyr`-Grundverben — `mutate()`, `filter()`, `select()`**</span>
+<span id="cb14-204"><a href="#cb14-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-205"><a href="#cb14-205" aria-hidden="true" tabindex="-1"></a>Aus Kapitel <span class="co">[</span><span class="ot">-@sec-einfuehrung</span><span class="co">]</span> kennen Sie bereits <span class="in">`tibble()`</span> zur Erstellung von Datentabellen. Das Paket <span class="in">`dplyr`</span> (Teil des <span class="in">`tidyverse`</span>) stellt einige wenige, gut kombinierbare "Verben" bereit, um solche Tabellen zu transformieren:</span>
+<span id="cb14-206"><a href="#cb14-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-207"><a href="#cb14-207" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mutate()`</span> erzeugt neue Spalten (oder verändert bestehende),</span>
+<span id="cb14-208"><a href="#cb14-208" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`filter()`</span> behält nur Zeilen, die eine Bedingung erfüllen,</span>
+<span id="cb14-209"><a href="#cb14-209" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`select()`</span> wählt eine Teilmenge der Spalten aus.</span>
+<span id="cb14-210"><a href="#cb14-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-211"><a href="#cb14-211" aria-hidden="true" tabindex="-1"></a>Wir bauen eine kleine Beispieltabelle mit Wertschöpfungsstufen, ihren Kosten je Einheit und dem erzielten Verkaufspreis, und berechnen daraus Marge und Marginalität:</span>
+<span id="cb14-212"><a href="#cb14-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-215"><a href="#cb14-215" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-216"><a href="#cb14-216" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ch2-dplyr-wertschoepfung</span></span>
+<span id="cb14-217"><a href="#cb14-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-218"><a href="#cb14-218" aria-hidden="true" tabindex="-1"></a><span class="co"># Kleine Beispieltabelle: vier Wertschoepfungsstufen einer Supply Chain</span></span>
+<span id="cb14-219"><a href="#cb14-219" aria-hidden="true" tabindex="-1"></a>wertschoepfung <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb14-220"><a href="#cb14-220" aria-hidden="true" tabindex="-1"></a>  <span class="at">stufe =</span> <span class="fu">c</span>(<span class="st">"Beschaffung"</span>, <span class="st">"Produktion"</span>, <span class="st">"Distribution"</span>, <span class="st">"Absatz"</span>),</span>
+<span id="cb14-221"><a href="#cb14-221" aria-hidden="true" tabindex="-1"></a>  <span class="at">kosten_je_einheit =</span> <span class="fu">c</span>(<span class="fl">12.0</span>, <span class="fl">8.5</span>, <span class="fl">3.0</span>, <span class="fl">1.5</span>),   <span class="co"># EUR je Stueck, kumulativ zurechenbar</span></span>
+<span id="cb14-222"><a href="#cb14-222" aria-hidden="true" tabindex="-1"></a>  <span class="at">preis_je_einheit  =</span> <span class="fu">c</span>(<span class="fl">15.0</span>, <span class="fl">24.0</span>, <span class="fl">27.5</span>, <span class="fl">32.0</span>) <span class="co"># kumulierter Verkaufs-/Verrechnungspreis</span></span>
+<span id="cb14-223"><a href="#cb14-223" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-224"><a href="#cb14-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-225"><a href="#cb14-225" aria-hidden="true" tabindex="-1"></a>wertschoepfung_erweitert <span class="ot">&lt;-</span> wertschoepfung <span class="sc">|&gt;</span></span>
+<span id="cb14-226"><a href="#cb14-226" aria-hidden="true" tabindex="-1"></a>  <span class="co"># neue Spalte: absolute Marge je Stufe</span></span>
+<span id="cb14-227"><a href="#cb14-227" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">marge_absolut =</span> preis_je_einheit <span class="sc">-</span> kosten_je_einheit) <span class="sc">|&gt;</span></span>
+<span id="cb14-228"><a href="#cb14-228" aria-hidden="true" tabindex="-1"></a>  <span class="co"># neue Spalte: relative Marge (Marge bezogen auf den Preis)</span></span>
+<span id="cb14-229"><a href="#cb14-229" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">marge_relativ =</span> marge_absolut <span class="sc">/</span> preis_je_einheit)</span>
+<span id="cb14-230"><a href="#cb14-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-231"><a href="#cb14-231" aria-hidden="true" tabindex="-1"></a>wertschoepfung_erweitert</span>
+<span id="cb14-232"><a href="#cb14-232" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-233"><a href="#cb14-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-234"><a href="#cb14-234" aria-hidden="true" tabindex="-1"></a><span class="in">`filter()`</span> reduziert die Tabelle auf Zeilen, die eine logische Bedingung erfüllen — etwa alle Stufen mit einer relativen Marge über 30 %:</span>
+<span id="cb14-235"><a href="#cb14-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-238"><a href="#cb14-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-239"><a href="#cb14-239" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ch2-dplyr-filter</span></span>
+<span id="cb14-240"><a href="#cb14-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-241"><a href="#cb14-241" aria-hidden="true" tabindex="-1"></a><span class="co"># Nur Stufen mit relativer Marge &gt; 0.30 behalten</span></span>
+<span id="cb14-242"><a href="#cb14-242" aria-hidden="true" tabindex="-1"></a>wertschoepfung_erweitert <span class="sc">|&gt;</span></span>
+<span id="cb14-243"><a href="#cb14-243" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(marge_relativ <span class="sc">&gt;</span> <span class="fl">0.30</span>)</span>
+<span id="cb14-244"><a href="#cb14-244" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-245"><a href="#cb14-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-246"><a href="#cb14-246" aria-hidden="true" tabindex="-1"></a><span class="in">`select()`</span> wiederum wählt gezielt Spalten aus, etwa wenn nur Stufenname und relative Marge interessieren:</span>
+<span id="cb14-247"><a href="#cb14-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-250"><a href="#cb14-250" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-251"><a href="#cb14-251" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ch2-dplyr-select</span></span>
+<span id="cb14-252"><a href="#cb14-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-253"><a href="#cb14-253" aria-hidden="true" tabindex="-1"></a><span class="co"># Nur die Spalten 'stufe' und 'marge_relativ' behalten</span></span>
+<span id="cb14-254"><a href="#cb14-254" aria-hidden="true" tabindex="-1"></a>wertschoepfung_erweitert <span class="sc">|&gt;</span></span>
+<span id="cb14-255"><a href="#cb14-255" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(stufe, marge_relativ)</span>
+<span id="cb14-256"><a href="#cb14-256" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-257"><a href="#cb14-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-258"><a href="#cb14-258" aria-hidden="true" tabindex="-1"></a>Der Pipe-Operator <span class="in">`|&gt;`</span> (aus Kapitel <span class="co">[</span><span class="ot">-@sec-einfuehrung</span><span class="co">]</span> bereits bekannt) verkettet diese Schritte lesbar von links nach rechts: "Nimm die Tabelle, dann erzeuge neue Spalten, dann filtere, dann wähle Spalten aus." Diese drei Verben — zusammen mit <span class="in">`arrange()`</span> (Sortieren) und <span class="in">`summarise()`</span> (Aggregieren), die in späteren Kapiteln folgen — bilden das Rückgrat der Datenanalyse mit <span class="in">`dplyr`</span>.</span>
+<span id="cb14-259"><a href="#cb14-259" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-260"><a href="#cb14-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-261"><a href="#cb14-261" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reaktionsfähigkeit und Effizienz</span></span>
+<span id="cb14-262"><a href="#cb14-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-263"><a href="#cb14-263" aria-hidden="true" tabindex="-1"></a>Nachdem die implizierte Unsicherheit als Eigenschaft der Nachfrageseite eingeführt wurde, stellt sich die Frage, wie eine Supply Chain darauf reagieren sollte. Hier kommen zwei gegensätzliche strategische Grundausrichtungen ins Spiel:</span>
+<span id="cb14-264"><a href="#cb14-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-265"><a href="#cb14-265" aria-hidden="true" tabindex="-1"></a>::: {.definition}</span>
+<span id="cb14-266"><a href="#cb14-266" aria-hidden="true" tabindex="-1"></a>**Definition: Reaktionsfähigkeit und Effizienz**</span>
+<span id="cb14-267"><a href="#cb14-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-268"><a href="#cb14-268" aria-hidden="true" tabindex="-1"></a>Die **Reaktionsfähigkeit** (*responsiveness*) einer Supply Chain ist ihre Fähigkeit, mit Nachfrageunsicherheit umzugehen — etwa durch schnelle Reaktion auf Nachfrageschwankungen, kurze Lieferzeiten oder hohe Produktvielfalt.</span>
+<span id="cb14-269"><a href="#cb14-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-270"><a href="#cb14-270" aria-hidden="true" tabindex="-1"></a>Die **Effizienz** einer Supply Chain ist das Inverse ihrer Gesamtkosten, das heißt aller Kosten, die anfallen, um ein Produkt von der Rohstoffgewinnung bis zum Endkunden zu bringen.</span>
+<span id="cb14-271"><a href="#cb14-271" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-272"><a href="#cb14-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-273"><a href="#cb14-273" aria-hidden="true" tabindex="-1"></a>Reaktionsfähigkeit lässt sich unter anderem erreichen durch hohe Lagerbestände, kurze Reaktions- und Lieferzeiten, hohe Produktvielfalt, kurze Entwicklungszyklen neuer Produkte, hohe Lieferbereitschaftsgrade und die Reduktion von Versorgungsunsicherheiten. Jede dieser Maßnahmen verursacht jedoch zusätzliche Kosten: Höhere Lagerbestände binden Kapital, kurze Lieferzeiten erfordern Kapazitätsreserven, und eine hohe Produktvielfalt erschwert Skaleneffekte in der Fertigung. Reaktionsfähigkeit und Effizienz stehen deshalb in einem grundsätzlichen **Zielkonflikt** (*trade-off*): Jede zusätzliche Einheit an Reaktionsfähigkeit ist nur zu höheren Kosten zu haben, und umgekehrt lässt sich Kosteneffizienz meist nur auf Kosten von Reaktionsfähigkeit erhöhen.</span>
+<span id="cb14-274"><a href="#cb14-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-275"><a href="#cb14-275" aria-hidden="true" tabindex="-1"></a>Formal lässt sich dieser Zusammenhang als **Kosten-Reaktionsfähigkeits-Grenze** (*efficient frontier*) darstellen: Für ein gegebenes Prozessdesign existiert eine Menge von Kombinationen aus Reaktionsfähigkeit und Kosten, die mit den verfügbaren Ressourcen bestmöglich erreichbar sind. Punkte auf dieser Grenze sind effizient in dem Sinne, dass keine Kombination aus Reaktionsfähigkeit und Kosten erreichbar ist, die gleichzeitig reaktionsfähiger *und* günstiger wäre. Nur durch Investitionen in bessere Prozesse, Technologien oder Informationssysteme lässt sich die gesamte Grenze nach außen verschieben — nicht aber ein einzelner Punkt darauf ohne Kompromiss verbessern.</span>
+<span id="cb14-276"><a href="#cb14-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-277"><a href="#cb14-277" aria-hidden="true" tabindex="-1"></a>Dieser Trade-off wird von fünf **strategischen Treibern** (*supply chain drivers*) operationalisiert, über die ein Unternehmen die Position seiner Supply Chain auf dem Kontinuum zwischen Effizienz und Reaktionsfähigkeit aktiv gestalten kann:</span>
+<span id="cb14-278"><a href="#cb14-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-279"><a href="#cb14-279" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Treiber <span class="pp">|</span> Typische Stellhebel <span class="pp">|</span></span>
+<span id="cb14-280"><a href="#cb14-280" aria-hidden="true" tabindex="-1"></a><span class="pp">|:---|:---|</span></span>
+<span id="cb14-281"><a href="#cb14-281" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Produktion** <span class="pp">|</span> Produktionstechnologie, Produktportfolio, Fertigungstiefe <span class="pp">|</span></span>
+<span id="cb14-282"><a href="#cb14-282" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Logistik** <span class="pp">|</span> Transportmodi, Lagerkapazitäten, Sicherheitsbestände <span class="pp">|</span></span>
+<span id="cb14-283"><a href="#cb14-283" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Struktur** <span class="pp">|</span> Lieferantenauswahl, Standortkapazitäten, Stufen und Verbindungen der Kette <span class="pp">|</span></span>
+<span id="cb14-284"><a href="#cb14-284" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Preis** <span class="pp">|</span> Preisgestaltung, Nachfragesteuerung, Rabattierung <span class="pp">|</span></span>
+<span id="cb14-285"><a href="#cb14-285" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Information** <span class="pp">|</span> Informationsteilung, Systemintegration, kollaborative Prognose und Planung <span class="pp">|</span></span>
+<span id="cb14-286"><a href="#cb14-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-287"><a href="#cb14-287" aria-hidden="true" tabindex="-1"></a>Jeder dieser Treiber kann auf einer Skala zwischen "kostenoptimiert" und "reaktionsoptimiert" konfiguriert werden. Ein Unternehmen, das etwa hohe Maschinenauslastung anstrebt (Produktionstreiber Richtung Effizienz), minimale Sicherheitsbestände hält (Logistiktreiber Richtung Effizienz) und Lieferanten primär nach Kosten auswählt (Struktur Richtung Effizienz), positioniert seine gesamte Supply Chain deutlich auf der Effizienzseite des Spektrums — und umgekehrt.</span>
+<span id="cb14-288"><a href="#cb14-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-289"><a href="#cb14-289" aria-hidden="true" tabindex="-1"></a><span class="fu">## Strategic Fit</span></span>
+<span id="cb14-290"><a href="#cb14-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-291"><a href="#cb14-291" aria-hidden="true" tabindex="-1"></a>Damit sind alle Bausteine vorhanden, um das zentrale Konzept dieses Kapitels einzuführen: den **Strategic Fit**.</span>
+<span id="cb14-292"><a href="#cb14-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-293"><a href="#cb14-293" aria-hidden="true" tabindex="-1"></a>::: {.definition}</span>
+<span id="cb14-294"><a href="#cb14-294" aria-hidden="true" tabindex="-1"></a>**Definition: Strategic Fit**</span>
+<span id="cb14-295"><a href="#cb14-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-296"><a href="#cb14-296" aria-hidden="true" tabindex="-1"></a>**Strategic Fit** bezeichnet die konsistente Abstimmung zwischen der Wettbewerbsstrategie eines Unternehmens (was der Kunde erwarten kann) und seiner Supply-Chain-Strategie (wie die Supply Chain konfiguriert ist), sodass die implizierte Unsicherheit, die die Supply Chain bewältigen muss, mit dem Grad an Reaktionsfähigkeit übereinstimmt, für den die Supply Chain ausgelegt ist <span class="co">[</span><span class="ot">@chopra2025supply, S. 56</span><span class="co">]</span>.</span>
+<span id="cb14-297"><a href="#cb14-297" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-298"><a href="#cb14-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-299"><a href="#cb14-299" aria-hidden="true" tabindex="-1"></a>Grafisch lässt sich Strategic Fit als Diagonale in einem Koordinatensystem darstellen, dessen horizontale Achse die Nachfrageunsicherheit (von niedrig bis hoch) und dessen vertikale Achse das Supply-Chain-Optimierungsziel (von Effizienz bis Reaktionsfähigkeit) abbildet. Produkte mit niedriger Nachfrageunsicherheit — etwa etablierte Grundstoffe wie Salz oder Grundnahrungsmittel — werden am besten von einer primär auf **Effizienz** ausgelegten Supply Chain bedient: Die Nachfrage ist gut prognostizierbar, sodass Kosteneinsparungen durch hohe Auslastung, geringe Bestände und lange Produktionsläufe kaum durch Fehlmengen oder Überbestände erkauft werden. Produkte mit hoher Nachfrageunsicherheit — etwa ein neues Produkt in einem neuen Markt — erfordern hingegen eine primär auf **Reaktionsfähigkeit** ausgelegte Supply Chain: Da sich die Nachfrage kaum verlässlich prognostizieren lässt, muss die Kette flexibel auf tatsächliche Bestellungen reagieren können, auch wenn dies höhere Kosten verursacht.</span>
+<span id="cb14-300"><a href="#cb14-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-301"><a href="#cb14-301" aria-hidden="true" tabindex="-1"></a>Strategic Fit ist erreicht, wenn eine Supply-Chain-Konfiguration nahe dieser Diagonalen liegt. Abweichungen von der Diagonalen sind strategisch riskant, aber in unterschiedliche Richtungen problematisch:</span>
+<span id="cb14-302"><a href="#cb14-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-303"><a href="#cb14-303" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Eine **zu effiziente** Supply Chain für ein Produkt mit hoher Nachfrageunsicherheit führt zu Fehlmengen, verpassten Verkaufschancen und unzufriedenen Kunden, weil die Kette nicht schnell genug auf Nachfrageschwankungen reagieren kann.</span>
+<span id="cb14-304"><a href="#cb14-304" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Eine **zu reaktionsfähige** (und damit teure) Supply Chain für ein Produkt mit niedriger Nachfrageunsicherheit verursacht unnötige Kosten, die im Wettbewerb um preissensitive Kunden nicht wettgemacht werden können.</span>
+<span id="cb14-305"><a href="#cb14-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-306"><a href="#cb14-306" aria-hidden="true" tabindex="-1"></a>::: {.vertiefung}</span>
+<span id="cb14-307"><a href="#cb14-307" aria-hidden="true" tabindex="-1"></a>**Theorie-Vertiefung: Funktionale und innovative Produkte nach Fisher**</span>
+<span id="cb14-308"><a href="#cb14-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-309"><a href="#cb14-309" aria-hidden="true" tabindex="-1"></a>Der Strategic-Fit-Gedanke geht wesentlich auf @fisher1997right zurück. Fisher unterscheidet **funktionale Produkte** — Güter des Grundbedarfs mit langen Lebenszyklen, stabiler, gut prognostizierbarer Nachfrage und geringen Margen (z. B. Grundnahrungsmittel, Standardverbrauchsgüter) — von **innovativen Produkten** mit kurzen Lebenszyklen, hoher Variantenvielfalt, schwer prognostizierbarer Nachfrage und hohen Margen (z. B. Mode, Unterhaltungselektronik). Seine zentrale These lautet, dass beide Produkttypen **unterschiedliche Supply Chains** erfordern: Funktionale Produkte gehören in eine *physisch effiziente* Kette, deren Aufgabe es ist, die gut vorhersagbare Nachfrage zu minimalen Kosten zu bedienen. Innovative Produkte gehören in eine *marktreaktionsfähige* Kette, deren Aufgabe es ist, Angebot und Nachfrage auch bei großer Prognoseunsicherheit rasch in Einklang zu bringen.</span>
+<span id="cb14-310"><a href="#cb14-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-311"><a href="#cb14-311" aria-hidden="true" tabindex="-1"></a>Die ökonomische Begründung liegt in den Kosten der beiden möglichen Fehler: Bei funktionalen Produkten sind die Margen klein, sodass jeder zusätzliche Euro an Bestand oder Kapazitätsreserve den Gewinn unmittelbar schmälert — Effizienz lohnt sich. Bei innovativen Produkten sind die Margen hoch, sodass eine verpasste Verkaufschance (Fehlmenge) sehr teuer ist, während übrig gebliebene Ware am Saisonende oft nur mit hohem Abschlag abgesetzt werden kann. Hier lohnt es sich, in Reaktionsfähigkeit zu investieren. Genau diese Abwägung zwischen den Kosten einer Fehlmenge und den Kosten eines Überbestands wird in Kapitel <span class="co">[</span><span class="ot">-@sec-newsvendor</span><span class="co">]</span> mit dem Newsvendor-Modell formal gefasst: Das dort hergeleitete kritische Verhältnis $c^u/(c^u+c^o)$ steigt mit der Marge und begründet damit quantitativ, warum margenstarke Produkte höhere Servicegrade und mehr Puffer rechtfertigen.</span>
+<span id="cb14-312"><a href="#cb14-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-313"><a href="#cb14-313" aria-hidden="true" tabindex="-1"></a>Chopra und Meindl verallgemeinern Fishers Zweiteilung zum Kontinuum der implizierten Unsicherheit, weil nicht nur das Produkt, sondern auch die bedienten Kundenanforderungen (Lieferzeit, Servicegrad, Kanäle) die Unsicherheit bestimmen <span class="co">[</span><span class="ot">@chopra2025supply</span><span class="co">]</span>. Dasselbe Produkt kann deshalb je nach Marktsegment eine effiziente oder eine reaktionsfähige Kette erfordern.</span>
+<span id="cb14-314"><a href="#cb14-314" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-315"><a href="#cb14-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-316"><a href="#cb14-316" aria-hidden="true" tabindex="-1"></a>Die praktische Konsequenz: Supply-Chain-Design ist kein universelles Optimierungsproblem mit einer einzigen "besten" Lösung, sondern muss stets im Kontext der bedienten Nachfrage und der Wettbewerbsstrategie des Unternehmens beurteilt werden. Zwei Unternehmen mit identischem Produkt, aber unterschiedlicher Wettbewerbspositionierung (etwa Kostenführer vs. Serviceführer), sollten folgerichtig auch unterschiedliche Supply-Chain-Strategien verfolgen.</span>
+<span id="cb14-317"><a href="#cb14-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-318"><a href="#cb14-318" aria-hidden="true" tabindex="-1"></a><span class="fu">### Effiziente vs. reaktive Teilstrategien</span></span>
+<span id="cb14-319"><a href="#cb14-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-320"><a href="#cb14-320" aria-hidden="true" tabindex="-1"></a>Der Strategic-Fit-Gedanke lässt sich bis auf die Ebene konkreter Teilstrategien herunterbrechen. Die folgende Tabelle stellt typische Ausprägungen effizienter und reaktiver Supply Chains gegenüber:</span>
+<span id="cb14-321"><a href="#cb14-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-322"><a href="#cb14-322" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Dimension <span class="pp">|</span> Effiziente Supply Chain <span class="pp">|</span> Reaktive Supply Chain <span class="pp">|</span></span>
+<span id="cb14-323"><a href="#cb14-323" aria-hidden="true" tabindex="-1"></a><span class="pp">|:---|:---|:---|</span></span>
+<span id="cb14-324"><a href="#cb14-324" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Primärziel** <span class="pp">|</span> Nachfragebefriedigung zu niedrigsten Kosten <span class="pp">|</span> Schnellstmögliche Nachfragebefriedigung <span class="pp">|</span></span>
+<span id="cb14-325"><a href="#cb14-325" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Produkt-Design-Strategie** <span class="pp">|</span> Geringe Produktvielfalt, einfaches Design, hohe Durchsätze <span class="pp">|</span> Modulare Produktentwicklung und Postponement <span class="pp">|</span></span>
+<span id="cb14-326"><a href="#cb14-326" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Preisstrategie** <span class="pp">|</span> Niedrige Preise und Margen (preissensitive Kunden) <span class="pp">|</span> Höhere Preise und Margen (wenig preissensitive Kunden) <span class="pp">|</span></span>
+<span id="cb14-327"><a href="#cb14-327" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Fertigungsstrategie** <span class="pp">|</span> Hohe Maschinenauslastung <span class="pp">|</span> Freie Kapazitäten für kurzfristige Mengenausweitung <span class="pp">|</span></span>
+<span id="cb14-328"><a href="#cb14-328" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Lagerstrategie** <span class="pp">|</span> Minimierung von (Sicherheits-)Beständen <span class="pp">|</span> Sicherheitsbestände zur Absicherung von Nachfrageschwankungen <span class="pp">|</span></span>
+<span id="cb14-329"><a href="#cb14-329" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Versorgungsstrategie** <span class="pp">|</span> Zykluszeiten nur reduzieren, wenn Kosten nicht steigen <span class="pp">|</span> Zykluszeiten reduzieren, auch wenn Kosten steigen <span class="pp">|</span></span>
+<span id="cb14-330"><a href="#cb14-330" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Beschaffungsstrategie** <span class="pp">|</span> Lieferantenauswahl nach Kosten und Verlässlichkeit <span class="pp">|</span> Lieferantenauswahl nach Reaktionsfähigkeit, Geschwindigkeit, Flexibilität, Qualität <span class="pp">|</span></span>
+<span id="cb14-331"><a href="#cb14-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-332"><a href="#cb14-332" aria-hidden="true" tabindex="-1"></a>Diese Tabelle macht deutlich, dass Strategic Fit keine abstrakte Größe ist, sondern sich in sehr konkreten operativen Entscheidungen niederschlägt — von der Lieferantenauswahl über die Bestandspolitik bis zur Produktarchitektur. Ein Unternehmen, das etwa Postponement betreibt (die endgültige Produktkonfiguration möglichst lange hinauszögert, siehe die Diskussion des Entkopplungspunkts weiter oben), verschiebt seine Supply Chain aktiv in Richtung Reaktionsfähigkeit.</span>
+<span id="cb14-333"><a href="#cb14-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-334"><a href="#cb14-334" aria-hidden="true" tabindex="-1"></a><span class="fu">### Normstrategien und der Beitrag des SCM</span></span>
+<span id="cb14-335"><a href="#cb14-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-336"><a href="#cb14-336" aria-hidden="true" tabindex="-1"></a>Auf einer höheren Abstraktionsebene lässt sich Strategic Fit auch mit klassischen wettbewerbsstrategischen **Normstrategien** verknüpfen. Für jede Normstrategie lässt sich ein spezifischer Beitrag formulieren, den das Supply Chain Management zur Umsetzung dieser Strategie leisten muss:</span>
+<span id="cb14-337"><a href="#cb14-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-338"><a href="#cb14-338" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Normstrategie <span class="pp">|</span> Strategischer Vorteil <span class="pp">|</span> Wettbewerbsbasis <span class="pp">|</span> Beitrag des SCM <span class="pp">|</span></span>
+<span id="cb14-339"><a href="#cb14-339" aria-hidden="true" tabindex="-1"></a><span class="pp">|:---|:---|:---|:---|</span></span>
+<span id="cb14-340"><a href="#cb14-340" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Kostenführer <span class="pp">|</span> Kosteneffiziente Produktion <span class="pp">|</span> Niedrigste Preise in der Produktkategorie <span class="pp">|</span> Effiziente, kostengünstige Infrastruktur <span class="pp">|</span></span>
+<span id="cb14-341"><a href="#cb14-341" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Innovationsführer <span class="pp">|</span> Marktstärke und singuläre Technologie <span class="pp">|</span> Begehrte, innovative Produkte <span class="pp">|</span> Kurze Time-to-Market, Volumensteigerung <span class="pp">|</span></span>
+<span id="cb14-342"><a href="#cb14-342" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Serviceführer <span class="pp">|</span> Konsequente Kundenorientierung <span class="pp">|</span> Kundenspezifische Erwartungserfüllung <span class="pp">|</span> Kundenorientierte Entwicklung ermöglichen <span class="pp">|</span></span>
+<span id="cb14-343"><a href="#cb14-343" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Qualitätsführer <span class="pp">|</span> Sichere, zuverlässige Produkte <span class="pp">|</span> Singuläre Produkteigenschaften <span class="pp">|</span> Verlässliche Supply Chain, Quality Assurance <span class="pp">|</span></span>
+<span id="cb14-344"><a href="#cb14-344" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Nachhaltigkeitsführer <span class="pp">|</span> Nachhaltige Produkte und Prozesse <span class="pp">|</span> Erfüllung von Nachhaltigkeitserwartungen <span class="pp">|</span> CO2-Neutralität, Ressourcenschonung <span class="pp">|</span></span>
+<span id="cb14-345"><a href="#cb14-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-346"><a href="#cb14-346" aria-hidden="true" tabindex="-1"></a>Auch hier zeigt sich derselbe Grundgedanke: Ein Kostenführer benötigt eine primär effiziente Supply Chain, während ein Service- oder Innovationsführer eine primär reaktionsfähige Supply Chain benötigt — unabhängig davon, ob es sich um dasselbe Produkt handelt. Strategic Fit ist damit weniger eine Eigenschaft des Produkts selbst als eine Eigenschaft der Passung zwischen Marktversprechen und Kettenkonfiguration.</span>
+<span id="cb14-347"><a href="#cb14-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-348"><a href="#cb14-348" aria-hidden="true" tabindex="-1"></a><span class="fu">### Strategic Fit und die Fertigungsentscheidung</span></span>
+<span id="cb14-349"><a href="#cb14-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-350"><a href="#cb14-350" aria-hidden="true" tabindex="-1"></a>Die eingangs behandelte Make-or-Buy-Entscheidung lässt sich nun in den Strategic-Fit-Rahmen einordnen. Eine rein kostenbasierte Fertigungsentscheidung (wie im ersten R-Exkurs dieses Kapitels) berücksichtigt nur eine Dimension — die Effizienz —, blendet aber die Auswirkung auf die Reaktionsfähigkeit der gesamten Kette aus. Ein Beispiel: Die Auslagerung der Fertigung an einen kostengünstigen, aber weit entfernten Lieferanten mag die Herstellkosten senken, verlängert aber typischerweise die Wiederbeschaffungszeit und reduziert damit die Fähigkeit, kurzfristig auf Nachfrageschwankungen zu reagieren. Für ein Produkt mit niedriger Nachfrageunsicherheit (Effizienzseite der Diagonalen) kann das strategisch sinnvoll sein; für ein Produkt mit hoher Nachfrageunsicherheit (Reaktionsfähigkeitsseite) verschlechtert dieselbe Entscheidung den Strategic Fit.</span>
+<span id="cb14-351"><a href="#cb14-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-352"><a href="#cb14-352" aria-hidden="true" tabindex="-1"></a>Ein Analysewerkzeug, das dabei hilft, die *finanzielle* Wirkung solcher Fertigungsentscheidungen zu quantifizieren, ist der **DuPont-Kennzahlenbaum**. Er zerlegt die Gesamtkapitalrentabilität (*Return on Investment*, ROI) multiplikativ in Umsatzrentabilität (*Return on Sales*, ROS) und Kapitalumschlag:</span>
+<span id="cb14-353"><a href="#cb14-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-354"><a href="#cb14-354" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb14-355"><a href="#cb14-355" aria-hidden="true" tabindex="-1"></a>\text{ROI} = \text{ROS} \times \text{Kapitalumschlag} = \frac{\text{Gewinn}}{\text{Umsatz}} \times \frac{\text{Umsatz}}{\text{Gesamtvermögen}}</span>
+<span id="cb14-356"><a href="#cb14-356" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb14-357"><a href="#cb14-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-358"><a href="#cb14-358" aria-hidden="true" tabindex="-1"></a>Eine Make-Entscheidung erhöht typischerweise das gebundene Kapital (eigene Anlagen, höhere Bestände an Rohstoffen und Zwischenprodukten) und senkt damit tendenziell den Kapitalumschlag, kann aber über geringere Stückkosten die Umsatzrentabilität verbessern. Eine Buy-Entscheidung wirkt tendenziell umgekehrt: geringere Kapitalbindung, aber oft geringere Marge durch den Einkaufspreis des Zulieferers. Der DuPont-Baum macht diesen Zielkonflikt zwischen ROS und Kapitalumschlag explizit und erlaubt, unterschiedliche Fertigungsszenarien konsistent zu vergleichen.</span>
+<span id="cb14-359"><a href="#cb14-359" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-360"><a href="#cb14-360" aria-hidden="true" tabindex="-1"></a>::: {.r-exkurs}</span>
+<span id="cb14-361"><a href="#cb14-361" aria-hidden="true" tabindex="-1"></a>**R-Exkurs: Fallbeispiel mit `dupont_roi()`, `if`/`else` und `dplyr`**</span>
+<span id="cb14-362"><a href="#cb14-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-363"><a href="#cb14-363" aria-hidden="true" tabindex="-1"></a>Die Funktion <span class="in">`dupont_roi()`</span> aus <span class="in">`R/scm_functions.R`</span> berechnet den vollständigen DuPont-Kennzahlenbaum aus Umsatz, Kosten und Bilanzpositionen. Wir nutzen sie, um zwei Fertigungsszenarien zu vergleichen: **Make** (Eigenfertigung, höhere Kapitalbindung, geringere variable Kosten) gegenüber **Buy** (Fremdbezug, geringere Kapitalbindung, höhere variable Kosten):</span>
+<span id="cb14-364"><a href="#cb14-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-367"><a href="#cb14-367" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-368"><a href="#cb14-368" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ch2-dupont-szenarien</span></span>
+<span id="cb14-369"><a href="#cb14-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-370"><a href="#cb14-370" aria-hidden="true" tabindex="-1"></a><span class="co"># Szenario "Make": Eigenfertigung mit hoeherer Kapitalbindung</span></span>
+<span id="cb14-371"><a href="#cb14-371" aria-hidden="true" tabindex="-1"></a>make_szenario <span class="ot">&lt;-</span> <span class="fu">dupont_roi</span>(</span>
+<span id="cb14-372"><a href="#cb14-372" aria-hidden="true" tabindex="-1"></a>  <span class="at">revenue      =</span> <span class="dv">11000</span>,  <span class="co"># Umsatz in Tsd. EUR</span></span>
+<span id="cb14-373"><a href="#cb14-373" aria-hidden="true" tabindex="-1"></a>  <span class="at">mat_cost     =</span> <span class="dv">5500</span>,   <span class="co"># Materialkosten (guenstiger durch Eigenfertigung)</span></span>
+<span id="cb14-374"><a href="#cb14-374" aria-hidden="true" tabindex="-1"></a>  <span class="at">pers_cost    =</span> <span class="dv">4950</span>,   <span class="co"># Personalkosten (hoeher: eigene Fertigungskapazitaet)</span></span>
+<span id="cb14-375"><a href="#cb14-375" aria-hidden="true" tabindex="-1"></a>  <span class="at">fixed_assets =</span> <span class="dv">3500</span>,   <span class="co"># hoehere Anlagenbindung durch eigene Maschinen</span></span>
+<span id="cb14-376"><a href="#cb14-376" aria-hidden="true" tabindex="-1"></a>  <span class="at">cash         =</span> <span class="dv">500</span>,</span>
+<span id="cb14-377"><a href="#cb14-377" aria-hidden="true" tabindex="-1"></a>  <span class="at">inventory    =</span> <span class="dv">3300</span>,   <span class="co"># hoehere Bestaende an Rohstoffen/Zwischenprodukten</span></span>
+<span id="cb14-378"><a href="#cb14-378" aria-hidden="true" tabindex="-1"></a>  <span class="at">receivables  =</span> <span class="dv">1075</span></span>
+<span id="cb14-379"><a href="#cb14-379" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-380"><a href="#cb14-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-381"><a href="#cb14-381" aria-hidden="true" tabindex="-1"></a><span class="co"># Szenario "Buy": Fremdbezug mit geringerer Kapitalbindung</span></span>
+<span id="cb14-382"><a href="#cb14-382" aria-hidden="true" tabindex="-1"></a>buy_szenario <span class="ot">&lt;-</span> <span class="fu">dupont_roi</span>(</span>
+<span id="cb14-383"><a href="#cb14-383" aria-hidden="true" tabindex="-1"></a>  <span class="at">revenue      =</span> <span class="dv">11000</span>,  <span class="co"># gleicher Umsatz zum Vergleich</span></span>
+<span id="cb14-384"><a href="#cb14-384" aria-hidden="true" tabindex="-1"></a>  <span class="at">mat_cost     =</span> <span class="dv">6800</span>,   <span class="co"># hoehere Materialkosten durch Einkaufspreis des Zulieferers</span></span>
+<span id="cb14-385"><a href="#cb14-385" aria-hidden="true" tabindex="-1"></a>  <span class="at">pers_cost    =</span> <span class="dv">3200</span>,   <span class="co"># geringere Personalkosten (keine eigene Fertigung)</span></span>
+<span id="cb14-386"><a href="#cb14-386" aria-hidden="true" tabindex="-1"></a>  <span class="at">fixed_assets =</span> <span class="dv">1200</span>,   <span class="co"># kaum eigene Anlagen</span></span>
+<span id="cb14-387"><a href="#cb14-387" aria-hidden="true" tabindex="-1"></a>  <span class="at">cash         =</span> <span class="dv">500</span>,</span>
+<span id="cb14-388"><a href="#cb14-388" aria-hidden="true" tabindex="-1"></a>  <span class="at">inventory    =</span> <span class="dv">1100</span>,   <span class="co"># geringere Bestaende</span></span>
+<span id="cb14-389"><a href="#cb14-389" aria-hidden="true" tabindex="-1"></a>  <span class="at">receivables  =</span> <span class="dv">1075</span></span>
+<span id="cb14-390"><a href="#cb14-390" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-391"><a href="#cb14-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-392"><a href="#cb14-392" aria-hidden="true" tabindex="-1"></a><span class="co"># Vergleichstabelle bauen: relevante Kennzahlen beider Szenarien</span></span>
+<span id="cb14-393"><a href="#cb14-393" aria-hidden="true" tabindex="-1"></a>vergleich <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb14-394"><a href="#cb14-394" aria-hidden="true" tabindex="-1"></a>  <span class="at">szenario =</span> <span class="fu">c</span>(<span class="st">"Make"</span>, <span class="st">"Buy"</span>),</span>
+<span id="cb14-395"><a href="#cb14-395" aria-hidden="true" tabindex="-1"></a>  <span class="at">ros            =</span> <span class="fu">c</span>(make_szenario<span class="sc">$</span>ros, buy_szenario<span class="sc">$</span>ros),</span>
+<span id="cb14-396"><a href="#cb14-396" aria-hidden="true" tabindex="-1"></a>  <span class="at">asset_turnover =</span> <span class="fu">c</span>(make_szenario<span class="sc">$</span>asset_turnover, buy_szenario<span class="sc">$</span>asset_turnover),</span>
+<span id="cb14-397"><a href="#cb14-397" aria-hidden="true" tabindex="-1"></a>  <span class="at">roi            =</span> <span class="fu">c</span>(make_szenario<span class="sc">$</span>roi, buy_szenario<span class="sc">$</span>roi)</span>
+<span id="cb14-398"><a href="#cb14-398" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb14-399"><a href="#cb14-399" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Prozentwerte fuer bessere Lesbarkeit ergaenzen</span></span>
+<span id="cb14-400"><a href="#cb14-400" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">roi_prozent =</span> <span class="fu">round</span>(roi <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>))</span>
+<span id="cb14-401"><a href="#cb14-401" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-402"><a href="#cb14-402" aria-hidden="true" tabindex="-1"></a>vergleich</span>
+<span id="cb14-403"><a href="#cb14-403" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-404"><a href="#cb14-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-405"><a href="#cb14-405" aria-hidden="true" tabindex="-1"></a>Auf Basis dieser Kennzahlen lässt sich mit <span class="in">`if`</span>/<span class="in">`else`</span> eine einfache Entscheidungsregel formulieren, die zusätzlich zur reinen ROI-Höhe auch die strategische Positionierung (Effizienz vs. Reaktionsfähigkeit) berücksichtigt:</span>
+<span id="cb14-406"><a href="#cb14-406" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-409"><a href="#cb14-409" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-410"><a href="#cb14-410" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ch2-dupont-entscheidung</span></span>
+<span id="cb14-411"><a href="#cb14-411" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-412"><a href="#cb14-412" aria-hidden="true" tabindex="-1"></a><span class="co"># Funktion: empfiehlt Make oder Buy je nach ROI-Differenz und</span></span>
+<span id="cb14-413"><a href="#cb14-413" aria-hidden="true" tabindex="-1"></a><span class="co"># strategischer Ausrichtung (reaktionsfaehig vs. effizient)</span></span>
+<span id="cb14-414"><a href="#cb14-414" aria-hidden="true" tabindex="-1"></a>empfehle_fertigung <span class="ot">&lt;-</span> <span class="cf">function</span>(roi_make, roi_buy, <span class="at">strategie =</span> <span class="st">"effizient"</span>) {</span>
+<span id="cb14-415"><a href="#cb14-415" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-416"><a href="#cb14-416" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Differenz der Kapitalrentabilitaeten</span></span>
+<span id="cb14-417"><a href="#cb14-417" aria-hidden="true" tabindex="-1"></a>  roi_differenz <span class="ot">&lt;-</span> roi_make <span class="sc">-</span> roi_buy</span>
+<span id="cb14-418"><a href="#cb14-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-419"><a href="#cb14-419" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Wenn ROI-Differenz sehr gering ist, gibt die Strategie den Ausschlag</span></span>
+<span id="cb14-420"><a href="#cb14-420" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">abs</span>(roi_differenz) <span class="sc">&lt;</span> <span class="fl">0.01</span>) {</span>
+<span id="cb14-421"><a href="#cb14-421" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (strategie <span class="sc">==</span> <span class="st">"reaktionsfaehig"</span>) {</span>
+<span id="cb14-422"><a href="#cb14-422" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="st">"Buy - bei aehnlichem ROI flexiblere Kapazitaet bevorzugen"</span>)</span>
+<span id="cb14-423"><a href="#cb14-423" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb14-424"><a href="#cb14-424" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="st">"Make - bei aehnlichem ROI hoehere Kontrolle/Effizienz nutzen"</span>)</span>
+<span id="cb14-425"><a href="#cb14-425" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb14-426"><a href="#cb14-426" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-427"><a href="#cb14-427" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-428"><a href="#cb14-428" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ansonsten: hoeherer ROI entscheidet</span></span>
+<span id="cb14-429"><a href="#cb14-429" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (roi_differenz <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb14-430"><a href="#cb14-430" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Make - deutlich hoehere Kapitalrentabilitaet"</span></span>
+<span id="cb14-431"><a href="#cb14-431" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb14-432"><a href="#cb14-432" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Buy - deutlich hoehere Kapitalrentabilitaet"</span></span>
+<span id="cb14-433"><a href="#cb14-433" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-434"><a href="#cb14-434" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-435"><a href="#cb14-435" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-436"><a href="#cb14-436" aria-hidden="true" tabindex="-1"></a><span class="co"># Anwendung auf unser Zahlenbeispiel</span></span>
+<span id="cb14-437"><a href="#cb14-437" aria-hidden="true" tabindex="-1"></a><span class="fu">empfehle_fertigung</span>(</span>
+<span id="cb14-438"><a href="#cb14-438" aria-hidden="true" tabindex="-1"></a>  <span class="at">roi_make  =</span> make_szenario<span class="sc">$</span>roi,</span>
+<span id="cb14-439"><a href="#cb14-439" aria-hidden="true" tabindex="-1"></a>  <span class="at">roi_buy   =</span> buy_szenario<span class="sc">$</span>roi,</span>
+<span id="cb14-440"><a href="#cb14-440" aria-hidden="true" tabindex="-1"></a>  <span class="at">strategie =</span> <span class="st">"effizient"</span></span>
+<span id="cb14-441"><a href="#cb14-441" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-442"><a href="#cb14-442" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-443"><a href="#cb14-443" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-444"><a href="#cb14-444" aria-hidden="true" tabindex="-1"></a>Dieses kleine Beispiel verdeutlicht, wie sich eigene Funktionen, Kontrollfluss und <span class="in">`dplyr`</span>-Verben kombinieren lassen, um eine strategische Fragestellung — hier die Make-or-Buy-Entscheidung im Licht des Strategic Fit — nachvollziehbar und wiederverwendbar zu quantifizieren. In der Praxis wären weitere Kriterien (Kapazitätsrisiko, Abhängigkeit von Lieferanten, Auswirkung auf die Lieferzeit) zu ergänzen, bevor eine solche Empfehlung tragfähig ist.</span>
+<span id="cb14-445"><a href="#cb14-445" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb14-446"><a href="#cb14-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-447"><a href="#cb14-447" aria-hidden="true" tabindex="-1"></a><span class="fu">## Zusammenfassung</span></span>
+<span id="cb14-448"><a href="#cb14-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-449"><a href="#cb14-449" aria-hidden="true" tabindex="-1"></a>Dieses Kapitel hat die Wertschöpfungskette als Abfolge von Beschaffung, Produktion, Distribution und Absatz eingeführt und gezeigt, wie sich diese Kette in vier Prozesszyklen (Kundenbestellung, Distribution, Produktion, Beschaffung) gliedern lässt, die jeweils durch den Entkopplungspunkt in einen prognosegetriebenen und einen auftragsgetriebenen Teil zerfallen. Darauf aufbauend wurde die strategische Fertigungsentscheidung (Make-or-Buy) sowie die Positionierung zwischen Make-to-stock und Make-to-order diskutiert.</span>
+<span id="cb14-450"><a href="#cb14-450" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-451"><a href="#cb14-451" aria-hidden="true" tabindex="-1"></a>Im zweiten Teil des Kapitels stand das Konzept des **Strategic Fit** im Mittelpunkt: die Forderung, dass die Reaktionsfähigkeit einer Supply Chain mit der implizierten Unsicherheit des bedienten Marktes übereinstimmen muss. Effizienz und Reaktionsfähigkeit wurden dabei als gegensätzliche, aber gleichermaßen legitime strategische Grundausrichtungen eingeführt, die über fünf Treiber — Produktion, Logistik, Struktur, Preis und Information — operationalisiert werden können. Der DuPont-Kennzahlenbaum wurde als quantitatives Werkzeug vorgestellt, um die finanzielle Wirkung unterschiedlicher Fertigungsentscheidungen (Make vs. Buy) vergleichbar zu machen.</span>
+<span id="cb14-452"><a href="#cb14-452" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-453"><a href="#cb14-453" aria-hidden="true" tabindex="-1"></a>In R haben Sie in diesem Kapitel gelernt, eigene Funktionen mit <span class="in">`function() { ... }`</span> zu definieren, mit <span class="in">`if`</span>/<span class="in">`else`</span> bedingte Logik zu implementieren und mit den <span class="in">`dplyr`</span>-Grundverben <span class="in">`mutate()`</span>, <span class="in">`filter()`</span> und <span class="in">`select()`</span> Tabellen gezielt zu transformieren und auszuwerten — Werkzeuge, die in den folgenden Kapiteln bei der Modellierung von Standortentscheidungen, Bestandspolitiken und dem Bullwhip-Effekt regelmäßig wiederkehren werden.</span>
+<span id="cb14-454"><a href="#cb14-454" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-455"><a href="#cb14-455" aria-hidden="true" tabindex="-1"></a>::: {.kontrollfragen}</span>
+<span id="cb14-456"><a href="#cb14-456" aria-hidden="true" tabindex="-1"></a>**Kontrollfragen**</span>
+<span id="cb14-457"><a href="#cb14-457" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-458"><a href="#cb14-458" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Nennen und erläutern Sie die vier Phasen des Wertschöpfungsprozesses einer Supply Chain.</span>
+<span id="cb14-459"><a href="#cb14-459" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Was versteht man unter dem Entkopplungspunkt (Customer Order Decoupling Point), und wie unterscheiden sich Make-to-stock und Make-to-order hinsichtlich seiner Lage?</span>
+<span id="cb14-460"><a href="#cb14-460" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Nennen Sie drei Kriterien, die bei einer Make-or-Buy-Entscheidung neben den reinen Herstell- bzw. Bezugskosten zu berücksichtigen sind.</span>
+<span id="cb14-461"><a href="#cb14-461" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Erläutern Sie den Unterschied zwischen Nachfrageunsicherheit und implizierter Nachfrageunsicherheit anhand eines eigenen Beispiels.</span>
+<span id="cb14-462"><a href="#cb14-462" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Definieren Sie Reaktionsfähigkeit und Effizienz einer Supply Chain und erklären Sie, warum zwischen beiden ein Zielkonflikt besteht.</span>
+<span id="cb14-463"><a href="#cb14-463" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Was besagt das Konzept des Strategic Fit, und wie lässt es sich grafisch anhand von Nachfrageunsicherheit und Supply-Chain-Optimierungsziel darstellen?</span>
+<span id="cb14-464"><a href="#cb14-464" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Nennen Sie die fünf strategischen Treiber, über die eine Supply Chain zwischen Effizienz und Reaktionsfähigkeit positioniert werden kann, und je ein Beispiel für einen Stellhebel je Treiber.</span>
+<span id="cb14-465"><a href="#cb14-465" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>Wie verändert sich die für einen Kostenführer sinnvolle Supply-Chain-Konfiguration im Vergleich zu einem Serviceführer, und warum?</span>
+<span id="cb14-466"><a href="#cb14-466" aria-hidden="true" tabindex="-1"></a>:::</span>
+</code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Supply Chain Management — Lehrbuch</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+</body></html>

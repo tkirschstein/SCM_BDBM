@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="description" content="Kursbegleitender Reader zur Vorlesung Supply Chain Management, Wintersemester 26/27">
+<title>5&nbsp; Distributionsstrukturen und -kanäle – Supply Chain Management</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" rel="next">
+<link href="../chapters/09_nachhaltigkeit-im-supply-chain-management.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-81de787dd4773dbc0001c2dc1cc3016d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script><script src="../site_libs/kePrint-0.0.1/kePrint.js"></script><link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="../custom.css">
+</head>
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html">Grundlagen</a></li><li class="breadcrumb-item"><a href="../chapters/14a_distributionsstrukturen.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Distributionsstrukturen und -kanäle</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Suchen" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Supply Chain Management</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Suchen"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Vorwort</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Grundlagen</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Einführung und Grundbegriffe des Supply Chain Managements</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Wertschöpfung, strategische Fertigung und Strategic Fit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03_ziele-zielkonflikte-und-logistikkosten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ziele, Zielkonflikte und Logistikkosten</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09_nachhaltigkeit-im-supply-chain-management.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Nachhaltigkeit im Supply Chain Management</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14a_distributionsstrukturen.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Distributionsstrukturen und -kanäle</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Strategische Gestaltung von Supply Chains</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Standortplanung I – Qualitative und kontinuierliche Verfahren</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Standortplanung II – Diskrete Netzwerkplanungsmodelle</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09_transportplanung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Transportplanung</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Unsicherheit und Koordination</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06_unsicherheit-in-supply-chains-pooling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Unsicherheit in Supply Chains und Pooling</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07_das-newsvendor-modell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Das Newsvendor-Modell</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/08_der-bullwhip-effekt-und-das-beergame.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Der Bullwhip-Effekt und das Beergame</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Distributionslogistik</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/13_lagerplanung-und-kommissionierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Lagerplanung und Kommissionierung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/12_transportmittel-und-antriebe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Verkehrsmittel, Antriebe und Transportkosten</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/10_kuerzeste-wege.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Kürzeste Wege</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/11_tourenplanung-tsp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Tourenplanung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14b_distributionssystem-gestalten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Distributionssystem gestalten</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literaturverzeichnis</span></a>
+  </div>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+<li><a href="#vom-zielsystem-zum-distributionssystem" id="toc-vom-zielsystem-zum-distributionssystem" class="nav-link active" data-scroll-target="#vom-zielsystem-zum-distributionssystem"><span class="header-section-number">5.1</span> Vom Zielsystem zum Distributionssystem</a></li>
+  <li><a href="#fallbeispiel-wohin-soll-die-distribution-von-sushifresh-wachsen" id="toc-fallbeispiel-wohin-soll-die-distribution-von-sushifresh-wachsen" class="nav-link" data-scroll-target="#fallbeispiel-wohin-soll-die-distribution-von-sushifresh-wachsen"><span class="header-section-number">5.2</span> Fallbeispiel: Wohin soll die Distribution von SushiFresh wachsen?</a></li>
+  <li><a href="#das-distributionssystem" id="toc-das-distributionssystem" class="nav-link" data-scroll-target="#das-distributionssystem"><span class="header-section-number">5.3</span> Das Distributionssystem</a></li>
+  <li><a href="#lieferservice-als-zielgr%C3%B6%C3%9Fe" id="toc-lieferservice-als-zielgröße" class="nav-link" data-scroll-target="#lieferservice-als-zielgr%C3%B6%C3%9Fe"><span class="header-section-number">5.4</span> Lieferservice als Zielgröße</a></li>
+  <li><a href="#absatzkan%C3%A4le-die-vertikale-struktur" id="toc-absatzkanäle-die-vertikale-struktur" class="nav-link" data-scroll-target="#absatzkan%C3%A4le-die-vertikale-struktur"><span class="header-section-number">5.5</span> Absatzkanäle: die vertikale Struktur</a></li>
+  <li><a href="#physische-distributionsstrukturen-die-horizontale-struktur" id="toc-physische-distributionsstrukturen-die-horizontale-struktur" class="nav-link" data-scroll-target="#physische-distributionsstrukturen-die-horizontale-struktur"><span class="header-section-number">5.6</span> Physische Distributionsstrukturen: die horizontale Struktur</a></li>
+  <li><a href="#wie-viele-lager-kosten-und-lieferzeit" id="toc-wie-viele-lager-kosten-und-lieferzeit" class="nav-link" data-scroll-target="#wie-viele-lager-kosten-und-lieferzeit"><span class="header-section-number">5.7</span> Wie viele Lager? Kosten und Lieferzeit</a></li>
+  <li><a href="#gestaltungsoptionen-f%C3%BCr-distributionsnetzwerke" id="toc-gestaltungsoptionen-für-distributionsnetzwerke" class="nav-link" data-scroll-target="#gestaltungsoptionen-f%C3%BCr-distributionsnetzwerke"><span class="header-section-number">5.8</span> Gestaltungsoptionen für Distributionsnetzwerke</a></li>
+  <li><a href="#cross-docking" id="toc-cross-docking" class="nav-link" data-scroll-target="#cross-docking"><span class="header-section-number">5.9</span> Cross-Docking</a></li>
+  <li><a href="#zusammenfassung" id="toc-zusammenfassung" class="nav-link" data-scroll-target="#zusammenfassung"><span class="header-section-number">5.10</span> Zusammenfassung</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html">Grundlagen</a></li><li class="breadcrumb-item"><a href="../chapters/14a_distributionsstrukturen.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Distributionsstrukturen und -kanäle</span></a></li></ol></nav><div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span id="sec-distributionsstrukturen" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Distributionsstrukturen und -kanäle</span></span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Gesamten Code zeigen</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Gesamten Code verbergen</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">Quellcode anzeigen</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><div class="lernziele">
+<p><strong>Lernziele</strong></p>
+<p>Nach der Bearbeitung dieses Kapitels können Sie …</p>
+<ul>
+<li>ein Distributionssystem in seine <strong>akquisitorische</strong> (Absatzkanal) und seine <strong>physische</strong> Seite (Logistikkanal) zerlegen und begründen, warum beide nicht übereinstimmen müssen,</li>
+<li>die Komponenten des <strong>Lieferservice</strong> benennen und mit Kennzahlen wie <strong>OTIF</strong> messen,</li>
+<li>direkte und indirekte <strong>Absatzkanäle</strong> unterscheiden und die Funktionen von Handelsstufen erklären,</li>
+<li>ein-, zwei- und mehrstufige <strong>Distributionsstrukturen</strong> sowie <strong>Cross-Docking</strong> beschreiben und ihre Vor- und Nachteile abwägen,</li>
+<li>den Zusammenhang zwischen <strong>Anzahl der Lager</strong>, Kostenkomponenten und Lieferzeit erklären und mit einem einfachen Kostenmodell in R untersuchen,</li>
+<li>Tabellen mit <code>pivot_longer()</code> vom breiten in das lange Format überführen und Anteile mit logischen Vektoren berechnen.</li>
+</ul>
+<p><strong>Literatur zur Vertiefung</strong></p>
+<ul>
+<li>
+<strong>Distributionsnetzwerke und Gestaltungsoptionen:</strong> <span class="citation" data-cites="chopra2025supply">(<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">Chopra und Meindl 2025</a>)</span>.</li>
+<li>
+<strong>Distributionslogistik und Lieferservice:</strong> <span class="citation" data-cites="pfohl2018logistiksysteme">(<a href="../references.html#ref-pfohl2018logistiksysteme" role="doc-biblioref"><strong>pfohl2018logistiksysteme?</strong></a>)</span>; <span class="citation" data-cites="guenther2012produktion">(<a href="../references.html#ref-guenther2012produktion" role="doc-biblioref">Günther und Tempelmeier 2012</a>)</span>.</li>
+</ul>
+</div>
+<section id="vom-zielsystem-zum-distributionssystem" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="vom-zielsystem-zum-distributionssystem">
+<span class="header-section-number">5.1</span> Vom Zielsystem zum Distributionssystem</h2>
+<p>Kapitel <a href="03_ziele-zielkonflikte-und-logistikkosten.html" class="quarto-xref"><span>3</span></a> hat gezeigt, dass Logistik zwischen konkurrierenden Zielen vermitteln muss: Kosten, Geschwindigkeit, Qualität und Flexibilität lassen sich nicht gleichzeitig maximieren. In der <strong>Distribution</strong>, also auf dem Weg vom Hersteller zum Kunden, werden diese Zielkonflikte besonders sichtbar. Hier entscheidet sich, ob die Ware zum richtigen Zeitpunkt, in der richtigen Menge und im richtigen Zustand beim Kunden ankommt. Gleichzeitig entstehen hier in vielen Branchen die größten Logistikkosten.</p>
+<p>Dieses Kapitel liefert den <strong>strukturellen Rahmen</strong> für alle weiteren Kapitel zur Netzwerk- und Distributionsplanung. Bevor man mit Optimierungsmodellen Standorte auswählt (Kapitel <a href="04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" class="quarto-xref"><span>6</span></a> und <a href="05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="quarto-xref"><span>7</span></a>), Transporte verteilt (Kapitel <a href="09_transportplanung.html" class="quarto-xref"><span>8</span></a>) oder Touren plant (Kapitel <a href="11_tourenplanung-tsp.html" class="quarto-xref"><span>15</span></a>), muss klar sein, <strong>welche Art von Distributionssystem</strong> überhaupt aufgebaut werden soll: Über welche Absatzkanäle wird verkauft? Wie viele Lagerstufen gibt es? Wird über ein Zentrallager, über regionale Läger oder ganz ohne Lager über Umschlagpunkte verteilt? Und welchen Lieferservice erwarten die Kunden?</p>
+</section><section id="fallbeispiel-wohin-soll-die-distribution-von-sushifresh-wachsen" class="level2" data-number="5.2"><h2 data-number="5.2" class="anchored" data-anchor-id="fallbeispiel-wohin-soll-die-distribution-von-sushifresh-wachsen">
+<span class="header-section-number">5.2</span> Fallbeispiel: Wohin soll die Distribution von SushiFresh wachsen?</h2>
+<div class="fallstudie">
+<p><strong>Fallstudie: Ausgangslage und Wachstumsideen</strong></p>
+<p>SushiFresh produziert in einer Küche und verkauft seine Boxen über die Kühlregale von <strong>sechs Supermärkten</strong> im Rhein-Main-Gebiet. Die Märkte werden jeden Morgen <strong>direkt</strong> aus der Küche beliefert. Der Absatzkanal führt damit über den Handel (Hersteller → Supermarkt → Kunde), der Logistikkanal dagegen direkt von der Küche in den Markt.</p>
+<p>Die Geschäftsführung diskutiert drei Wachstumsideen:</p>
+<ol type="1">
+<li>
+<strong>Handel:</strong> Die Supermarktkette <strong>RheinMarkt</strong> möchte die Boxen in rund 40 Märkten in ganz Hessen listen. RheinMarkt betreibt eine eigene Handelslogistik mit Zentrallager und Frische-Umschlagpunkten.</li>
+<li>
+<strong>Lieferdienst:</strong> Frische Boxen sollen direkt an Endkunden in Frankfurt geliefert werden.</li>
+<li>
+<strong>Onlineshop „Sushi@Home“:</strong> Haltbare Kits zum Selbermachen, Saucen und Zubehör werden bundesweit per Paket verschickt.</li>
+</ol>
+<p>Die drei Ideen unterscheiden sich in Kunde, Produkt und Lieferservice und führen deshalb zu <strong>unterschiedlichen</strong> Distributionssystemen. Wir werden sie im Verlauf des Readers schrittweise aufgreifen: Den Onlineshop in Kapitel <a href="13_lagerplanung-und-kommissionierung.html" class="quarto-xref"><span>12</span></a>, den Lieferdienst in Kapitel <a href="12_transportmittel-und-antriebe.html" class="quarto-xref"><span>13</span></a> und die RheinMarkt-Anfrage abschließend in Kapitel <a href="14b_distributionssystem-gestalten.html" class="quarto-xref"><span>16</span></a>.</p>
+</div>
+</section><section id="das-distributionssystem" class="level2" data-number="5.3"><h2 data-number="5.3" class="anchored" data-anchor-id="das-distributionssystem">
+<span class="header-section-number">5.3</span> Das Distributionssystem</h2>
+<div class="definition">
+<p><strong>Definition: Distributionssystem</strong></p>
+<p>Das <strong>Distributionssystem</strong> umfasst alle Akteure, Einrichtungen und Prozesse, über die ein Produkt vom Hersteller zum Kunden gelangt. Man unterscheidet</p>
+<ul>
+<li>die <strong>akquisitorische Distribution</strong> (Absatzkanal): <em>Wer</em> ist am Verkauf beteiligt, wer übernimmt Eigentum, Preisgestaltung und Kundenkontakt?</li>
+<li>die <strong>physische Distribution</strong> (Logistikkanal): <em>Wie</em> fließt die Ware, über welche Lagerstufen, Standorte, Umschlagpunkte und Transportwege?</li>
+</ul>
+</div>
+<p>Die Unterscheidung geht auf die betriebswirtschaftliche Logistikliteratur zurück <span class="citation" data-cites="pfohl2018logistiksysteme">(<a href="../references.html#ref-pfohl2018logistiksysteme" role="doc-biblioref"><strong>pfohl2018logistiksysteme?</strong></a>)</span> und ist mehr als eine begriffliche Feinheit: Absatz- und Logistikkanal <strong>müssen nicht übereinstimmen</strong>. Beim <strong>Streckengeschäft</strong> etwa verkauft ein Händler die Ware, ohne sie jemals physisch in den Händen zu halten. Der Hersteller liefert direkt an den Kunden des Händlers. Umgekehrt kann ein Hersteller seine Produkte direkt an Endkunden verkaufen, die Lagerung und Zustellung aber vollständig einem Logistikdienstleister überlassen.</p>
+<p>Für SushiFresh ist diese Trennung bereits heute sichtbar. Der Absatzkanal führt über die Supermärkte, physisch werden die Märkte aber direkt aus der Küche beliefert, an der Handelslogistik vorbei. Bei RheinMarkt stellt sich nun die Frage, ob dieser direkte Logistikkanal beibehalten oder die Ware über die Handelslogistik des Kunden geführt wird. Der Absatzkanal ist in beiden Fällen derselbe.</p>
+<p>Die Gestaltung eines Distributionssystems erstreckt sich über alle Planungsebenen aus Kapitel <a href="01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html" class="quarto-xref"><span>1</span></a>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Ebene</th>
+<th style="text-align: left;">Typische Entscheidungen</th>
+<th style="text-align: left;">Kapitel</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">strategisch</td>
+<td style="text-align: left;">Absatzkanäle, Anzahl der Lagerstufen, Standorte</td>
+<td style="text-align: left;">dieses Kapitel, <a href="04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" class="quarto-xref"><span>6</span></a>, <a href="05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="quarto-xref"><span>7</span></a>
+</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">taktisch</td>
+<td style="text-align: left;">Zuordnung von Kunden zu Lagern, Transportmengen, Bestandsniveaus, Fuhrpark</td>
+<td style="text-align: left;">
+<a href="09_transportplanung.html" class="quarto-xref"><span>8</span></a>, <a href="06_unsicherheit-in-supply-chains-pooling.html" class="quarto-xref"><span>9</span></a>, <a href="12_transportmittel-und-antriebe.html" class="quarto-xref"><span>13</span></a>
+</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">operativ</td>
+<td style="text-align: left;">Kommissionierung, Tourenplanung, tägliche Disposition</td>
+<td style="text-align: left;">
+<a href="13_lagerplanung-und-kommissionierung.html" class="quarto-xref"><span>12</span></a>, <a href="10_kuerzeste-wege.html" class="quarto-xref"><span>14</span></a>, <a href="11_tourenplanung-tsp.html" class="quarto-xref"><span>15</span></a>
+</td>
+</tr>
+</tbody>
+</table></section><section id="lieferservice-als-zielgröße" class="level2" data-number="5.4"><h2 data-number="5.4" class="anchored" data-anchor-id="lieferservice-als-zielgröße">
+<span class="header-section-number">5.4</span> Lieferservice als Zielgröße</h2>
+<p>Was ein Distributionssystem leisten muss, wird über den <strong>Lieferservice</strong> beschrieben. Er ist die distributionsbezogene Konkretisierung der Service- und Zeitziele aus Kapitel <a href="03_ziele-zielkonflikte-und-logistikkosten.html" class="quarto-xref"><span>3</span></a>.</p>
+<div class="definition">
+<p><strong>Definition: Lieferservice</strong></p>
+<p>Der <strong>Lieferservice</strong> umfasst alle Leistungen der Distribution, die der Kunde zwischen Auftragserteilung und Warenempfang wahrnimmt. Er wird üblicherweise in sechs Komponenten gegliedert: <strong>Lieferzeit</strong>, <strong>Lieferzuverlässigkeit</strong>, <strong>Lieferfähigkeit</strong>, <strong>Lieferbeschaffenheit</strong>, <strong>Lieferflexibilität</strong> und <strong>Information</strong>.</p>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-condensed caption-top table-sm small">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Komponente</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Leitfrage</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Kennzahl</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Lieferzeit</td>
+<td style="text-align: left;">Wie lange dauert es vom Auftrag bis zur Ankunft?</td>
+<td style="text-align: left;">Ø Lieferzeit, Anteil Same-Day</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lieferzuverlässigkeit</td>
+<td style="text-align: left;">Wird der zugesagte Termin eingehalten?</td>
+<td style="text-align: left;">Termintreue, OTIF</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lieferfähigkeit</td>
+<td style="text-align: left;">Ist die bestellte Ware vorrätig?</td>
+<td style="text-align: left;">α-/β-Servicegrad</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lieferbeschaffenheit</td>
+<td style="text-align: left;">Kommt die richtige Ware in richtiger Menge und unbeschädigt an?</td>
+<td style="text-align: left;">Fehlerquote, Reklamationen</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lieferflexibilität</td>
+<td style="text-align: left;">Kann auf Sonderwünsche reagiert werden?</td>
+<td style="text-align: left;">Anteil erfüllter Sonderwünsche</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Information</td>
+<td style="text-align: left;">Weiß der Kunde, wo seine Sendung ist?</td>
+<td style="text-align: left;">Tracking, Avis</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Die einzelnen Komponenten stehen ihrerseits in Konflikt: Eine kurze Lieferzeit verlangt kundennahe Bestände und viele kleine Sendungen, eine hohe Lieferfähigkeit hohe Sicherheitsbestände. Wie hoch die Bestände für einen gewünschten Servicegrad sein müssen, berechnen wir in den Kapiteln <a href="06_unsicherheit-in-supply-chains-pooling.html" class="quarto-xref"><span>9</span></a> und <a href="07_das-newsvendor-modell.html" class="quarto-xref"><span>10</span></a>. Hier geht es zunächst um das Messen.</p>
+<p>Eine im Handel weit verbreitete Kennzahl ist <strong>OTIF</strong> (<em>on time, in full</em>): der Anteil der Lieferungen, die <strong>pünktlich und vollständig</strong> beim Kunden ankommen. Sie verknüpft Zuverlässigkeit und Vollständigkeit und wird von Handelsketten häufig vertraglich vereinbart, oft verbunden mit Vertragsstrafen bei Unterschreitung.</p>
+<div class="r-exkurs">
+<p><strong>R-Exkurs: Anteile mit logischen Vektoren berechnen</strong></p>
+<p>Vergleichsoperatoren wie <code>&lt;=</code> oder <code>==</code> liefern in R <strong>logische Vektoren</strong> (<code>TRUE</code>/<code>FALSE</code>). Weil R bei Rechenoperationen <code>TRUE</code> als 1 und <code>FALSE</code> als 0 behandelt, liefert <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> auf einem logischen Vektor direkt den <strong>Anteil</strong> der <code>TRUE</code>-Werte. Mit <code>&amp;</code> (und) bzw. <code>|</code> (oder) lassen sich mehrere Bedingungen elementweise verknüpfen. Das ist genau das, was OTIF verlangt:</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Zehn Belieferungen eines Marktes: Ankunftszeit (Stunden) und gelieferte Menge</span></span>
+<span><span class="va">lieferungen</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  ankunft <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">6.8</span>, <span class="fl">7.4</span>, <span class="fl">7.9</span>, <span class="fl">8.2</span>, <span class="fl">7.1</span>, <span class="fl">7.6</span>, <span class="fl">7.95</span>, <span class="fl">7.3</span>, <span class="fl">8.4</span>, <span class="fl">7.0</span><span class="op">)</span>,</span>
+<span>  bestellt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">42</span>, <span class="fl">38</span>, <span class="fl">45</span>, <span class="fl">40</span>, <span class="fl">41</span>, <span class="fl">39</span>, <span class="fl">44</span>, <span class="fl">40</span>, <span class="fl">42</span><span class="op">)</span>,</span>
+<span>  geliefert <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">42</span>, <span class="fl">36</span>, <span class="fl">45</span>, <span class="fl">40</span>, <span class="fl">41</span>, <span class="fl">39</span>, <span class="fl">44</span>, <span class="fl">40</span>, <span class="fl">42</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">puenktlich</span>  <span class="op">&lt;-</span> <span class="va">lieferungen</span><span class="op">$</span><span class="va">ankunft</span> <span class="op">&lt;=</span> <span class="fl">8</span>      <span class="co"># vor Ladenöffnung um 8 Uhr</span></span>
+<span><span class="va">vollstaendig</span> <span class="op">&lt;-</span> <span class="va">lieferungen</span><span class="op">$</span><span class="va">geliefert</span> <span class="op">==</span> <span class="va">lieferungen</span><span class="op">$</span><span class="va">bestellt</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Puenktlichkeit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">puenktlich</span><span class="op">)</span>,</span>
+<span>  Vollstaendigkeit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">vollstaendig</span><span class="op">)</span>,</span>
+<span>  OTIF <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">puenktlich</span> <span class="op">&amp;</span> <span class="va">vollstaendig</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>  Puenktlichkeit Vollstaendigkeit             OTIF 
+             0.8              0.9              0.7 </code></pre>
+</div>
+</div>
+<p>Die Pünktlichkeit liegt bei 80 %, die Vollständigkeit bei 90 %, OTIF aber nur bei 70 %: Weil beide Bedingungen gleichzeitig erfüllt sein müssen, ist OTIF immer kleiner oder gleich dem Minimum der beiden Einzelquoten.</p>
+</div>
+</section><section id="absatzkanäle-die-vertikale-struktur" class="level2" data-number="5.5"><h2 data-number="5.5" class="anchored" data-anchor-id="absatzkanäle-die-vertikale-struktur">
+<span class="header-section-number">5.5</span> Absatzkanäle: die vertikale Struktur</h2>
+<p>Ein <strong>Absatzkanal</strong> beschreibt die Folge der Akteure, die ein Produkt bis zum Endkunden durchläuft. Nach der Zahl der zwischengeschalteten Handelsstufen unterscheidet man:</p>
+<ul>
+<li>
+<strong>direkter Vertrieb</strong> (Nullstufen-Kanal): Hersteller → Endkunde, z. B. Onlineshop, Lieferdienst, eigene Filialen,</li>
+<li>
+<strong>einstufig indirekter Vertrieb</strong>: Hersteller → Einzelhandel → Endkunde, z. B. SushiFresh über Supermärkte,</li>
+<li>
+<strong>zweistufig indirekter Vertrieb</strong>: Hersteller → Großhandel → Einzelhandel → Endkunde, z. B. Getränke über den Getränkefachgroßhandel.</li>
+</ul>
+<p>Zwischenstufen sind nicht bloß „Kostenaufschläge“. Sie übernehmen Funktionen, die sonst der Hersteller erbringen müsste: <strong>Sortimentsbildung</strong> (der Kunde findet viele Produkte an einem Ort), <strong>Mengenausgleich</strong> (große Lieferungen werden in kleine Abnahmemengen aufgeteilt), <strong>Lagerhaltung</strong>, <strong>Finanzierung</strong> (der Handel trägt Bestands- und Forderungsrisiken) und <strong>Kundenkontakt</strong>. Die Entscheidung zwischen direktem und indirektem Vertrieb ist deshalb eine Abwägung: Der direkte Weg bringt volle Kontrolle über Preis, Marke, Kundendaten und Marge, erfordert aber eigene Logistik und Kundenakquise. Der indirekte Weg bringt Reichweite und die Logistik des Handels, kostet aber Marge, schafft Abhängigkeit und ist oft mit Listungsgebühren verbunden.</p>
+<p>Wer mehrere Kanäle parallel betreibt, muss mit <strong>Kanalkonflikten</strong> rechnen: Bietet SushiFresh dieselben Boxen über den eigenen Lieferdienst günstiger an als im Supermarkt, verärgert das den Handelspartner. Typische Antworten sind kanalspezifische Sortimente (z. B. Kits nur online) oder abgestimmte Preise.</p>
+</section><section id="physische-distributionsstrukturen-die-horizontale-struktur" class="level2" data-number="5.6"><h2 data-number="5.6" class="anchored" data-anchor-id="physische-distributionsstrukturen-die-horizontale-struktur">
+<span class="header-section-number">5.6</span> Physische Distributionsstrukturen: die horizontale Struktur</h2>
+<p>Die physische Struktur beschreibt, über <strong>wie viele Lagerstufen</strong> und <strong>wie viele Lager je Stufe</strong> die Ware fließt. Vier Grundformen lassen sich unterscheiden:</p>
+<ol type="1">
+<li>
+<strong>Direktbelieferung ab Werk:</strong> Jeder Kunde wird direkt vom Produktionsstandort beliefert. Es gibt keine Lagerkosten und keinen Umschlag, aber viele kleine Sendungen und lange Wege. Sinnvoll bei Großkunden mit vollen Ladungen oder bei kleinen Absatzgebieten wie heute bei SushiFresh.</li>
+<li>
+<strong>Einstufige Struktur mit Zentrallager:</strong> Alle Kunden werden aus einem Zentrallager versorgt. Bestände sind gebündelt, die Steuerung ist einfach, aber die Auslieferstrecken werden lang.</li>
+<li>
+<strong>Zwei- oder mehrstufige Struktur:</strong> Ein Zentrallager versorgt Regionallager, die wiederum die Kunden beliefern. Hauptläufe zwischen den Stufen sind gut gebündelt, die Kunden sind nah, dafür steigen Bestände und Umschlagaufwand. Diese Struktur ist typisch für den Lebensmitteleinzelhandel und die Ersatzteillogistik.</li>
+<li>
+<strong>Cross-Docking:</strong> Umschlagpunkte ohne Lagerbestand bündeln die Sendungen vieler Lieferanten und verteilen sie in derselben Nacht auf die Empfänger.</li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-condensed caption-top table-sm small">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Struktur</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Vorteil</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Nachteil</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">typisch für</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Direkt ab Werk</td>
+<td style="text-align: left;">keine Lagerkosten, kein Umschlag</td>
+<td style="text-align: left;">viele kleine Sendungen, lange Wege</td>
+<td style="text-align: left;">Großkunden, volle Ladungen</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Zentrallager</td>
+<td style="text-align: left;">Bestand gebündelt (Pooling), einfache Steuerung</td>
+<td style="text-align: left;">lange Auslieferstrecken</td>
+<td style="text-align: left;">Spezialsortimente</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Zentral- + Regionallager</td>
+<td style="text-align: left;">kurze Lieferzeiten, gebündelte Hauptläufe</td>
+<td style="text-align: left;">mehr Bestand und Umschlag, komplexere Steuerung</td>
+<td style="text-align: left;">Lebensmittelhandel, Ersatzteile</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cross-Docking</td>
+<td style="text-align: left;">Bündelung ohne Lagerbestand, schneller Durchlauf</td>
+<td style="text-align: left;">hohe Synchronisationsanforderung</td>
+<td style="text-align: left;">Frische, Handelslogistik, KEP</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="vertiefung">
+<p><strong>Theorie-Vertiefung: Lagergeschäft und Streckengeschäft im Lebensmittelhandel</strong></p>
+<p>Der deutsche Lebensmitteleinzelhandel hat seine Logistik in den vergangenen Jahrzehnten stark zentralisiert. Früher belieferten die Hersteller jede Filiale direkt (<strong>Filialdirektbelieferung</strong>). Heute läuft der größte Teil der Ware über handelseigene Zentral- und Regionallager (<strong>Lagergeschäft</strong>), weil der Handel so Anlieferungen bündelt, die Zahl der Lkw-Stopps an der Filialrampe senkt und Bestände zentral steuert. Ausnahmen sind Produkte mit sehr kurzer Haltbarkeit oder sehr hohem Volumen, etwa Backwaren, Molkereiprodukte, Getränke oder frische Convenience-Produkte. Für sie lohnt sich die Belieferung über <strong>Frische-Cross-Docks</strong> oder weiterhin die direkte Filialbelieferung durch den Hersteller (<strong>Streckengeschäft</strong>). Für einen Frischeproduzenten wie SushiFresh ist die Wahl zwischen diesen Wegen deshalb keine Detailfrage, sondern entscheidet über Haltbarkeit, Kosten und die Abhängigkeit vom Handel. Kapitel <a href="14b_distributionssystem-gestalten.html" class="quarto-xref"><span>16</span></a> rechnet diese Wahl für die RheinMarkt-Anfrage durch.</p>
+</div>
+</section><section id="wie-viele-lager-kosten-und-lieferzeit" class="level2" data-number="5.7"><h2 data-number="5.7" class="anchored" data-anchor-id="wie-viele-lager-kosten-und-lieferzeit">
+<span class="header-section-number">5.7</span> Wie viele Lager? Kosten und Lieferzeit</h2>
+<p>Die vielleicht wichtigste strukturelle Frage lautet: <strong>Wie viele Lager</strong> soll ein Distributionssystem haben? Mit jedem zusätzlichen Lager verändern sich vier Kostenkomponenten und die Lieferzeit <span class="citation" data-cites="chopra2025supply">(<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">Chopra und Meindl 2025</a>)</span>:</p>
+<ul>
+<li>
+<strong>Lagerfixkosten</strong> (Miete, Personal, Gebäude) steigen etwa proportional zur Zahl der Lager.</li>
+<li>
+<strong>Bestandskosten</strong> steigen, weil jeder Standort seinen eigenen Sicherheitsbestand braucht. Bei unabhängiger Nachfrage wächst der gesamte Sicherheitsbestand etwa mit der Wurzel der Lageranzahl. Das ist das <strong>Wurzelgesetz</strong>, die Umkehrung des Pooling-Effekts, den Kapitel <a href="06_unsicherheit-in-supply-chains-pooling.html" class="quarto-xref"><span>9</span></a> formal herleitet.</li>
+<li>
+<strong>Hauptlaufkosten</strong> (Belieferung der Lager) steigen, weil mehr Lager angefahren werden müssen.</li>
+<li>
+<strong>Auslieferkosten</strong> (Lager → Kunde) sinken, weil die Kunden im Mittel näher am nächsten Lager liegen. Bei gleichmäßig verteilten Kunden in einer Fläche sinkt die durchschnittliche Entfernung etwa mit <span class="math inline">\(1/\sqrt{n}\)</span>.</li>
+<li>Die <strong>Lieferzeit</strong> sinkt mit zunehmender Lageranzahl.</li>
+</ul>
+<p>Ein einfaches Modell fasst diese Zusammenhänge zusammen:</p>
+<p><span class="math display">\[
+K(n) = \underbrace{f \cdot n}_{\text{Lager}} + \underbrace{b \cdot \sqrt{n}}_{\text{Bestand}} + \underbrace{h \cdot n}_{\text{Hauptlauf}} + \underbrace{\frac{a}{\sqrt{n}}}_{\text{Auslieferung}}
+\]</span></p>
+<p>Die Parameter <span class="math inline">\(f, b, h, a\)</span> sind hier illustrativ gewählt. Für ein konkretes Netz würden sie aus Kostensätzen und Kundenverteilungen geschätzt.</p>
+<div class="r-exkurs">
+<p><strong>R-Exkurs: Breite und lange Tabellen mit <code>pivot_longer()</code></strong></p>
+<p>Wir berechnen die vier Kostenkomponenten für <span class="math inline">\(n = 1, \dots, 12\)</span> Lager zunächst in einer <strong>breiten</strong> Tabelle: eine Zeile je Lageranzahl, eine Spalte je Kostenkomponente. Für <code>ggplot()</code> ist dieses Format unpraktisch, denn jede Linie im Diagramm bräuchte einen eigenen <code>geom_line()</code>-Aufruf. <code>ggplot()</code> arbeitet am besten mit <strong>langen</strong> Tabellen, in denen <em>eine</em> Spalte die Komponente benennt und <em>eine</em> Spalte den Wert enthält. Die Funktion <code><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">tidyr::pivot_longer()</a></code> erledigt diese Umformung: <code>cols</code> wählt die Spalten, die „gestapelt“ werden sollen, <code>names_to</code> benennt die neue Kategorienspalte, <code>values_to</code> die neue Wertspalte.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">kosten</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>Lager        <span class="op">=</span> <span class="fl">100</span> <span class="op">*</span> <span class="va">n</span>,</span>
+<span>         Bestand      <span class="op">=</span> <span class="fl">250</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>,</span>
+<span>         Hauptlauf    <span class="op">=</span> <span class="fl">30</span> <span class="op">*</span> <span class="va">n</span>,</span>
+<span>         Auslieferung <span class="op">=</span> <span class="fl">3000</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>,</span>
+<span>         Gesamt       <span class="op">=</span> <span class="va">Lager</span> <span class="op">+</span> <span class="va">Bestand</span> <span class="op">+</span> <span class="va">Hauptlauf</span> <span class="op">+</span> <span class="va">Auslieferung</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">kosten</span>, <span class="fl">3</span><span class="op">)</span>                      <span class="co"># breites Format</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 6
+      n Lager Bestand Hauptlauf Auslieferung Gesamt
+  &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;  &lt;dbl&gt;
+1     1   100    250         30        3000   3380 
+2     2   200    354.        60        2121.  2735.
+3     3   300    433.        90        1732.  2555.</code></pre>
+</div>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">kosten_lang</span> <span class="op">&lt;-</span> <span class="va">kosten</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">pivot_longer</span><span class="op">(</span>cols <span class="op">=</span> <span class="op">-</span><span class="va">n</span>, names_to <span class="op">=</span> <span class="st">"Komponente"</span>, values_to <span class="op">=</span> <span class="st">"Kosten"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">kosten_lang</span>, <span class="fl">5</span><span class="op">)</span>                 <span class="co"># langes Format</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+      n Komponente   Kosten
+  &lt;int&gt; &lt;chr&gt;         &lt;dbl&gt;
+1     1 Lager           100
+2     1 Bestand         250
+3     1 Hauptlauf        30
+4     1 Auslieferung   3000
+5     1 Gesamt         3380</code></pre>
+</div>
+</div>
+<p>Aus 12 Zeilen mit 6 Spalten werden 60 Zeilen mit 3 Spalten. Jetzt genügt ein einziger <code>geom_line()</code>-Aufruf, und die Farbe wird über <code>aes(colour = Komponente)</code> zugeordnet.</p>
+</div>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">n_opt</span> <span class="op">&lt;-</span> <span class="va">kosten</span><span class="op">$</span><span class="va">n</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html">which.min</a></span><span class="op">(</span><span class="va">kosten</span><span class="op">$</span><span class="va">Gesamt</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">kosten_lang</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">n</span>, y <span class="op">=</span> <span class="va">Kosten</span>, colour <span class="op">=</span> <span class="va">Komponente</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>linewidth <span class="op">=</span> <span class="va">Komponente</span> <span class="op">==</span> <span class="st">"Gesamt"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">kosten_lang</span>, <span class="va">Komponente</span> <span class="op">==</span> <span class="st">"Gesamt"</span>, <span class="va">n</span> <span class="op">==</span> <span class="va">n_opt</span><span class="op">)</span>,</span>
+<span>             size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_linewidth_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1.6</span><span class="op">)</span>, guide <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>breaks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Anzahl Lager n"</span>, y <span class="op">=</span> <span class="st">"Kosten (T€/Jahr)"</span>, colour <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">13</span><span class="op">)</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="14a_distributionsstrukturen_files/figure-html/chds-kosten-plot-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Kostenkomponenten in Abhängigkeit von der Lageranzahl (illustrativ, T€/Jahr)</figcaption></figure>
+</div>
+</div>
+</div>
+<p>Im Beispiel liegt das Kostenminimum bei <strong>4 Lagern</strong>. Links davon dominieren die hohen Auslieferkosten, rechts davon die mit jedem Lager wachsenden Fix- und Bestandskosten. Die Gesamtkostenkurve ist in der Nähe des Optimums sehr flach. Das ist eine typische und praktisch wichtige Eigenschaft: Eine Abweichung um ein Lager vom Optimum kostet wenig, sodass Service- oder Risikoüberlegungen den Ausschlag geben können. Wer etwa eine kürzere Lieferzeit verspricht, muss mehr Lager betreiben, als die reine Kostenrechnung nahelegt. Das ist genau der Zielkonflikt zwischen Kosten und Service aus Kapitel <a href="03_ziele-zielkonflikte-und-logistikkosten.html" class="quarto-xref"><span>3</span></a>.</p>
+<p>Das Modell beantwortet nur die Frage nach der <em>Anzahl</em>. <em>Wo</em> die Lager stehen und welche Kunden sie beliefern, beantwortet das Warehouse Location Problem in Kapitel <a href="05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html" class="quarto-xref"><span>7</span></a>, in dem dieselben Kostenkomponenten – Fixkosten der Standorte und standortabhängige Transportkosten – in einem Optimierungsmodell zusammengeführt werden.</p>
+</section><section id="gestaltungsoptionen-für-distributionsnetzwerke" class="level2" data-number="5.8"><h2 data-number="5.8" class="anchored" data-anchor-id="gestaltungsoptionen-für-distributionsnetzwerke">
+<span class="header-section-number">5.8</span> Gestaltungsoptionen für Distributionsnetzwerke</h2>
+<p><span class="citation" data-cites="chopra2025supply">Chopra und Meindl (<a href="../references.html#ref-chopra2025supply" role="doc-biblioref">2025</a>)</span> systematisieren die Gestaltung von Distributionsnetzwerken im Handel entlang zweier Fragen: <strong>Wo</strong> wird der Bestand gehalten (beim Hersteller, beim Händler, in der Filiale)? <strong>Wie</strong> gelangt die Ware zum Endkunden (Paketversand, eigene Zustellung, Abholung)? Daraus ergeben sich sechs typische Optionen:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-condensed caption-top table-sm small">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Option</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Lieferzeit</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Bestand</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Transportkosten</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">geeignet für</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Herstellerlager, Direktversand</td>
+<td style="text-align: left;">lang</td>
+<td style="text-align: left;">niedrig (gebündelt)</td>
+<td style="text-align: left;">hoch je Sendung</td>
+<td style="text-align: left;">breites Sortiment, wenig Nachfrage je Artikel</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Streckengeschäft mit Zusammenführung</td>
+<td style="text-align: left;">lang</td>
+<td style="text-align: left;">niedrig</td>
+<td style="text-align: left;">mittel</td>
+<td style="text-align: left;">Konfiguration, Elektronik</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Händlerlager, Paketversand</td>
+<td style="text-align: left;">mittel</td>
+<td style="text-align: left;">mittel</td>
+<td style="text-align: left;">mittel</td>
+<td style="text-align: left;">Standard-Onlinehandel</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Händlerlager, eigene Zustellung</td>
+<td style="text-align: left;">kurz</td>
+<td style="text-align: left;">hoch</td>
+<td style="text-align: left;">sehr hoch</td>
+<td style="text-align: left;">Lebensmittel, sperrige Güter</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lager mit Abholung durch Kunden</td>
+<td style="text-align: left;">mittel</td>
+<td style="text-align: left;">mittel</td>
+<td style="text-align: left;">niedrig bis mittel</td>
+<td style="text-align: left;">preissensible Kunden in Städten</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Filiale mit Abholung (Click &amp; Collect)</td>
+<td style="text-align: left;">sehr kurz</td>
+<td style="text-align: left;">hoch</td>
+<td style="text-align: left;">niedrig</td>
+<td style="text-align: left;">Mode, Elektronik, Frische</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Keine Option ist allgemein überlegen. Die Wahl folgt dem Produkt (Wert, Haltbarkeit, Nachfragevolumen je Artikel) und dem geforderten Lieferservice, also wieder dem <strong>Strategic Fit</strong> aus Kapitel <a href="02_wertschoepfung-strategische-fertigung-und-strategic-fit.html" class="quarto-xref"><span>2</span></a>. Für die drei Wachstumsideen von SushiFresh ergibt sich ein erstes Bild:</p>
+<ul>
+<li>
+<strong>RheinMarkt</strong> (frische Boxen, Handel): Bestand im Markt, Belieferung über Direktbelieferung oder Handelslogistik. Entscheidend ist die Haltbarkeit von nur zwei Tagen.</li>
+<li>
+<strong>Lieferdienst</strong> (frische Boxen, Endkunden): Bestand nahe am Kunden (Küche oder städtisches Mikrodepot), eigene Zustellung mit kurzen Zeitfenstern. Hohe Transportkosten je Sendung.</li>
+<li>
+<strong>Sushi@Home</strong> (haltbare Kits, Endkunden bundesweit): Herstellerlager mit Paketversand. Bestand gebündelt, Lieferzeit von ein bis zwei Tagen akzeptiert.</li>
+</ul></section><section id="cross-docking" class="level2" data-number="5.9"><h2 data-number="5.9" class="anchored" data-anchor-id="cross-docking">
+<span class="header-section-number">5.9</span> Cross-Docking</h2>
+<div class="definition">
+<p><strong>Definition: Cross-Docking</strong></p>
+<p><strong>Cross-Docking</strong> bezeichnet den Umschlag eingehender Sendungen mehrerer Lieferanten an einem Umschlagpunkt <strong>ohne Einlagerung</strong> (in der Regel innerhalb von 24 Stunden). Die Ware wird nach Empfängern umsortiert und in gebündelten Touren ausgeliefert.</p>
+</div>
+<p>Man unterscheidet zwei Varianten:</p>
+<ul>
+<li>
+<strong>Einstufiges Cross-Docking</strong> (<em>pre-distribution</em>): Der Lieferant kommissioniert bereits je Empfänger, etwa je Filiale. Am Umschlagpunkt werden die fertigen Einheiten nur noch auf die Ausgangstouren verteilt.</li>
+<li>
+<strong>Zweistufiges Cross-Docking</strong> (<em>post-distribution</em>): Der Lieferant liefert sortenrein, der Umschlagpunkt kommissioniert auf die Empfänger.</li>
+</ul>
+<p>Cross-Docking vereint die Bündelungsvorteile eines Lagers (wenige, volle Anlieferungen; gebündelte Auslieferung) mit dem Wegfall des Lagerbestands. Der Preis dafür ist eine hohe Anforderung an die <strong>Synchronisation</strong>: Anlieferungen müssen in engen Zeitfenstern eintreffen, Mengen und Qualität müssen stimmen, und Informationen über die eintreffende Ware (Lieferavis, elektronischer Datenaustausch) müssen vor der Ankunft vorliegen. Verspätet sich ein Lieferant, verzögern sich alle abgehenden Touren, oder die Filiale erhält ihre Ware nicht. Der fehlende Puffer ist zugleich Vorteil und Risiko. Für Frischware ist Cross-Docking besonders attraktiv, weil jede Stunde Standzeit Haltbarkeit kostet.</p>
+</section><section id="zusammenfassung" class="level2" data-number="5.10"><h2 data-number="5.10" class="anchored" data-anchor-id="zusammenfassung">
+<span class="header-section-number">5.10</span> Zusammenfassung</h2>
+<p>Ein Distributionssystem hat zwei Seiten: Der <strong>Absatzkanal</strong> legt fest, wer verkauft, der <strong>Logistikkanal</strong>, wie die Ware fließt. Beide müssen nicht übereinstimmen, wie das Streckengeschäft und die heutige Direktbelieferung der Supermärkte durch SushiFresh zeigen. Zielgröße der Distribution ist ein angestrebter <strong>Lieferservice</strong>, der sich in sechs Komponenten zerlegen und mit Kennzahlen wie OTIF messen lässt. Die physische Struktur reicht von der Direktbelieferung über ein- und mehrstufige Lagersysteme bis zum Cross-Docking. Mit der Anzahl der Lager steigen Fix- und Bestandskosten (Wurzelgesetz), während Auslieferkosten und Lieferzeit sinken. Die kostenminimale Lageranzahl liegt in einem flachen Optimum, in dem Serviceüberlegungen den Ausschlag geben können. Welche Gestaltungsoption passt, folgt aus Produkt und Lieferservice, also aus dem Strategic Fit.</p>
+<p>Auf der R-Seite haben Sie gesehen, wie sich Anteile über logische Vektoren und <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> berechnen lassen und wie <code>pivot_longer()</code> breite Tabellen in das lange Format bringt, das <code>ggplot()</code> für Diagramme mit mehreren Linien erwartet.</p>
+<div class="kontrollfragen">
+<p><strong>Kontrollfragen</strong></p>
+<ol type="1">
+<li>Erklären Sie den Unterschied zwischen Absatzkanal und Logistikkanal am Beispiel von SushiFresh. Warum ist es sinnvoll, beide getrennt zu betrachten?</li>
+<li>Nennen Sie die sechs Komponenten des Lieferservice und je eine passende Kennzahl. Welche Komponenten sind für frische Sushi-Boxen im Supermarkt besonders kritisch?</li>
+<li>Ein Lieferant erreicht eine Pünktlichkeit von 95 % und eine Vollständigkeit von 92 %. Welche Werte kann OTIF höchstens bzw. mindestens annehmen?</li>
+<li>Welche Funktionen übernimmt der Handel in einem indirekten Absatzkanal? Unter welchen Bedingungen würden Sie einem Hersteller zum direkten Vertrieb raten?</li>
+<li>Vergleichen Sie die Direktbelieferung ab Werk mit einer zweistufigen Distributionsstruktur hinsichtlich Bestand, Transport und Lieferzeit.</li>
+<li>Begründen Sie, warum die Bestandskosten mit der Anzahl der Lager etwa mit <span class="math inline">\(\sqrt{n}\)</span> wachsen, während die Auslieferkosten etwa mit <span class="math inline">\(1/\sqrt{n}\)</span> sinken.</li>
+<li>Verdoppeln Sie im R-Modell die Auslieferkosten. Wie verändert sich die kostenminimale Lageranzahl, und wie lässt sich das ökonomisch erklären?</li>
+<li>Ordnen Sie die drei Wachstumsideen von SushiFresh den Gestaltungsoptionen nach Chopra zu und begründen Sie Ihre Wahl.</li>
+<li>Unter welchen Voraussetzungen ist Cross-Docking einem Lager überlegen? Welches Risiko geht man dabei ein?</li>
+</ol>
+</div>
+
+
+<!-- -->
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-chopra2025supply" class="csl-entry" role="listitem">
+Chopra, Sunil, und Peter Meindl. 2025. <em>Supply Chain Management: Strategy, Planning, and Operation</em>. 8. Aufl. Pearson.
+</div>
+<div id="ref-guenther2012produktion" class="csl-entry" role="listitem">
+Günther, Hans-Otto, und Horst Tempelmeier. 2012. <em>Produktion und Logistik</em>. 9. Aufl. Springer-Lehrbuch. Springer.
+</div>
+</div>
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopiert");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopiert");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../chapters/09_nachhaltigkeit-im-supply-chain-management.html" class="pagination-link" aria-label="Nachhaltigkeit im Supply Chain Management">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Nachhaltigkeit im Supply Chain Management</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html" class="pagination-link" aria-label="Standortplanung I – Qualitative und kontinuierliche Verfahren">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Standortplanung I – Qualitative und kontinuierliche Verfahren</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Quellcode</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Distributionsstrukturen und -kanäle {#sec-distributionsstrukturen}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds-setup</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../R/scm_functions.R"</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Inline-Zahlen im Fließtext deutsch formatieren (Dezimalkomma, Tausenderpunkt)</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>knit_hooks<span class="sc">$</span><span class="fu">set</span>(<span class="at">inline =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.numeric</span>(x)) <span class="fu">format</span>(x, <span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>) <span class="cf">else</span> x</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>::: {.lernziele}</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>**Lernziele**</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>Nach der Bearbeitung dieses Kapitels können Sie …</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>ein Distributionssystem in seine **akquisitorische** (Absatzkanal) und seine **physische** Seite (Logistikkanal) zerlegen und begründen, warum beide nicht übereinstimmen müssen,</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>die Komponenten des **Lieferservice** benennen und mit Kennzahlen wie **OTIF** messen,</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>direkte und indirekte **Absatzkanäle** unterscheiden und die Funktionen von Handelsstufen erklären,</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>ein-, zwei- und mehrstufige **Distributionsstrukturen** sowie **Cross-Docking** beschreiben und ihre Vor- und Nachteile abwägen,</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>den Zusammenhang zwischen **Anzahl der Lager**, Kostenkomponenten und Lieferzeit erklären und mit einem einfachen Kostenmodell in R untersuchen,</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Tabellen mit <span class="in">`pivot_longer()`</span> vom breiten in das lange Format überführen und Anteile mit logischen Vektoren berechnen.</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>**Literatur zur Vertiefung**</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Distributionsnetzwerke und Gestaltungsoptionen:** <span class="co">[</span><span class="ot">@chopra2025supply</span><span class="co">]</span>.</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Distributionslogistik und Lieferservice:** <span class="co">[</span><span class="ot">@pfohl2018logistiksysteme</span><span class="co">]</span>; <span class="co">[</span><span class="ot">@guenther2012produktion</span><span class="co">]</span>.</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="fu">## Vom Zielsystem zum Distributionssystem</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>Kapitel <span class="co">[</span><span class="ot">-@sec-logistikkosten</span><span class="co">]</span> hat gezeigt, dass Logistik zwischen konkurrierenden Zielen vermitteln muss: Kosten, Geschwindigkeit, Qualität und Flexibilität lassen sich nicht gleichzeitig maximieren. In der **Distribution**, also auf dem Weg vom Hersteller zum Kunden, werden diese Zielkonflikte besonders sichtbar. Hier entscheidet sich, ob die Ware zum richtigen Zeitpunkt, in der richtigen Menge und im richtigen Zustand beim Kunden ankommt. Gleichzeitig entstehen hier in vielen Branchen die größten Logistikkosten.</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>Dieses Kapitel liefert den **strukturellen Rahmen** für alle weiteren Kapitel zur Netzwerk- und Distributionsplanung. Bevor man mit Optimierungsmodellen Standorte auswählt (Kapitel [-@sec-standort-1] und [-@sec-standort-2]), Transporte verteilt (Kapitel [-@sec-transportplanung]) oder Touren plant (Kapitel [-@sec-tourenplanung]), muss klar sein, **welche Art von Distributionssystem** überhaupt aufgebaut werden soll: Über welche Absatzkanäle wird verkauft? Wie viele Lagerstufen gibt es? Wird über ein Zentrallager, über regionale Läger oder ganz ohne Lager über Umschlagpunkte verteilt? Und welchen Lieferservice erwarten die Kunden?</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fallbeispiel: Wohin soll die Distribution von SushiFresh wachsen?</span></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>::: {.fallstudie}</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>**Fallstudie: Ausgangslage und Wachstumsideen**</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>SushiFresh produziert in einer Küche und verkauft seine Boxen über die Kühlregale von **sechs Supermärkten** im Rhein-Main-Gebiet. Die Märkte werden jeden Morgen **direkt** aus der Küche beliefert. Der Absatzkanal führt damit über den Handel (Hersteller → Supermarkt → Kunde), der Logistikkanal dagegen direkt von der Küche in den Markt.</span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>Die Geschäftsführung diskutiert drei Wachstumsideen:</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Handel:** Die Supermarktkette **RheinMarkt** möchte die Boxen in rund 40 Märkten in ganz Hessen listen. RheinMarkt betreibt eine eigene Handelslogistik mit Zentrallager und Frische-Umschlagpunkten.</span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Lieferdienst:** Frische Boxen sollen direkt an Endkunden in Frankfurt geliefert werden.</span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Onlineshop „Sushi@Home“:** Haltbare Kits zum Selbermachen, Saucen und Zubehör werden bundesweit per Paket verschickt.</span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>Die drei Ideen unterscheiden sich in Kunde, Produkt und Lieferservice und führen deshalb zu **unterschiedlichen** Distributionssystemen. Wir werden sie im Verlauf des Readers schrittweise aufgreifen: Den Onlineshop in Kapitel <span class="co">[</span><span class="ot">-@sec-lager</span><span class="co">]</span>, den Lieferdienst in Kapitel <span class="co">[</span><span class="ot">-@sec-verkehrsmittel</span><span class="co">]</span> und die RheinMarkt-Anfrage abschließend in Kapitel <span class="co">[</span><span class="ot">-@sec-distributionssystem</span><span class="co">]</span>.</span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a><span class="fu">## Das Distributionssystem</span></span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>::: {.definition}</span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>**Definition: Distributionssystem**</span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>Das **Distributionssystem** umfasst alle Akteure, Einrichtungen und Prozesse, über die ein Produkt vom Hersteller zum Kunden gelangt. Man unterscheidet</span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>die **akquisitorische Distribution** (Absatzkanal): *Wer* ist am Verkauf beteiligt, wer übernimmt Eigentum, Preisgestaltung und Kundenkontakt?</span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>die **physische Distribution** (Logistikkanal): *Wie* fließt die Ware, über welche Lagerstufen, Standorte, Umschlagpunkte und Transportwege?</span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>Die Unterscheidung geht auf die betriebswirtschaftliche Logistikliteratur zurück <span class="co">[</span><span class="ot">@pfohl2018logistiksysteme</span><span class="co">]</span> und ist mehr als eine begriffliche Feinheit: Absatz- und Logistikkanal **müssen nicht übereinstimmen**. Beim **Streckengeschäft** etwa verkauft ein Händler die Ware, ohne sie jemals physisch in den Händen zu halten. Der Hersteller liefert direkt an den Kunden des Händlers. Umgekehrt kann ein Hersteller seine Produkte direkt an Endkunden verkaufen, die Lagerung und Zustellung aber vollständig einem Logistikdienstleister überlassen.</span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>Für SushiFresh ist diese Trennung bereits heute sichtbar. Der Absatzkanal führt über die Supermärkte, physisch werden die Märkte aber direkt aus der Küche beliefert, an der Handelslogistik vorbei. Bei RheinMarkt stellt sich nun die Frage, ob dieser direkte Logistikkanal beibehalten oder die Ware über die Handelslogistik des Kunden geführt wird. Der Absatzkanal ist in beiden Fällen derselbe.</span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>Die Gestaltung eines Distributionssystems erstreckt sich über alle Planungsebenen aus Kapitel <span class="co">[</span><span class="ot">-@sec-einfuehrung</span><span class="co">]</span>:</span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Ebene <span class="pp">|</span> Typische Entscheidungen <span class="pp">|</span> Kapitel <span class="pp">|</span></span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a><span class="pp">|:---|:---|:---|</span></span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> strategisch <span class="pp">|</span> Absatzkanäle, Anzahl der Lagerstufen, Standorte <span class="pp">|</span> dieses Kapitel, <span class="co">[</span><span class="ot">-@sec-standort-1</span><span class="co">]</span>, <span class="co">[</span><span class="ot">-@sec-standort-2</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> taktisch <span class="pp">|</span> Zuordnung von Kunden zu Lagern, Transportmengen, Bestandsniveaus, Fuhrpark <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-transportplanung</span><span class="co">]</span>, <span class="co">[</span><span class="ot">-@sec-unsicherheit-pooling</span><span class="co">]</span>, <span class="co">[</span><span class="ot">-@sec-verkehrsmittel</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> operativ <span class="pp">|</span> Kommissionierung, Tourenplanung, tägliche Disposition <span class="pp">|</span> <span class="co">[</span><span class="ot">-@sec-lager</span><span class="co">]</span>, <span class="co">[</span><span class="ot">-@sec-kuerzeste-wege</span><span class="co">]</span>, <span class="co">[</span><span class="ot">-@sec-tourenplanung</span><span class="co">]</span> <span class="pp">|</span></span>
+<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a><span class="fu">## Lieferservice als Zielgröße</span></span>
+<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a>Was ein Distributionssystem leisten muss, wird über den **Lieferservice** beschrieben. Er ist die distributionsbezogene Konkretisierung der Service- und Zeitziele aus Kapitel <span class="co">[</span><span class="ot">-@sec-logistikkosten</span><span class="co">]</span>.</span>
+<span id="cb8-89"><a href="#cb8-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-90"><a href="#cb8-90" aria-hidden="true" tabindex="-1"></a>::: {.definition}</span>
+<span id="cb8-91"><a href="#cb8-91" aria-hidden="true" tabindex="-1"></a>**Definition: Lieferservice**</span>
+<span id="cb8-92"><a href="#cb8-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-93"><a href="#cb8-93" aria-hidden="true" tabindex="-1"></a>Der **Lieferservice** umfasst alle Leistungen der Distribution, die der Kunde zwischen Auftragserteilung und Warenempfang wahrnimmt. Er wird üblicherweise in sechs Komponenten gegliedert: **Lieferzeit**, **Lieferzuverlässigkeit**, **Lieferfähigkeit**, **Lieferbeschaffenheit**, **Lieferflexibilität** und **Information**.</span>
+<span id="cb8-94"><a href="#cb8-94" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-95"><a href="#cb8-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-99"><a href="#cb8-99" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds-lieferservice</span></span>
+<span id="cb8-100"><a href="#cb8-100" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb8-101"><a href="#cb8-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-102"><a href="#cb8-102" aria-hidden="true" tabindex="-1"></a>ls_tab <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb8-103"><a href="#cb8-103" aria-hidden="true" tabindex="-1"></a>  <span class="at">Komponente =</span> <span class="fu">c</span>(<span class="st">"Lieferzeit"</span>, <span class="st">"Lieferzuverlässigkeit"</span>, <span class="st">"Lieferfähigkeit"</span>,</span>
+<span id="cb8-104"><a href="#cb8-104" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Lieferbeschaffenheit"</span>, <span class="st">"Lieferflexibilität"</span>, <span class="st">"Information"</span>),</span>
+<span id="cb8-105"><a href="#cb8-105" aria-hidden="true" tabindex="-1"></a>  <span class="at">Leitfrage =</span> <span class="fu">c</span>(<span class="st">"Wie lange dauert es vom Auftrag bis zur Ankunft?"</span>,</span>
+<span id="cb8-106"><a href="#cb8-106" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Wird der zugesagte Termin eingehalten?"</span>,</span>
+<span id="cb8-107"><a href="#cb8-107" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Ist die bestellte Ware vorrätig?"</span>,</span>
+<span id="cb8-108"><a href="#cb8-108" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Kommt die richtige Ware in richtiger Menge und unbeschädigt an?"</span>,</span>
+<span id="cb8-109"><a href="#cb8-109" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Kann auf Sonderwünsche reagiert werden?"</span>,</span>
+<span id="cb8-110"><a href="#cb8-110" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Weiß der Kunde, wo seine Sendung ist?"</span>),</span>
+<span id="cb8-111"><a href="#cb8-111" aria-hidden="true" tabindex="-1"></a>  <span class="at">Kennzahl =</span> <span class="fu">c</span>(<span class="st">"Ø Lieferzeit, Anteil Same-Day"</span>, <span class="st">"Termintreue, OTIF"</span>,</span>
+<span id="cb8-112"><a href="#cb8-112" aria-hidden="true" tabindex="-1"></a>               <span class="st">"α-/β-Servicegrad"</span>, <span class="st">"Fehlerquote, Reklamationen"</span>,</span>
+<span id="cb8-113"><a href="#cb8-113" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Anteil erfüllter Sonderwünsche"</span>, <span class="st">"Tracking, Avis"</span>)</span>
+<span id="cb8-114"><a href="#cb8-114" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-115"><a href="#cb8-115" aria-hidden="true" tabindex="-1"></a><span class="fu">kbl</span>(ls_tab, <span class="at">booktabs =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-116"><a href="#cb8-116" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb8-117"><a href="#cb8-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-118"><a href="#cb8-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-119"><a href="#cb8-119" aria-hidden="true" tabindex="-1"></a>Die einzelnen Komponenten stehen ihrerseits in Konflikt: Eine kurze Lieferzeit verlangt kundennahe Bestände und viele kleine Sendungen, eine hohe Lieferfähigkeit hohe Sicherheitsbestände. Wie hoch die Bestände für einen gewünschten Servicegrad sein müssen, berechnen wir in den Kapiteln <span class="co">[</span><span class="ot">-@sec-unsicherheit-pooling</span><span class="co">]</span> und <span class="co">[</span><span class="ot">-@sec-newsvendor</span><span class="co">]</span>. Hier geht es zunächst um das Messen.</span>
+<span id="cb8-120"><a href="#cb8-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-121"><a href="#cb8-121" aria-hidden="true" tabindex="-1"></a>Eine im Handel weit verbreitete Kennzahl ist **OTIF** (*on time, in full*): der Anteil der Lieferungen, die **pünktlich und vollständig** beim Kunden ankommen. Sie verknüpft Zuverlässigkeit und Vollständigkeit und wird von Handelsketten häufig vertraglich vereinbart, oft verbunden mit Vertragsstrafen bei Unterschreitung.</span>
+<span id="cb8-122"><a href="#cb8-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-123"><a href="#cb8-123" aria-hidden="true" tabindex="-1"></a>::: {.r-exkurs}</span>
+<span id="cb8-124"><a href="#cb8-124" aria-hidden="true" tabindex="-1"></a>**R-Exkurs: Anteile mit logischen Vektoren berechnen**</span>
+<span id="cb8-125"><a href="#cb8-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-126"><a href="#cb8-126" aria-hidden="true" tabindex="-1"></a>Vergleichsoperatoren wie <span class="in">`&lt;=`</span> oder <span class="in">`==`</span> liefern in R **logische Vektoren** (`TRUE`/`FALSE`). Weil R bei Rechenoperationen `TRUE` als 1 und `FALSE` als 0 behandelt, liefert `mean()` auf einem logischen Vektor direkt den **Anteil** der <span class="in">`TRUE`</span>-Werte. Mit <span class="in">`&amp;`</span> (und) bzw. <span class="in">`|`</span> (oder) lassen sich mehrere Bedingungen elementweise verknüpfen. Das ist genau das, was OTIF verlangt:</span>
+<span id="cb8-127"><a href="#cb8-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-130"><a href="#cb8-130" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-131"><a href="#cb8-131" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds-otif</span></span>
+<span id="cb8-132"><a href="#cb8-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-133"><a href="#cb8-133" aria-hidden="true" tabindex="-1"></a><span class="co"># Zehn Belieferungen eines Marktes: Ankunftszeit (Stunden) und gelieferte Menge</span></span>
+<span id="cb8-134"><a href="#cb8-134" aria-hidden="true" tabindex="-1"></a>lieferungen <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb8-135"><a href="#cb8-135" aria-hidden="true" tabindex="-1"></a>  <span class="at">ankunft =</span> <span class="fu">c</span>(<span class="fl">6.8</span>, <span class="fl">7.4</span>, <span class="fl">7.9</span>, <span class="fl">8.2</span>, <span class="fl">7.1</span>, <span class="fl">7.6</span>, <span class="fl">7.95</span>, <span class="fl">7.3</span>, <span class="fl">8.4</span>, <span class="fl">7.0</span>),</span>
+<span id="cb8-136"><a href="#cb8-136" aria-hidden="true" tabindex="-1"></a>  <span class="at">bestellt =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">42</span>, <span class="dv">38</span>, <span class="dv">45</span>, <span class="dv">40</span>, <span class="dv">41</span>, <span class="dv">39</span>, <span class="dv">44</span>, <span class="dv">40</span>, <span class="dv">42</span>),</span>
+<span id="cb8-137"><a href="#cb8-137" aria-hidden="true" tabindex="-1"></a>  <span class="at">geliefert =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">42</span>, <span class="dv">36</span>, <span class="dv">45</span>, <span class="dv">40</span>, <span class="dv">41</span>, <span class="dv">39</span>, <span class="dv">44</span>, <span class="dv">40</span>, <span class="dv">42</span>)</span>
+<span id="cb8-138"><a href="#cb8-138" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-139"><a href="#cb8-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-140"><a href="#cb8-140" aria-hidden="true" tabindex="-1"></a>puenktlich  <span class="ot">&lt;-</span> lieferungen<span class="sc">$</span>ankunft <span class="sc">&lt;=</span> <span class="dv">8</span>      <span class="co"># vor Ladenöffnung um 8 Uhr</span></span>
+<span id="cb8-141"><a href="#cb8-141" aria-hidden="true" tabindex="-1"></a>vollstaendig <span class="ot">&lt;-</span> lieferungen<span class="sc">$</span>geliefert <span class="sc">==</span> lieferungen<span class="sc">$</span>bestellt</span>
+<span id="cb8-142"><a href="#cb8-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-143"><a href="#cb8-143" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">Puenktlichkeit =</span> <span class="fu">mean</span>(puenktlich),</span>
+<span id="cb8-144"><a href="#cb8-144" aria-hidden="true" tabindex="-1"></a>  <span class="at">Vollstaendigkeit =</span> <span class="fu">mean</span>(vollstaendig),</span>
+<span id="cb8-145"><a href="#cb8-145" aria-hidden="true" tabindex="-1"></a>  <span class="at">OTIF =</span> <span class="fu">mean</span>(puenktlich <span class="sc">&amp;</span> vollstaendig))</span>
+<span id="cb8-146"><a href="#cb8-146" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-147"><a href="#cb8-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-148"><a href="#cb8-148" aria-hidden="true" tabindex="-1"></a>Die Pünktlichkeit liegt bei 80 %, die Vollständigkeit bei 90 %, OTIF aber nur bei 70 %: Weil beide Bedingungen gleichzeitig erfüllt sein müssen, ist OTIF immer kleiner oder gleich dem Minimum der beiden Einzelquoten.</span>
+<span id="cb8-149"><a href="#cb8-149" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-150"><a href="#cb8-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-151"><a href="#cb8-151" aria-hidden="true" tabindex="-1"></a><span class="fu">## Absatzkanäle: die vertikale Struktur</span></span>
+<span id="cb8-152"><a href="#cb8-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-153"><a href="#cb8-153" aria-hidden="true" tabindex="-1"></a>Ein **Absatzkanal** beschreibt die Folge der Akteure, die ein Produkt bis zum Endkunden durchläuft. Nach der Zahl der zwischengeschalteten Handelsstufen unterscheidet man:</span>
+<span id="cb8-154"><a href="#cb8-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-155"><a href="#cb8-155" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**direkter Vertrieb** (Nullstufen-Kanal): Hersteller → Endkunde, z. B. Onlineshop, Lieferdienst, eigene Filialen,</span>
+<span id="cb8-156"><a href="#cb8-156" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**einstufig indirekter Vertrieb**: Hersteller → Einzelhandel → Endkunde, z. B. SushiFresh über Supermärkte,</span>
+<span id="cb8-157"><a href="#cb8-157" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**zweistufig indirekter Vertrieb**: Hersteller → Großhandel → Einzelhandel → Endkunde, z. B. Getränke über den Getränkefachgroßhandel.</span>
+<span id="cb8-158"><a href="#cb8-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-159"><a href="#cb8-159" aria-hidden="true" tabindex="-1"></a>Zwischenstufen sind nicht bloß „Kostenaufschläge“. Sie übernehmen Funktionen, die sonst der Hersteller erbringen müsste: **Sortimentsbildung** (der Kunde findet viele Produkte an einem Ort), **Mengenausgleich** (große Lieferungen werden in kleine Abnahmemengen aufgeteilt), **Lagerhaltung**, **Finanzierung** (der Handel trägt Bestands- und Forderungsrisiken) und **Kundenkontakt**. Die Entscheidung zwischen direktem und indirektem Vertrieb ist deshalb eine Abwägung: Der direkte Weg bringt volle Kontrolle über Preis, Marke, Kundendaten und Marge, erfordert aber eigene Logistik und Kundenakquise. Der indirekte Weg bringt Reichweite und die Logistik des Handels, kostet aber Marge, schafft Abhängigkeit und ist oft mit Listungsgebühren verbunden.</span>
+<span id="cb8-160"><a href="#cb8-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-161"><a href="#cb8-161" aria-hidden="true" tabindex="-1"></a>Wer mehrere Kanäle parallel betreibt, muss mit **Kanalkonflikten** rechnen: Bietet SushiFresh dieselben Boxen über den eigenen Lieferdienst günstiger an als im Supermarkt, verärgert das den Handelspartner. Typische Antworten sind kanalspezifische Sortimente (z. B. Kits nur online) oder abgestimmte Preise.</span>
+<span id="cb8-162"><a href="#cb8-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-163"><a href="#cb8-163" aria-hidden="true" tabindex="-1"></a><span class="fu">## Physische Distributionsstrukturen: die horizontale Struktur</span></span>
+<span id="cb8-164"><a href="#cb8-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-165"><a href="#cb8-165" aria-hidden="true" tabindex="-1"></a>Die physische Struktur beschreibt, über **wie viele Lagerstufen** und **wie viele Lager je Stufe** die Ware fließt. Vier Grundformen lassen sich unterscheiden:</span>
+<span id="cb8-166"><a href="#cb8-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-167"><a href="#cb8-167" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Direktbelieferung ab Werk:** Jeder Kunde wird direkt vom Produktionsstandort beliefert. Es gibt keine Lagerkosten und keinen Umschlag, aber viele kleine Sendungen und lange Wege. Sinnvoll bei Großkunden mit vollen Ladungen oder bei kleinen Absatzgebieten wie heute bei SushiFresh.</span>
+<span id="cb8-168"><a href="#cb8-168" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Einstufige Struktur mit Zentrallager:** Alle Kunden werden aus einem Zentrallager versorgt. Bestände sind gebündelt, die Steuerung ist einfach, aber die Auslieferstrecken werden lang.</span>
+<span id="cb8-169"><a href="#cb8-169" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Zwei- oder mehrstufige Struktur:** Ein Zentrallager versorgt Regionallager, die wiederum die Kunden beliefern. Hauptläufe zwischen den Stufen sind gut gebündelt, die Kunden sind nah, dafür steigen Bestände und Umschlagaufwand. Diese Struktur ist typisch für den Lebensmitteleinzelhandel und die Ersatzteillogistik.</span>
+<span id="cb8-170"><a href="#cb8-170" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Cross-Docking:** Umschlagpunkte ohne Lagerbestand bündeln die Sendungen vieler Lieferanten und verteilen sie in derselben Nacht auf die Empfänger.</span>
+<span id="cb8-171"><a href="#cb8-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-174"><a href="#cb8-174" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-175"><a href="#cb8-175" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds-strukturen-tab</span></span>
+<span id="cb8-176"><a href="#cb8-176" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb8-177"><a href="#cb8-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-178"><a href="#cb8-178" aria-hidden="true" tabindex="-1"></a>st <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb8-179"><a href="#cb8-179" aria-hidden="true" tabindex="-1"></a>  <span class="at">Struktur =</span> <span class="fu">c</span>(<span class="st">"Direkt ab Werk"</span>, <span class="st">"Zentrallager"</span>, <span class="st">"Zentral- + Regionallager"</span>, <span class="st">"Cross-Docking"</span>),</span>
+<span id="cb8-180"><a href="#cb8-180" aria-hidden="true" tabindex="-1"></a>  <span class="at">Vorteil =</span> <span class="fu">c</span>(<span class="st">"keine Lagerkosten, kein Umschlag"</span>,</span>
+<span id="cb8-181"><a href="#cb8-181" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Bestand gebündelt (Pooling), einfache Steuerung"</span>,</span>
+<span id="cb8-182"><a href="#cb8-182" aria-hidden="true" tabindex="-1"></a>              <span class="st">"kurze Lieferzeiten, gebündelte Hauptläufe"</span>,</span>
+<span id="cb8-183"><a href="#cb8-183" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Bündelung ohne Lagerbestand, schneller Durchlauf"</span>),</span>
+<span id="cb8-184"><a href="#cb8-184" aria-hidden="true" tabindex="-1"></a>  <span class="at">Nachteil =</span> <span class="fu">c</span>(<span class="st">"viele kleine Sendungen, lange Wege"</span>, <span class="st">"lange Auslieferstrecken"</span>,</span>
+<span id="cb8-185"><a href="#cb8-185" aria-hidden="true" tabindex="-1"></a>               <span class="st">"mehr Bestand und Umschlag, komplexere Steuerung"</span>,</span>
+<span id="cb8-186"><a href="#cb8-186" aria-hidden="true" tabindex="-1"></a>               <span class="st">"hohe Synchronisationsanforderung"</span>),</span>
+<span id="cb8-187"><a href="#cb8-187" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">typisch für</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Großkunden, volle Ladungen"</span>, <span class="st">"Spezialsortimente"</span>,</span>
+<span id="cb8-188"><a href="#cb8-188" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"Lebensmittelhandel, Ersatzteile"</span>, <span class="st">"Frische, Handelslogistik, KEP"</span>)</span>
+<span id="cb8-189"><a href="#cb8-189" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-190"><a href="#cb8-190" aria-hidden="true" tabindex="-1"></a><span class="fu">kbl</span>(st, <span class="at">booktabs =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-191"><a href="#cb8-191" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb8-192"><a href="#cb8-192" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-193"><a href="#cb8-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-194"><a href="#cb8-194" aria-hidden="true" tabindex="-1"></a>::: {.vertiefung}</span>
+<span id="cb8-195"><a href="#cb8-195" aria-hidden="true" tabindex="-1"></a>**Theorie-Vertiefung: Lagergeschäft und Streckengeschäft im Lebensmittelhandel**</span>
+<span id="cb8-196"><a href="#cb8-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-197"><a href="#cb8-197" aria-hidden="true" tabindex="-1"></a>Der deutsche Lebensmitteleinzelhandel hat seine Logistik in den vergangenen Jahrzehnten stark zentralisiert. Früher belieferten die Hersteller jede Filiale direkt (**Filialdirektbelieferung**). Heute läuft der größte Teil der Ware über handelseigene Zentral- und Regionallager (**Lagergeschäft**), weil der Handel so Anlieferungen bündelt, die Zahl der Lkw-Stopps an der Filialrampe senkt und Bestände zentral steuert. Ausnahmen sind Produkte mit sehr kurzer Haltbarkeit oder sehr hohem Volumen, etwa Backwaren, Molkereiprodukte, Getränke oder frische Convenience-Produkte. Für sie lohnt sich die Belieferung über **Frische-Cross-Docks** oder weiterhin die direkte Filialbelieferung durch den Hersteller (**Streckengeschäft**). Für einen Frischeproduzenten wie SushiFresh ist die Wahl zwischen diesen Wegen deshalb keine Detailfrage, sondern entscheidet über Haltbarkeit, Kosten und die Abhängigkeit vom Handel. Kapitel <span class="co">[</span><span class="ot">-@sec-distributionssystem</span><span class="co">]</span> rechnet diese Wahl für die RheinMarkt-Anfrage durch.</span>
+<span id="cb8-198"><a href="#cb8-198" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-199"><a href="#cb8-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-200"><a href="#cb8-200" aria-hidden="true" tabindex="-1"></a><span class="fu">## Wie viele Lager? Kosten und Lieferzeit</span></span>
+<span id="cb8-201"><a href="#cb8-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-202"><a href="#cb8-202" aria-hidden="true" tabindex="-1"></a>Die vielleicht wichtigste strukturelle Frage lautet: **Wie viele Lager** soll ein Distributionssystem haben? Mit jedem zusätzlichen Lager verändern sich vier Kostenkomponenten und die Lieferzeit <span class="co">[</span><span class="ot">@chopra2025supply</span><span class="co">]</span>:</span>
+<span id="cb8-203"><a href="#cb8-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-204"><a href="#cb8-204" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Lagerfixkosten** (Miete, Personal, Gebäude) steigen etwa proportional zur Zahl der Lager.</span>
+<span id="cb8-205"><a href="#cb8-205" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Bestandskosten** steigen, weil jeder Standort seinen eigenen Sicherheitsbestand braucht. Bei unabhängiger Nachfrage wächst der gesamte Sicherheitsbestand etwa mit der Wurzel der Lageranzahl. Das ist das **Wurzelgesetz**, die Umkehrung des Pooling-Effekts, den Kapitel <span class="co">[</span><span class="ot">-@sec-unsicherheit-pooling</span><span class="co">]</span> formal herleitet.</span>
+<span id="cb8-206"><a href="#cb8-206" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Hauptlaufkosten** (Belieferung der Lager) steigen, weil mehr Lager angefahren werden müssen.</span>
+<span id="cb8-207"><a href="#cb8-207" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Auslieferkosten** (Lager → Kunde) sinken, weil die Kunden im Mittel näher am nächsten Lager liegen. Bei gleichmäßig verteilten Kunden in einer Fläche sinkt die durchschnittliche Entfernung etwa mit $1/\sqrt{n}$.</span>
+<span id="cb8-208"><a href="#cb8-208" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Die **Lieferzeit** sinkt mit zunehmender Lageranzahl.</span>
+<span id="cb8-209"><a href="#cb8-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-210"><a href="#cb8-210" aria-hidden="true" tabindex="-1"></a>Ein einfaches Modell fasst diese Zusammenhänge zusammen:</span>
+<span id="cb8-211"><a href="#cb8-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-212"><a href="#cb8-212" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb8-213"><a href="#cb8-213" aria-hidden="true" tabindex="-1"></a>K(n) = \underbrace{f \cdot n}_{\text{Lager}} + \underbrace{b \cdot \sqrt{n}}_{\text{Bestand}} + \underbrace{h \cdot n}_{\text{Hauptlauf}} + \underbrace{\frac{a}{\sqrt{n}}}_{\text{Auslieferung}}</span>
+<span id="cb8-214"><a href="#cb8-214" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb8-215"><a href="#cb8-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-216"><a href="#cb8-216" aria-hidden="true" tabindex="-1"></a>Die Parameter $f, b, h, a$ sind hier illustrativ gewählt. Für ein konkretes Netz würden sie aus Kostensätzen und Kundenverteilungen geschätzt.</span>
+<span id="cb8-217"><a href="#cb8-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-218"><a href="#cb8-218" aria-hidden="true" tabindex="-1"></a>::: {.r-exkurs}</span>
+<span id="cb8-219"><a href="#cb8-219" aria-hidden="true" tabindex="-1"></a>**R-Exkurs: Breite und lange Tabellen mit `pivot_longer()`**</span>
+<span id="cb8-220"><a href="#cb8-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-221"><a href="#cb8-221" aria-hidden="true" tabindex="-1"></a>Wir berechnen die vier Kostenkomponenten für $n = 1, \dots, 12$ Lager zunächst in einer **breiten** Tabelle: eine Zeile je Lageranzahl, eine Spalte je Kostenkomponente. Für `ggplot()` ist dieses Format unpraktisch, denn jede Linie im Diagramm bräuchte einen eigenen `geom_line()`-Aufruf. `ggplot()` arbeitet am besten mit **langen** Tabellen, in denen *eine* Spalte die Komponente benennt und *eine* Spalte den Wert enthält. Die Funktion <span class="in">`tidyr::pivot_longer()`</span> erledigt diese Umformung: <span class="in">`cols`</span> wählt die Spalten, die „gestapelt“ werden sollen, <span class="in">`names_to`</span> benennt die neue Kategorienspalte, <span class="in">`values_to`</span> die neue Wertspalte.</span>
+<span id="cb8-222"><a href="#cb8-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-225"><a href="#cb8-225" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-226"><a href="#cb8-226" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds-kosten-breit</span></span>
+<span id="cb8-227"><a href="#cb8-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-228"><a href="#cb8-228" aria-hidden="true" tabindex="-1"></a>kosten <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">n =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-229"><a href="#cb8-229" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Lager        =</span> <span class="dv">100</span> <span class="sc">*</span> n,</span>
+<span id="cb8-230"><a href="#cb8-230" aria-hidden="true" tabindex="-1"></a>         <span class="at">Bestand      =</span> <span class="dv">250</span> <span class="sc">*</span> <span class="fu">sqrt</span>(n),</span>
+<span id="cb8-231"><a href="#cb8-231" aria-hidden="true" tabindex="-1"></a>         <span class="at">Hauptlauf    =</span> <span class="dv">30</span> <span class="sc">*</span> n,</span>
+<span id="cb8-232"><a href="#cb8-232" aria-hidden="true" tabindex="-1"></a>         <span class="at">Auslieferung =</span> <span class="dv">3000</span> <span class="sc">/</span> <span class="fu">sqrt</span>(n),</span>
+<span id="cb8-233"><a href="#cb8-233" aria-hidden="true" tabindex="-1"></a>         <span class="at">Gesamt       =</span> Lager <span class="sc">+</span> Bestand <span class="sc">+</span> Hauptlauf <span class="sc">+</span> Auslieferung)</span>
+<span id="cb8-234"><a href="#cb8-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-235"><a href="#cb8-235" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(kosten, <span class="dv">3</span>)                      <span class="co"># breites Format</span></span>
+<span id="cb8-236"><a href="#cb8-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-237"><a href="#cb8-237" aria-hidden="true" tabindex="-1"></a>kosten_lang <span class="ot">&lt;-</span> kosten <span class="sc">|&gt;</span></span>
+<span id="cb8-238"><a href="#cb8-238" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>n, <span class="at">names_to =</span> <span class="st">"Komponente"</span>, <span class="at">values_to =</span> <span class="st">"Kosten"</span>)</span>
+<span id="cb8-239"><a href="#cb8-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-240"><a href="#cb8-240" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(kosten_lang, <span class="dv">5</span>)                 <span class="co"># langes Format</span></span>
+<span id="cb8-241"><a href="#cb8-241" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-242"><a href="#cb8-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-243"><a href="#cb8-243" aria-hidden="true" tabindex="-1"></a>Aus 12 Zeilen mit 6 Spalten werden 60 Zeilen mit 3 Spalten. Jetzt genügt ein einziger <span class="in">`geom_line()`</span>-Aufruf, und die Farbe wird über <span class="in">`aes(colour = Komponente)`</span> zugeordnet.</span>
+<span id="cb8-244"><a href="#cb8-244" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-245"><a href="#cb8-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-248"><a href="#cb8-248" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-249"><a href="#cb8-249" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds-kosten-plot</span></span>
+<span id="cb8-250"><a href="#cb8-250" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Kostenkomponenten in Abhängigkeit von der Lageranzahl (illustrativ, T€/Jahr)"</span></span>
+<span id="cb8-251"><a href="#cb8-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-252"><a href="#cb8-252" aria-hidden="true" tabindex="-1"></a>n_opt <span class="ot">&lt;-</span> kosten<span class="sc">$</span>n[<span class="fu">which.min</span>(kosten<span class="sc">$</span>Gesamt)]</span>
+<span id="cb8-253"><a href="#cb8-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-254"><a href="#cb8-254" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(kosten_lang, <span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> Kosten, <span class="at">colour =</span> Komponente)) <span class="sc">+</span></span>
+<span id="cb8-255"><a href="#cb8-255" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">linewidth =</span> Komponente <span class="sc">==</span> <span class="st">"Gesamt"</span>)) <span class="sc">+</span></span>
+<span id="cb8-256"><a href="#cb8-256" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">filter</span>(kosten_lang, Komponente <span class="sc">==</span> <span class="st">"Gesamt"</span>, n <span class="sc">==</span> n_opt),</span>
+<span id="cb8-257"><a href="#cb8-257" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb8-258"><a href="#cb8-258" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linewidth_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">1.6</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb8-259"><a href="#cb8-259" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb8-260"><a href="#cb8-260" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Anzahl Lager n"</span>, <span class="at">y =</span> <span class="st">"Kosten (T€/Jahr)"</span>, <span class="at">colour =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb8-261"><a href="#cb8-261" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span>
+<span id="cb8-262"><a href="#cb8-262" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-263"><a href="#cb8-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-264"><a href="#cb8-264" aria-hidden="true" tabindex="-1"></a>Im Beispiel liegt das Kostenminimum bei **`r n_opt` Lagern**. Links davon dominieren die hohen Auslieferkosten, rechts davon die mit jedem Lager wachsenden Fix- und Bestandskosten. Die Gesamtkostenkurve ist in der Nähe des Optimums sehr flach. Das ist eine typische und praktisch wichtige Eigenschaft: Eine Abweichung um ein Lager vom Optimum kostet wenig, sodass Service- oder Risikoüberlegungen den Ausschlag geben können. Wer etwa eine kürzere Lieferzeit verspricht, muss mehr Lager betreiben, als die reine Kostenrechnung nahelegt. Das ist genau der Zielkonflikt zwischen Kosten und Service aus Kapitel <span class="co">[</span><span class="ot">-@sec-logistikkosten</span><span class="co">]</span>.</span>
+<span id="cb8-265"><a href="#cb8-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-266"><a href="#cb8-266" aria-hidden="true" tabindex="-1"></a>Das Modell beantwortet nur die Frage nach der *Anzahl*. *Wo* die Lager stehen und welche Kunden sie beliefern, beantwortet das Warehouse Location Problem in Kapitel <span class="co">[</span><span class="ot">-@sec-standort-2</span><span class="co">]</span>, in dem dieselben Kostenkomponenten – Fixkosten der Standorte und standortabhängige Transportkosten – in einem Optimierungsmodell zusammengeführt werden.</span>
+<span id="cb8-267"><a href="#cb8-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-268"><a href="#cb8-268" aria-hidden="true" tabindex="-1"></a><span class="fu">## Gestaltungsoptionen für Distributionsnetzwerke</span></span>
+<span id="cb8-269"><a href="#cb8-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-270"><a href="#cb8-270" aria-hidden="true" tabindex="-1"></a>@chopra2025supply systematisieren die Gestaltung von Distributionsnetzwerken im Handel entlang zweier Fragen: **Wo** wird der Bestand gehalten (beim Hersteller, beim Händler, in der Filiale)? **Wie** gelangt die Ware zum Endkunden (Paketversand, eigene Zustellung, Abholung)? Daraus ergeben sich sechs typische Optionen:</span>
+<span id="cb8-271"><a href="#cb8-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-274"><a href="#cb8-274" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-275"><a href="#cb8-275" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: chds-chopra</span></span>
+<span id="cb8-276"><a href="#cb8-276" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb8-277"><a href="#cb8-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-278"><a href="#cb8-278" aria-hidden="true" tabindex="-1"></a>ch <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb8-279"><a href="#cb8-279" aria-hidden="true" tabindex="-1"></a>  <span class="at">Option =</span> <span class="fu">c</span>(<span class="st">"Herstellerlager, Direktversand"</span>, <span class="st">"Streckengeschäft mit Zusammenführung"</span>,</span>
+<span id="cb8-280"><a href="#cb8-280" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Händlerlager, Paketversand"</span>, <span class="st">"Händlerlager, eigene Zustellung"</span>,</span>
+<span id="cb8-281"><a href="#cb8-281" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Lager mit Abholung durch Kunden"</span>, <span class="st">"Filiale mit Abholung (Click &amp; Collect)"</span>),</span>
+<span id="cb8-282"><a href="#cb8-282" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lieferzeit =</span> <span class="fu">c</span>(<span class="st">"lang"</span>, <span class="st">"lang"</span>, <span class="st">"mittel"</span>, <span class="st">"kurz"</span>, <span class="st">"mittel"</span>, <span class="st">"sehr kurz"</span>),</span>
+<span id="cb8-283"><a href="#cb8-283" aria-hidden="true" tabindex="-1"></a>  <span class="at">Bestand =</span> <span class="fu">c</span>(<span class="st">"niedrig (gebündelt)"</span>, <span class="st">"niedrig"</span>, <span class="st">"mittel"</span>, <span class="st">"hoch"</span>, <span class="st">"mittel"</span>, <span class="st">"hoch"</span>),</span>
+<span id="cb8-284"><a href="#cb8-284" aria-hidden="true" tabindex="-1"></a>  <span class="at">Transportkosten =</span> <span class="fu">c</span>(<span class="st">"hoch je Sendung"</span>, <span class="st">"mittel"</span>, <span class="st">"mittel"</span>, <span class="st">"sehr hoch"</span>,</span>
+<span id="cb8-285"><a href="#cb8-285" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"niedrig bis mittel"</span>, <span class="st">"niedrig"</span>),</span>
+<span id="cb8-286"><a href="#cb8-286" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">geeignet für</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"breites Sortiment, wenig Nachfrage je Artikel"</span>,</span>
+<span id="cb8-287"><a href="#cb8-287" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Konfiguration, Elektronik"</span>, <span class="st">"Standard-Onlinehandel"</span>,</span>
+<span id="cb8-288"><a href="#cb8-288" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Lebensmittel, sperrige Güter"</span>, <span class="st">"preissensible Kunden in Städten"</span>,</span>
+<span id="cb8-289"><a href="#cb8-289" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Mode, Elektronik, Frische"</span>)</span>
+<span id="cb8-290"><a href="#cb8-290" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-291"><a href="#cb8-291" aria-hidden="true" tabindex="-1"></a><span class="fu">kbl</span>(ch, <span class="at">booktabs =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-292"><a href="#cb8-292" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb8-293"><a href="#cb8-293" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb8-294"><a href="#cb8-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-295"><a href="#cb8-295" aria-hidden="true" tabindex="-1"></a>Keine Option ist allgemein überlegen. Die Wahl folgt dem Produkt (Wert, Haltbarkeit, Nachfragevolumen je Artikel) und dem geforderten Lieferservice, also wieder dem **Strategic Fit** aus Kapitel <span class="co">[</span><span class="ot">-@sec-strategic-fit</span><span class="co">]</span>. Für die drei Wachstumsideen von SushiFresh ergibt sich ein erstes Bild:</span>
+<span id="cb8-296"><a href="#cb8-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-297"><a href="#cb8-297" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**RheinMarkt** (frische Boxen, Handel): Bestand im Markt, Belieferung über Direktbelieferung oder Handelslogistik. Entscheidend ist die Haltbarkeit von nur zwei Tagen.</span>
+<span id="cb8-298"><a href="#cb8-298" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Lieferdienst** (frische Boxen, Endkunden): Bestand nahe am Kunden (Küche oder städtisches Mikrodepot), eigene Zustellung mit kurzen Zeitfenstern. Hohe Transportkosten je Sendung.</span>
+<span id="cb8-299"><a href="#cb8-299" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Sushi@Home** (haltbare Kits, Endkunden bundesweit): Herstellerlager mit Paketversand. Bestand gebündelt, Lieferzeit von ein bis zwei Tagen akzeptiert.</span>
+<span id="cb8-300"><a href="#cb8-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-301"><a href="#cb8-301" aria-hidden="true" tabindex="-1"></a><span class="fu">## Cross-Docking</span></span>
+<span id="cb8-302"><a href="#cb8-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-303"><a href="#cb8-303" aria-hidden="true" tabindex="-1"></a>::: {.definition}</span>
+<span id="cb8-304"><a href="#cb8-304" aria-hidden="true" tabindex="-1"></a>**Definition: Cross-Docking**</span>
+<span id="cb8-305"><a href="#cb8-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-306"><a href="#cb8-306" aria-hidden="true" tabindex="-1"></a>**Cross-Docking** bezeichnet den Umschlag eingehender Sendungen mehrerer Lieferanten an einem Umschlagpunkt **ohne Einlagerung** (in der Regel innerhalb von 24 Stunden). Die Ware wird nach Empfängern umsortiert und in gebündelten Touren ausgeliefert.</span>
+<span id="cb8-307"><a href="#cb8-307" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb8-308"><a href="#cb8-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-309"><a href="#cb8-309" aria-hidden="true" tabindex="-1"></a>Man unterscheidet zwei Varianten:</span>
+<span id="cb8-310"><a href="#cb8-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-311"><a href="#cb8-311" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Einstufiges Cross-Docking** (*pre-distribution*): Der Lieferant kommissioniert bereits je Empfänger, etwa je Filiale. Am Umschlagpunkt werden die fertigen Einheiten nur noch auf die Ausgangstouren verteilt.</span>
+<span id="cb8-312"><a href="#cb8-312" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Zweistufiges Cross-Docking** (*post-distribution*): Der Lieferant liefert sortenrein, der Umschlagpunkt kommissioniert auf die Empfänger.</span>
+<span id="cb8-313"><a href="#cb8-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-314"><a href="#cb8-314" aria-hidden="true" tabindex="-1"></a>Cross-Docking vereint die Bündelungsvorteile eines Lagers (wenige, volle Anlieferungen; gebündelte Auslieferung) mit dem Wegfall des Lagerbestands. Der Preis dafür ist eine hohe Anforderung an die **Synchronisation**: Anlieferungen müssen in engen Zeitfenstern eintreffen, Mengen und Qualität müssen stimmen, und Informationen über die eintreffende Ware (Lieferavis, elektronischer Datenaustausch) müssen vor der Ankunft vorliegen. Verspätet sich ein Lieferant, verzögern sich alle abgehenden Touren, oder die Filiale erhält ihre Ware nicht. Der fehlende Puffer ist zugleich Vorteil und Risiko. Für Frischware ist Cross-Docking besonders attraktiv, weil jede Stunde Standzeit Haltbarkeit kostet.</span>
+<span id="cb8-315"><a href="#cb8-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-316"><a href="#cb8-316" aria-hidden="true" tabindex="-1"></a><span class="fu">## Zusammenfassung</span></span>
+<span id="cb8-317"><a href="#cb8-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-318"><a href="#cb8-318" aria-hidden="true" tabindex="-1"></a>Ein Distributionssystem hat zwei Seiten: Der **Absatzkanal** legt fest, wer verkauft, der **Logistikkanal**, wie die Ware fließt. Beide müssen nicht übereinstimmen, wie das Streckengeschäft und die heutige Direktbelieferung der Supermärkte durch SushiFresh zeigen. Zielgröße der Distribution ist ein angestrebter **Lieferservice**, der sich in sechs Komponenten zerlegen und mit Kennzahlen wie OTIF messen lässt. Die physische Struktur reicht von der Direktbelieferung über ein- und mehrstufige Lagersysteme bis zum Cross-Docking. Mit der Anzahl der Lager steigen Fix- und Bestandskosten (Wurzelgesetz), während Auslieferkosten und Lieferzeit sinken. Die kostenminimale Lageranzahl liegt in einem flachen Optimum, in dem Serviceüberlegungen den Ausschlag geben können. Welche Gestaltungsoption passt, folgt aus Produkt und Lieferservice, also aus dem Strategic Fit.</span>
+<span id="cb8-319"><a href="#cb8-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-320"><a href="#cb8-320" aria-hidden="true" tabindex="-1"></a>Auf der R-Seite haben Sie gesehen, wie sich Anteile über logische Vektoren und <span class="in">`mean()`</span> berechnen lassen und wie <span class="in">`pivot_longer()`</span> breite Tabellen in das lange Format bringt, das <span class="in">`ggplot()`</span> für Diagramme mit mehreren Linien erwartet.</span>
+<span id="cb8-321"><a href="#cb8-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-322"><a href="#cb8-322" aria-hidden="true" tabindex="-1"></a>::: {.kontrollfragen}</span>
+<span id="cb8-323"><a href="#cb8-323" aria-hidden="true" tabindex="-1"></a>**Kontrollfragen**</span>
+<span id="cb8-324"><a href="#cb8-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-325"><a href="#cb8-325" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Erklären Sie den Unterschied zwischen Absatzkanal und Logistikkanal am Beispiel von SushiFresh. Warum ist es sinnvoll, beide getrennt zu betrachten?</span>
+<span id="cb8-326"><a href="#cb8-326" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Nennen Sie die sechs Komponenten des Lieferservice und je eine passende Kennzahl. Welche Komponenten sind für frische Sushi-Boxen im Supermarkt besonders kritisch?</span>
+<span id="cb8-327"><a href="#cb8-327" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Ein Lieferant erreicht eine Pünktlichkeit von 95 % und eine Vollständigkeit von 92 %. Welche Werte kann OTIF höchstens bzw. mindestens annehmen?</span>
+<span id="cb8-328"><a href="#cb8-328" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Welche Funktionen übernimmt der Handel in einem indirekten Absatzkanal? Unter welchen Bedingungen würden Sie einem Hersteller zum direkten Vertrieb raten?</span>
+<span id="cb8-329"><a href="#cb8-329" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Vergleichen Sie die Direktbelieferung ab Werk mit einer zweistufigen Distributionsstruktur hinsichtlich Bestand, Transport und Lieferzeit.</span>
+<span id="cb8-330"><a href="#cb8-330" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Begründen Sie, warum die Bestandskosten mit der Anzahl der Lager etwa mit $\sqrt{n}$ wachsen, während die Auslieferkosten etwa mit $1/\sqrt{n}$ sinken.</span>
+<span id="cb8-331"><a href="#cb8-331" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Verdoppeln Sie im R-Modell die Auslieferkosten. Wie verändert sich die kostenminimale Lageranzahl, und wie lässt sich das ökonomisch erklären?</span>
+<span id="cb8-332"><a href="#cb8-332" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>Ordnen Sie die drei Wachstumsideen von SushiFresh den Gestaltungsoptionen nach Chopra zu und begründen Sie Ihre Wahl.</span>
+<span id="cb8-333"><a href="#cb8-333" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>Unter welchen Voraussetzungen ist Cross-Docking einem Lager überlegen? Welches Risiko geht man dabei ein?</span>
+<span id="cb8-334"><a href="#cb8-334" aria-hidden="true" tabindex="-1"></a>:::</span>
+</code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Supply Chain Management — Lehrbuch</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+</body></html>

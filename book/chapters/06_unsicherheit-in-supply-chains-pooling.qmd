@@ -18,7 +18,7 @@
 # Pakete für dieses Kapitel: Datenmanipulation, Visualisierung, Tabellen
 library(tidyverse)   # dplyr, tidyr, ggplot2, purrr, ...
 library(kableExtra)  # formatierte Tabellen für HTML/PDF
-library(MASS)        # mvrnorm() für korrelierte Normalverteilungen
+# MASS wird nicht geladen (würde dplyr::select() überdecken); Aufruf über MASS::mvrnorm()
 
 # Die im Buch wiederverwendeten SCM-Funktionen (u.a. pooling_safety_stock(),
 # simuliere_tS(), tS.lager()) liegen gebündelt in R/scm_functions.R
