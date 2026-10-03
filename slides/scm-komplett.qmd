@@ -1,5 +1,5 @@
 ---
-title: "Supply Chain Management"
+title: "Supply Chain Management & Distribution"
 subtitle: "Wintersemester 26/27"
 author: "Thomas Kirschstein"
 

@@ -392,7 +392,7 @@ p |> add_markers(x = n_opt, y = min(kost$Gesamt), name = "Minimum",
 ::: {.fragment .fade-up}
 ::: {.callout-note appearance="simple"}
 ## Gegenläufige Effekte
-- **Lager-** und **Bestandskosten** steigen mit der Zahl der Lager. Der Sicherheitsbestand wächst etwa mit $\sqrt{n}$ (**Wurzelgesetz**; die Begründung liefert der Pooling-Effekt in der Einheit Pooling).
+- **Lager-** und **Bestandskosten** steigen mit der Zahl der Lager. .
 - **Auslieferkosten** sinken, weil die Kunden näher am Lager liegen.
 - Die **Lieferzeit** sinkt mit jedem zusätzlichen Lager.
 :::
@@ -526,15 +526,7 @@ Betrachten Sie die drei Wachstumsideen (Handel, Lieferdienst, Onlineshop).
 - Verdoppeln Sie im R-Code die Auslieferkosten. Wie verändert sich die kostenminimale Lageranzahl? Warum?
 :::
 ::: {.column width="42%"}
-```{r dk-exercise-hint}
-#| echo: true
-#| eval: false
 
-n <- 1:12
-gesamt <- 100 * n + 250 * sqrt(n) +
-  30 * n + 2 * 3000 / sqrt(n)
-n[which.min(gesamt)]
-```
 :::
 :::
 :::
