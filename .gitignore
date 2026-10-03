@@ -1,0 +1,41 @@
+# R / RStudio
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Editor / KI-Werkzeuge
+.claude/
+
+# Quarto: Caches (gilt für alle Unterordner)
+.quarto/
+_freeze/
+*_cache/
+**/*.quarto_ipynb
+
+# Nicht veröffentlichte Ordner
+/literature/*
+!/literature/\!references.bib
+/data/
+/_extensions/
+/slides/_archiv_images/
+/slides/scm-komplett_files/
+
+# Gerenderte Ausgaben außerhalb von docs/
+/_site/
+book/_book/
+slides/**/*_files/
+slides/**/*.html
+exercises/*.html
+case_studies/*.html
+
+# Nicht webfähige Grafikformate
+*.emf
+*.wmf
+
+# Betriebssystem / Temporäres
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.log
