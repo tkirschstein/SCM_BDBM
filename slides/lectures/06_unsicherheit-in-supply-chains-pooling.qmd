@@ -44,43 +44,6 @@ Nach dieser Einheit können Sie …
 
 ---
 
-## Fallstudie: SushiFresh GmbH {#slide-sushifresh-pooling-intro}
-::: slide-subtitle
-Sechs Filialen, ein neues Zentralwerk
-:::
-
-::: {.callout-note appearance="simple"}
-## Ausgangslage
-**SushiFresh GmbH** ist ein fiktiver, regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet und beliefert täglich **sechs Filialen**. In Kapitel 5 fiel die Entscheidung, die Produktion auf **einen zentralen Standort in Wiesbaden-Erbenheim** zu konsolidieren. Dieses Kapitel fragt: Wie hoch ist der dafür nötige Sicherheitsbestand — dezentral vs. zentral?
-:::
-
-```{r sushifresh-filialtabelle}
-#| echo: false
-#| warning: false
-#| message: false
-
-sf_filialen <- data.frame(
-  Filiale = c("Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim", "Darmstadt", "Offenbach"),
-  mu      = c(120, 150, 280, 90, 110, 95),
-  sigma   = c(25, 30, 55, 20, 24, 22)
-)
-
-kbl(sf_filialen,
-    col.names = c("Filiale", "μ (Boxen/Tag)", "σ"),
-    align = c("l", "r", "r")) |>
-  kable_styling(bootstrap_options = c("condensed", "striped"), full_width = TRUE) |>
-  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
-  row_spec(3, bold = TRUE, background = "#FFF3CD")
-```
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-Gesamtnachfrage: **845 Boxen/Tag**. Frankfurt (fett) ist die größte **und** volatilste Filiale.
-:::
-:::
-
----
-
 ## Die Natur der Unsicherheit {#slide-pooling-1}
 ::: slide-subtitle
 Implizierte Unsicherheit in Supply Chains [@chopra2025supply]

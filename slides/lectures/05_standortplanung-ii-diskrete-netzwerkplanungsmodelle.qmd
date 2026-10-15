@@ -1234,7 +1234,7 @@ fig_h <- plot_ly()
 
 # Add-Kurve: startet leer, oeffnet direkt S1 (Wiesbaden-Erbenheim) -> Optimum
 fig_h <- fig_h %>% add_trace(
-  x = c(1, 2), y = c(269, 262),
+  x = c(1, 2), y = c(309, 302),
   type = "scatter", mode = "lines+markers",
   name = "Add-Heuristik",
   line   = list(color = "#01696f", width = 2.5),
@@ -1244,7 +1244,7 @@ fig_h <- fig_h %>% add_trace(
 # Drop-Kurve: startet mit allen 3 Standorten offen, schliesst Raunheim, dann
 # Mainz-Hechtsheim -> selbes Optimum
 fig_h <- fig_h %>% add_trace(
-  x = c(5,4,3, 2), y = c(388, 340 ,300, 262),
+  x = c(5,4,3, 2), y = c(393, 355 ,326, 302),
   type = "scatter", mode = "lines+markers",
   name = "Drop-Heuristik",
   line   = list(color = "#da7101", width = 2.5, dash = "dash"),
@@ -1253,7 +1253,7 @@ fig_h <- fig_h %>% add_trace(
 
 # Optimum
 fig_h <- fig_h %>% add_trace(
-  x = c(1), y = c(262),
+  x = c(1), y = c(302),
   type = "scatter", mode = "lines",
   name = "Optimum (Z* = 262)",
   line = list(color = "#a12c7b", width = 1.5, dash = "dot")
@@ -1263,7 +1263,7 @@ fig_h <- fig_h %>% layout(
   xaxis = list(title = "Anzahl offener Standorte", dtick = 1,
                range = c(0.5, 5.5)),
   yaxis = list(title = "Gesamtkosten (T€/Jahr)",
-               range = c(250, 760)),
+               range = c(275, 420)),
   legend = list(orientation = "h", y = -0.2),
   plot_bgcolor  = "transparent",
   paper_bgcolor = "transparent",
@@ -2020,11 +2020,15 @@ Die **AHP-Analyse** aus Kapitel 4 favorisierte knapp **Mainz-Hechtsheim**. Die *
 #| warning: false
 #| message: false
 
+tmp.trans.cost <- zuordnung |> 
+  group_by(Lager) |> 
+  summarise( cost = round(sum(Kosten)))
+
+
 vergleich_ahp <- data.frame(
-  Standort = c("Raunheim", "Wiesbaden-Erbenheim"),
-  Fixkosten = c(260000, 180000),
-  Transport = c(round(.wlp_cost(3, f_h, c_h, a_h)$transport, 1),
-                round(.wlp_cost(1, f_h, c_h, a_h)$transport, 1))
+  Standort = standorte$Standort[offene_lager] ,
+  Fixkosten = standorte$Kosten[offene_lager]*1000,
+  Transport = tmp.trans.cost$cost
 ) |>
   dplyr::mutate(Gesamt = Fixkosten + Transport)
 
@@ -2056,13 +2060,6 @@ Raunheim und Wiesbaden-Erbenheim sind transportkostengünstiger, die Einsparunge
 :::
 :::
 
-::: {.fragment .fade-up}
-::: {.callout-note appearance="simple"}
-## Entscheidung SushiFresh
-
-Konsolidierung des Produktionsstandorts auf **Wiesbaden-Erbenheim**. Diese Entscheidung wird in Kapitel 6 (Pooling) und Kapitel 8 (Bullwhip-Effekt) wieder aufgegriffen.
-:::
-:::
 
 :::
 :::

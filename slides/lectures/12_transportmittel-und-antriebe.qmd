@@ -91,7 +91,7 @@ fv_fahrer <- 55000
 
 # Streckenlängen der Filialbelieferung: Pendelverkehr heute (296 km/Tag);
 # eine Rundtour von ca. 153 km wird in der Einheit Tourenplanung hergeleitet
-tour_km <- c(Pendel = 296, `2-opt` = 153)
+tour_km <- c(Pendel = 204, `2-opt` = 153)
 ```
 
 ## Distributionslogistik {#tm-outline}
@@ -153,7 +153,7 @@ Pilot für einen **Lieferdienst an Endkunden** in Frankfurt. Im Gespräch: E-Tra
 
 ::: {.fragment .fade-up}
 ::: {.small-text}
-Dazu brauchen wir einen Überblick über Verkehrsträger und Antriebe **und** ein Werkzeug zur Berechnung von **Transportkostensätzen**. Die bisher verwendeten Kostensätze (z. B. 0,02 €/(Box·km) aus Einheit Standortplanung II) werden wir dabei nachrechnen.
+> Dazu brauchen wir einen Überblick über Verkehrsträger und Antriebe **und** ein Werkzeug zur Berechnung von **Transportkostensätzen**. Die bisher verwendeten Kostensätze (z. B. 0,02 €/(Box·km) aus Einheit Standortplanung II) werden wir dabei nachrechnen.
 :::
 :::
 
@@ -201,8 +201,12 @@ Standardisierte Behälter, die zwischen Verkehrsmitteln wechseln:
 :::
 
 ::: {.fragment .fade-up}
-::: {.small-text}
-**Unimodal**: ein Verkehrsträger. **Multimodal**: mehrere Verkehrsträger. **Intermodal / kombinierter Verkehr**: mehrere Verkehrsträger mit **derselben Ladeeinheit**, ohne die Ware umzuladen.
+::: {.callout-important appearance="simple"}
+## Verkehrsketten
+
+- **Unimodal**: ein Verkehrsträger
+- **Multimodal**: mehrere Verkehrsträger
+- **Intermodal / kombinierter Verkehr**: mehrere Verkehrsträger mit **derselben Ladeeinheit**, ohne die Ware umzuladen
 :::
 :::
 
@@ -210,24 +214,25 @@ Standardisierte Behälter, die zwischen Verkehrsmitteln wechseln:
 
 ## Verkehrsträger im Vergleich {#tm-modes}
 ::: slide-subtitle
-Kennzahlen (Größenordnungen)
+Kennzahlen & Charakteristika 
 :::
 
 ::: {.small-text}
 ```{r tm-modes-tab}
 #| echo: false
-
 modes <- data.frame(
   Traeger = c("Straße", "Schiene", "Binnenschiff", "Seeschiff", "Luft"),
-  Einheit = c("Sattelzug ~25 t Nutzlast, 33 Paletten",
-              "Ganzzug ~1.000–2.000 t (max. 740 m)",
+  Einheit = c("Sattelzug ~25 t Nutzlast",
+              "Ganzzug ~1.000–2.000 t",
               "Großmotorgüterschiff ~2.000–3.000 t",
-              "Containerschiff bis ~24.000 TEU",
+              "Containerschiff bis ~240.000 t",
               "Frachtflugzeug ~100–120 t"),
-  Tempo = c("60–80 km/h, Tür-zu-Tür", "netzabhängig, Umschlag nötig",
-            "10–20 km/h, wasserstandsabhängig", "25–40 km/h", "800–900 km/h"),
-  Netz  = c("sehr dicht", "Gleisanschluss nötig", "Wasserstraßen",
+  Tempo = c("60–80 km/h", "40–60 km/h",
+            "10–20 km/h", "25–40 km/h", "800–900 km/h"),
+  Netz  = c("sehr dicht", "mittel", "dünn (Wasserstraßen)",
             "Häfen", "Flughäfen"),
+  Kosten = c("~0,10–0,15", "~0,05–0,08", "~0,02–0,03",
+             "~0,005–0,01", "~0,3–0,6"),
   THG   = c("~110–120", "~16–18", "~31–33", "~5–20", "~500–1.000"),
   Gueter = c("Stückgut, Frische, Teilladungen", "Massengut, Container, Autos",
              "Massengut, Container", "Container, Massengut",
@@ -235,36 +240,14 @@ modes <- data.frame(
 )
 kbl_sf(modes,
        col.names = c("Verkehrsträger", "Typische Einheit", "Geschwindigkeit",
-                     "Netz", "THG (g CO₂e/tkm)", "Typische Güter"),
-       align = c("l", "l", "l", "l", "r", "l"), font_size = 22)
+                     "Netz", "Kosten (€/tkm)", "THG (g CO₂e/tkm)", "Typische Güter"),
+       align = c("l", "l", "l", "l", "r", "r", "l"), font_size = 22)
 ```
 :::
 
-::: columns
-::: {.column width="55%"}
-::: {.smaller-text}
-THG-Werte für Straße, Schiene, Binnenschiff: Durchschnittswerte des Umweltbundesamts (TREMOD) [@uba2024emissionsdaten]. Werte für See- und Luftfracht: grobe Größenordnungen, stark abhängig von Schiffsgröße bzw. Belly- oder Frachtflugzeug.
-:::
-:::
-::: {.column width="42%"}
-::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-Unter **50 km** ist der Lkw praktisch ohne Alternative: Bahn und Schiff können keine Fläche bedienen.
-:::
-:::
-:::
-:::
 
----
-
-## Verkehrsträger im Vergleich {#tm-radar}
-::: slide-subtitle
-Qualitatives Profil
-:::
-
-::: columns
-::: {.column width="55%"}
-
+:::: columns
+::: {.column width="45%"}
 ```{r tm-radar-plot}
 #| echo: false
 #| warning: false
@@ -290,11 +273,12 @@ for (k in seq_along(scores)) {
 p |> layout(polar = list(radialaxis = list(visible = TRUE, range = c(0, 5))),
             legend = list(orientation = "h", x = 0.05, y = -0.1),
             margin = list(l = 60, r = 60, t = 30, b = 30),
-            height = 520, width = 720)
+            height = 480, width = 600)
 ```
-
 :::
-::: {.column width="42%"}
+
+::: {.column width="55%"}
+
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
@@ -303,19 +287,56 @@ Kein Verkehrsträger dominiert. Die Wahl hängt vom **Produkt** ab (Wert, Verder
 :::
 :::
 
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Hinweis THG-Raten & Kostensätze
+Emissionsraten sind grobe Näherung basierend auf TREMOD [@uba2024emissionsdaten]. Diese hängen stark von der Auslastung/Beladung und den technischen Details der eingesetzten Fahrzeuge ab. Ähnliches gilt für die Kostensätze.
+:::
+:::
+
+:::
+::::
+
+
+---
+
+## Logistikdienstleister {#tm-dl-markt}
+::: slide-subtitle
+Wer bietet Transportleistungen an?
+:::
+
+::: {.small-text}
+```{r tm-dl-tab}
+#| echo: false
+
+dl <- data.frame(
+  Akteur = c("Frachtführer", "Spediteur", "KEP-Dienst", "Kontraktlogistiker (3PL)",
+             "4PL / Lead Logistics Provider", "Digitale Spedition / Frachtbörse"),
+  Leistung = c("führt die Beförderung selbst durch (eigene Fahrzeuge)",
+               "organisiert die Beförderung im eigenen Namen, beauftragt Frachtführer",
+               "Kurier-, Express-, Paketsendungen in eigenen Netzen (Hub-and-Spoke)",
+               "langfristige, kundenspezifische Leistungsbündel: Lager, Kommissionierung, Transport, Mehrwertdienste",
+               "steuert das gesamte Logistiknetz inkl. weiterer Dienstleister, oft ohne eigene Anlagen",
+               "Plattform vermittelt Ladungen und Laderaum, oft mit Echtzeit-Preisen"),
+  Recht = c("Frachtvertrag (§ 407 HGB)", "Speditionsvertrag (§ 453 HGB)",
+            "Frachtvertrag, AGB", "individueller Logistikvertrag", "Rahmenvertrag",
+            "Vermittlung bzw. Spedition"),
+  SushiFresh = c("regionaler Kühltransporteur", "organisiert den Lachs aus Norwegen",
+                 "Versand Sushi@Home (Einheit Lager und Kommissionierung)", "Betrieb des Sushi@Home-Lagers?",
+                 "für SushiFresh zu groß", "Zusatztouren in der Saison")
+)
+kbl_sf(dl, col.names = c("Akteur", "Leistung", "Vertrag", "Beispiel SushiFresh"),
+       align = c("l", "l", "l", "l"), font_size = 21)
+```
+:::
+
 ::: {.fragment .fade-up}
 ::: {.callout-note appearance="simple"}
-## Beispiel Rhein
-Binnenschiffe sind günstig und klimafreundlich, aber bei **Niedrigwasser** (z. B. Pegel Kaub) sinkt die Abladetiefe. Dann steigen Frachtraten und Lieferrisiko.
+Der Logistikmarkt ist sehr fragmentiert: viele kleine Frachtführer und wenige große Netzwerkanbieter. Für Verlader bedeutet das: Preise und Kapazitäten schwanken stark mit Saison, Dieselpreis und Fahrermangel.
 :::
 :::
 
-::: {.smaller-text}
-Bewertung 1 (schlecht) bis 5 (gut), qualitative Einschätzung.
-:::
-
-:::
-:::
 
 ---
 
@@ -324,102 +345,122 @@ Bewertung 1 (schlecht) bis 5 (gut), qualitative Einschätzung.
 Wann lohnt sich die Bahn im Hauptlauf?
 :::
 
+```{r tm-kv-param}
+#| echo: false
+
+k_S <- 1.76   # Lkw direkt (€/km, inkl. Fahrer)
+u   <- 45     # Umschlag je Terminal (€ je Ladeeinheit)
+k_V <- 2.20   # Vor-/Nachlauf Lkw (€/km)
+alpha <- 0.2     # Länge Vor-/Nachlauf (km)
+k_B <- 0.95   # Hauptlauf Bahn (€/km je Ladeeinheit)
+fixKV  <- 2 * u 
+d_star <- fixKV / (k_S - k_B - alpha * k_V)
+```
+
 ::: columns
-::: {.column width="45%"}
+::: {.column width="44%"}
 
 ::: {.smaller-text}
-**Prinzip:** Vorlauf per Lkw → Umschlag ins Terminal → **Hauptlauf** Bahn oder Schiff → Umschlag → Nachlauf per Lkw. Die Ladeeinheit (Sattelauflieger, Wechselbrücke, Container) bleibt geschlossen.
+**Kostenstruktur** (je Ladeeinheit, z. B. Sattelauflieger)
 
-**Kostenstruktur**
+- Straße direkt: $K_S = k_S \cdot d_S$
+- Kombiniert: $K_{KV} = 2 \cdot u + k_Z \cdot (d_V + d_N) + k_B \cdot d_B$
 
-- Straße direkt: $K_S(d) = k_S \cdot d$
-- Kombiniert: $K_{KV}(d) = \underbrace{2 \cdot u + 2 \cdot k_V \cdot d_V}_{\text{entfernungsunabhängig}} + k_B \cdot d$
+**typische Kosten- & Distanzstrukturen**
 
-**Break-even-Entfernung**
-$$d^* = \frac{2u + 2 k_V d_V}{k_S - k_B}$$
+- $d_S < d_V+d_N+d_B$ und $d_S \approx d_B$
+- $k_B < k_S < k_Z$
+- $u$ ... Umladekosten
 :::
 
 ::: {.fragment .fade-up}
-::: {.callout-note appearance="simple"}
-Zusätzlich: Im Vor- und Nachlauf des KV sind in Deutschland **44 t** Gesamtgewicht erlaubt (statt 40 t).
+```{r tm-kv-netz}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 2.4
+#| fig-width: 6
+
+# Stilisiertes Netzwerk: Direktverkehr (oben) und kombinierte Verkehrskette (unten)
+kn <- data.frame(
+  x = c(0, 10, .25, 9.75), y = c(1, 1, 0, 0),
+  name = c("Versender", "Empfänger", "Terminal", "Terminal"),
+  sym  = c("square", "square", "diamond", "diamond"),
+  col  = c("#2A7ACA", "#2A7ACA", "#D97B29", "#D97B29")
+)
+kante <- function(p, x0, y0, x1, y1, col, w, dash = "solid")
+  add_segments(p, x = x0, xend = x1, y = y0, yend = y1,
+               line = list(color = col, width = w, dash = dash),
+               hoverinfo = "skip", showlegend = FALSE)
+lbl <- function(x, y, txt, col = "#1F2933")
+  list(x = x, y = y, text = txt, showarrow = FALSE,
+       font = list(size = 15, color = col), bgcolor = "rgba(255,255,255,0.85)")
+
+plot_ly(type = "scatter", mode = "markers") |>
+  kante(0, 1, 10, 1, "#9AA5B1", 4) |>                       # Straße direkt
+  kante(0, 1, 0.25, 0, "#9AA5B1", 2.5, "dash") |>            # Vorlauf
+  kante(.25, 0, 9.75, 0, "#0B6E4F", 6) |>                    # Hauptlauf Bahn
+  kante(9.75, 0, 10, 1, "#9AA5B1", 2.5, "dash") |>           # Nachlauf
+  add_trace(x = kn$x, y = kn$y, mode = "markers",
+            marker = list(symbol = kn$sym, size = 20, color = kn$col,
+                          line = list(color = "#2F3E46", width = 1.5)),
+            hoverinfo = "skip", showlegend = FALSE) |>
+  layout(
+    annotations = list(
+      lbl(0, 1.32, "<b>Versender</b>"), lbl(10, 1.32, "<b>Empfänger</b>"),
+      lbl(5, 1.17, paste0("<b>Straße direkt</b>: k<sub>S</sub> · d<sub>S</sub> = ",
+                          fmt(k_S), " €/km · d<sub>S</sub>"), "#4B5563"),
+      lbl(0.4, 0.42, paste0("Vorlauf Lkw<br>", fmt(k_V), " €/km · d<sub>V</sub>")),
+      lbl(9.6, 0.42, paste0("Nachlauf Lkw<br>", fmt(k_V), " €/km · d<sub>N</sub>")),
+      lbl(0.25, -0.33, paste0("Umschlag<br>u = ", u, " €"), "#D97B29"),
+      lbl(9.75, -0.33, paste0("Umschlag<br>u = ", u, " €"), "#D97B29"),
+      lbl(5, -.3, paste0("Umwegfaktor alpha=", alpha*100, " %")),
+      lbl(5, 0.17, paste0("<b>Hauptlauf Bahn</b>: k<sub>B</sub> · d<sub>B</sub> = ",
+                          fmt(k_B), " €/km · d<sub>B</sub>"), "#0B6E4F")
+    ),
+    xaxis = list(visible = FALSE, range = c(-0.8, 10.8), fixedrange = TRUE),
+    yaxis = list(visible = FALSE, range = c(-0.55, 1.5), fixedrange = TRUE),
+    margin = list(l = 0, r = 0, t = 0, b = 0),
+    plot_bgcolor = "transparent", paper_bgcolor = "transparent",
+    height = 230, width = 600)
+```
+:::
+
+
+:::
+::: {.column width="53%"}
+::: {.fragment .fade-up}
+::: {.smaller-text}
+Sei $d_B = d_S = d$ und $d_V+d_N = \alpha \cdot d$, dann gilt für die **Break-Even-Distanz**: $$d^*=\frac{2 \cdot u}{k_S-k_B-\alpha\cdot k_Z}$$
+Hierbei ist $\alpha<1$ der **Umwegfaktor**. Der maximal erlaubte Umweg ist dabei $\alpha < \frac{k_S - k_B}{k_Z}$
 :::
 :::
 
-:::
-::: {.column width="52%"}
-
+::: {.fragment .fade-up}
 ```{r tm-kv-plot}
 #| echo: false
-#| fig-height: 4.2
+#| fig-height: 3.4
+#| fig-width: 6.3
 #| warning: false
 #| message: false
 
-k_S <- 1.76; u <- 45; k_V <- 2.20; d_V <- 25; k_B <- 0.95
-fixKV <- 2 * u + 2 * k_V * d_V
-d_star <- fixKV / (k_S - k_B)
 d <- seq(0, 600, 10)
 plot_ly() |>
   add_lines(x = d, y = k_S * d, name = "Straße direkt",
             line = list(color = "#9AA5B1", width = 3)) |>
-  add_lines(x = d, y = fixKV + k_B * d, name = "Kombinierter Verkehr",
+  add_lines(x = d, y = fixKV + k_V * alpha * d + k_B * d, name = "Kombinierter Verkehr",
             line = list(color = "#0B6E4F", width = 3)) |>
   add_markers(x = d_star, y = k_S * d_star, name = "Break-even",
               marker = list(color = "#D97B29", size = 12)) |>
   add_annotations(x = d_star, y = k_S * d_star,
                   text = paste0("d* ≈ ", round(d_star), " km"),
                   ax = -60, ay = -40, font = list(size = 14)) |>
-  plt_layout("Entfernung d (km)", "Kosten je Ladeeinheit (€)", h = 380, w = 680)
+  plt_layout("Entfernung d (km)", "Kosten je Ladeeinheit (€)", h = 310, w = 800) |>
+  layout(legend = list(orientation = "h", x = 0, y = -0.32),
+         margin = list(l = 70, r = 20, t = 10, b = 80))
 ```
 
-::: {.smaller-text}
-Annahmen: $k_S$ = `r fmt(k_S)` €/km (Lkw inkl. Fahrer, s. u.), Umschlag $u$ = `r u` €, Vor-/Nachlauf je `r d_V` km zu `r fmt(k_V)` €/km, Bahn $k_B$ = `r fmt(k_B)` €/km. In der Praxis kommen Fahrplanbindung und Terminalzeiten hinzu.
-:::
 
-:::
-:::
-
----
-
-## Fallstudie – Lachs aus Norwegen {#tm-cs-inbound}
-::: slide-subtitle
-Verkehrsträgerwahl für Frischware
-:::
-
-::: columns
-::: {.column width="55%"}
-
-::: {.small-text}
-```{r tm-inbound-tab}
-#| echo: false
-
-inb <- data.frame(
-  Option = c("Kühl-Lkw + Fähre", "Kühl-Lkw + Bahn (KV)", "Luftfracht"),
-  Laufzeit = c("~1,5–2 Tage", "~2,5–3 Tage", "< 1 Tag (+ Vor-/Nachlauf)"),
-  Kosten = c("mittel", "niedrig bis mittel", "sehr hoch"),
-  THG = c("hoch", "niedrig", "sehr hoch"),
-  Risiko = c("Stau, Fahrermangel", "Fahrplan, Terminalzeiten",
-             "Kapazität, Kühlkette am Flughafen")
-)
-kbl_sf(inb, col.names = c("Option", "Laufzeit", "Kosten", "THG", "Hauptrisiko"),
-       align = c("l", "l", "l", "l", "l"), font_size = 22)
-```
-:::
-
-:::
-::: {.column width="42%"}
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Abwägung
-Für Sushi zählt die **Resthaltbarkeit** beim Eintreffen. Jeder Tag Transport reduziert die Verkaufszeit in der Filiale. Das erhöht die Überdeckungskosten im **Newsvendor-Modell** (Einheit Newsvendor).
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-note appearance="simple"}
-## Mögliche Lösung
-KV für tiefgekühlte oder länger haltbare Ware (z. B. Reis, Nori, TK-Garnelen), Lkw für frischen Lachs. Unterschiedliche Produkte, unterschiedliche Verkehrsträger.
-:::
 :::
 
 :::
@@ -429,7 +470,7 @@ KV für tiefgekühlte oder länger haltbare Ware (z. B. Reis, Nori, TK-Garnelen)
 
 ## Straßengüterverkehr {#tm-fahrzeugklassen}
 ::: slide-subtitle
-Fahrzeugklassen
+Fahrzeugklassen & Antriebe
 :::
 
 ::: {.small-text}
@@ -455,18 +496,6 @@ kbl_sf(kl, col.names = c("Fahrzeug", "zul. Gesamtgewicht", "Nutzlast", "Paletten
 :::
 
 ::: {.fragment .fade-up}
-::: {.callout-note appearance="simple"}
-## Für die Planung relevant
-Jede Klasse bringt **eigene Restriktionen** mit: Kapazität (Gewicht **und** Volumen bzw. Paletten), Fahrerqualifikation, Maut, Zufahrts- und Durchfahrtsverbote, Lenk- und Ruhezeiten (ab 3,5 t nach VO (EG) 561/2006: nach 4,5 h Lenkzeit 45 min Pause, i. d. R. max. 9 h pro Tag).
-:::
-:::
-
----
-
-## Antriebstechnologien {#tm-antriebe}
-::: slide-subtitle
-Überblick Straßengüterverkehr
-:::
 
 ::: {.small-text}
 ```{r tm-antriebe-tab}
@@ -493,21 +522,26 @@ kbl_sf(an, col.names = c("Antrieb", "Energieträger", "Reichweite", "Tanken/Lade
 ```
 :::
 
+:::
+
+
 ::: columns
 ::: {.column width="50%"}
 ::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Drop-in-Kraftstoffe
-**HVO100** kann in vielen Diesel-Lkw ohne Umbau getankt werden. Das senkt die THG-Emissionen stark, ändert aber **nichts** an Reichweite, Kosten pro km (eher höher) und Planung.
+::: {.callout-note appearance="simple"}
+## Planungsrelevante Parameter allgemein
+Kapazität (Gewicht, Fläche, Volumen), Fahrerqualifikation, Maut, Zufahrts- und Durchfahrtsverbote, Lenk- und Ruhezeiten (ab 3,5 t: nach 4,5 h Lenkzeit 45 min Pause).
 :::
+
 :::
 :::
 ::: {.column width="47%"}
 ::: {.fragment .fade-up}
 ::: {.callout-warning appearance="simple"}
-## Planungsrelevant
-Vor allem **BEV** verändern die Planung: begrenzte Reichweite, lange Ladezeiten, Ladeinfrastruktur, Gewicht. Wasserstoff spielt im Lkw-Bereich derzeit kaum eine Rolle (wenige Tankstellen, hohe H₂-Preise).
+## Planungsrelevante Parameter BEV
+begrenzte Reichweite, lange Ladezeiten, Ladeinfrastruktur, höheres Gewicht
 :::
+
 :::
 :::
 :::
@@ -526,8 +560,8 @@ Technik und Rahmenbedingungen 2026
 ## Technik (schwerer Fernverkehr)
 - Batterien **~500–800 kWh**, Herstellerreichweite ~500 km bei 40 t, in der Praxis 15–30 % weniger
 - Verbrauch **~1,2–1,8 kWh/km** (Last, Wetter, Tempo, Topografie)
-- Laden: **Depot** über Nacht (50–150 kW), unterwegs **CCS** bis ~400 kW oder **Megawatt Charging (MCS)**, seit 2026 als IEC 63379 genormt
-- Kaufpreis etwa das **2,3- bis 2,8-Fache** eines Diesel-Sattelzugs
+- Laden: **Depot** über Nacht (50–150 kW), unterwegs **CCS** bis ~400 kW oder **Megawatt Charging (MCS)**
+- Kaufpreis etwa das **2-Fache** eines Diesel-Sattelzugs
 :::
 
 :::
@@ -543,77 +577,6 @@ Technik und Rahmenbedingungen 2026
 :::
 :::
 
-::: {.fragment .fade-up}
-::: {.smaller-text}
-Kaufpreise, Verbrauch und Strompreise sind Marktbeobachtungen und Schätzungen (Stand Herbst 2026), keine Listenpreise. Für eigene Kalkulationen immer konkrete Angebote einholen.
-:::
-:::
-
----
-
-## Batterieelektrische Lkw {#tm-laden}
-::: slide-subtitle
-Laden und Lenkzeiten
-:::
-
-::: columns
-::: {.column width="52%"}
-
-```{r tm-ladekurve}
-#| echo: false
-#| warning: false
-#| message: false
-
-# Illustrative Ladekurve: 600 kWh Batterie, MCS 750 kW bis 60 % SoC,
-# danach linear abfallend auf 150 kW bei 100 % SoC
-kap <- 600
-leistung <- function(soc) ifelse(soc < 0.6, 750, 750 - (750 - 150) * (soc - 0.6) / 0.4)
-dt <- 1 / 60                                   # Minuten-Schritte (h)
-soc <- 0.2; t <- 0; verlauf <- data.frame(t = 0, soc = soc)
-while (soc < 0.95) {
-  soc <- soc + leistung(soc) * dt / kap; t <- t + 1
-  verlauf <- rbind(verlauf, data.frame(t = t, soc = soc))
-}
-t80 <- min(verlauf$t[verlauf$soc >= 0.8])
-soc45 <- verlauf$soc[verlauf$t == 45]
-
-plot_ly(verlauf, x = ~t, y = ~soc * 100, type = "scatter", mode = "lines",
-        line = list(color = "#0B6E4F", width = 3), name = "Ladezustand") |>
-  add_segments(x = 45, xend = 45, y = 0, yend = 100,
-               line = list(color = "#D97B29", dash = "dash"),
-               name = "45-min-Pause") |>
-  plt_layout("Ladezeit (min)", "Ladezustand (SoC, %)", h = 430, w = 700)
-```
-
-::: {.smaller-text}
-Illustrative Ladekurve: 600-kWh-Batterie, 750 kW bis 60 % Ladezustand, danach sinkende Ladeleistung.
-:::
-
-:::
-::: {.column width="45%"}
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Laden in der Lenkzeitpause
-In der gesetzlichen **45-Minuten-Pause** steigt der Ladezustand von 20 % auf rund `r round(soc45 * 100)` %. Das sind ca. `r round((soc45 - 0.2) * kap)` kWh, also gut `r round((soc45 - 0.2) * kap / 1.3 / 10) * 10` km Reichweite.
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-## Nichtlineares Laden
-Die letzten Prozente dauern am längsten (20 → 80 %: `r t80` min). In der Planung lädt man deshalb meist nur **bis ~80 %**. Die Ladezeit hängt also vom Ladezustand ab und ist nicht einfach proportional zur Energiemenge.
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.smaller-text}
-Voraussetzung: Ein freier MCS-Ladepunkt liegt **auf der Route** und ist zur Pausenzeit verfügbar.
-:::
-:::
-
-:::
-:::
 
 ---
 
@@ -629,6 +592,9 @@ Was beeinflusst die Reichweite?
 #| echo: false
 #| warning: false
 #| message: false
+#| fig-height: 6.3
+#| fig-width: 6.3
+
 
 vb <- data.frame(
   Faktor = c("Basis", "Beladung", "Kühlung", "Winter", "Autobahn"),
@@ -648,12 +614,9 @@ plot_ly(vb, y = ~Faktor, x = ~base, type = "bar", orientation = "h",
                       tickfont = list(size = 14)),
          xaxis = list(title = "Verbrauch (kWh/100 km)"),
          margin = list(l = 90, r = 20, t = 10, b = 50),
-         height = 420, width = 740)
+         height = 480, width = 680)
 ```
 
-::: {.smaller-text}
-Illustratives Beispiel 7,5-t-E-Kühl-Lkw: **Sommer** (Basis + Beladung + Kühlung) `r sum(vb$Wert[1:3])` kWh/100 km, **Winter** (Heizung, kalte Batterie, weniger Kühlbedarf) `r sum(vb$Wert[1:4])` kWh/100 km, Autobahn im Winter `r sum(vb$Wert)` kWh/100 km.
-:::
 
 :::
 ::: {.column width="45%"}
@@ -671,107 +634,7 @@ Illustratives Beispiel 7,5-t-E-Kühl-Lkw: **Sommer** (Basis + Beladung + Kühlun
 
 ::: {.fragment .fade-up}
 ::: {.callout-warning appearance="simple"}
-Beim Diesel spielt das für die Planung kaum eine Rolle (Tank reicht). Beim E-Lkw entscheidet es über die **Zulässigkeit einer Tour**.
-:::
-:::
-
-:::
-:::
-
----
-
-## Einschränkungen für die Planung {#tm-restriktionen}
-::: slide-subtitle
-Von der Technik zur Nebenbedingung
-:::
-
-::: {.small-text}
-```{r tm-restr-tab}
-#| echo: false
-
-rs <- data.frame(
-  Technik = c("Begrenzte Batteriekapazität", "Lange, nichtlineare Ladezeit",
-              "Wenige (Schnell-)Ladepunkte", "Ladeleistung am Depot / Netzanschluss",
-              "Höheres Leergewicht", "Verbrauch abhängig von Last und Wetter",
-              "Mautbefreiung, Zufahrt in Umweltzonen"),
-  Planung = c("Max. Tourlänge, Energie-Nebenbedingung je Tour",
-              "Ladezeit als Teil der Tourdauer, Lenkzeitpausen nutzen",
-              "Ladestopps als zusätzliche Knoten im Graphen",
-              "Ladefenster nachts, Fahrzeugeinsatz staffeln (Schichtplanung)",
-              "Geringere Nutzlast → Kapazitätsrestriktion im VRP",
-              "Saisonabhängige Reichweite, Puffer einplanen",
-              "Andere Kostensätze c_ij, ggf. andere kürzeste Wege"),
-  Modell = c("E-VRP", "E-VRP mit Ladefunktion", "E-VRP mit Ladestationen",
-             "Ladeplanung / Scheduling", "CVRP", "Robuste Planung",
-             "Kürzeste Wege, Transportproblem")
-)
-kbl_sf(rs, col.names = c("Technische Eigenschaft", "Folge für die Planung",
-                         "Modell (Einheit)"),
-       align = c("l", "l", "l"), font_size = 22)
-```
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple" icon=false}
-#### Energie-Nebenbedingung im E-VRP [@schneider2014electric]
-Ladezustand $q_j$ bei Ankunft in $j$, Verbrauch $e_{ij}$ auf der Fahrt von $i$ nach $j$, nutzbare Kapazität $Q$:
-$$0 \leq q_j \leq q_i - e_{ij} \cdot x_{ij} + Q \cdot (1 - x_{ij}) \qquad \forall i, j, \qquad q_{\text{Depot}} = Q$$
-An **Ladestationen** wird $q_i$ wieder auf (bis zu) $Q$ angehoben.
-:::
-:::
-
----
-
-## Fallstudie – E-Kühl-Lkw für SushiFresh {#tm-cs-reichweite}
-::: slide-subtitle
-Reicht die Reichweite für die heutige Belieferung?
-:::
-
-```{r tm-reichweite-calc}
-#| echo: false
-
-Q_nutz <- 110          # kWh für die Planung nutzbar (140 kWh brutto, Reserve)
-e_sommer <- 0.62; e_winter <- 0.70   # kWh/km inkl. Kühlung
-rw_max_s <- Q_nutz / e_sommer; rw_max_w <- Q_nutz / e_winter
-```
-
-::: columns
-::: {.column width="52%"}
-
-::: {.small-text}
-```{r tm-reichweite-tab}
-#| echo: false
-
-rw <- data.frame(
-  Zeile = c("Pendelverkehr heute: Energiebedarf", "Maximal fahrbare Strecke"),
-  Sommer = c(paste0(fmt(tour_km[["Pendel"]] * e_sommer, 0), " kWh ✗"),
-             paste0(fmt(rw_max_s, 0), " km")),
-  Winter = c(paste0(fmt(tour_km[["Pendel"]] * e_winter, 0), " kWh ✗"),
-             paste0(fmt(rw_max_w, 0), " km"))
-)
-kbl_sf(rw, col.names = c("", "Sommer (0,62 kWh/km)", "Winter (0,70 kWh/km)"),
-       align = c("l", "r", "r"), font_size = 24) |>
-  row_spec(1, background = "#F8D7DA", color = "#1F2933")
-```
-
-Pendelverkehr heute: `r tour_km[["Pendel"]]` km pro Tag. Nutzbare Energie: $Q =$ `r Q_nutz` kWh (Batterie 140 kWh, Reserve für Alterung und Unvorhergesehenes).
-:::
-
-:::
-::: {.column width="45%"}
-
-::: {.fragment .fade-up}
-::: {.callout-important appearance="simple"}
-## Ergebnis
-- Der heutige **Pendelverkehr** ist mit dem E-Lkw **unmöglich** (ohne Zwischenladen).
-- Eine Tour darf im Winter höchstens rund **`r fmt(rw_max_w, 0)` km** lang sein.
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Offene Frage
-Schafft eine **Rundtour** durch alle sechs Filialen diese Grenze? Dafür brauchen wir die Straßenentfernungen (Einheit Kürzeste Wege) und eine gute Reihenfolge (Einheit Tourenplanung). Bei E-Fahrzeugen wird Tourenplanung damit zur Frage der **Machbarkeit**.
+Beim Diesel spielt das für die Planung kaum eine Rolle (Tank reicht). Beim E-Lkw kann es  über die **Zulässigkeit einer Tour** entscheiden.
 :::
 :::
 
@@ -788,41 +651,81 @@ Warum die letzten Kilometer so teuer sind
 ::: columns
 ::: {.column width="50%"}
 
+```{r tm-last-mile}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 5
+#| out-width: 100%
+
+set.seed(42)
+kunden <- data.frame(x = 5 + rnorm(24, 0, 1.1), y = 5 + rnorm(24, 0, 1.1))
+hub <- c(5, 5); depot <- c(0.6, 0.6)
+p <- plot_ly(type = "scatter", mode = "markers") 
+pts <- kunden
+  # Reihenfolge per Nearest Neighbor ab dem Mikrodepot (Einheit Tourenplanung)
+  ord <- c(); cur <- depot; rest <- seq_len(nrow(pts))
+  while (length(rest) > 0) {
+    nxt <- rest[which.min((pts$x[rest] - cur[1])^2 + (pts$y[rest] - cur[2])^2)]
+    ord <- c(ord, nxt); cur <- c(pts$x[nxt], pts$y[nxt]); rest <- setdiff(rest, nxt)
+  }
+  pts <- pts[ord, ]
+  xs <- c(depot[1], pts$x, depot[1]); ys <- c(depot[2], pts$y, depot[2])
+  p <- p |> add_trace(x = xs, y = ys, mode = "lines",
+                      line = list(color = cols[k], width = 2),
+                      name = paste("Truck-Tour", k), showlegend = k == 1)
+
+p |>
+  add_markers(x = kunden$x, y = kunden$y, marker = list(color = "#2D9E8E", size = 9),
+              name = "Endkunde") |>
+  add_markers(x = depot[1], y = depot[2], marker = list(symbol = "hexagon", size = 26,
+              color = "#BFDBF7", line = list(color = "#2F3E46", width = 2)),
+              name = "Küche") |>
+  layout(xaxis = list(visible = FALSE), yaxis = list(visible = FALSE),
+         legend = list(orientation = "h", x = 0, y = -0.05),
+         margin = list(l = 5, r = 5, t = 5, b = 5), height = 470, width = 680)
+```
+
+:::
+
+::: {.column width="49%"}
+
 ::: {.callout-note appearance="simple"}
 ## Merkmale
 - viele Stopps mit **kleinen Sendungen** → keine Bündelung
 - **Parkplatzsuche**, Halten in zweiter Reihe, Fußwege
 - **Zeitfenster** und Nicht-Antreffen (Zweitzustellung)
 - Zufahrtsbeschränkungen, Umweltzonen, Fußgängerzonen
-- hoher **Personalkostenanteil**: Kosten fallen pro Stopp an, nicht pro km
+- hoher **Personalkostenanteil** → Kosten in **€ pro Stopp** bzw. **€ pro Sendung**
 :::
 
 :::
-::: {.column width="47%"}
+:::
+
+
 
 ::: {.callout-tip appearance="simple"}
 ## Neue Optionen
+
+:::: columns
+::: {.column width="60%"}
 - **Lastenrad** mit **Mikrodepot** (Container, Ladenfläche)
-- **E-Transporter** (bis 4,25 t emissionsfrei dauerhaft mautbefreit)
-- **Drohnen** für leichte, eilige Sendungen
-- **Paketstationen** und Abholpunkte (Kunde übernimmt die letzte Meile)
-- autonome **Lieferroboter** (Gehweg)
+- **E-Transporter** (emissionsfrei und mautbefreit)
 :::
 
+::: {.column width="40%"}
+- **Paketstationen** und Abholpunkte 
+- autonome **Drohnen** und **Lieferroboter** 
 :::
+::::
 :::
 
-::: {.fragment .fade-up}
-::: {.small-text}
-Kennzahl der letzten Meile ist **€ pro Stopp** bzw. **€ pro Sendung**, nicht € pro km. Treiber sind die **Stoppdichte** (Stopps pro Stunde) und der **Stundensatz**.
-:::
-:::
 
 ---
 
-## Lastenrad und Mikrodepot {#tm-lastenrad}
+## Letzte Meile {#tm-lastenrad}
 ::: slide-subtitle
-Zweistufige Belieferung
+Mikrodepots mit Lastenrädern und autonome Fahrzeuge 
 :::
 
 ::: columns
@@ -832,6 +735,8 @@ Zweistufige Belieferung
 #| echo: false
 #| warning: false
 #| message: false
+#| fig-height: 5
+#| out-width: 100%
 
 set.seed(42)
 kunden <- data.frame(x = 5 + rnorm(24, 0, 1.1), y = 5 + rnorm(24, 0, 1.1))
@@ -872,87 +777,34 @@ p |>
 ```
 
 :::
-::: {.column width="47%"}
-
-::: {.callout-note appearance="simple"}
-## Lastenrad (E-Pedelec)
-- Nutzlast ~100–250 kg, Volumen ~1–2 m³
-- Motorunterstützung bis **25 km/h**, kein Führerschein
-- Reichweite ~40–80 km je Akku (Akkutausch möglich)
-- nutzt Radwege, kurze Haltewege, keine Parkplatzsuche
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Planungsfolgen
-- **Zwei-Stufen-Problem** (2E-VRP): Standort des Mikrodepots, Belieferung per Lkw, Touren der Lastenräder
-- viele kurze Touren mit **kleiner Kapazität**
-- Kühlboxen für Frischware, Wetter als Risiko
-:::
-:::
-
-:::
-:::
-
----
-
-## Drohnen {#tm-drohnen}
-::: slide-subtitle
-Möglichkeiten und Grenzen
-:::
-
-::: columns
 ::: {.column width="50%"}
 
 ::: {.callout-note appearance="simple"}
-## Eigenschaften
-- Nutzlast typischerweise **2–5 kg**
-- Reichweite ~10–40 km (Multikopter), mehr mit Starrflügel-/VTOL-Bauweise
-- schnell, unabhängig vom Straßenverkehr
-- **Regulierung**: EU-Drohnenverordnung (EU) 2019/947. Flüge außerhalb der Sichtweite (BVLOS) brauchen eine Betriebsgenehmigung; Luftraumkonzept **U-Space**
-- Wetter (Wind, Regen), Lärm, Akzeptanz, Übergabe beim Empfänger
+## alternative Zustellfahrzeuge
+- benötigen ein **Mikrodepot** zum Umschlag
+- **2-stufiges Problem**: Depot → Mikrodepot → Kunde
+- meist Steuerung über **Infrastrukturzugang**
+- Kosten meist höher als bei 1-stufiger Letzten Meile → Ausnahme: Personalkosteneisparung bei autonomen Fahrzeugen
 :::
 
 :::
-::: {.column width="47%"}
-
-::: {.callout-tip appearance="simple"}
-## Einsatzfelder
-- Medizin (Laborproben, Blutkonserven)
-- Ersatzteile, Inseln, schwer erreichbare Orte
-- Kombination **Lkw + Drohne**: Die Drohne startet vom Fahrzeug und bedient Kunden parallel → *Flying Sidekick TSP* [@murray2015flying]
 :::
+
 
 ::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-## SushiFresh
-Eine Eilnachlieferung von 3 kg entspricht rund **6–7 Boxen**. Für die Filialbelieferung bleibt die Drohne eine **Nische**, z. B. bei Ausverkauf am Nachmittag in Rüsselsheim (6 km).
-:::
-:::
-
-:::
-:::
-
----
-
-## Letzte Meile im Vergleich {#tm-lastmile-vgl}
-::: slide-subtitle
-Eigenschaften und Restriktionen
-:::
-
 ::: {.small-text}
 ```{r tm-lm-tab}
 #| echo: false
 
 lm <- data.frame(
-  Option = c("E-Transporter", "Lastenrad", "Drohne", "Lieferroboter"),
-  Nutzlast = c("~1 t, 10–15 m³", "100–250 kg", "2–5 kg", "~20–50 kg"),
-  Tempo = c("Stadtverkehr, Parkplatzsuche", "bis 25 km/h, Radwege",
+  Option = c( "Lastenrad", "Drohne", "Lieferroboter"),
+  Nutzlast = c( "100–250 kg", "2–5 kg", "~20–50 kg"),
+  Tempo = c("bis 25 km/h, Radwege",
             "schnell, luftlinienartig", "Schritttempo"),
-  Reichweite = c("~150–300 km", "~40–80 km", "~10–40 km", "wenige km"),
-  Restriktion = c("Parken, Umweltzonen, Ladefenster", "Kapazität, Wetter, Mikrodepot nötig",
+  Reichweite = c( "~40–80 km", "~10–40 km", "wenige km"),
+  Restriktion = c( "Kapazität, Wetter, Mikrodepot nötig",
                   "Genehmigung, Wetter, Gewicht", "Gehwegrecht, Treppen, Vandalismus"),
-  Modell = c("CVRP mit Zeitfenstern", "2E-VRP", "TSP-D / FSTSP", "Roboter-VRP")
+  Modell = c("2E-VRP", "TSP-D / FSTSP", "Roboter-VRP")
 )
 kbl_sf(lm, col.names = c("Option", "Kapazität", "Geschwindigkeit", "Reichweite",
                          "Wichtigste Restriktion", "Planungsmodell"),
@@ -960,10 +812,6 @@ kbl_sf(lm, col.names = c("Option", "Kapazität", "Geschwindigkeit", "Reichweite"
 ```
 :::
 
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-Neue Verkehrsmittel ändern die **Struktur** des Planungsproblems: Aus einem VRP wird ein **zweistufiges** Problem (Mikrodepot), ein **synchronisiertes** Problem (Lkw + Drohne) oder ein Problem mit **Energie-Nebenbedingungen** (E-VRP).
-:::
 :::
 
 ---
@@ -978,13 +826,11 @@ Grundlagen der Fahrzeugkostenrechnung
 ::: {.column width="50%"}
 
 ::: {.callout-note appearance="simple"}
-## Fixe (zeitabhängige) Kosten pro Jahr
+## Fixe (nutzungsunabhängige) Kosten pro Jahr
 - **Abschreibung** (AfA): $\dfrac{A - RW}{N}$
 - **kalkulatorische Zinsen**: $\dfrac{A + RW}{2} \cdot i$
 - Versicherung, Kfz-Steuer
-- Fahrerpersonal (Lohn + Nebenkosten)
-- anteilige Gemeinkosten (Disposition, Verwaltung)
-- bei E-Lkw: **Ladeinfrastruktur** am Depot
+- anteilige Gemeinkosten (Disposition, Verwaltung, Infrastruktur)
 :::
 
 :::
@@ -997,6 +843,11 @@ Grundlagen der Fahrzeugkostenrechnung
 - Reifen
 - AdBlue, Schmierstoffe
 - **Maut**: Mautsatz × Anteil mautpflichtiger Strecke
+:::
+
+::: {.callout-tip appearance="simple"}
+## Variable (zeitabhängige) Kosten pro Stunde
+- Fahrerpersonal (Lohn + Nebenkosten)
 :::
 
 :::
@@ -1013,62 +864,6 @@ mit Jahresfahrleistung $L$, produktiven Stunden $T$, Nutzlast $m$ (t), Auslastun
 
 ---
 
-## Transportkostensätze {#tm-kosten-r}
-::: slide-subtitle
-Kalkulation in R
-:::
-
-::: columns
-::: {.column width="55%"}
-
-```{r tm-kosten-code}
-#| echo: true
-#| eval: false
-
-fahrzeugkosten <- function(p, km_jahr) {
-  afa    <- (p$A - p$RW) / p$N
-  zins   <- (p$A + p$RW) / 2 * p$i
-  fix    <- afa + zins + p$versicherung +
-            p$steuer + p$sonst_fix
-  var_km <- p$energie_km + p$wartung_km +
-            p$reifen_km + p$maut_km
-  list(fix = fix, var_km = var_km,
-       gesamt_km = fix / km_jahr + var_km)
-}
-
-sf_diesel <- list(
-  A = 95000, RW = 15000, N = 6, i = 0.05,
-  versicherung = 4500, steuer = 500,
-  sonst_fix = 6000,
-  energie_km = 0.17 * 2.00,  # 17 l/100 km
-  wartung_km = 0.09, reifen_km = 0.03,
-  maut_km = 0.151 * 0.5)     # 50 % mautpflichtig
-
-fahrzeugkosten(sf_diesel, km_jahr = 296 * 300)
-```
-
-:::
-::: {.column width="42%"}
-
-::: {.callout-note appearance="simple"}
-## Vorgehen
-1. Fahrzeugparameter als **Liste** erfassen
-2. Fixkosten pro Jahr und variable Kosten pro km berechnen
-3. Mit Fahrleistung und Einsatzzeit in **Kostensätze** umrechnen
-4. **Sensitivitäten** prüfen (Dieselpreis, Strompreis, Fahrleistung)
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-Alle Zahlen der folgenden Beispiele sind **gerundete Annahmen** (netto, Stand Herbst 2026), etwa zum Dieselpreis von rund 2,40 €/l brutto im September 2026 [@destatis2026diesel]. Sie ersetzen keine Angebote.
-:::
-:::
-
-:::
-:::
-
----
-
 ## Beispiel 1 – Diesel-Kühl-Lkw {#tm-bsp1}
 ::: slide-subtitle
 Kostensätze für den 7,5-Tonner von SushiFresh
@@ -1080,6 +875,13 @@ Kostensätze für den 7,5-Tonner von SushiFresh
 km_pendel <- tour_km["Pendel"] * liefertage
 kd <- fahrzeugkosten(sf_diesel, km_pendel)
 ```
+
+::: {.callout-tip appearance="simple"}
+## Sushi-Fresh-Distribution ab Raunheim
+
+Sushi-Fresh beliefert von Raunheim aus alle Filialen durch Pendeltouren. Insgesamt sind pro Arbeits-Tag damit `r round(tour_km[["Pendel"]])` km zu fahren. Dazu wird ein 7,5-t-Kühltransporter an 300 Arbeits-Tagen eingesetzt.
+:::
+
 
 ::: columns
 ::: {.column width="48%"}
@@ -1127,8 +929,10 @@ Für die Tourenplanung ist die Trennung in **€/km** (Fahrzeug, variabel) und *
 :::
 :::
 
+
 :::
 :::
+
 
 ---
 
@@ -1140,11 +944,11 @@ Was kostet eine Box? Nachrechnen des Satzes aus Einheit Standortplanung II
 ```{r tm-bsp1b-calc}
 #| echo: false
 
-mu  <- c(C1 = 120, C2 = 150, C3 = 280, C4 = 90, C5 = 110, C6 = 95)
-dR  <- c(C1 = 26, C2 = 22, C3 = 28, C4 = 6, C5 = 39, C6 = 27)
+mu  <- c(C1 = 120,C2 = 150, C3 = 280, C4 = 90, C5 = 110, C6 = 95)
+dR  <- c(C1 = 48, C2 = 27, C3 = 17, C4 = 55, C5 = 45, C6 = 13)
 v_kmh <- 45; t_stopp <- 0.25; t_lade <- 0.25
 
-std <- c(Pendel = tour_km[["Pendel"]] / v_kmh + 6 * t_stopp + 6 * t_lade,
+std <- c(Pendel =  tour_km[["Pendel"]] / v_kmh + 6 * t_stopp + 6 * t_lade,
          Tour   = tour_km[["2-opt"]] / v_kmh + 6 * t_stopp + 1 * t_lade)
 km  <- c(Pendel = tour_km[["Pendel"]], Tour = tour_km[["2-opt"]])
 kd_tour <- fahrzeugkosten(sf_diesel, km["Tour"] * liefertage)
@@ -1159,14 +963,17 @@ tag <- data.frame(
   mutate(gesamt = fix + var + fahrer,
          je_box = gesamt / sum(mu))
 rownames(tag) <- NULL
-boxkm <- sum(mu * dR)   # beladene Box-km im Pendelverkehr
+boxkm <- sum(mu * dR/2)   # beladene Box-km im Pendelverkehr
 satz_boxkm <- tag$gesamt[1] / boxkm
 ```
 
-::: columns
-::: {.column width="55%"}
+::: {.callout-note appearance="simple"}
+## Sushi-Fresh-Distribution ab Raunheim
 
-::: {.small-text}
+Die ersten Einschätzungen gehen davon aus, dass der 7,5-t-Kühltransporter die Pendeltouren mit einer Durchschnittsgeschwindigkeit von `r v_kmh` km/h zurücklegt. Die Beladung in Raunheim dauert jedes Mal `r t_lade * 60` Minuten, die Entladung in jeder Filiale `r t_stopp * 60` Minuten.
+:::
+
+
 ```{r tm-bsp1b-tab}
 #| echo: false
 
@@ -1175,46 +982,31 @@ kbl_sf(tag[1, ] |> transmute(Variante, km, h = fmt(h, 1), fix = fmt(fix), var = 
                         je_box = fmt(je_box, 3)),
        col.names = c("Variante", "km/Tag", "h/Tag", "Fahrzeug fix (€)",
                      "Fahrzeug var. (€)", "Fahrer (€)", "Gesamt (€/Tag)", "€/Box"),
-       align = c("l", rep("r", 7)), font_size = 22)
+       align = c("l", rep("r", 7)), font_size = 28)
 ```
 
-::: {.smaller-text}
-Annahmen: Ø `r v_kmh` km/h, je Filiale `r t_stopp * 60` min Entladen, je Beladung in Raunheim `r t_lade * 60` min.
-:::
-:::
-
-:::
-::: {.column width="42%"}
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Kostensatz je Box und km
 Im Pendelverkehr legen alle Boxen zusammen $\sum_j \mu_j \cdot d_{Rj} =$ `r fmt(boxkm, 0)` beladene Box-km zurück (Rückfahrt leer):
 $$\frac{`r gsub(",", "{,}", fmt(tag$gesamt[1]))`\ \text{€}}{`r fmt(boxkm, 0)`\ \text{Box-km}} \approx `r gsub(",", "{,}", fmt(satz_boxkm, 3))`\ \text{€}/(\text{Box} \cdot \text{km})$$
-Das liegt in der Größenordnung der Annahme **0,02 €/(Box·km)** aus Einheit Standortplanung II. Die Differenz entsteht vor allem durch die voll eingerechneten Lade- und Entladezeiten des Fahrers.
+Das liegt über der Annahme von **0,02 €/(Box·km)** aus Einheit Standortplanung II. Woher könnte die Differenz stammen?
 :::
 :::
 
-::: {.fragment .fade-up}
-::: {.callout-important appearance="simple"}
-Ein linearer Satz je Box-km unterstellt Einzelanfahrten. Was eine **Rundtour** spart, rechnen wir in der Einheit Tourenplanung nach.
-:::
-:::
-
-:::
-:::
 
 ---
 
 ## Beispiel 2 – Diesel oder E-Lkw? {#tm-bsp2}
 ::: slide-subtitle
-Jahreskosten des Kühl-Lkw bei Rundtourbetrieb
+Jahreskosten des E-LKW
 :::
 
 ```{r tm-bsp2-calc}
 #| echo: false
 
-km_tour_jahr <- tour_km[["2-opt"]] * liefertage
+km_tour_jahr <- tour_km[["Pendel"]] * liefertage
 kb <- fahrzeugkosten(sf_bev, km_tour_jahr)
 kd2 <- kd_tour
 fahrer_tour <- std["Tour"] * fahrer_h * liefertage
@@ -1230,13 +1022,49 @@ kd_komp <- komp(sf_diesel, kd2, km_tour_jahr)
 kb_komp <- komp(sf_bev, kb, km_tour_jahr)
 ```
 
-::: columns
-::: {.column width="55%"}
+::: {.callout-note appearance="simple"}
+## Sushi-Fresh-Distribution ab Raunheim mit E-LKW
 
+Als Alternative zum Diesel 7,5-t-Diesel-Lkw erwägt Sushi-Fresh einen 7,5-t-E-LKW einzusetzen. Das entsprechende Modell verbraucht 66 kWh/100 km (Jahresmittel inkl. Kühlung). Der E-LKW soll über Nacht im Depot zu `r fmt(strom_depot)` €/kWh geladen werden. Der Depot-Ladepunkt schlägt mit 3.500 €/Jahr zu buche.
+:::
+
+:::: columns
+::: {.column width="50%"}
+
+::: {.small-text}
+```{r tm-bsp1-tab-bev}
+#| echo: false
+
+pos <- data.frame(
+  Position = c("Anschaffung A / Restwert RW / Nutzung N",
+               "Abschreibung (A − RW)/N", "Kalk. Zinsen (A + RW)/2 · 5 %",
+               "Versicherung + Kfz-Steuer", "Gemeinkosten (inkl. Ladepunkt)",
+               "<b>Fixkosten Fahrzeug pro Jahr</b>",
+               "Energiekosten", "Wartung + Reifen",
+               "Maut", "<b>Variable Kosten pro km</b>"),
+  Wert = c(paste(eur(sf_bev$A), eur(sf_bev$RW), sf_bev$N, sep=" / "), eur(kb$afa), eur(kb$zins),
+           eur(sf_bev$versicherung + sf_bev$steuer), eur(sf_bev$sonst_fix),
+           paste0("<b>", eur(kb$fix), "</b>"),
+           paste0(fmt(sf_bev$energie_km, 3), " €/km"),
+           paste0(fmt(sf_bev$wartung_km + sf_bev$reifen_km, 3), " €/km"),
+           paste0(fmt(sf_bev$maut_km, 3), " €/km"),
+           paste0("<b>", fmt(kb$var_km, 3), " €/km</b>"))
+)
+kbl_sf(pos, col.names = c("Kalkulationsposition", "Wert"), align = c("l", "r"),
+       font_size = 22, first_col = FALSE, escape = FALSE)
+```
+:::
+
+:::
+
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
 ```{r tm-bsp2-plot}
 #| echo: false
 #| warning: false
 #| message: false
+#| out-width: 100%
 
 df2 <- data.frame(Pos = rep(names(kd_komp), 2),
                   Antrieb = rep(c("Diesel", "Batterieelektrisch"), each = 5),
@@ -1250,33 +1078,13 @@ for (k in seq_along(levels(df2$Pos))) {
                      marker = list(color = farb[k]))
 }
 p |> layout(barmode = "stack") |>
-  plt_layout("", "Fahrzeugkosten (€/Jahr, ohne Fahrer)", h = 470, w = 720)
+  plt_layout("", "Fahrzeugkosten (€/Jahr, ohne Fahrer)", h = 400, w = 600)
 ```
-
-:::
-::: {.column width="42%"}
-
-::: {.smaller-text}
-**Annahmen E-Lkw:** 170.000 € Kaufpreis, Restwert 30.000 €, 66 kWh/100 km (Jahresmittel inkl. Kühlung) zu `r fmt(strom_depot)` €/kWh, Wartung 6 ct/km, keine Maut und Kfz-Steuer, Depot-Ladepunkt 3.500 €/Jahr. Fahrleistung: `r fmt(km_tour_jahr, 0)` km/Jahr (Annahme: Rundtour mit ca. `r tour_km[["2-opt"]]` km pro Tag, hergeleitet in der Einheit Tourenplanung).
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Ergebnis
-- Diesel: **`r eur(sum(kd_komp))`/Jahr** (`r fmt(sum(kd_komp) / km_tour_jahr)` €/km)
-- E-Lkw: **`r eur(sum(kb_komp))`/Jahr** (`r fmt(sum(kb_komp) / km_tour_jahr)` €/km)
-- Fahrerkosten (`r eur(fahrer_tour)`/Jahr) sind gleich
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.smaller-text}
-Bei nur ~`r round(km_tour_jahr / 1000)` Tsd. km/Jahr kann die Ersparnis bei Energie und Maut den höheren Kaufpreis **`r if (sum(kb_komp) > sum(kd_komp)) "noch nicht" else "bereits"`** ausgleichen. Entscheidend ist die **Fahrleistung**.
-:::
 :::
 
 :::
-:::
+::::
+
 
 ---
 
@@ -1292,6 +1100,7 @@ Break-even-Fahrleistung
 #| echo: false
 #| warning: false
 #| message: false
+#| out.width: 100%
 
 L <- seq(20000, 120000, 1000)
 kmD <- sapply(L, function(l) fahrzeugkosten(sf_diesel, l)$gesamt_km)
@@ -1302,15 +1111,15 @@ plot_ly() |>
             line = list(color = "#9AA5B1", width = 3)) |>
   add_lines(x = L / 1000, y = kmB, name = "Batterieelektrisch",
             line = list(color = "#0B6E4F", width = 3)) |>
-  add_segments(x = km_tour_jahr / 1000, xend = km_tour_jahr / 1000,
-               y = 0, yend = 2.5, name = "SushiFresh Rundtour",
-               line = list(color = "#D97B29", dash = "dash")) |>
   add_segments(x = km_pendel / 1000, xend = km_pendel / 1000,
                y = 0, yend = 2.5, name = "SushiFresh Pendelverkehr",
                line = list(color = "#C00000", dash = "dot")) |>
-  layout(yaxis = list(range = c(0, 2.5))) |>
+  add_segments(x = L_star / 1000, xend = L_star / 1000,
+               y = 0, yend = 2.5, name = "Break-even-Fahrleistung",
+               line = list(color = "#52B788", dash = "dot")) |>
+  layout(yaxis = list(range = c(0, 2.5)), xaxis = list(range=c(30,80))) |>
   plt_layout("Jahresfahrleistung (Tsd. km)", "Fahrzeugkosten (€/km, ohne Fahrer)",
-             h = 470, w = 720)
+             h = 480, w = 750)
 ```
 
 :::
@@ -1321,369 +1130,12 @@ plot_ly() |>
 ## Interpretation
 - E-Lkw: hohe **Fixkosten**, niedrige **variable** Kosten → lohnen sich bei **hoher Fahrleistung**
 - Break-even bei ca. **`r round(L_star / 1000)` Tsd. km/Jahr**
-- Der Pendelverkehr hätte mehr km, ist aber mit dem E-Lkw **nicht fahrbar** (Reichweite)
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-note appearance="simple"}
-## Hebel für SushiFresh
-Zweiter Einsatz am Nachmittag (z. B. Beschaffungsfahrten, Lieferdienst) erhöht die Fahrleistung und verschiebt die Rechnung zugunsten des E-Lkw.
-:::
-:::
-
-:::
-:::
-
----
-
-## Beispiel 3 – Fernverkehr {#tm-bsp3}
-::: slide-subtitle
-40-t-Sattelzug: Diesel vs. batterieelektrisch
-:::
-
-```{r tm-bsp3-calc}
-#| echo: false
-
-fd <- fahrzeugkosten(fv_diesel, fv_km); fb <- fahrzeugkosten(fv_bev, fv_km)
-fah_km <- fv_fahrer / fv_km
-tab3 <- data.frame(
-  Position = c("Fixkosten Fahrzeug", "Energie", "Wartung + Reifen", "Maut", "Fahrer"),
-  Diesel = c(fd$fix_km, fv_diesel$energie_km, fv_diesel$wartung_km + fv_diesel$reifen_km,
-             fv_diesel$maut_km, fah_km),
-  BEV = c(fb$fix_km, fv_bev$energie_km, fv_bev$wartung_km + fv_bev$reifen_km,
-          fv_bev$maut_km, fah_km)
-)
-```
-
-::: columns
-::: {.column width="47%"}
-
-::: {.small-text}
-```{r tm-bsp3-tab}
-#| echo: false
-
-kbl_sf(rbind(tab3, data.frame(Position = "<b>Summe €/km</b>",
-                              Diesel = sum(tab3$Diesel), BEV = sum(tab3$BEV))) |>
-         mutate(Diesel = fmt(Diesel, 3), BEV = fmt(BEV, 3)),
-       col.names = c("€/km", "Diesel", "Batterieelektrisch"),
-       align = c("l", "r", "r"), font_size = 24, escape = FALSE)
-```
-
-::: {.smaller-text}
-Annahmen: `r fmt(fv_km, 0)` km/Jahr, 5 Jahre; Diesel 125.000 €, 28 l/100 km zu `r fmt(diesel_preis)` €/l, Maut 34,8 ct/km auf 90 % der Strecke; BEV 300.000 €, 1,2 kWh/km, Strommix 80 % Depot / 20 % öffentlich, Ladepunkt 10.000 €/Jahr, mautbefreit.
-:::
-:::
-
-:::
-::: {.column width="50%"}
-
-```{r tm-bsp3-sens}
-#| echo: false
-#| fig-height: 4
-#| warning: false
-#| message: false
-
-dp <- seq(1.2, 2.6, 0.05)
-diesel_km <- sapply(dp, function(x) {
-  p <- fv_diesel; p$energie_km <- 0.28 * x + 0.02
-  fahrzeugkosten(p, fv_km)$gesamt_km + fah_km
-})
-bev_km <- function(maut_anteil) {
-  p <- fv_bev; p$maut_km <- 0.348 * 0.9 * maut_anteil
-  fahrzeugkosten(p, fv_km)$gesamt_km + fah_km
-}
-plot_ly() |>
-  add_lines(x = dp, y = diesel_km, name = "Diesel",
-            line = list(color = "#9AA5B1", width = 3)) |>
-  add_lines(x = dp, y = rep(bev_km(0), length(dp)), name = "BEV, mautbefreit",
-            line = list(color = "#0B6E4F", width = 3)) |>
-  add_lines(x = dp, y = rep(bev_km(1), length(dp)), name = "BEV, volle Maut",
-            line = list(color = "#0B6E4F", width = 3, dash = "dash")) |>
-  add_segments(x = diesel_preis, xend = diesel_preis, y = 1.3, yend = 2.4,
-               name = "Annahme 2026", line = list(color = "#D97B29", dash = "dot")) |>
-  plt_layout("Dieselpreis (€/l netto)", "Gesamtkosten inkl. Fahrer (€/km)",
-             h = 370, w = 700)
-```
-
-::: {.fragment .fade-up}
-::: {.smaller-text}
-Mautbefreit ist der E-Lkw ab ca. `r fmt(dp[which.min(abs(diesel_km - bev_km(0)))], 2)` €/l günstiger, mit voller Maut erst ab ca. `r fmt(dp[which.min(abs(diesel_km - bev_km(1)))], 2)` €/l. Der Vorteil hängt also stark an der **politisch befristeten** Mautbefreiung (bis 06/2031).
-:::
-:::
-
-:::
-:::
-
----
-
-## Beispiel 4 – Letzte Meile {#tm-bsp4}
-::: slide-subtitle
-Kosten pro Zustellung: E-Transporter vs. Lastenrad
-:::
-
-```{r tm-bsp4-calc}
-#| echo: false
-
-lm_par <- data.frame(
-  Option = c("E-Transporter", "Lastenrad + Mikrodepot"),
-  fahrzeug_tag = c(45, 12),        # AfA, Zins, Versicherung, Wartung
-  depot_tag    = c(0, 24),         # Miete Mikrodepot (Container)
-  km_tag       = c(60, 35),
-  k_km         = c(0.12, 0.02),
-  stunden      = c(8, 8),
-  k_h          = c(28, 28),        # gleicher Stundenlohn
-  stopps_h     = c(5, 6)           # Lastenrad: keine Parkplatzsuche
-) |>
-  mutate(kosten_tag = fahrzeug_tag + depot_tag + km_tag * k_km + stunden * k_h,
-         stopps = stunden * stopps_h,
-         je_stopp = kosten_tag / stopps)
-```
-
-::: columns
-::: {.column width="55%"}
-
-::: {.small-text}
-```{r tm-bsp4-tab}
-#| echo: false
-
-kbl_sf(lm_par |> transmute(Option, fz = eur(fahrzeug_tag + depot_tag),
-                           km = eur(km_tag * k_km), pers = eur(stunden * k_h),
-                           ges = eur(kosten_tag), stopps,
-                           je = paste0(fmt(je_stopp), " €")),
-       col.names = c("Option", "Fahrzeug + Depot", "km-Kosten", "Personal",
-                     "Kosten/Tag", "Stopps/Tag", "€ je Stopp"),
-       align = c("l", rep("r", 6)), font_size = 22)
-```
-
-::: {.smaller-text}
-Annahmen: 8-h-Schicht, gleicher Stundenlohn, E-Transporter 5 Stopps/h (Parkplatzsuche), Lastenrad 6 Stopps/h im Umkreis von 3 km um das Mikrodepot, Mikrodepot 720 €/Monat.
-:::
-:::
-
-:::
-::: {.column width="42%"}
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Ergebnis
-Das Lastenrad ist trotz Mikrodepot ca. **`r fmt((1 - lm_par$je_stopp[2] / lm_par$je_stopp[1]) * 100, 0)` %** günstiger je Stopp. Der Hebel sind **nicht** die Fahrzeugkosten, sondern die **Stopps pro Stunde**.
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-## Grenzen
-Lastenräder brauchen **hohe Stoppdichte** auf kleiner Fläche. Bei verstreuten Kunden, schweren Sendungen oder schlechtem Wetter dreht sich das Bild.
-:::
-:::
-
-:::
-:::
-
----
-
-## Vom Kostensatz zum Tarif {#tm-tkm}
-::: slide-subtitle
-Auslastung und Leerfahrten
-:::
-
-```{r tm-tkm-calc}
-#| echo: false
-
-k_km_fv <- sum(tab3$Diesel)
-m <- 25
-szen <- expand.grid(alpha = c(0.6, 0.8, 1.0), lambda = c(0, 0.2, 0.4)) |>
-  mutate(k_tkm = k_km_fv / (m * alpha * (1 - lambda)))
-```
-
-::: columns
-::: {.column width="50%"}
-
-::: {.small-text}
-**Diesel-Sattelzug:** `r fmt(k_km_fv)` €/km, Nutzlast `r m` t
-
-```{r tm-tkm-tab}
-#| echo: false
-
-w <- szen |>
-  mutate(k_tkm = paste0(fmt(k_tkm * 100, 1), " ct")) |>
-  pivot_wider(names_from = lambda, values_from = k_tkm)
-names(w) <- c("Auslastung α", "Leerfahrten 0 %", "20 %", "40 %")
-w$`Auslastung α` <- paste0(w$`Auslastung α` * 100, " %")
-kbl_sf(w, align = c("c", "r", "r", "r"), font_size = 24)
-```
-
-Kostensatz je Tonnenkilometer: $k_{tkm} = \dfrac{k_{km}}{m \cdot \alpha \cdot (1-\lambda)}$
-:::
-
-:::
-::: {.column width="47%"}
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Botschaft
-Derselbe Lkw kostet je tkm zwischen `r fmt(min(szen$k_tkm) * 100, 1)` und `r fmt(max(szen$k_tkm) * 100, 1)` ct, abhängig von **Auslastung** und **Leerfahrten**. Bündelung, Rückladungen und Frachtbörsen sind deshalb für Spediteure entscheidend.
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-note appearance="simple"}
-## Vom Kostensatz zum Preis
-Preis = Kostensatz + Wagnis und Gewinn. Üblich sind Tarife je **Palette**, je **100 kg** (Stückgut, entfernungsgestaffelt), je **Tour** oder je **Stopp** (KEP), dazu Diesel- und Mautzuschläge (Floater).
-:::
-:::
-
-:::
-:::
-
----
-
-## Logistikdienstleister {#tm-dl-markt}
-::: slide-subtitle
-Wer bietet Transportleistungen an?
-:::
-
-::: {.small-text}
-```{r tm-dl-tab}
-#| echo: false
-
-dl <- data.frame(
-  Akteur = c("Frachtführer", "Spediteur", "KEP-Dienst", "Kontraktlogistiker (3PL)",
-             "4PL / Lead Logistics Provider", "Digitale Spedition / Frachtbörse"),
-  Leistung = c("führt die Beförderung selbst durch (eigene Fahrzeuge)",
-               "organisiert die Beförderung im eigenen Namen, beauftragt Frachtführer",
-               "Kurier-, Express-, Paketsendungen in eigenen Netzen (Hub-and-Spoke)",
-               "langfristige, kundenspezifische Leistungsbündel: Lager, Kommissionierung, Transport, Mehrwertdienste",
-               "steuert das gesamte Logistiknetz inkl. weiterer Dienstleister, oft ohne eigene Anlagen",
-               "Plattform vermittelt Ladungen und Laderaum, oft mit Echtzeit-Preisen"),
-  Recht = c("Frachtvertrag (§ 407 HGB)", "Speditionsvertrag (§ 453 HGB)",
-            "Frachtvertrag, AGB", "individueller Logistikvertrag", "Rahmenvertrag",
-            "Vermittlung bzw. Spedition"),
-  SushiFresh = c("regionaler Kühltransporteur", "organisiert den Lachs aus Norwegen",
-                 "Versand Sushi@Home (Einheit Lager und Kommissionierung)", "Betrieb des Sushi@Home-Lagers?",
-                 "für SushiFresh zu groß", "Zusatztouren in der Saison")
-)
-kbl_sf(dl, col.names = c("Akteur", "Leistung", "Vertrag", "Beispiel SushiFresh"),
-       align = c("l", "l", "l", "l"), font_size = 21)
-```
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-note appearance="simple"}
-Der Logistikmarkt ist sehr fragmentiert: viele kleine Frachtführer und wenige große Netzwerkanbieter. Für Verlader bedeutet das: Preise und Kapazitäten schwanken stark mit Saison, Dieselpreis und Fahrermangel.
-:::
-:::
-
----
-
-## Fremdvergabe {#tm-makebuy}
-::: slide-subtitle
-Eigenes Fahrzeug oder Spediteur?
-:::
-
-```{r tm-mb-calc}
-#| echo: false
-
-mb_fix     <- kd$fix + fahrer_jahr       # zweiter Kühl-Lkw inkl. Fahrer (€/Jahr)
-mb_km_tag  <- 150                        # km je Zusatztour
-mb_var_tag <- kd$var_km * mb_km_tag      # variable Kosten je Einsatztag
-mb_preis   <- 390                        # Tagessatz Spediteur inkl. Fahrer
-mb_be      <- mb_fix / (mb_preis - mb_var_tag)
-mb_tage    <- 60                         # Bedarf SushiFresh (Dezember, Sommer, Events)
-```
-
-::: columns
-::: {.column width="55%"}
-
-```{r tm-mb-plot}
-#| echo: false
-#| warning: false
-#| message: false
-
-tage <- 0:300
-plot_ly() |>
-  add_lines(x = tage, y = mb_fix + mb_var_tag * tage, name = "Eigenes Fahrzeug + Fahrer",
-            line = list(color = "#2F3E46", width = 3)) |>
-  add_lines(x = tage, y = mb_preis * tage, name = "Spediteur (Tagessatz)",
-            line = list(color = "#D97B29", width = 3)) |>
-  add_segments(x = mb_tage, xend = mb_tage, y = 0, yend = 1.3e5,
-               name = "Bedarf SushiFresh", line = list(color = "#0B6E4F", dash = "dash")) |>
-  add_markers(x = mb_be, y = mb_preis * mb_be, name = "Break-even",
-              marker = list(color = "#C00000", size = 12)) |>
-  plt_layout("Einsatztage pro Jahr", "Kosten (€/Jahr)", h = 470, w = 760)
-```
-
-:::
-::: {.column width="43%"}
-
-::: {.small-text}
-**Situation:** In Spitzenzeiten braucht SushiFresh eine **zweite Kühltour** (ca. `r mb_km_tag` km). Eigenes Fahrzeug: Fixkosten `r eur(kd$fix)` + Fahrer `r eur(fahrer_jahr)` pro Jahr, variabel `r fmt(kd$var_km, 3)` €/km (Beispiel 1). Spediteur: `r mb_preis` € je Einsatztag inkl. Fahrer.
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Ergebnis
-Break-even bei **`r round(mb_be)` Einsatztagen** pro Jahr. Bei `r mb_tage` Tagen Bedarf kostet die Fremdvergabe `r eur(mb_preis * mb_tage)` statt `r eur(mb_fix + mb_var_tag * mb_tage)`. **Fremdvergabe** wandelt Fixkosten in variable Kosten.
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-## Nicht im Preis enthalten
-Transaktionskosten (Ausschreibung, Steuerung, Kontrolle), Abhängigkeit, Verfügbarkeit in der Spitze (alle wollen im Dezember Kapazität), Qualität der Kühlkette, Kundenkontakt.
-:::
-:::
-
-:::
-:::
-
----
-
-## Fremdvergabe {#tm-vergabe}
-::: slide-subtitle
-Ausschreibung, Vergütung und Dieselfloater
-:::
-
-::: columns
-::: {.column width="48%"}
-
-::: {.callout-note appearance="simple"}
-## Ausschreibung von Transportleistungen
-1. Bedarf beschreiben: Relationen, Mengen, Zeitfenster, Temperaturanforderungen
-2. **Leistungsniveau** festlegen (SLA): Pünktlichkeit, OTIF, Reaktionszeit, Schadensquote
-3. Angebote einholen und vergleichen (Preis **und** Qualität)
-4. Vertrag mit Kennzahlen, Bonus-Malus und Preisgleitklauseln
-5. Laufende Leistungsmessung
-:::
-
-::: {.smaller-text}
-**Vergütungsformen:** €/km, €/Tour, Tagessatz, €/Palette, €/100 kg (Stückguttarif nach Entfernung und Gewicht), €/Stopp (KEP).
-:::
-
-:::
-::: {.column width="49%"}
-
-```{r tm-floater-calc}
-#| echo: false
-
-d_basis <- 1.60; d_akt <- diesel_preis; anteil_kraftstoff <- 0.30
-zuschlag <- (d_akt - d_basis) / d_basis * anteil_kraftstoff
-```
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple" icon=false}
-#### Dieselfloater (Preisgleitklausel)
-$$\text{Zuschlag} = \frac{p_{\text{aktuell}} - p_{\text{Basis}}}{p_{\text{Basis}}} \cdot a_{\text{Kraftstoff}}$$
-Vertrag 2025 mit Basis `r fmt(d_basis)` €/l, heute `r fmt(d_akt)` €/l (netto), Kraftstoffanteil am Frachtpreis `r anteil_kraftstoff * 100` %:
-
-Zuschlag = **`r fmt(zuschlag * 100, 1)` %** → Tagessatz `r mb_preis` € steigt auf **`r fmt(mb_preis * (1 + zuschlag))` €**.
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-note appearance="simple"}
-Der Floater verteilt das **Dieselpreisrisiko** fair zwischen Verlader und Dienstleister. Ähnliche Klauseln gibt es für die **Maut**, etwa bei Änderungen nach Ende der Befreiung für E-Lkw 2031.
+- bei aktueller Fahrleistung lohnt sich der E-Lkw
+- Unsicherheit bestehen durch:
+  - Reichweite
+  - Mischkalkulation bei externen Laden
+  - Lebensdauer und Wartungskosten (Batteriedegradation)
+- weitere mögliche Kostenkompoente: Opportunitätskosten der entgangenen Stromeinspeisevergütung
 :::
 :::
 
@@ -1702,10 +1154,10 @@ Warum und nach welchem Standard?
 
 ::: {.callout-note appearance="simple"}
 ## Anlass
-- Transporte sind für die meisten Unternehmen **Scope-3-Emissionen** (vor- und nachgelagerter Transport nach GHG Protocol)
-- Händler wie RheinMarkt fragen Emissionen **je Sendung** bei ihren Lieferanten ab
+- Transporte sind für die meisten Unternehmen **Scope-3-Emissionen** (außer z.B. Logistikunternehmen und Selbsterbringung)
+- Händler fragen oft Emissionen **je Sendung** bei ihren Lieferanten ab
 - Vergleich von Alternativen: Verkehrsträger, Antriebe, Touren
-- Dienstleister müssen ihren Kunden **vergleichbare** Werte liefern
+- Logistikdienstleister müssen ihren Kunden **vergleichbare** Werte liefern
 :::
 
 :::
@@ -1757,7 +1209,7 @@ iso <- data.frame(
                 "Emissionen der Energiebereitstellung (Förderung, Raffinerie, Kraftwerk)",
                 "Emissionen im Fahrzeug (Verbrennung)",
                 "WTT + TTW, verpflichtend auszuweisen",
-                "Masse × Distanz (tkm), Distanz = kürzeste realisierbare Entfernung (SFD), Luftverkehr: Großkreisdistanz (GCD)")
+                "Masse × Allokations-Distanz (tkm), Allokations-Distanz = kürzeste realisierbare Entfernung (SFD), Luftverkehr: Großkreisdistanz (GCD)")
 )
 kbl_sf(iso, col.names = c("Begriff", "Bedeutung"), align = c("l", "l"),
        font_size = 21)
@@ -1767,22 +1219,27 @@ kbl_sf(iso, col.names = c("Begriff", "Bedeutung"), align = c("l", "l"),
 :::
 ::: {.column width="45%"}
 
+**Transportkette [kombinierter Verkehr](#tm-kv)** 
+
+
 ```{r tm-iso-kette}
 #| echo: false
 #| warning: false
 #| message: false
-#| fig-height: 3.5
+#| fig-height: 2.75
+#| out.width: 100%
 
 el <- data.frame(
-  name = c("Lkw\nRaunheim–Hanau", "Cross-Dock\nHanau", "Tour\nHanau–Markt"),
-  typ = c("TCE 1", "TCE 2 (Hub)", "TCE 3"),
-  x = c(0.17, 0.5, 0.83), col = c("#2A7ACA", "#F4A259", "#2A7ACA")
+  name = c("Lkw\n Vorlauf", "Terminal\n Versand-\n region","Bahn\nHauptlauf", "Terminal\n Empfangs-\nregion" , "Lkw\n Nachlauf"),
+  typ = c("TCE 1", "TCE 2" ,"TCE 3" ,"TCE 4", "TCE 5"),
+  typ2 = c("TOC 1", "HOC 1" ,"TOC 2" ,"HOC 1", "TOC 1 o. 2"),
+  x = c(0.17, 0.5, 0.83, 1.16, 1.5), col = c("#2A7ACA50", "#F4A25975", "#52B78850" , "#F4A25975", "#2A7ACA50")
 )
-shp <- lapply(1:3, function(i) list(type = "rect", x0 = el$x[i] - 0.14, x1 = el$x[i] + 0.14,
+shp <- lapply(1:5, function(i) list(type = "rect", x0 = el$x[i] - 0.14, x1 = el$x[i] + 0.14,
                                     y0 = 0.3, y1 = 0.7, fillcolor = el$col[i],
                                     line = list(color = "#2F3E46", width = 1.5)))
 p <- plot_ly(type = "scatter", mode = "markers")
-for (i in 1:2) p <- p |> add_annotations(x = el$x[i + 1] - 0.15, y = 0.5, ax = el$x[i] + 0.15,
+for (i in 1:4) p <- p |> add_annotations(x = el$x[i + 1] - 0.15, y = 0.5, ax = el$x[i] + 0.15,
                                          ay = 0.5, xref = "x", yref = "y", axref = "x",
                                          ayref = "y", text = "", showarrow = TRUE,
                                          arrowhead = 2, arrowcolor = "#2F3E46")
@@ -1790,25 +1247,25 @@ p |> add_annotations(x = el$x, y = 0.5, text = gsub("\n", "<br>", el$name),
                      showarrow = FALSE, font = list(size = 19)) |>
   add_annotations(x = el$x, y = 0.15, text = paste0("<b>", el$typ, "</b>"),
                   showarrow = FALSE, font = list(size = 20)) |>
-  layout(shapes = shp, xaxis = list(visible = FALSE, range = c(0, 1)),
-         yaxis = list(visible = FALSE, range = c(0, 0.8)),
+  add_annotations(x = el$x, y = -0.15, text = paste0("<b>", el$typ2, "</b>"),
+                  showarrow = FALSE, font = list(size = 20)) |>
+  layout(shapes = shp, xaxis = list(visible = FALSE, range = c(0, 1.65)),
+         yaxis = list(visible = FALSE, range = c(-0.3, 0.8)),
          margin = list(l = 5, r = 5, t = 5, b = 5),
          plot_bgcolor = "transparent", paper_bgcolor = "transparent",
-         height = 230, width = 620)
+         height = 250, width = 620)
 ```
 
-::: {.smaller-text}
-Transportkette einer SushiFresh-Box zu RheinMarkt (Einheit Distributionssystem gestalten): zwei Transport-TCEs und ein Hub-TCE.
+
+:::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-warning appearance="simple"}
-Für die Verteilung zählt die **kürzeste realisierbare Distanz** (SFD), nicht der tatsächlich gefahrene Umweg in der Tour. So erhalten gleiche Sendungen unabhängig von der Tourenplanung gleiche Werte. Die tatsächlich gefahrenen km (inkl. Leerfahrten) stecken im **Energieverbrauch** der TOC.
+Für die Allokation der Emissionen wird die **kürzeste realisierbare Distanz** (SFD) vom Versandort zum Zielort verwendet. Diese Allokations-Distanzen sind **unabhängig von der tatsächlich gefahrenen Tour**.  Die Emissionen der tatsächlich gefahrenen Tour (inkl. Leerfahrten) werden durch den **Energieverbrauch** der TOC berücksichtigt.
 :::
 :::
 
-:::
-:::
 
 ---
 
@@ -1842,8 +1299,11 @@ Energiemenge $V_k$ je Energieträger $k$, Emissionsfaktor $f_k$, Sendungsmasse $
 :::
 
 ::: {.fragment .fade-up}
-::: {.smaller-text}
-**Emissionsfaktoren (Annahmen, gerundet):** Diesel TTW ≈ 2,65 kg CO₂/l, WTW ≈ 3,2 kg CO₂e/l. Strom (Netz DE) ≈ 0,38 kg CO₂e/kWh inkl. Vorkette; der direkte Faktor des deutschen Strommix lag 2024 bei rund 363 g CO₂/kWh [@uba2025strommix].
+::: {.callout-note appearance="simple" icon=false}
+## Emissionsfaktoren 
+Diesel TTW ≈ 2,65 kg CO₂/l, WTW ≈ 3,2 kg CO₂e/l
+
+Strom (Netz DE) ≈ 0,38 kg CO₂e/kWh inkl. Vorkette [@uba2025strommix]
 :::
 :::
 
@@ -1976,3 +1436,111 @@ fahrzeugkosten(e_van, km_jahr = 60000)
 :::
 :::
 :::
+
+
+---
+
+## Fallstudie – Lachs aus Norwegen {#tm-cs-inbound}
+::: slide-subtitle
+Verkehrsträgerwahl für Frischware
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.small-text}
+```{r tm-inbound-tab}
+#| echo: false
+
+inb <- data.frame(
+  Option = c("Kühl-Lkw + Fähre", "Kühl-Lkw + Bahn (KV)", "Luftfracht"),
+  Laufzeit = c("~1,5–2 Tage", "~2,5–3 Tage", "< 1 Tag (+ Vor-/Nachlauf)"),
+  Kosten = c("mittel", "niedrig bis mittel", "sehr hoch"),
+  THG = c("hoch", "niedrig", "sehr hoch"),
+  Risiko = c("Stau, Fahrermangel", "Fahrplan, Terminalzeiten",
+             "Kapazität, Kühlkette am Flughafen")
+)
+kbl_sf(inb, col.names = c("Option", "Laufzeit", "Kosten", "THG", "Hauptrisiko"),
+       align = c("l", "l", "l", "l", "l"), font_size = 22)
+```
+:::
+
+:::
+::: {.column width="42%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Abwägung
+Für Sushi zählt die **Resthaltbarkeit** beim Eintreffen. Jeder Tag Transport reduziert die Verkaufszeit in der Filiale. Das erhöht die Überdeckungskosten im **Newsvendor-Modell** (Einheit Newsvendor).
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Mögliche Lösung
+KV für tiefgekühlte oder länger haltbare Ware (z. B. Reis, Nori, TK-Garnelen), Lkw für frischen Lachs. Unterschiedliche Produkte, unterschiedliche Verkehrsträger.
+:::
+:::
+
+:::
+:::
+
+
+---
+
+## Fallstudie – E-Kühl-Lkw für SushiFresh {#tm-cs-reichweite}
+::: slide-subtitle
+Reicht die Reichweite für die heutige Belieferung?
+:::
+
+```{r tm-reichweite-calc}
+#| echo: false
+
+Q_nutz <- 110          # kWh für die Planung nutzbar (140 kWh brutto, Reserve)
+e_sommer <- 0.62; e_winter <- 0.70   # kWh/km inkl. Kühlung
+rw_max_s <- Q_nutz / e_sommer; rw_max_w <- Q_nutz / e_winter
+```
+
+::: columns
+::: {.column width="52%"}
+
+::: {.small-text}
+```{r tm-reichweite-tab}
+#| echo: false
+
+rw <- data.frame(
+  Zeile = c("Pendelverkehr heute: Energiebedarf", "Maximal fahrbare Strecke"),
+  Sommer = c(paste0(fmt(tour_km[["Pendel"]] * e_sommer, 0), " kWh ✗"),
+             paste0(fmt(rw_max_s, 0), " km")),
+  Winter = c(paste0(fmt(tour_km[["Pendel"]] * e_winter, 0), " kWh ✗"),
+             paste0(fmt(rw_max_w, 0), " km"))
+)
+kbl_sf(rw, col.names = c("", "Sommer (0,62 kWh/km)", "Winter (0,70 kWh/km)"),
+       align = c("l", "r", "r"), font_size = 24) |>
+  row_spec(1, background = "#F8D7DA", color = "#1F2933")
+```
+
+Pendelverkehr heute: `r tour_km[["Pendel"]]` km pro Tag. Nutzbare Energie: $Q =$ `r Q_nutz` kWh (Batterie 140 kWh, Reserve für Alterung und Unvorhergesehenes).
+:::
+
+:::
+::: {.column width="45%"}
+
+::: {.fragment .fade-up}
+::: {.callout-important appearance="simple"}
+## Ergebnis
+- Der heutige **Pendelverkehr** ist mit dem E-Lkw **unmöglich** (ohne Zwischenladen).
+- Eine Tour darf im Winter höchstens rund **`r fmt(rw_max_w, 0)` km** lang sein.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Offene Frage
+Schafft eine **Rundtour** durch alle sechs Filialen diese Grenze? Dafür brauchen wir die Straßenentfernungen (Einheit Kürzeste Wege) und eine gute Reihenfolge (Einheit Tourenplanung). Bei E-Fahrzeugen wird Tourenplanung damit zur Frage der **Machbarkeit**.
+:::
+:::
+
+:::
+:::
+

@@ -28,14 +28,14 @@ tp_filialen <- data.frame(
 # Adventszeit: Nachfrage + 40 %
 tp_filialen$Dez <- round(tp_filialen$mu * 1.4)
 
-# Küchen (Angebotsknoten): Zentralküche + zwei temporär angemietete Küchen
+# Küchen (Angebotsknoten): 2 Standardküchen + temporär angemietete Küche
 tp_kuechen <- data.frame(
   ID        = c("S3", "S1", "S5"),
-  Standort  = c("Raunheim (Zentralküche)", "Wiesbaden-Erbenheim",
+  Standort  = c("Raunheim", "Wiesbaden-Erbenheim",
                 "Neu-Isenburg"),
   Lon       = c(8.4650, 8.2999, 8.7072),
   Lat       = c(50.0000, 50.0632, 50.0543),
-  Kapazitaet = c(850, 200, 133)
+  Kapazitaet = c(450, 400, 133)
 )
 
 # Transportkosten c_ij in EUR je Box (Zeilen aus der Kostenmatrix von Einheit Standortplanung II)
@@ -259,7 +259,7 @@ kbl_sf(einordnung,
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Roter Faden
-Die Standortfrage für SushiFresh ist beantwortet: Die **Zentralküche Raunheim** beliefert die sechs Filialen. Das WLP hat Standorte gewählt **und** Filialen zugeordnet. Was passiert, wenn die Standorte feststehen, aber **Kapazitäten** knapp werden? Wege und Reihenfolgen der Touren folgen später im Block Distributionslogistik.
+Die Standortfrage für SushiFresh ist beantwortet: Von **Raunheim** und **Wiesbaden-Erbenheim** werden die sechs Filialen beliefert. Das WLP hat Standorte gewählt **und** Filialen zugeordnet. Was passiert, wenn die Standorte feststehen, aber **Kapazitäten** knapp werden?
 :::
 :::
 
@@ -324,12 +324,12 @@ leaflet(options = leafletOptions(zoomControl = TRUE)) |>
 
 ::: {.callout-note appearance="simple"}
 ## Ausgangslage
-Im Normalbetrieb beliefert die **Zentralküche Raunheim** alle sechs Filialen. Die Planung für die **Adventszeit** steht an: Dann steigt die Nachfrage nach Sushi-Boxen um rund **40 %**. Raunheim kann im Schichtbetrieb höchstens **850 Boxen/Tag** produzieren.
+Im Normalbetrieb beliefern **Raunheim** und **Wiesbaden-Erbenheim** alle sechs Filialen. Die Planung für die **Adventszeit** steht an: Dann steigt die Nachfrage nach Sushi-Boxen um rund **40 %**. **Raunheim** und **Wiesbaden-Erbenheim** können im Schichtbetrieb höchstens **850 Boxen/Tag** produzieren (Raunheim: 450 Boxen/Tag, Wiesbaden-Erbenheim: 400 Boxen/Tag).
 :::
 
 ::: {.callout-tip appearance="simple"}
 ## Idee der Geschäftsführung
-Für vier Wochen werden zwei **Cateringküchen** an früheren Kandidatenstandorten aus Einheit Standortplanung II angemietet: **Wiesbaden-Erbenheim** (200 Boxen/Tag) und **Neu-Isenburg** (133 Boxen/Tag).
+Für vier Wochen wird daher in **Neu-Isenburg** eine temporäre **Cateringküche**  angemietet, die eine **Kapazität von 133 Boxen/Tag** hat.
 :::
 
 ::: {.fragment .fade-up}
@@ -395,9 +395,6 @@ Gesamtkapazität $\sum_i s_i =$ `r sum(tp_supply)` Boxen, Gesamtnachfrage $\sum_
 :::
 :::
 
-::: {.fragment .fade-up}
-Raunheim allein würde mit 850 Boxen `r sum(tp_demand) - 850` Boxen/Tag zu wenig liefern.
-:::
 :::
 
 :::
@@ -479,7 +476,7 @@ fig |>
          yaxis = list(visible = FALSE, range = c(-0.02, 1.1), fixedrange = TRUE),
          plot_bgcolor = "transparent", paper_bgcolor = "transparent",
          margin = list(l = 10, r = 10, t = 10, b = 10),
-         height = 400, width = 620)
+         height = 400, width = 420)
 ```
 :::
 
@@ -1174,7 +1171,7 @@ Transportplanung SushiFresh – Ausfall einer Kühlzelle
 
 ::: {.columns .exercise-content}
 ::: {.column width="55%"}
-Am 18. Dezember fällt in Raunheim eine Kühlzelle aus. Die Kapazität sinkt für einen Tag auf **700 Boxen**. Die Mietküchen können nicht kurzfristig aufstocken.
+Am 18. Dezember fällt in Raunheim eine Kühlzelle aus. Die Kapazität sinkt für einen Tag auf **300 Boxen**. Die anderen Küchen können nicht kurzfristig aufstocken.
 
 - Ist das Transportproblem noch balanciert? Führen Sie gegebenenfalls einen Dummy-Knoten ein.
 - Welche Kosten würden Sie für den Dummy-Knoten ansetzen? Begründen Sie mit einem Deckungsbeitrag von 4,50 €/Box.
