@@ -11,6 +11,7 @@ library(kableExtra)
 
 # Funktionen aus scm_functions.R einbinden (u. a. simuliere_tS())
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 # Farben für die Grafiken dieses Kapitels
 farbe_nachfrage  <- "#1F4E79"

@@ -8,6 +8,7 @@
 
 # Funktionen aus scm_functions.R einbinden (u. a. haversine())
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 library(tidyverse)
 library(knitr)

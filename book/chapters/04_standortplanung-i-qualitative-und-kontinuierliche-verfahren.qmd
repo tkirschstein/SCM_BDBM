@@ -20,6 +20,7 @@
 # Hilfsfunktionen aus R/scm_functions.R einbinden (u.a. center_of_gravity(),
 # weiszfeld(), haversine(), ahp_priority_vector(), ahp_consistency())
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 library(tidyverse)
 library(knitr)

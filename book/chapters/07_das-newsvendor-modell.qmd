@@ -308,6 +308,7 @@ Zur Kontrolle vergleichen wir unser eigenes Ergebnis direkt mit der fertigen Fun
 
 ```{r ch7-vergleich-funktion}
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 ergebnis_fertig <- newsvendor_normal(
   mu = mu_nachfrage, sigma = sigma_nachfrage,

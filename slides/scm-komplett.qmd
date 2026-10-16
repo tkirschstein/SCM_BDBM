@@ -27,8 +27,10 @@ library(knitr)
 library(kableExtra)
 library(dplyr)
 
-
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 ```
 
 

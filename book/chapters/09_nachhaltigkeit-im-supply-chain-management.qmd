@@ -12,6 +12,7 @@ library(kableExtra)
 
 # Funktionen und Farbpalette aus scm_functions.R einbinden (Objekt `cols`)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 ```
 
 ::: {.lernziele}

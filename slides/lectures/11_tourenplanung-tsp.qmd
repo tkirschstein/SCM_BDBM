@@ -5,8 +5,10 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 
 library(tidyverse)
 library(plotly)
@@ -42,127 +44,13 @@ W <- matrix(0, nrow(tsp_nodes), nrow(tsp_nodes),
 W[cbind(tsp_edges$from, tsp_edges$to)] <- tsp_edges$km
 W[cbind(tsp_edges$to, tsp_edges$from)] <- tsp_edges$km
 
-dijkstra <- function(W, start) {
-  ids <- rownames(W)
-  d <- setNames(rep(Inf, nrow(W)), ids)
-  perm <- setNames(rep(FALSE, nrow(W)), ids)
-  d[start] <- 0
-  while (!all(perm)) {
-    v <- names(which.min(ifelse(perm, Inf, d)))
-    perm[v] <- TRUE
-    for (w in ids[W[v, ] > 0 & !perm]) d[w] <- min(d[w], d[v] + W[v, w])
-  }
-  d
-}
-
 # Distanzmatrix Zentralküche + Filialen (Ergebnis Einheit Kürzeste Wege)
 stops <- c("R", paste0("C", 1:6))
 D <- t(sapply(stops, function(s) dijkstra(W, s)[stops]))
 dimnames(D) <- list(stops, stops)
 stop_names <- setNames(tsp_nodes$Name, tsp_nodes$ID)[stops]
 
-# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
-fmt <- function(x, d = 1) formatC(x, format = "f", digits = d,
-                                   big.mark = ".", decimal.mark = ",")
-
-kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
-                   col1_bg = "#2F3E46") {
-  out <- kbl(df, ...) |>
-    kable_styling(bootstrap_options = c("condensed", "striped"),
-                  full_width = TRUE, font_size = font_size) |>
-    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
-  if (first_col) out <- out |>
-    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
-  out
-}
-
-tour_length <- function(tour, D) {
-  sum(D[cbind(tour, c(tour[-1], tour[1]))])
-}
-tour_str <- function(tour) paste(c(tour, tour[1]), collapse = " → ")
-
-# Tourgrafik: Linien = Fahrtabschnitte (Länge = Netzdistanz)
-tsp_plot <- function(tour = NULL, star = FALSE, highlight = NULL,
-                     new_edges = NULL, height = 560, width = 860,
-                     edge_labels = TRUE) {
-  nd <- tsp_nodes[tsp_nodes$ID %in% stops, ]
-  xy <- split(nd[, c("x", "y")], nd$ID)
-  fig <- plot_ly(type = "scatter", mode = "markers")
-  # Straßennetz im Hintergrund
-  for (e in seq_len(nrow(tsp_edges))) {
-    a <- tsp_nodes[tsp_nodes$ID == tsp_edges$from[e], ]
-    b <- tsp_nodes[tsp_nodes$ID == tsp_edges$to[e], ]
-    fig <- fig |> add_segments(x = a$x, xend = b$x, y = a$y, yend = b$y,
-                               line = list(color = "#E5E7EB", width = 2),
-                               hoverinfo = "skip", showlegend = FALSE)
-  }
-  segs <- NULL
-  if (star) segs <- data.frame(a = "R", b = stops[-1])
-  if (!is.null(tour)) segs <- data.frame(a = tour, b = c(tour[-1], tour[1]))
-  if (!is.null(segs)) for (k in seq_len(nrow(segs))) {
-    a <- segs$a[k]; b <- segs$b[k]
-    key <- paste(sort(c(a, b)), collapse = "-")
-    col <- if (!is.null(highlight) && key %in% highlight) "#C00000" else
-      if (!is.null(new_edges) && key %in% new_edges) "#D97B29" else "#0B6E4F"
-    dash <- if (!is.null(highlight) && key %in% highlight) "dot" else "solid"
-    fig <- fig |> add_segments(
-      x = xy[[a]]$x, xend = xy[[b]]$x, y = xy[[a]]$y, yend = xy[[b]]$y,
-      line = list(color = col, width = 4, dash = dash),
-      hoverinfo = "skip", showlegend = FALSE)
-    if (edge_labels) fig <- fig |> add_annotations(
-      x = (xy[[a]]$x + xy[[b]]$x) / 2, y = (xy[[a]]$y + xy[[b]]$y) / 2,
-      text = paste0("<b>", D[a, b], "</b>"), showarrow = FALSE,
-      bgcolor = "white", font = list(size = 13, color = col))
-  }
-  fig |>
-    add_trace(x = nd$x, y = nd$y, text = nd$ID, mode = "markers+text",
-              marker = list(symbol = ifelse(nd$Typ == "Küche", "hexagon", "circle"),
-                            size = 42,
-                            color = ifelse(nd$Typ == "Küche", "#BFDBF7", "#2D9E8E"),
-                            line = list(color = "#2F3E46", width = 1.5)),
-              textfont = list(size = 14,
-                              color = ifelse(nd$Typ == "Küche", "#1F2933", "white")),
-              hovertext = nd$Name, hoverinfo = "text", showlegend = FALSE) |>
-    add_annotations(x = nd$x, y = nd$y - 2.7, text = nd$Name, showarrow = FALSE,
-                    font = list(size = 11, color = "#4B5563")) |>
-    layout(xaxis = list(visible = FALSE, fixedrange = TRUE,
-                        range = range(tsp_nodes$x) + c(-4, 4)),
-           yaxis = list(visible = FALSE, fixedrange = TRUE,
-                        range = range(tsp_nodes$y) + c(-4.5, 4)),
-           plot_bgcolor = "transparent", paper_bgcolor = "transparent",
-           margin = list(l = 5, r = 5, t = 5, b = 5),
-           height = height, width = width)
-}
-
 # ── Verfahren (identisch zu den gezeigten R-Folien) ──────────────────────────
-nearest_neighbor <- function(D, start = 1) {
-  tour <- start
-  while (length(tour) < nrow(D)) {
-    offen <- setdiff(seq_len(nrow(D)), tour)
-    letzte <- tail(tour, 1)
-    tour <- c(tour, offen[which.min(D[letzte, offen])])
-  }
-  rownames(D)[tour]
-}
-
-two_opt <- function(tour, D) {
-  n <- length(tour); log <- list()
-  repeat {
-    best <- 0
-    for (i in 1:(n - 1)) for (k in (i + 1):n) {
-      a <- tour[i]; b <- tour[i + 1]
-      c <- tour[k]; d <- tour[k %% n + 1]
-      if (b == c || a == d) next          # benachbarte Kanten
-      delta <- D[a, b] + D[c, d] - D[a, c] - D[b, d]
-      if (delta > best) { best <- delta; bi <- i; bk <- k }
-    }
-    if (best <= 0) break                  # lokales Optimum
-    log[[length(log) + 1]] <- list(tour = tour, i = bi, k = bk, gain = best)
-    tour <- c(tour[1:bi], rev(tour[(bi + 1):bk]),
-              if (bk < n) tour[(bk + 1):n])
-  }
-  list(tour = tour, log = log)
-}
 
 # Ergebnisse
 tour_nn  <- nearest_neighbor(D, start = 1)
@@ -173,38 +61,11 @@ len_2o   <- tour_length(tour_2o, D)
 len_star <- 2 * sum(D["R", -1])
 
 # Exakte Lösung durch vollständige Enumeration (n = 7 → 360 Touren)
-perms <- function(v) if (length(v) <= 1) list(v) else
-  do.call(base::c, lapply(seq_along(v), function(i)
-    lapply(perms(v[-i]), function(p) c(v[i], p))))
 alle_touren <- lapply(perms(stops[-1]), function(p) c("R", p))
 alle_len    <- sapply(alle_touren, tour_length, D = D)
 tour_opt    <- alle_touren[[which.min(alle_len)]]
 len_opt     <- min(alle_len)
 
-# Savings-Verfahren (Clarke & Wright, parallele Variante)
-savings_cw <- function(D, q, cap, depot = "R") {
-  kunden <- names(q)
-  touren <- as.list(kunden)                       # Start: Pendeltouren
-  s <- subset(expand.grid(i = kunden, j = kunden, stringsAsFactors = FALSE),
-              i < j)
-  s$s <- D[depot, s$i] + D[depot, s$j] - D[cbind(s$i, s$j)]
-  s <- s[order(-s$s), ]
-  for (r in seq_len(nrow(s))) {
-    i <- s$i[r]; j <- s$j[r]
-    ti <- which(sapply(touren, function(t) i %in% t))
-    tj <- which(sapply(touren, function(t) j %in% t))
-    if (ti == tj) next
-    A <- touren[[ti]]; B <- touren[[tj]]
-    if (sum(q[c(A, B)]) > cap) next
-    if (tail(A, 1) == i && B[1] == j) new <- c(A, B)
-    else if (A[1] == i && tail(B, 1) == j) new <- c(B, A)
-    else if (tail(A, 1) == i && tail(B, 1) == j) new <- c(A, rev(B))
-    else if (A[1] == i && B[1] == j) new <- c(rev(A), B)
-    else next                                     # i oder j innen → nicht verknüpfbar
-    touren[[ti]] <- new; touren <- touren[-tj]
-  }
-  list(touren = touren, savings = s)
-}
 q_norm  <- c(C1 = 120, C2 = 150, C3 = 280, C4 = 90, C5 = 110, C6 = 95)
 vrp     <- savings_cw(D, q_norm, cap = 500)
 vrp_len <- sapply(vrp$touren, function(t) tour_length(c("R", t), D))
@@ -891,7 +752,7 @@ plot_ly(vgl, x = ~factor(Variante, levels = Variante), y = ~km, type = "bar",
 ::: {.callout-tip appearance="simple"}
 ## Ergebnis
 - Optimale Tour (Enumeration aller `r length(alle_touren) / 2` Touren): `r tour_str(tour_opt)` mit **`r len_opt` km**
-- NN + 2-opt liegt `r fmt((len_2o / len_opt - 1) * 100)` % über dem Optimum, NN allein `r fmt((len_nn / len_opt - 1) * 100)` %.
+- NN + 2-opt liegt `r fmt((len_2o / len_opt - 1) * 100, 1)` % über dem Optimum, NN allein `r fmt((len_nn / len_opt - 1) * 100, 1)` %.
 :::
 :::
 
@@ -940,13 +801,13 @@ ersparnis_jahr <- (bew$kosten[1] - bew$kosten[3]) * tage_jahr
 ```{r tsp-kosten-tab}
 #| echo: false
 
-kbl_sf(bew |> transmute(Variante, km, h = fmt(h), kosten = paste0(fmt(kosten), " €"),
+kbl_sf(bew |> transmute(Variante, km, h = fmt(h, 1), kosten = paste0(fmt(kosten, 1), " €"),
                         je_box = paste0(fmt(je_box, 3), " €")),
        col.names = c("Variante", "km/Tag", "Stunden/Tag", "Kosten/Tag", "€ je Box"),
        align = c("l", "r", "r", "r", "r"), font_size = 24)
 ```
 
-Fahrzeugfixkosten `r fmt(fix_tag)` €/Tag, `r fmt(k_km, 3)` €/km, Fahrer `r fmt(k_h)` €/h; Ø `r v_kmh` km/h, `r t_stopp * 60` min je Filiale, `r t_lade * 60` min je Beladung in Raunheim.
+Fahrzeugfixkosten `r fmt(fix_tag, 1)` €/Tag, `r fmt(k_km, 3)` €/km, Fahrer `r fmt(k_h, 1)` €/h; Ø `r v_kmh` km/h, `r t_stopp * 60` min je Filiale, `r t_lade * 60` min je Beladung in Raunheim.
 :::
 
 :::

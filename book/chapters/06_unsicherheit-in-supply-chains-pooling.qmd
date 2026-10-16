@@ -23,6 +23,7 @@ library(kableExtra)  # formatierte Tabellen für HTML/PDF
 # Die im Buch wiederverwendeten SCM-Funktionen (u.a. pooling_safety_stock(),
 # simuliere_tS(), tS.lager()) liegen gebündelt in R/scm_functions.R
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 ```
 
 Kapitel [-@sec-standort-1] und [-@sec-standort-2] haben gezeigt, wie Standorte und Netzwerke **unter der Annahme bekannter, fixer Nachfragen** geplant werden. In der Realität ist diese Annahme fast nie erfüllt: Nachfrage schwankt von Periode zu Periode, Lieferzeiten variieren, und Kapazitäten müssen lange im Voraus festgelegt werden, bevor überhaupt bekannt ist, wie viel tatsächlich benötigt wird. Dieses Kapitel behandelt, wie Supply Chains mit dieser **Unsicherheit** umgehen — durch geeignete Quantifizierung, durch Sicherheitsbestände und, als zentrales Gestaltungsprinzip, durch **Pooling**: die Bündelung von Kapazitäten oder Lagerbeständen, um Nachfrageschwankungen gegenseitig auszugleichen.

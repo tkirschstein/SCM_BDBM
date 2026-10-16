@@ -131,6 +131,7 @@ Berechnen Sie für jede Regel den realisierten Gewinn, die Fehlmengen, die Abfal
 #| eval: false
 library(tidyverse)
 source("../R/scm_functions.R")   # newsvendor_normal()
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 raw <- read_csv("Bakery sales.csv")
 

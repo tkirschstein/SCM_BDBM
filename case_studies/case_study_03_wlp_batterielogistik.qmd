@@ -149,6 +149,7 @@ knitr::kable(lager, format.args = list(big.mark = ".", decimal.mark = ","),
 #| label: starter
 #| eval: false
 source("../R/scm_functions.R")   # haversine(), add_heuristic_wlp(), drop_heuristic_wlp(), vogels_approximation()
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 library(ompr); library(ompr.roi); library(ROI.plugin.glpk); library(dplyr)
 
 uf <- 1.2

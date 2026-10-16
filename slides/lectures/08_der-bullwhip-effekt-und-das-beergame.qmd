@@ -14,8 +14,10 @@ library(kableExtra)
 library(xml2)
 library(datawizard)
 
-# Funktionen aus scm_functions.R einbinden
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 
 set.seed(1234)
 
@@ -24,27 +26,6 @@ farbe_bestellung <- "#C00000"
 farbe_bestand <- "#70AD47"
 farbe_hintergrund <- "#F2F2F2"
 
-plotly_layout <- function(p,
-                          title = NULL,
-                          x_title = NULL,
-                          y_title = NULL,
-                          showlegend = TRUE) {
-  p |>
-    layout(
-      title = list(text = title, x = 0),
-      xaxis = list(title = x_title),
-      yaxis = list(title = y_title),
-      showlegend = showlegend,
-      legend = list(
-        orientation = "h",
-        x = 0,
-        y = -0.15
-      ),
-      margin = list(l = 70, r = 30, b = 70, t = 70),
-      paper_bgcolor = "white",
-      plot_bgcolor = "white"
-    )
-}
 ```
 
 ## Unsicherheit in Supply Chains  {#outline}
@@ -96,7 +77,6 @@ $$
 \text{Nord-Fisch KG}
 $$
 :::
-
 
 ::: {.smaller-text}
 ::: columns
@@ -152,7 +132,6 @@ SushiFresh GmbH entscheidet täglich über seine Produktionsmenge an Sushi-Boxen
 - der **disponible Bestand** $p_t$ berücksichtigt auch offene Bestellungen $p_t = n_{t-1} + q_{t-1} (+q_t)$
 :::
 
-
 ------------------------------------------------------------------------------
 
 ## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-stock-overview}
@@ -190,7 +169,6 @@ daten_bestand <- res |>
          ) |> 
   add_row(Periode = 0, Nettobestand = i.ini, 'Disponibler_Bestand' = i.ini, Bestellmenge = 0, Liefermenge = 0, 'Physischer_Bestand' = i.ini, offene_Bestellungen = 0, .before = 1) |>
   mutate(Nettobestand_vor_Bedarf = lag(Nettobestand))
-
 
 ```
 
@@ -452,7 +430,6 @@ Wichtig: Die Parameter $\mu$ und $\sigma$ sind die erwarte tägliche **Nachfrage
 ::: 
 :::
 
-
 ------------------------------------------------------------------------------
 
 ## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-order-decisions}
@@ -675,7 +652,6 @@ Die Schwankung der Nachfrage $\sigma_d=$ `r round(sd_vergleich$Standardabweichun
 ::: 
 :::
 
-
 ------------------------------------------------------------------------------
 
 ##  Bullwhip-Effekt
@@ -725,7 +701,6 @@ daten_bullwhip <- tibble(
   Handel = bestellung_handel,
   Großhandel = bestellung_grosshandel
 )
-
 
 p_sushi_bullwhip <- daten_bullwhip |>
   plot_ly() |> 
@@ -841,7 +816,6 @@ $\rightarrow$ je größer $B$ desto stärker der Bullwhip-Effekt
 ::: 
 :::
 
-
 ------------------------------------------------------------------------------
 
 ## Bullwhip-Effekt
@@ -922,7 +896,6 @@ $$
 :::
 :::
 
-
 ------------------------------------------------------------------------------
 
 ##  Bullwhip-Effekt
@@ -980,7 +953,6 @@ Typische Folgen
 :::
 
 ------------------------------------------------------------------------------
-
 
 ##  Bullwhip-Effekt
 ::: slide-subtitle

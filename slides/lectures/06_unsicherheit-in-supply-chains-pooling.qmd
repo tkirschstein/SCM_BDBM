@@ -16,7 +16,10 @@ library(planr)
 library(dplyr)
 # MASS wird nicht geladen, um dplyr::select() nicht zu überdecken; Aufruf über MASS::mvrnorm()
 
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 ```
 
 

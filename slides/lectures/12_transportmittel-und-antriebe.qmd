@@ -5,8 +5,10 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 
 library(tidyverse)
 library(plotly)
@@ -15,43 +17,7 @@ library(kableExtra)
 
 knitr::opts_chunk$set(fig.width = 9.5, fig.height = 6)
 
-# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
-fmt <- function(x, d = 2) formatC(x, format = "f", digits = d,
-                                   big.mark = ".", decimal.mark = ",")
-eur <- function(x, d = 0) paste0(fmt(x, d), " €")
-
-kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
-                   col1_bg = "#2F3E46") {
-  out <- kbl(df, ...) |>
-    kable_styling(bootstrap_options = c("condensed", "striped"),
-                  full_width = TRUE, font_size = font_size) |>
-    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
-  if (first_col) out <- out |>
-    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
-  out
-}
-
-plt_layout <- function(p, xt = "", yt = "", h = 480, w = 760, legend = TRUE) {
-  p |> layout(xaxis = list(title = xt), yaxis = list(title = yt),
-              showlegend = legend,
-              legend = list(orientation = "h", x = 0, y = -0.18),
-              margin = list(l = 70, r = 20, t = 20, b = 60),
-              plot_bgcolor = "white", paper_bgcolor = "white",
-              height = h, width = w)
-}
-
 # ── Kostensatzrechnung ───────────────────────────────────────────────────────
-# Fahrzeugparameter: Liste mit Anschaffung A, Restwert RW, Nutzungsdauer N,
-# Zinssatz i, fixen Jahreskosten und variablen Kosten je km
-fahrzeugkosten <- function(p, km_jahr) {
-  afa    <- (p$A - p$RW) / p$N                 # lineare Abschreibung
-  zins   <- (p$A + p$RW) / 2 * p$i             # kalk. Zinsen auf Ø Kapital
-  fix    <- afa + zins + p$versicherung + p$steuer + p$sonst_fix
-  var_km <- p$energie_km + p$wartung_km + p$reifen_km + p$maut_km
-  list(afa = afa, zins = zins, fix = fix, var_km = var_km,
-       fix_km = fix / km_jahr, gesamt_km = fix / km_jahr + var_km,
-       gesamt_jahr = fix + var_km * km_jahr)
-}
 
 # Parameter (Annahmen, netto, gerundet, Stand Herbst 2026)
 diesel_preis <- 2.00   # €/l netto (Tankstelle ~2,40 €/l brutto, Sept. 2026)
@@ -91,7 +57,11 @@ fv_fahrer <- 55000
 
 # Streckenlängen der Filialbelieferung: Pendelverkehr heute (296 km/Tag);
 # eine Rundtour von ca. 153 km wird in der Einheit Tourenplanung hergeleitet
-tour_km <- c(Pendel = 204, `2-opt` = 153)
+
+# Distanzen aus Einheit 5
+dist_vec_raunheim <- df_dist[3,]
+
+tour_km <- c(Pendel = 2*sum(dist_vec_raunheim), `2-opt` = 153)
 ```
 
 ## Distributionslogistik {#tm-outline}
@@ -245,7 +215,6 @@ kbl_sf(modes,
 ```
 :::
 
-
 :::: columns
 ::: {.column width="45%"}
 ```{r tm-radar-plot}
@@ -279,14 +248,12 @@ p |> layout(polar = list(radialaxis = list(visible = TRUE, range = c(0, 5))),
 
 ::: {.column width="55%"}
 
-
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Lesart
 Kein Verkehrsträger dominiert. Die Wahl hängt vom **Produkt** ab (Wert, Verderblichkeit, Gewicht), von der **Entfernung** und von der Bedeutung der **Lieferzeit** (vgl. Strategic Fit).
 :::
 :::
-
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
@@ -297,7 +264,6 @@ Emissionsraten sind grobe Näherung basierend auf TREMOD [@uba2024emissionsdaten
 
 :::
 ::::
-
 
 ---
 
@@ -336,7 +302,6 @@ kbl_sf(dl, col.names = c("Akteur", "Leistung", "Vertrag", "Beispiel SushiFresh")
 Der Logistikmarkt ist sehr fragmentiert: viele kleine Frachtführer und wenige große Netzwerkanbieter. Für Verlader bedeutet das: Preise und Kapazitäten schwanken stark mit Saison, Dieselpreis und Fahrermangel.
 :::
 :::
-
 
 ---
 
@@ -426,7 +391,6 @@ plot_ly(type = "scatter", mode = "markers") |>
 ```
 :::
 
-
 :::
 ::: {.column width="53%"}
 ::: {.fragment .fade-up}
@@ -459,7 +423,6 @@ plot_ly() |>
   layout(legend = list(orientation = "h", x = 0, y = -0.32),
          margin = list(l = 70, r = 20, t = 10, b = 80))
 ```
-
 
 :::
 
@@ -524,7 +487,6 @@ kbl_sf(an, col.names = c("Antrieb", "Energieträger", "Reichweite", "Tanken/Lade
 
 :::
 
-
 ::: columns
 ::: {.column width="50%"}
 ::: {.fragment .fade-up}
@@ -577,7 +539,6 @@ Technik und Rahmenbedingungen 2026
 :::
 :::
 
-
 ---
 
 ## Batterieelektrische Lkw {#tm-reichweite}
@@ -594,7 +555,6 @@ Was beeinflusst die Reichweite?
 #| message: false
 #| fig-height: 6.3
 #| fig-width: 6.3
-
 
 vb <- data.frame(
   Faktor = c("Basis", "Beladung", "Kühlung", "Winter", "Autobahn"),
@@ -616,7 +576,6 @@ plot_ly(vb, y = ~Faktor, x = ~base, type = "bar", orientation = "h",
          margin = list(l = 90, r = 20, t = 10, b = 50),
          height = 480, width = 680)
 ```
-
 
 :::
 ::: {.column width="45%"}
@@ -702,8 +661,6 @@ p |>
 :::
 :::
 
-
-
 ::: {.callout-tip appearance="simple"}
 ## Neue Optionen
 
@@ -719,7 +676,6 @@ p |>
 :::
 ::::
 :::
-
 
 ---
 
@@ -789,7 +745,6 @@ p |>
 
 :::
 :::
-
 
 ::: {.fragment .fade-up}
 ::: {.small-text}
@@ -882,7 +837,6 @@ kd <- fahrzeugkosten(sf_diesel, km_pendel)
 Sushi-Fresh beliefert von Raunheim aus alle Filialen durch Pendeltouren. Insgesamt sind pro Arbeits-Tag damit `r round(tour_km[["Pendel"]])` km zu fahren. Dazu wird ein 7,5-t-Kühltransporter an 300 Arbeits-Tagen eingesetzt.
 :::
 
-
 ::: columns
 ::: {.column width="48%"}
 
@@ -929,10 +883,8 @@ Für die Tourenplanung ist die Trennung in **€/km** (Fahrzeug, variabel) und *
 :::
 :::
 
-
 :::
 :::
-
 
 ---
 
@@ -973,7 +925,6 @@ satz_boxkm <- tag$gesamt[1] / boxkm
 Die ersten Einschätzungen gehen davon aus, dass der 7,5-t-Kühltransporter die Pendeltouren mit einer Durchschnittsgeschwindigkeit von `r v_kmh` km/h zurücklegt. Die Beladung in Raunheim dauert jedes Mal `r t_lade * 60` Minuten, die Entladung in jeder Filiale `r t_stopp * 60` Minuten.
 :::
 
-
 ```{r tm-bsp1b-tab}
 #| echo: false
 
@@ -985,7 +936,6 @@ kbl_sf(tag[1, ] |> transmute(Variante, km, h = fmt(h, 1), fix = fmt(fix), var = 
        align = c("l", rep("r", 7)), font_size = 28)
 ```
 
-
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Kostensatz je Box und km
@@ -994,7 +944,6 @@ $$\frac{`r gsub(",", "{,}", fmt(tag$gesamt[1]))`\ \text{€}}{`r fmt(boxkm, 0)`\
 Das liegt über der Annahme von **0,02 €/(Box·km)** aus Einheit Standortplanung II. Woher könnte die Differenz stammen?
 :::
 :::
-
 
 ---
 
@@ -1084,7 +1033,6 @@ p |> layout(barmode = "stack") |>
 
 :::
 ::::
-
 
 ---
 
@@ -1221,7 +1169,6 @@ kbl_sf(iso, col.names = c("Begriff", "Bedeutung"), align = c("l", "l"),
 
 **Transportkette [kombinierter Verkehr](#tm-kv)** 
 
-
 ```{r tm-iso-kette}
 #| echo: false
 #| warning: false
@@ -1256,7 +1203,6 @@ p |> add_annotations(x = el$x, y = 0.5, text = gsub("\n", "<br>", el$name),
          height = 250, width = 620)
 ```
 
-
 :::
 :::
 
@@ -1265,7 +1211,6 @@ p |> add_annotations(x = el$x, y = 0.5, text = gsub("\n", "<br>", el$name),
 Für die Allokation der Emissionen wird die **kürzeste realisierbare Distanz** (SFD) vom Versandort zum Zielort verwendet. Diese Allokations-Distanzen sind **unabhängig von der tatsächlich gefahrenen Tour**.  Die Emissionen der tatsächlich gefahrenen Tour (inkl. Leerfahrten) werden durch den **Energieverbrauch** der TOC berücksichtigt.
 :::
 :::
-
 
 ---
 
@@ -1314,74 +1259,177 @@ Strom (Netz DE) ≈ 0,38 kg CO₂e/kWh inkl. Vorkette [@uba2025strommix]
 
 ## Fallstudie – CO₂ der Filialbelieferung {#tm-co2-bsp}
 ::: slide-subtitle
-Emissionen je Box nach ISO 14083
+Emissionen je Box nach ISO 14083: Pendelverkehr oder Rundtour?
 :::
 
 ```{r tm-co2-calc}
 #| echo: false
 
-f_d_ttw <- 2.65; f_d_wtw <- 3.20          # kg CO2e/l
-f_strom <- 0.38; ladeverlust <- 0.10      # kg CO2e/kWh, Ladeverluste
-m_box   <- 0.35                           # kg je Box inkl. Verpackung
-hub_kwh <- 40                             # kWh/Tag Kühlung Versandzone Raunheim
+library(leaflet)
 
-mu  <- c(C1 = 120, C2 = 150, C3 = 280, C4 = 90, C5 = 110, C6 = 95)
-dR  <- c(C1 = 26, C2 = 22, C3 = 28, C4 = 6, C5 = 39, C6 = 27)   # SFD (Einheit Kürzeste Wege)
-tkm <- sum(mu * m_box / 1000 * dR)
+# ── Straßennetz Rhein-Main (wie in der Einheit Kürzeste Wege) ────────────────
+co2_nodes <- data.frame(
+  ID   = c("R", "MH", "WK", "FK", "C1", "C2", "C3", "C4", "C5", "C6"),
+  Name = c("Raunheim", "Mönchhof-Dreieck", "Wiesbadener Kreuz", "Frankfurter Kreuz",
+           "Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim", "Darmstadt", "Offenbach"),
+  Lon  = c(8.4650, 8.4950, 8.3720, 8.5985, 8.2398, 8.2711, 8.6821, 8.4116, 8.6512, 8.7761),
+  Lat  = c(50.0000, 50.0350, 50.0620, 50.0535, 50.0782, 50.0000, 50.1109, 49.9904,
+           49.8728, 50.0956)
+)
+co2_edges <- data.frame(
+  from = c("R", "R", "R", "MH", "MH", "MH", "WK", "WK", "C1", "C2",
+           "C4", "FK", "FK", "FK", "C3", "C5"),
+  to   = c("MH", "C4", "C3", "WK", "FK", "C4", "C1", "C2", "C2", "C4",
+           "C5", "C3", "C5", "C6", "C6", "C6"),
+  km   = c(5, 6, 33, 13, 10, 10, 8, 15, 14, 16, 33, 13, 29, 12, 10, 24)
+)
+co2_W <- matrix(0, nrow(co2_nodes), nrow(co2_nodes),
+                dimnames = list(co2_nodes$ID, co2_nodes$ID))
+co2_W[cbind(co2_edges$from, co2_edges$to)] <- co2_edges$km
+co2_W[cbind(co2_edges$to, co2_edges$from)] <- co2_edges$km
 
-szen_co2 <- data.frame(
-  Szenario = c("Diesel, Pendelverkehr", "Diesel, Rundtour", "E-Lkw, Rundtour"),
-  km = c(tour_km[["Pendel"]], tour_km[["2-opt"]], tour_km[["2-opt"]])
-) |>
-  mutate(energie = c(0.17 * km[1], 0.17 * km[2], 0.66 * km[3] * (1 + ladeverlust)),
-         einheit = c("l", "l", "kWh"),
-         ttw = c(energie[1:2] * f_d_ttw, 0),
-         wtw = c(energie[1:2] * f_d_wtw, energie[3] * f_strom),
-         eps = wtw / tkm,
-         je_box = wtw / sum(mu) * 1000)
-hub_co2 <- hub_kwh * f_strom
-hub_je_box <- hub_co2 / sum(mu) * 1000
-box_C5 <- szen_co2$eps[2] * m_box / 1000 * dR["C5"] * 1000
-box_C4 <- szen_co2$eps[2] * m_box / 1000 * dR["C4"] * 1000
+# Dijkstra: kürzeste Entfernungen und Vorgänger ab Startknoten s
+sp_tree <- function(W, s) {
+  ids <- rownames(W)
+  d <- setNames(rep(Inf, length(ids)), ids)
+  pred <- setNames(rep(NA_character_, length(ids)), ids)
+  perm <- setNames(rep(FALSE, length(ids)), ids)
+  d[s] <- 0
+  while (!all(perm)) {
+    v <- names(which.min(ifelse(perm, Inf, d))); perm[v] <- TRUE
+    for (w in ids[W[v, ] > 0 & !perm]) if (d[v] + W[v, w] < d[w]) {
+      d[w] <- d[v] + W[v, w]; pred[w] <- v
+    }
+  }
+  list(d = d, pred = pred)
+}
+# Knotenfolge des kürzesten Wegs von s nach t (für die Kartendarstellung)
+sp_path <- function(s, t) {
+  pr <- sp_tree(co2_W, s)$pred; p <- t
+  while (p[1] != s) p <- c(unname(pr[p[1]]), p)
+  co2_nodes[match(p, co2_nodes$ID), c("Lon", "Lat")]
+}
+
+# ── Filialen, Distanzen, Touren ──────────────────────────────────────────────
+fil <- data.frame(ID = paste0("C", 1:6),
+                  Name = co2_nodes$Name[match(paste0("C", 1:6), co2_nodes$ID)],
+                  mu = c(120, 150, 280, 90, 110, 95))
+dR <- sp_tree(co2_W, "R")$d[fil$ID]                      # SFD Raunheim -> Filiale
+orte <- c("R", fil$ID)
+D <- t(sapply(orte, function(s) sp_tree(co2_W, s)$d[orte]))
+tour <- c("R", "C4", "C2", "C1", "C3", "C6", "C5")         # 2-opt-Tour (Tourenplanung)
+km_pendel <- 2 * sum(dR)
+km_rund   <- sum(D[cbind(tour, c(tour[-1], tour[1]))])
+
+# ── Emissionen (Well-to-Wheel) und Zuordnung nach ISO 14083 ─────────────────
+f_diesel <- 3.20; v_diesel <- 0.17            # kg CO2e/l; l/km inkl. Kühlung
+f_strom  <- 0.38; v_bev <- 0.66; ladeverlust <- 0.10   # kg CO2e/kWh; kWh/km
+m_box    <- 0.35                              # kg je Box inkl. Verpackung
+E_toc <- function(km) c(Diesel = km * v_diesel * f_diesel,           # kg CO2e/Tag
+                        BEV    = km * v_bev * (1 + ladeverlust) * f_strom)
+tkm <- sum(fil$mu * m_box / 1000 * dR)        # Transportaktivität (SFD)
+
+co2_tabelle <- function(km) {
+  E <- E_toc(km); eps <- E / tkm               # Intensität kg CO2e/tkm
+  g <- outer(m_box / 1000 * dR, eps) * 1000    # g CO2e je Box und Filiale
+  data.frame(
+    Standort = c(fil$Name, "Ø je Box", "Gesamt (kg/Tag)"),
+    Boxen    = c(fmt(fil$mu, 0), fmt(sum(fil$mu), 0), ""),
+    d        = c(fmt(dR, 0), "", paste(fmt(km, 0), "km/Tag")),
+    Diesel   = c(fmt(g[, "Diesel"], 0), fmt(E["Diesel"] / sum(fil$mu) * 1000, 0),
+                 fmt(E["Diesel"], 1)),
+    BEV      = c(fmt(g[, "BEV"], 0), fmt(E["BEV"] / sum(fil$mu) * 1000, 0),
+                 fmt(E["BEV"], 1))
+  )
+}
+co2_kbl <- function(df) {
+  kbl_sf(df, col.names = c("Standort", "Boxen", "Distanz (km)", "Diesel", "E-Lkw"),
+         align = c("l", "r", "r", "r", "r"), font_size = 17, row.names = FALSE) |>
+    add_header_above(c(" " = 3, "g CO₂e je Box" = 2), color = "white",
+                     background = "#2F3E46") |>
+    row_spec(7:8, bold = TRUE, background = "#E8F3EE", color = "#1F2933")
+}
+
+# ── Karte ────────────────────────────────────────────────────────────────────
+co2_karte <- function(wege, farbe, beschriftung) {
+  m <- leaflet(width = "100%", height = 230,
+               options = leafletOptions(zoomControl = FALSE, dragging = FALSE,
+                                        scrollWheelZoom = FALSE,
+                                        doubleClickZoom = FALSE)) |>
+    addProviderTiles(providers$Esri.WorldGrayCanvas)
+  for (w in wege) m <- m |> addPolylines(lng = w$Lon, lat = w$Lat, color = farbe,
+                                         weight = 5, opacity = 0.85)
+  fk <- co2_nodes[match(fil$ID, co2_nodes$ID), ]
+  richtung <- c(C1 = "top", C2 = "left", C3 = "top", C4 = "bottom",
+                C5 = "right", C6 = "right")
+  lab_stil <- list("font-size" = "14px", "font-weight" = "600")
+  for (k in seq_len(nrow(fk))) m <- m |>
+    addCircleMarkers(lng = fk$Lon[k], lat = fk$Lat[k], radius = 4 + sqrt(fil$mu[k]) / 2,
+                     color = "white", weight = 2, fillColor = "#2D9E8E",
+                     fillOpacity = 1, label = beschriftung[k],
+                     labelOptions = labelOptions(noHide = TRUE, textOnly = TRUE,
+                                                 direction = richtung[[fil$ID[k]]],
+                                                 style = lab_stil))
+  m |>
+    addCircleMarkers(lng = 8.4650, lat = 50.0000, radius = 10, color = "white",
+                     weight = 2, fillColor = "#2A7ACA", fillOpacity = 1,
+                     label = "Raunheim",
+                     labelOptions = labelOptions(noHide = TRUE, direction = "right",
+                                                 textOnly = TRUE, offset = c(6, 0),
+                                                 style = list("font-size" = "14px",
+                                                              "font-weight" = "700",
+                                                              "color" = "#2A7ACA"))) |>
+    fitBounds(8.10, 49.84, 8.92, 50.13)
+}
+wege_pendel <- lapply(fil$ID, function(j) sp_path("R", j))
+wege_rund   <- lapply(seq_along(tour), function(k)
+  sp_path(tour[k], c(tour[-1], tour[1])[k]))
+pos_tour <- match(fil$ID, tour) - 1                        # Position in der Tour
 ```
 
-::: columns
-::: {.column width="56%"}
+:::: columns
+::: {.column width="49%"}
 
-::: {.small-text}
-```{r tm-co2-tab}
+::: {.smaller-text}
+**Pendelverkehr** (6 Einzelfahrten): **`r fmt(km_pendel, 0)` km/Tag**
+:::
+
+```{r tm-co2-map-pendel}
 #| echo: false
 
-kbl_sf(szen_co2 |> transmute(Szenario, km = fmt(km, 0),
-                             energie = paste(fmt(energie, 0), einheit),
-                             ttw = fmt(ttw, 0), wtw = fmt(wtw, 0),
-                             eps = fmt(eps, 1), je_box = fmt(je_box, 0)),
-       col.names = c("Szenario (TOC)", "km/Tag", "Energie", "TTW (kg)", "WTW (kg)",
-                     "kg CO₂e/tkm", "g CO₂e/Box"),
-       align = c("l", rep("r", 6)), font_size = 22)
+co2_karte(wege_pendel, "#6B7280", fil$Name)
 ```
 
-Transportaktivität: $\sum_j \mu_j \cdot m_{\text{Box}} \cdot d_{Rj}^{\text{SFD}} =$ `r fmt(tkm, 2)` tkm pro Tag (`r sum(mu)` Boxen à `r fmt(m_box)` kg, kürzeste Straßenentfernungen; wie man sie berechnet, zeigt die Einheit Kürzeste Wege). Rundtour: ca. `r tour_km[["2-opt"]]` km (Einheit Tourenplanung). **Hub** (Kühlung Versandzone, `r hub_kwh` kWh/Tag): `r fmt(hub_co2, 1)` kg CO₂e, also `r fmt(hub_je_box, 0)` g je Box.
-:::
+```{r tm-co2-tab-pendel}
+#| echo: false
+
+co2_kbl(co2_tabelle(km_pendel))
+```
 
 :::
-::: {.column width="42%"}
+::: {.column width="49%"}
 
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Ergebnis
-- Die **Rundtour** halbiert die Emissionen gegenüber dem Pendelverkehr, der **E-Lkw** halbiert sie noch einmal (beim heutigen Strommix).
-- Zuordnung nach SFD: Eine Box nach **Darmstadt** (39 km) trägt `r fmt(box_C5, 0)` g, eine nach **Rüsselsheim** (6 km) nur `r fmt(box_C4, 0)` g (Diesel, Rundtour).
-:::
+::: {.smaller-text}
+**Rundtour** (2-opt, Reihenfolge 1–6): **`r fmt(km_rund, 0)` km/Tag**
 :::
 
-::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-Die Intensität je tkm ist sehr hoch, weil der Lkw nur **leichte Ware** fährt (Volumen, nicht Gewicht begrenzt). ISO 14083 erlaubt in solchen Fällen auch andere Zuordnungsgrößen (z. B. Stück, Paletten), sofern sie einheitlich verwendet werden.
-:::
-:::
+```{r tm-co2-map-rund}
+#| echo: false
+
+co2_karte(wege_rund, "#0B6E4F", paste0(pos_tour, " · ", fil$Name))
+```
+
+```{r tm-co2-tab-rund}
+#| echo: false
+
+co2_kbl(co2_tabelle(km_rund))
+```
 
 :::
+::::
+
+::: {.tiny-text}
+WTW: Diesel `r fmt(v_diesel * 100, 0)` l/100 km × `r fmt(f_diesel, 1)` kg CO₂e/l; E-Lkw `r fmt(v_bev * 100, 0)` kWh/100 km + `r fmt(ladeverlust * 100, 0)` % Ladeverluste × `r fmt(f_strom, 2)` kg CO₂e/kWh. Zuordnung nach ISO 14083 über $\mu_j \cdot m_{\text{Box}} \cdot d_{Rj}$ (kürzeste Entfernung ab Raunheim), je Box also $E_{\text{TOC}} \cdot d_{Rj} / \sum_k \mu_k d_{Rk}$. E-Lkw im Pendelverkehr nur mit Zwischenladen im Depot.
 :::
 
 ---
@@ -1437,7 +1485,6 @@ fahrzeugkosten(e_van, km_jahr = 60000)
 :::
 :::
 
-
 ---
 
 ## Fallstudie – Lachs aus Norwegen {#tm-cs-inbound}
@@ -1484,7 +1531,6 @@ KV für tiefgekühlte oder länger haltbare Ware (z. B. Reis, Nori, TK-Garnelen)
 
 :::
 :::
-
 
 ---
 

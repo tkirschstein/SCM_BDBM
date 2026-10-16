@@ -136,6 +136,7 @@ Die Zuordnung der 27 Bundesstaaten zu den fünf Großregionen ist im Startercode
 #| eval: false
 library(tidyverse)
 source("../R/scm_functions.R")   # pooling_safety_stock()
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 pfad   <- "olist/"   # Ordner mit den entpackten CSV-Dateien
 orders <- read_csv(paste0(pfad, "olist_orders_dataset.csv"))

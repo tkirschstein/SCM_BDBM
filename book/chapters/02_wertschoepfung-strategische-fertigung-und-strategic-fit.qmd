@@ -8,6 +8,7 @@
 
 # Funktionen aus scm_functions.R einbinden (u. a. dupont_roi(), Farbpalette cols)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 library(tidyverse)   # dplyr, ggplot2, tibble usw.
 library(knitr)       # kable() für Tabellen

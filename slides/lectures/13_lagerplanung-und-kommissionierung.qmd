@@ -5,8 +5,10 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 
 library(tidyverse)
 library(plotly)
@@ -14,30 +16,6 @@ library(knitr)
 library(kableExtra)
 
 knitr::opts_chunk$set(fig.width = 9.5, fig.height = 6)
-
-# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
-fmt <- function(x, d = 1) formatC(x, format = "f", digits = d,
-                                   big.mark = ".", decimal.mark = ",")
-
-kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
-                   col1_bg = "#2F3E46") {
-  out <- kbl(df, ...) |>
-    kable_styling(bootstrap_options = c("condensed", "striped"),
-                  full_width = TRUE, font_size = font_size) |>
-    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
-  if (first_col) out <- out |>
-    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
-  out
-}
-
-plt_layout <- function(p, xt = "", yt = "", h = 480, w = 760, legend = TRUE) {
-  p |> layout(xaxis = list(title = xt), yaxis = list(title = yt),
-              showlegend = legend,
-              legend = list(orientation = "h", x = 0, y = -0.18),
-              margin = list(l = 70, r = 20, t = 20, b = 60),
-              plot_bgcolor = "white", paper_bgcolor = "white",
-              height = h, width = w)
-}
 
 # ── Lagerlayout SushiFresh Raunheim ──────────────────────────────────────────
 # 8 Kommissioniergänge, je Gang zwei Regalseiten mit 12 Fächern (1,5 m breit),
@@ -50,104 +28,6 @@ slots <- expand.grid(tiefe = 1:n_tief, seite = c("L", "R"), gang = 1:n_gang,
          y = 1 + 1.5 * (tiefe - 0.5),
          rx = x + ifelse(seite == "L", -1.5, 1.5))
 n_sku <- nrow(slots)
-
-# Wegdistanz zwischen zwei Pickpositionen (Gangmitte) bzw. Depot
-dist_lager <- function(p, q) {
-  if (p[1] == q[1]) return(abs(p[2] - q[2]))
-  abs(p[1] - q[1]) + min(p[2] + q[2], 2 * Y - p[2] - q[2])
-}
-weg_laenge <- function(wp) sum(abs(diff(wp[, 1])) + abs(diff(wp[, 2])))
-
-# ── Routingstrategien (liefern Wegpunkte ab/bis Depot) ───────────────────────
-route_sshape <- function(pk) {
-  g <- sort(unique(pk$gang)); m <- length(g)
-  wp <- list(c(0, 0)); vorne <- TRUE
-  for (k in seq_len(m)) {
-    x <- gang_x[g[k]]; ys <- pk$y[pk$gang == g[k]]
-    if (k == m && m %% 2 == 1) {
-      wp <- c(wp, list(c(x, 0), c(x, max(ys)), c(x, 0)))
-    } else if (vorne) {
-      wp <- c(wp, list(c(x, 0), c(x, Y))); vorne <- FALSE
-    } else {
-      wp <- c(wp, list(c(x, Y), c(x, 0))); vorne <- TRUE
-    }
-  }
-  do.call(rbind, c(wp, list(c(0, 0))))
-}
-route_return <- function(pk) {
-  g <- sort(unique(pk$gang)); wp <- list(c(0, 0))
-  for (j in g) {
-    x <- gang_x[j]
-    wp <- c(wp, list(c(x, 0), c(x, max(pk$y[pk$gang == j])), c(x, 0)))
-  }
-  do.call(rbind, c(wp, list(c(0, 0))))
-}
-route_lgap <- function(pk) {
-  g <- sort(unique(pk$gang)); m <- length(g)
-  if (m == 1) return(route_return(pk))
-  wp <- list(c(0, 0), c(gang_x[g[1]], 0), c(gang_x[g[1]], Y))
-  vorne_max <- c()
-  mitte <- if (m > 2) g[2:(m - 1)] else integer(0)
-  for (j in mitte) {
-    pts <- c(0, sort(pk$y[pk$gang == j]), Y); k <- which.max(diff(pts))
-    x <- gang_x[j]; wp <- c(wp, list(c(x, Y)))
-    if (pts[k + 1] < Y) wp <- c(wp, list(c(x, pts[k + 1]), c(x, Y)))
-    vorne_max[as.character(j)] <- pts[k]
-  }
-  xl <- gang_x[g[m]]; wp <- c(wp, list(c(xl, Y), c(xl, 0)))
-  for (j in rev(mitte)) {
-    x <- gang_x[j]; fm <- vorne_max[as.character(j)]
-    wp <- c(wp, list(c(x, 0)))
-    if (fm > 0) wp <- c(wp, list(c(x, fm), c(x, 0)))
-  }
-  do.call(rbind, c(wp, list(c(0, 0))))
-}
-
-# TSP auf dem Lagergraph (Einheiten Kürzeste Wege und Tourenplanung)
-dist_matrix <- function(pk) {
-  P <- rbind(c(0, 0), as.matrix(pk[, c("x", "y")])); n <- nrow(P)
-  D <- matrix(0, n, n)
-  for (i in 1:n) for (j in 1:n) D[i, j] <- dist_lager(P[i, ], P[j, ])
-  list(P = P, D = D)
-}
-tour_len <- function(t, D) sum(D[cbind(t, c(t[-1], t[1]))])
-nn_tour <- function(D) {
-  t <- 1
-  while (length(t) < nrow(D)) {
-    o <- setdiff(seq_len(nrow(D)), t); t <- c(t, o[which.min(D[tail(t, 1), o])])
-  }
-  t
-}
-two_opt <- function(t, D) {
-  n <- length(t)
-  repeat {
-    best <- 0
-    for (i in 1:(n - 1)) for (k in (i + 1):n) {
-      a <- t[i]; b <- t[i + 1]; c <- t[k]; d <- t[k %% n + 1]
-      if (b == c || a == d) next
-      dl <- D[a, b] + D[c, d] - D[a, c] - D[b, d]
-      if (dl > best + 1e-9) { best <- dl; bi <- i; bk <- k }
-    }
-    if (best <= 0) break
-    t <- c(t[1:bi], rev(t[(bi + 1):bk]), if (bk < n) t[(bk + 1):n])
-  }
-  t
-}
-perms <- function(v) if (length(v) <= 1) list(v) else
-  do.call(base::c, lapply(seq_along(v), function(i)
-    lapply(perms(v[-i]), function(p) c(v[i], p))))
-tour_wp <- function(t, P) {
-  tt <- c(t, t[1]); wp <- list(P[tt[1], ])
-  for (k in 2:length(tt)) {
-    p <- P[tt[k - 1], ]; q <- P[tt[k], ]
-    if (p[1] != q[1]) {
-      yy <- if (p[2] + q[2] <= 2 * Y - p[2] - q[2]) 0 else Y
-      wp <- c(wp, list(c(p[1], yy), c(q[1], yy)))
-    }
-    wp <- c(wp, list(q))
-  }
-  do.call(rbind, wp)
-}
 
 # ── Sortiment und Zugriffshäufigkeiten ───────────────────────────────────────
 set.seed(2026)
@@ -165,14 +45,6 @@ sku <- data.frame(sku = seq_len(n_sku), name = namen, zugriffe = zugriffe,
                   klasse = klasse)
 
 # ── Lagerplatzvergabe-Strategien: Artikel → Fach ─────────────────────────────
-zuordnung_klasse <- function(fach_reihenfolge) {
-  out <- integer(n_sku)
-  for (k in c("A", "B", "C")) {
-    idx <- which(klasse == k)
-    out[idx] <- sample(fach_reihenfolge[idx])
-  }
-  out
-}
 ord_gangkopf  <- slots |> arrange(y, gang) |> pull(slot)   # vorne in allen Gängen
 ord_gangweise <- slots |> arrange(gang, y) |> pull(slot)   # erste Gänge zuerst
 strategien <- list(
@@ -193,7 +65,7 @@ bsp_routes <- list(
 )
 bsp_dm <- dist_matrix(bsp_pk)
 bsp_P  <- perms(2:nrow(bsp_dm$D))
-bsp_L  <- sapply(bsp_P, function(p) tour_len(c(1, p), bsp_dm$D))
+bsp_L  <- sapply(bsp_P, function(p) tour_length(c(1, p), bsp_dm$D))
 bsp_opt_t <- c(1, bsp_P[[which.min(bsp_L)]])
 bsp_routes[["Optimal (TSP)"]] <- tour_wp(bsp_opt_t, bsp_dm$P)
 bsp_len <- sapply(bsp_routes, weg_laenge)
@@ -210,59 +82,14 @@ sim <- map_dfr(names(strategien), function(s) {
     c("S-Shape" = weg_laenge(route_sshape(pk)),
       "Return" = weg_laenge(route_return(pk)),
       "Largest Gap" = weg_laenge(route_lgap(pk)),
-      "NN + 2-opt" = tour_len(two_opt(nn_tour(dm$D), dm$D), dm$D))
+      "NN + 2-opt" = tour_length(two_opt(nearest_neighbor(dm$D), dm$D)$tour, dm$D))
   })
   data.frame(strategie = s, routing = rownames(d), weg = rowMeans(d))
 })
 pos_mittel <- mean(lengths(auftraege))
 
-# ── Plot: Lagerlayout ────────────────────────────────────────────────────────
+# ── Farben der ABC-Klassen (für lager_plot()) ─────────────────────────────────
 klassen_farbe <- c(A = "#0B6E4F", B = "#F4A259", C = "#D0D5DD")
-lager_plot <- function(zuordnung = NULL, picks = NULL, wp = NULL,
-                       route_farbe = "#C00000", height = 520, width = 760,
-                       labels = TRUE) {
-  fach_klasse <- rep(NA, n_sku)
-  if (!is.null(zuordnung)) fach_klasse[zuordnung] <- klasse
-  shapes <- lapply(seq_len(n_sku), function(i) {
-    s <- slots[i, ]
-    list(type = "rect", x0 = s$rx - 0.5, x1 = s$rx + 0.5,
-         y0 = s$y - 0.7, y1 = s$y + 0.7,
-         fillcolor = if (is.na(fach_klasse[i])) "#E5E7EB" else
-           klassen_farbe[[fach_klasse[i]]],
-         line = list(color = "white", width = 1), layer = "below")
-  })
-  p <- plot_ly(type = "scatter", mode = "markers")
-  if (!is.null(wp)) p <- p |> add_trace(
-    x = wp[, 1], y = wp[, 2], mode = "lines",
-    line = list(color = route_farbe, width = 3), hoverinfo = "skip",
-    showlegend = FALSE)
-  if (!is.null(picks)) {
-    p <- p |> add_trace(
-      x = picks$rx, y = picks$y, mode = "markers",
-      marker = list(size = 15, color = "#2A7ACA",
-                    line = list(color = "white", width = 2)),
-      text = picks$name, hoverinfo = "text", showlegend = FALSE)
-    if (labels) p <- p |> add_annotations(
-      x = picks$rx, y = picks$y, text = seq_len(nrow(picks)),
-      showarrow = FALSE, font = list(color = "white", size = 11))
-  }
-  p |>
-    add_trace(x = 0, y = 0, mode = "markers+text", text = "Depot",
-              textposition = "bottom center",
-              marker = list(symbol = "square", size = 22, color = "#BFDBF7",
-                            line = list(color = "#2F3E46", width = 2)),
-              hoverinfo = "skip", showlegend = FALSE) |>
-    add_annotations(x = gang_x, y = -1.6, text = paste("Gang", seq_len(n_gang)),
-                    showarrow = FALSE, font = list(size = 11, color = "#4B5563")) |>
-    layout(shapes = shapes,
-           xaxis = list(visible = FALSE, range = c(-2.5, max(gang_x) + 2.5),
-                        fixedrange = TRUE),
-           yaxis = list(visible = FALSE, range = c(-3, Y + 1),
-                        fixedrange = TRUE),
-           plot_bgcolor = "transparent", paper_bgcolor = "transparent",
-           margin = list(l = 5, r = 5, t = 5, b = 5),
-           height = height, width = width)
-}
 ```
 
 # Distributionslogistik
@@ -324,7 +151,7 @@ SushiFresh setzt eine der Wachstumsideen aus der Einheit Distributionsstrukturen
 ::: {.fragment .fade-up}
 ::: {.callout-warning appearance="simple"}
 ## Problem nach dem Start
-Rund **300 Aufträge pro Tag** mit Ø `r fmt(pos_mittel)` Positionen. Die Artikel wurden eingelagert, „wo gerade Platz war“. Die Picker laufen lange Wege, der Versand am Nachmittag wird knapp.
+Rund **300 Aufträge pro Tag** mit Ø `r fmt(pos_mittel, 1)` Positionen. Die Artikel wurden eingelagert, „wo gerade Platz war“. Die Picker laufen lange Wege, der Versand am Nachmittag wird knapp.
 :::
 :::
 
@@ -1016,7 +843,7 @@ lager_plot(picks = bsp_pk, wp = bsp_routes[["S-Shape"]], height = 520, width = 7
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Bewertung
-Weglänge: **`r fmt(bsp_len[["S-Shape"]])` m**. Einfach zu merken und gut bei **vielen Picks pro Gang**. Bei wenigen, weit vorne liegenden Picks wird viel unnötig gelaufen.
+Weglänge: **`r fmt(bsp_len[["S-Shape"]], 1)` m**. Einfach zu merken und gut bei **vielen Picks pro Gang**. Bei wenigen, weit vorne liegenden Picks wird viel unnötig gelaufen.
 :::
 :::
 
@@ -1054,7 +881,7 @@ lager_plot(picks = bsp_pk, wp = bsp_routes[["Return"]], height = 520, width = 78
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Bewertung
-Weglänge: **`r fmt(bsp_len[["Return"]])` m**. Gut, wenn Picks **nahe am vorderen Gangende** liegen. Bei Picks tief im Gang wird jeder Meter doppelt gelaufen.
+Weglänge: **`r fmt(bsp_len[["Return"]], 1)` m**. Gut, wenn Picks **nahe am vorderen Gangende** liegen. Bei Picks tief im Gang wird jeder Meter doppelt gelaufen.
 :::
 :::
 
@@ -1092,7 +919,7 @@ lager_plot(picks = bsp_pk, wp = bsp_routes[["Largest Gap"]], height = 520, width
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Bewertung
-Weglänge: **`r fmt(bsp_len[["Largest Gap"]])` m**. Etwas schwerer zu merken, schneidet aber in Studien meist am besten unter den einfachen Strategien ab.
+Weglänge: **`r fmt(bsp_len[["Largest Gap"]], 1)` m**. Etwas schwerer zu merken, schneidet aber in Studien meist am besten unter den einfachen Strategien ab.
 :::
 :::
 
@@ -1128,7 +955,7 @@ lager_plot(picks = bsp_pk, wp = bsp_routes[["Optimal (TSP)"]],
 vgl <- data.frame(Strategie = names(bsp_len), Weg = bsp_len) |>
   mutate(Mehr = (Weg / min(Weg) - 1) * 100)
 rownames(vgl) <- NULL
-kbl_sf(vgl |> mutate(Weg = paste0(fmt(Weg), " m"),
+kbl_sf(vgl |> mutate(Weg = paste0(fmt(Weg, 1), " m"),
                      Mehr = paste0("+", fmt(Mehr, 0), " %")),
        col.names = c("Strategie", "Weglänge", "über Optimum"),
        align = c("l", "r", "r"), font_size = 24)
@@ -1313,7 +1140,7 @@ kbl_sf(szen |> transmute(Szenario, weg = fmt(weg, 0), t = fmt(t, 0),
 ```
 
 ::: {.smaller-text}
-Annahmen: $v$ = `r fmt(v)` m/s mit Wagen, $t_{\text{Basis}}$ = `r t_basis` s, $t_{\text{Pos}}$ = `r t_pos` s, Ø `r fmt(pos_mittel)` Positionen, `r auftraege_tag` Aufträge pro Tag.
+Annahmen: $v$ = `r fmt(v, 1)` m/s mit Wagen, $t_{\text{Basis}}$ = `r t_basis` s, $t_{\text{Pos}}$ = `r t_pos` s, Ø `r fmt(pos_mittel, 1)` Positionen, `r auftraege_tag` Aufträge pro Tag.
 :::
 :::
 
@@ -1323,7 +1150,7 @@ Annahmen: $v$ = `r fmt(v)` m/s mit Wagen, $t_{\text{Basis}}$ = `r t_basis` s, $t
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Ergebnis
-Allein durch Umlagern der Artikel und eine feste Laufregel sinkt der Personalbedarf von `r fmt(szen$std_tag[1])` auf `r fmt(szen$std_tag[3])` Picker-Stunden pro Tag (**`r fmt((1 - szen$std_tag[3] / szen$std_tag[1]) * 100, 0)` %**), ohne Investition in Technik.
+Allein durch Umlagern der Artikel und eine feste Laufregel sinkt der Personalbedarf von `r fmt(szen$std_tag[1], 1)` auf `r fmt(szen$std_tag[3], 1)` Picker-Stunden pro Tag (**`r fmt((1 - szen$std_tag[3] / szen$std_tag[1]) * 100, 0)` %**), ohne Investition in Technik.
 :::
 :::
 

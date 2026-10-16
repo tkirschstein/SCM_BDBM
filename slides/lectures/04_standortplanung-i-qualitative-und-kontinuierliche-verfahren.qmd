@@ -5,8 +5,10 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 
 library(tidyverse)
 library(leaflet)

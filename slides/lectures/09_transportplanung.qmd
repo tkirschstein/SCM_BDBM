@@ -5,8 +5,10 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden (u. a. vogels_approximation())
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 
 library(tidyverse)
 library(leaflet)
@@ -35,7 +37,7 @@ tp_kuechen <- data.frame(
                 "Neu-Isenburg"),
   Lon       = c(8.4650, 8.2999, 8.7072),
   Lat       = c(50.0000, 50.0632, 50.0543),
-  Kapazitaet = c(450, 400, 133)
+  Kapazitaet = c(450, 400, 333)
 )
 
 # Transportkosten c_ij in EUR je Box (Zeilen aus der Kostenmatrix von Einheit Standortplanung II)
@@ -49,169 +51,6 @@ tp_cost <- matrix(
 
 tp_supply <- setNames(tp_kuechen$Kapazitaet, tp_kuechen$ID)
 tp_demand <- setNames(tp_filialen$Dez, tp_filialen$ID)
-
-# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
-
-fmt <- function(x, d = 2) formatC(x, format = "f", digits = d,
-                                   big.mark = ".", decimal.mark = ",")
-
-kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
-                   col1_bg = "#2F3E46") {
-  names(df)[names(df) == "Kueche"] <- "K\u00fcche"
-  out <- kbl(df, ...) |>
-    kable_styling(bootstrap_options = c("condensed", "striped"),
-                  full_width = TRUE, font_size = font_size) |>
-    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
-  if (first_col) out <- out |>
-    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
-  out
-}
-
-# Nordwestecken-Regel
-nw_corner <- function(supply, demand) {
-  a <- matrix(0, length(supply), length(demand),
-              dimnames = list(names(supply), names(demand)))
-  i <- 1; j <- 1
-  while (i <= length(supply) && j <= length(demand)) {
-    q <- min(supply[i], demand[j])
-    a[i, j] <- q
-    supply[i] <- supply[i] - q
-    demand[j] <- demand[j] - q
-    if (supply[i] == 0) i <- i + 1 else j <- j + 1
-  }
-  a
-}
-
-# VAM mit Protokoll aller Iterationen (gleiche Logik wie vogels_approximation())
-vam_trace <- function(cost, supply, demand) {
-  m <- nrow(cost); n <- ncol(cost)
-  alloc <- matrix(0, m, n, dimnames = dimnames(cost))
-  sup <- supply; dem <- demand
-  ar <- seq_len(m); ac <- seq_len(n)
-  pen <- function(v) { v <- sort(v); if (length(v) >= 2) v[2] - v[1] else 0 }
-  steps <- list()
-  while (length(ar) > 0 && length(ac) > 0) {
-    rp <- sapply(ar, function(i) pen(cost[i, ac]))
-    cp <- sapply(ac, function(j) pen(cost[ar, j]))
-    if (max(rp) >= max(cp)) {
-      typ <- "Zeile"; i <- ar[which.max(rp)]
-      j <- ac[which.min(cost[i, ac])]; pmax_val <- max(rp)
-    } else {
-      typ <- "Spalte"; j <- ac[which.max(cp)]
-      i <- ar[which.min(cost[ar, j])]; pmax_val <- max(cp)
-    }
-    q <- min(sup[i], dem[j])
-    steps[[length(steps) + 1]] <- list(
-      ar = ar, ac = ac, sup = sup, dem = dem,
-      rp = setNames(rp, rownames(cost)[ar]),
-      cp = setNames(cp, colnames(cost)[ac]),
-      alloc_before = alloc, typ = typ, i = i, j = j, q = q, pmax = pmax_val
-    )
-    alloc[i, j] <- alloc[i, j] + q
-    sup[i] <- sup[i] - q; dem[j] <- dem[j] - q
-    if (sup[i] <= 0) ar <- setdiff(ar, i)
-    if (dem[j] <= 0) ac <- setdiff(ac, j)
-  }
-  list(steps = steps, allocation = alloc, total_cost = sum(alloc * cost))
-}
-
-# Transporttableau einer VAM-Iteration als HTML-Tabelle
-vam_tableau <- function(step, cost, font_size = 20) {
-  m <- nrow(cost); n <- ncol(cost)
-  grey   <- function(x) paste0("<span style='color:#B8BEC6'>", x, "</span>")
-  mark   <- function(x) paste0("<span style='background:#F4A259;padding:2px 6px;",
-                               "border-radius:4px;font-weight:bold'>", x, "</span>")
-  alloc_f <- function(c, a) paste0(sprintf("%.3f", c),
-                                   " <b style='color:#0B6E4F'>[", a, "]</b>")
-  body <- matrix("", m, n)
-  for (i in 1:m) for (j in 1:n) {
-    active <- (i %in% step$ar) && (j %in% step$ac)
-    a <- step$alloc_before[i, j]
-    txt <- if (a > 0) alloc_f(cost[i, j], a) else sprintf("%.3f", cost[i, j])
-    if (!active && a == 0) txt <- grey(txt)
-    if (i == step$i && j == step$j) txt <- mark(paste0(sprintf("%.3f", cost[i, j]),
-                                                        " → ", step$q))
-    body[i, j] <- txt
-  }
-  # Restangebot und Zeilen-Penalties
-  s_col <- sapply(1:m, function(i) if (i %in% step$ar) step$sup[i] else grey(0))
-  rp_col <- sapply(1:m, function(i) {
-    if (!(i %in% step$ar)) return(grey("–"))
-    v <- step$rp[rownames(cost)[i]]
-    txt <- sprintf("%.3f", v)
-    if (step$typ == "Zeile" && i == step$i) txt <- mark(txt)
-    txt
-  })
-  d_row <- sapply(1:n, function(j) if (j %in% step$ac) step$dem[j] else grey(0))
-  cp_row <- sapply(1:n, function(j) {
-    if (!(j %in% step$ac)) return(grey("–"))
-    v <- step$cp[colnames(cost)[j]]
-    txt <- sprintf("%.3f", v)
-    if (step$typ == "Spalte" && j == step$j) txt <- mark(txt)
-    txt
-  })
-  df <- data.frame(
-    rbind(cbind(rownames(cost), body, s_col, rp_col),
-          c("a<sub>j</sub> (Rest)", d_row, "", ""),
-          c("Δ Spalte", cp_row, "", "")),
-    stringsAsFactors = FALSE
-  )
-  names(df) <- c("", colnames(cost), "s<sub>i</sub> (Rest)", "Δ Zeile")
-  rownames(df) <- NULL
-  kbl(df, escape = FALSE, align = c("l", rep("c", n), "c", "c")) |>
-    kable_styling(bootstrap_options = c("condensed"), full_width = TRUE,
-                  font_size = font_size) |>
-    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
-    column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
-    row_spec(m + 1:2, background = "#EEF2F4", color = "#1F2933")
-}
-
-# Flussdarstellung (bipartiter Graph) einer Allokation
-tp_flow_plot <- function(alloc, cost, title = NULL, height = 470, width = 700) {
-  m <- nrow(alloc); n <- ncol(alloc)
-  kp <- data.frame(id = rownames(alloc), x = 0.18,
-                   y = seq(0.85, 0.15, length.out = m))
-  fp <- data.frame(id = colnames(alloc), x = 0.80,
-                   y = seq(0.95, 0.05, length.out = n))
-  fig <- plot_ly(type = "scatter", mode = "markers")
-  qmax <- max(alloc)
-  for (i in 1:m) for (j in 1:n) {
-    if (alloc[i, j] <= 0) next
-    w <- 1.5 + 9 * alloc[i, j] / qmax
-    fig <- fig |> add_segments(x = kp$x[i], xend = fp$x[j],
-                               y = kp$y[i], yend = fp$y[j],
-                               line = list(color = "#52B788", width = w),
-                               hoverinfo = "text", showlegend = FALSE,
-                               text = paste0(rownames(alloc)[i], " → ",
-                                             colnames(alloc)[j], ": ",
-                                             alloc[i, j], " Boxen"))
-    fig <- fig |> add_annotations(
-      x = kp$x[i] + 0.62 * (fp$x[j] - kp$x[i]),
-      y = kp$y[i] + 0.62 * (fp$y[j] - kp$y[i]),
-      text = paste0("<b>", alloc[i, j], "</b>"), showarrow = FALSE,
-      bgcolor = "white", font = list(size = 13, color = "#0B6E4F"))
-  }
-  fig |>
-    add_trace(x = kp$x, y = kp$y, text = kp$id, mode = "markers+text",
-              marker = list(symbol = "hexagon", size = 44, color = "#BFDBF7",
-                            line = list(color = "#4B5563", width = 1.5)),
-              textfont = list(size = 15, color = "#1F2933"),
-              hoverinfo = "skip", showlegend = FALSE) |>
-    add_trace(x = fp$x, y = fp$y, text = fp$id, mode = "markers+text",
-              marker = list(symbol = "circle", size = 40, color = "#2D9E8E",
-                            line = list(color = "#2F3E46", width = 1.5)),
-              textfont = list(size = 15, color = "white"),
-              hoverinfo = "skip", showlegend = FALSE) |>
-    add_annotations(x = c(0.18, 0.80), y = c(1.06, 1.06),
-                    text = c("<b>Küchen <i>i</i></b>", "<b>Filialen <i>j</i></b>"),
-                    showarrow = FALSE, font = list(size = 14)) |>
-    layout(title = title,
-           xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
-           yaxis = list(visible = FALSE, range = c(-0.03, 1.1), fixedrange = TRUE),
-           plot_bgcolor = "transparent", paper_bgcolor = "transparent",
-           margin = list(l = 10, r = 10, t = 10, b = 10),
-           height = height, width = width)
-}
 
 # ── Lösungen vorab berechnen ─────────────────────────────────────────────────
 tp_nw   <- nw_corner(tp_supply, tp_demand)
@@ -329,7 +168,7 @@ Im Normalbetrieb beliefern **Raunheim** und **Wiesbaden-Erbenheim** alle sechs F
 
 ::: {.callout-tip appearance="simple"}
 ## Idee der Geschäftsführung
-Für vier Wochen wird daher in **Neu-Isenburg** eine temporäre **Cateringküche**  angemietet, die eine **Kapazität von 133 Boxen/Tag** hat.
+Für vier Wochen wird daher in **Neu-Isenburg** eine temporäre **Cateringküche**  angemietet, die eine **Kapazität von 333 Boxen/Tag** hat. Damit deckt die Gesamtkapazität die Adventsnachfrage genau.
 :::
 
 ::: {.fragment .fade-up}
@@ -619,7 +458,7 @@ kbl_sf(nw_df, escape = FALSE, align = c("c", rep("c", 6)), font_size = 24)
 ::: {.fragment .fade-up}
 Transportkosten: **`r fmt(tp_nw_cost)` €/Tag**
 
-Beispiel: Die Filiale Darmstadt (C5) wird komplett aus Wiesbaden-Erbenheim beliefert – mit `r fmt(tp_cost["S1","C5"], 3)` €/Box die teuerste Verbindung der gesamten Matrix.
+Beispiel: Die Filiale Wiesbaden (C1) wird komplett aus Raunheim beliefert (`r fmt(tp_cost["S3","C1"], 3)` €/Box), obwohl die Küche Wiesbaden-Erbenheim mit `r fmt(tp_cost["S1","C1"], 3)` €/Box fast viermal günstiger wäre.
 :::
 :::
 
@@ -757,7 +596,7 @@ vam_tableau(tp_vam$steps[[1]], tp_cost, font_size = 24)
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Entscheidung
-Günstigste Zelle in Spalte C1: **S1 → C1**. Menge $\min(200, 168) = 168$ Boxen. Nachfrage von C1 ist gedeckt → **Spalte C1 streichen**.
+Günstigste Zelle in Spalte C1: **S1 → C1**. Menge $\min(`r tp_vam$steps[[1]]$sup["S1"]`, `r tp_vam$steps[[1]]$dem["C1"]`) = `r tp_vam$steps[[1]]$q`$ Boxen. Nachfrage von C1 ist gedeckt → **Spalte C1 streichen**.
 :::
 :::
 :::
@@ -792,7 +631,7 @@ Die Penalties müssen daher **in jeder Iteration neu** berechnet werden.
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Entscheidung
-Größtes $\Delta$: Spalte **C3** (Frankfurt, $\Delta = `r sprintf("%.3f", tp_vam$steps[[2]]$pmax)`$). Günstigste Zelle: **S3 → C3**, Menge $\min(850, 392) = 392$. Spalte C3 streichen.
+Größtes $\Delta$: Spalte **C3** (Frankfurt, $\Delta = `r sprintf("%.3f", tp_vam$steps[[2]]$pmax)`$). Günstigste Zelle: **S3 → C3**, Menge $\min(`r tp_vam$steps[[2]]$sup["S3"]`, `r tp_vam$steps[[2]]$dem["C3"]`) = `r tp_vam$steps[[2]]$q`$. Spalte C3 streichen.
 :::
 :::
 :::
@@ -816,7 +655,7 @@ vam_tableau(tp_vam$steps[[3]], tp_cost, font_size = 24)
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Entscheidung
-Erstmals ist eine **Zeile** ausschlaggebend: Wiesbaden-Erbenheim (S1) hat mit $\Delta = `r sprintf("%.3f", tp_vam$steps[[3]]$pmax)`$ das größte Penalty. Die günstigste verbleibende Zelle ist **S1 → C6** (Offenbach). S1 hat nur noch `r tp_vam$steps[[3]]$q` Boxen frei → **Zeile S1 streichen**, C6 bleibt mit Restnachfrage `r tp_vam$steps[[3]]$dem[6] - tp_vam$steps[[3]]$q` aktiv.
+Erstmals ist eine **Zeile** ausschlaggebend: Wiesbaden-Erbenheim (S1) hat mit $\Delta = `r sprintf("%.3f", tp_vam$steps[[3]]$pmax)`$ das größte Penalty. Die günstigste verbleibende Zelle ist **S1 → C6** (Offenbach). Menge $\min(`r tp_vam$steps[[3]]$sup["S1"]`, `r tp_vam$steps[[3]]$dem["C6"]`) = `r tp_vam$steps[[3]]$q`$ → Nachfrage von Offenbach gedeckt, **Spalte C6 streichen**. S1 bleibt mit Restangebot `r tp_vam$steps[[3]]$sup["S1"] - tp_vam$steps[[3]]$q` Boxen aktiv.
 :::
 :::
 
@@ -1037,8 +876,8 @@ plot_ly(x = c("Nordwestecke", "VAM", "LP-Optimum"),
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Ergebnis
-- VAM liegt nur `r fmt((tp_vam$total_cost / tp_opt_val - 1) * 100, 1)` % über dem Optimum, die Nordwestecke `r fmt((tp_nw_cost / tp_opt_val - 1) * 100, 0)` %.
-- Der Unterschied VAM ↔ Optimum liegt allein in der Aufteilung von **Rüsselsheim (C4)** und **Offenbach (C6)** zwischen Raunheim und Wiesbaden-Erbenheim.
+- VAM liegt `r fmt((tp_vam$total_cost / tp_opt_val - 1) * 100, 1)` % über dem Optimum, die Nordwestecke `r fmt((tp_nw_cost / tp_opt_val - 1) * 100, 0)` %.
+- Der Unterschied VAM ↔ Optimum liegt allein in der Aufteilung von **Mainz (C2)**, **Rüsselsheim (C4)** und **Offenbach (C6)** zwischen Wiesbaden-Erbenheim und Neu-Isenburg.
 :::
 :::
 
@@ -1080,20 +919,25 @@ Dummy-Quellen und Dummy-Senken
 
 ::: {.fragment .fade-up}
 ::: small-text
-**Variante:** Neu-Isenburg bietet 150 statt 133 Boxen/Tag → 17 Boxen Überkapazität
+**Variante:** Neu-Isenburg bietet `r tp_supply["S5"] + 17` statt `r tp_supply["S5"]` Boxen/Tag → 17 Boxen Überkapazität
 
 ```{r tp-unbalanced}
 #| echo: false
 
-sup_ub <- tp_supply; sup_ub["S5"] <- 150
+sup_ub <- tp_supply; sup_ub["S5"] <- tp_supply["S5"] + 17
 vam_ub <- vogels_approximation(tp_cost, sup_ub, tp_demand)
 
 ub_df <- as.data.frame(vam_ub$allocation) |>
   rownames_to_column("Kueche") |>
   mutate(across(-Kueche, ~ ifelse(.x > 0, paste0("<b>", .x, "</b>"),
                                  "<span style='color:#B8BEC6'>–</span>")))
-kbl_sf(ub_df, escape = FALSE, align = c("c", rep("c", 7)), font_size = 22) |>
-  column_spec(8, background = "#FDEBD3")
+# Dummy-Spalte bzw. -Zeile über den Namen hervorheben (nicht über eine feste Position)
+ub_tab <- kbl_sf(ub_df, escape = FALSE, align = rep("c", ncol(ub_df)), font_size = 22)
+d_col <- which(names(ub_df) == "Dummy")
+d_row <- which(ub_df$Kueche == "Dummy")
+if (length(d_col)) ub_tab <- column_spec(ub_tab, d_col, background = "#FDEBD3")
+if (length(d_row)) ub_tab <- row_spec(ub_tab, d_row, background = "#FDEBD3")
+ub_tab
 ```
 
 `vogels_approximation()` ergänzt die Dummy-Spalte automatisch. Kosten: `r fmt(vam_ub$total_cost)` €/Tag.
@@ -1183,7 +1027,7 @@ Am 18. Dezember fällt in Raunheim eine Kühlzelle aus. Die Kapazität sinkt fü
 #| echo: true
 #| eval: false
 
-sup_18 <- c(S3 = 700, S1 = 200, S5 = 133)
+sup_18 <- c(S3 = 300, S1 = 400, S5 = 333)
 cost_18 <- rbind(tp_cost, Dummy = 4.5)
 
 vogels_approximation(cost_18,

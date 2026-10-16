@@ -179,6 +179,7 @@ Die Funktionen `ahp_priority_vector()`, `ahp_consistency()`, `center_of_gravity(
 #| label: starter
 #| eval: false
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 # --- AHP: Beispielmatrix (Kriterien K1..K3) – durch eigene Urteile ersetzen
 A <- matrix(c(1,   2,   3,

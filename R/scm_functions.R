@@ -3,135 +3,19 @@
 # Prof. Dr. Thomas Kirschstein | HS RheinMain
 # Bachelor Supply Chain Management
 # =============================================================================
-# Functions are grouped into four domains:
+# Fachmodelle und Algorithmen, gruppiert nach Themen:
+#   0. Bestandsmanagement ((t, S)-Politik)
 #   1. Location Planning (CoG, Weiszfeld, Haversine, AHP)
 #   2. Transportation Problem (Vogel's Approximation)
 #   3. Inventory Models (Newsvendor, EOQ, Pooling)
 #   4. Warehouse Location Problem (Add / Drop Heuristics)
+#   5. Transportplanung: Eröffnungsverfahren mit Protokoll
+#   6. Kürzeste Wege (Dijkstra)
+#   7. Tourenplanung (TSP-Heuristiken, Savings)
+#   8. Lager und Kommissionierung (Picker Routing, Lagerplatzvergabe)
+#   9. Transportkosten
+# Darstellungs- und Formatierungshilfen stehen in R/scm_helpers.R.
 # =============================================================================
-
-# Farbdefinitionen
-
-cols <- list(
-  top    = "#0B6E4F",
-  strat  = "#2D6A4F",
-  mid    = "#52B788",
-  low    = "#FFFFFF",
-  atp    = "#D97B29",
-  border = "#2F3E46",
-  text   = "#1F2933",
-  muted  = "#6B7280",
-  dash   = "#7C8792",
-  bg     = "#FFFFFF"
-)
-
-# Zeichenfunktionen Blockdiagramme
-
-mid <- function(a, b) (a + b) / 2
-
-chevron_path <- function(x0, x1, y0, y1, head = 0.28, notch = 0.24) {
-  xm <- x1 - head
-  paste0(
-    "M ", x0, ",", y0, " ",
-    "L ", xm, ",", y0, " ",
-    "L ", x1, ",", mid(y0, y1), " ",
-    "L ", xm, ",", y1, " ",
-    "L ", x0, ",", y1, " ",
-    "L ", x0 + notch, ",", mid(y0, y1), " Z"
-  )
-}
-
-shape_rect <- function(x0, x1, y0, y1, fill, line = cols$border, width = 1.2) {
-  list(
-    type = "rect", x0 = x0, x1 = x1, y0 = y0, y1 = y1,
-    xref = "x", yref = "y",
-    line = list(color = line, width = width),
-    fillcolor = fill,
-    layer = "below"
-  )
-}
-
-shape_path <- function(path, fill, line = cols$border, width = 1.2) {
-  list(
-    type = "path", path = path, xref = "x", yref = "y",
-    line = list(color = line, width = width),
-    fillcolor = fill,
-    layer = "below"
-  )
-}
-
-shape_line <- function(x0, x1, y0, y1, color, width = 2) {
-  list(
-    type = "line", x0 = x0, x1 = x1, y0 = y0, y1 = y1,
-    xref = "x", yref = "y",
-    line = list(color = color, width = width)
-  )
-}
-
-text_trace <- function(data, x, y, text, color, size = 16) {
-  add_text(
-    fig, data = data,
-    x = x, y = y, text = text,
-    textfont = list(size = size, color = color, family = "Arial"),
-    hoverinfo = "skip", showlegend = FALSE
-  )
-}
-
-arrow_ann <- function(x, y, ax, ay, dash = FALSE,
-                      color = cols$border, width = 1.5) {
-  list(
-    x = x, y = y, ax = ax, ay = ay,
-    xref = "x", yref = "y", axref = "x", ayref = "y",
-    text = "", showarrow = TRUE,
-    arrowhead = 2, arrowsize = 1,
-    arrowwidth = width, arrowcolor = color,
-    arrowdash = if (dash) "dash" else "solid"
-  )
-}
-kable_zeilenweise <- function(data,
-                              fragment_typ = "fade-up",
-                              start_index = 1,
-                              ...) {
-  
-  tab_html <- knitr::kable(
-    data,
-    format = "html",
-    escape = FALSE,
-    ...
-  )
-  
-  doc <- xml2::read_html(as.character(tab_html))
-  
-  zeilen <- xml2::xml_find_all(
-    doc,
-    ".//tbody/tr"
-  )
-  
-  for (i in seq_along(zeilen)) {
-    
-    xml2::xml_attr(
-      zeilen[i],
-      "class"
-    ) <- paste(
-      "fragment",
-      fragment_typ
-    )
-    
-    xml2::xml_attr(
-      zeilen[i],
-      "data-fragment-index"
-    ) <- start_index + i - 1
-  }
-  
-  knitr::asis_output(
-    as.character(
-      xml2::xml_find_first(
-        doc,
-        ".//table"
-      )
-    )
-  )
-}
 
 # 0. Inventor management ─────────────────────────────────────────────────────
 
@@ -979,4 +863,374 @@ dupont_roi <- function(revenue, mat_cost, pers_cost,
     asset_turnover = asset_turnover,
     roi            = roi
   )
+}
+
+
+# ─── 5. TRANSPORTPLANUNG: ERÖFFNUNGSVERFAHREN ──────────────────────────────────
+
+#' Nordwestecken-Regel
+#' @param supply,demand Benannte Vektoren Angebot und Nachfrage.
+#' @return Allokationsmatrix.
+nw_corner <- function(supply, demand) {
+  a <- matrix(0, length(supply), length(demand),
+              dimnames = list(names(supply), names(demand)))
+  i <- 1; j <- 1
+  while (i <= length(supply) && j <= length(demand)) {
+    q <- min(supply[i], demand[j])
+    a[i, j] <- q
+    supply[i] <- supply[i] - q
+    demand[j] <- demand[j] - q
+    if (supply[i] == 0) i <- i + 1 else j <- j + 1
+  }
+  a
+}
+
+#' Vogel'sche Approximationsmethode mit Protokoll aller Iterationen
+#' (gleiche Logik wie vogels_approximation(), zusätzlich steps für Tableaus)
+#' @return Liste mit steps, allocation und total_cost.
+vam_trace <- function(cost, supply, demand) {
+  m <- nrow(cost); n <- ncol(cost)
+  alloc <- matrix(0, m, n, dimnames = dimnames(cost))
+  sup <- supply; dem <- demand
+  ar <- seq_len(m); ac <- seq_len(n)
+  pen <- function(v) { v <- sort(v); if (length(v) >= 2) v[2] - v[1] else 0 }
+  steps <- list()
+  while (length(ar) > 0 && length(ac) > 0) {
+    rp <- sapply(ar, function(i) pen(cost[i, ac]))
+    cp <- sapply(ac, function(j) pen(cost[ar, j]))
+    if (max(rp) >= max(cp)) {
+      typ <- "Zeile"; i <- ar[which.max(rp)]
+      j <- ac[which.min(cost[i, ac])]; pmax_val <- max(rp)
+    } else {
+      typ <- "Spalte"; j <- ac[which.max(cp)]
+      i <- ar[which.min(cost[ar, j])]; pmax_val <- max(cp)
+    }
+    q <- min(sup[i], dem[j])
+    steps[[length(steps) + 1]] <- list(
+      ar = ar, ac = ac, sup = sup, dem = dem,
+      rp = setNames(rp, rownames(cost)[ar]),
+      cp = setNames(cp, colnames(cost)[ac]),
+      alloc_before = alloc, typ = typ, i = i, j = j, q = q, pmax = pmax_val
+    )
+    alloc[i, j] <- alloc[i, j] + q
+    sup[i] <- sup[i] - q; dem[j] <- dem[j] - q
+    if (sup[i] <= 0) ar <- setdiff(ar, i)
+    if (dem[j] <= 0) ac <- setdiff(ac, j)
+  }
+  list(steps = steps, allocation = alloc, total_cost = sum(alloc * cost))
+}
+
+
+# ─── 6. KÜRZESTE WEGE ──────────────────────────────────────────────────────────
+
+#' Dijkstra-Algorithmus: kürzeste Entfernungen ab einem Startknoten
+#' @param W Gewichtsmatrix mit Knotennamen (0 = keine Kante).
+#' @param start Startknoten.
+#' @return Benannter Vektor der kürzesten Entfernungen.
+dijkstra <- function(W, start) {
+  ids <- rownames(W)
+  d <- setNames(rep(Inf, nrow(W)), ids)
+  perm <- setNames(rep(FALSE, nrow(W)), ids)
+  d[start] <- 0
+  while (!all(perm)) {
+    v <- names(which.min(ifelse(perm, Inf, d)))
+    perm[v] <- TRUE
+    for (w in ids[W[v, ] > 0 & !perm]) d[w] <- min(d[w], d[v] + W[v, w])
+  }
+  d
+}
+
+#' Dijkstra mit Protokoll (Marken, Vorgänger, Markenkorrekturen je Iteration)
+#' @return Liste mit steps, d und pred.
+dijkstra_trace <- function(W, start) {
+  n <- nrow(W); ids <- rownames(W)
+  d <- setNames(rep(Inf, n), ids); pred <- setNames(rep(NA_character_, n), ids)
+  perm <- setNames(rep(FALSE, n), ids)
+  d[start] <- 0
+  steps <- list()
+  while (!all(perm)) {
+    cand <- ifelse(perm, Inf, d)
+    u <- names(which.min(cand))
+    perm[u] <- TRUE
+    updates <- character(0); old <- c()
+    for (v in ids[W[u, ] > 0 & !perm]) {
+      if (d[u] + W[u, v] < d[v]) {
+        old[v] <- d[v]
+        d[v] <- d[u] + W[u, v]; pred[v] <- u
+        updates <- c(updates, v)
+      }
+    }
+    steps[[length(steps) + 1]] <- list(u = u, d = d, pred = pred,
+                                       perm = perm, updates = updates,
+                                       old = old)
+  }
+  list(steps = steps, d = d, pred = pred)
+}
+
+#' Knotenfolge des kürzesten Wegs aus dem Vorgängervektor
+#' @param pred Vorgänger je Knoten (aus dijkstra_trace()).
+#' @param ziel Zielknoten.
+pfad <- function(pred, ziel) {
+  p <- ziel
+  while (!is.na(pred[p[1]])) p <- c(pred[p[1]], p)
+  unname(p)
+}
+
+
+# ─── 7. TOURENPLANUNG ──────────────────────────────────────────────────────────
+
+#' Länge einer Rundtour (Rückkehr zum ersten Knoten wird mitgezählt)
+#' @param tour Knotenfolge (Namen oder Indizes).
+#' @param D Distanzmatrix.
+tour_length <- function(tour, D) {
+  sum(D[cbind(tour, c(tour[-1], tour[1]))])
+}
+
+#' Länge einer Tour ab und bis Depot (Depot = Index 1, nicht in t enthalten)
+depot_tour_length <- function(t, D) { tt <- c(1, t, 1); sum(D[cbind(head(tt, -1), tt[-1])]) }
+
+#' Nearest-Neighbor-Heuristik
+#' @param D Distanzmatrix.
+#' @param start Startknoten (Index).
+#' @return Knotennamen der Tour bzw. Indizes, falls D keine Zeilennamen hat.
+nearest_neighbor <- function(D, start = 1) {
+  tour <- start
+  while (length(tour) < nrow(D)) {
+    offen <- setdiff(seq_len(nrow(D)), tour)
+    letzte <- tail(tour, 1)
+    tour <- c(tour, offen[which.min(D[letzte, offen])])
+  }
+  if (is.null(rownames(D))) tour else rownames(D)[tour]
+}
+
+#' 2-opt-Verbesserungsverfahren (bester Zug je Iteration)
+#' @param tour Ausgangstour.
+#' @param D Distanzmatrix.
+#' @param tol Mindestverbesserung je Zug.
+#' @return Liste mit verbesserter tour und log der ausgeführten Züge.
+two_opt <- function(tour, D, tol = 1e-9) {
+  n <- length(tour); log <- list()
+  repeat {
+    best <- 0
+    for (i in 1:(n - 1)) for (k in (i + 1):n) {
+      a <- tour[i]; b <- tour[i + 1]
+      c <- tour[k]; d <- tour[k %% n + 1]
+      if (b == c || a == d) next          # benachbarte Kanten
+      delta <- D[a, b] + D[c, d] - D[a, c] - D[b, d]
+      if (delta > best + tol) { best <- delta; bi <- i; bk <- k }
+    }
+    if (best <= 0) break                  # lokales Optimum
+    log[[length(log) + 1]] <- list(tour = tour, i = bi, k = bk, gain = best)
+    tour <- c(tour[1:bi], rev(tour[(bi + 1):bk]),
+              if (bk < n) tour[(bk + 1):n])
+  }
+  list(tour = tour, log = log)
+}
+
+#' Alle Permutationen eines Vektors (rekursiv; nur für kleine n geeignet)
+perms <- function(v) if (length(v) <= 1) list(v) else
+  do.call(base::c, lapply(seq_along(v), function(i)
+    lapply(perms(v[-i]), function(p) c(v[i], p))))
+
+#' Savings-Verfahren nach Clarke & Wright (parallele Variante, Kapazität)
+#' @param D Distanzmatrix mit Knotennamen.
+#' @param q Benannte Bedarfe der Kunden.
+#' @param cap Fahrzeugkapazität.
+#' @param depot Name des Depots.
+#' @return Liste mit touren und Savings-Liste.
+savings_cw <- function(D, q, cap, depot = "R") {
+  kunden <- names(q)
+  touren <- as.list(kunden)                       # Start: Pendeltouren
+  s <- subset(expand.grid(i = kunden, j = kunden, stringsAsFactors = FALSE),
+              i < j)
+  s$s <- D[depot, s$i] + D[depot, s$j] - D[cbind(s$i, s$j)]
+  s <- s[order(-s$s), ]
+  for (r in seq_len(nrow(s))) {
+    i <- s$i[r]; j <- s$j[r]
+    ti <- which(sapply(touren, function(t) i %in% t))
+    tj <- which(sapply(touren, function(t) j %in% t))
+    if (ti == tj) next
+    A <- touren[[ti]]; B <- touren[[tj]]
+    if (sum(q[c(A, B)]) > cap) next
+    if (tail(A, 1) == i && B[1] == j) new <- c(A, B)
+    else if (A[1] == i && tail(B, 1) == j) new <- c(B, A)
+    else if (tail(A, 1) == i && tail(B, 1) == j) new <- c(A, rev(B))
+    else if (A[1] == i && B[1] == j) new <- c(rev(A), B)
+    else next                                     # i oder j innen → nicht verknüpfbar
+    touren[[ti]] <- new; touren <- touren[-tj]
+  }
+  list(touren = touren, savings = s)
+}
+
+#' Savings-Verfahren mit Kapazitäts- und Dauerrestriktion (Indexform, Depot = 1)
+#' @param D Distanzmatrix (km).
+#' @param q Bedarfe der Kunden 2..n.
+#' @param cap Kapazität je Tour.
+#' @param t_max Maximale Tourdauer (h).
+#' @param v Geschwindigkeit (km/h).
+#' @param t_stop,t_load Stopp- und Ladezeit (h).
+#' @return Liste von Touren (Knotenindizes).
+savings_vrp <- function(D, q, cap, t_max, v = v_kmh, t_stop = t_stopp,
+                        t_load = t_lade) {
+  k <- length(q); touren <- as.list(2:(k + 1))
+  dauer <- function(t) {
+    tt <- c(1, t, 1)
+    sum(D[cbind(head(tt, -1), tt[-1])]) / v + length(t) * t_stop + t_load
+  }
+  s <- which(upper.tri(D[-1, -1]), arr.ind = TRUE)
+  s <- data.frame(i = s[, 1] + 1, j = s[, 2] + 1)
+  s$s <- D[1, s$i] + D[1, s$j] - D[cbind(s$i, s$j)]
+  s <- s[order(-s$s), ]
+  for (r in seq_len(nrow(s))) {
+    i <- s$i[r]; j <- s$j[r]
+    ti <- which(sapply(touren, function(t) i %in% t))
+    tj <- which(sapply(touren, function(t) j %in% t))
+    if (ti == tj) next
+    A <- touren[[ti]]; B <- touren[[tj]]
+    if (sum(q[c(A, B) - 1]) > cap) next
+    if (tail(A, 1) == i && B[1] == j) neu <- c(A, B)
+    else if (A[1] == i && tail(B, 1) == j) neu <- c(B, A)
+    else if (tail(A, 1) == i && tail(B, 1) == j) neu <- c(A, rev(B))
+    else if (A[1] == i && B[1] == j) neu <- c(rev(A), B)
+    else next
+    if (dauer(neu) > t_max) next
+    touren[[ti]] <- neu; touren <- touren[-tj]
+  }
+  touren
+}
+
+
+# ─── 8. LAGER UND KOMMISSIONIERUNG ─────────────────────────────────────────────
+
+#' Wegdistanz zwischen zwei Positionen im Ein-Block-Lager
+#' @param p,q Positionen (x = Gangmitte, y = Tiefe).
+#' @param y_max Lage des hinteren Quergangs.
+dist_lager <- function(p, q, y_max = Y) {
+  if (p[1] == q[1]) return(abs(p[2] - q[2]))
+  abs(p[1] - q[1]) + min(p[2] + q[2], 2 * y_max - p[2] - q[2])
+}
+
+#' Weglänge eines rechtwinkligen Wegpunktzugs (Matrix x, y)
+weg_laenge <- function(wp) sum(abs(diff(wp[, 1])) + abs(diff(wp[, 2])))
+
+#' Routingstrategie S-Shape: Gänge mit Picks vollständig durchlaufen
+#' @param pk Picks mit Spalten gang und y.
+#' @param gx x-Position der Gänge.
+#' @param y_max Hinterer Quergang.
+#' @return Wegpunkte ab/bis Depot (0, 0).
+route_sshape <- function(pk, gx = gang_x, y_max = Y) {
+  g <- sort(unique(pk$gang)); m <- length(g)
+  wp <- list(c(0, 0)); vorne <- TRUE
+  for (k in seq_len(m)) {
+    x <- gx[g[k]]; ys <- pk$y[pk$gang == g[k]]
+    if (k == m && m %% 2 == 1) {
+      wp <- c(wp, list(c(x, 0), c(x, max(ys)), c(x, 0)))
+    } else if (vorne) {
+      wp <- c(wp, list(c(x, 0), c(x, y_max))); vorne <- FALSE
+    } else {
+      wp <- c(wp, list(c(x, y_max), c(x, 0))); vorne <- TRUE
+    }
+  }
+  do.call(rbind, c(wp, list(c(0, 0))))
+}
+
+#' Routingstrategie Return: jeden Gang von vorne bis zum hintersten Pick
+route_return <- function(pk, gx = gang_x) {
+  g <- sort(unique(pk$gang)); wp <- list(c(0, 0))
+  for (j in g) {
+    x <- gx[j]
+    wp <- c(wp, list(c(x, 0), c(x, max(pk$y[pk$gang == j])), c(x, 0)))
+  }
+  do.call(rbind, c(wp, list(c(0, 0))))
+}
+
+#' Routingstrategie Largest Gap: größte Lücke je Gang nicht laufen
+route_lgap <- function(pk, gx = gang_x, y_max = Y) {
+  g <- sort(unique(pk$gang)); m <- length(g)
+  if (m == 1) return(route_return(pk, gx))
+  wp <- list(c(0, 0), c(gx[g[1]], 0), c(gx[g[1]], y_max))
+  vorne_max <- c()
+  mitte <- if (m > 2) g[2:(m - 1)] else integer(0)
+  for (j in mitte) {
+    pts <- c(0, sort(pk$y[pk$gang == j]), y_max); k <- which.max(diff(pts))
+    x <- gx[j]; wp <- c(wp, list(c(x, y_max)))
+    if (pts[k + 1] < y_max) wp <- c(wp, list(c(x, pts[k + 1]), c(x, y_max)))
+    vorne_max[as.character(j)] <- pts[k]
+  }
+  xl <- gx[g[m]]; wp <- c(wp, list(c(xl, y_max), c(xl, 0)))
+  for (j in rev(mitte)) {
+    x <- gx[j]; fm <- vorne_max[as.character(j)]
+    wp <- c(wp, list(c(x, 0)))
+    if (fm > 0) wp <- c(wp, list(c(x, fm), c(x, 0)))
+  }
+  do.call(rbind, c(wp, list(c(0, 0))))
+}
+
+#' Distanzmatrix Depot + Pickpositionen
+#' @return Liste mit Koordinaten P und Distanzmatrix D.
+dist_matrix <- function(pk, y_max = Y) {
+  P <- rbind(c(0, 0), as.matrix(pk[, c("x", "y")])); n <- nrow(P)
+  D <- matrix(0, n, n)
+  for (i in 1:n) for (j in 1:n) D[i, j] <- dist_lager(P[i, ], P[j, ], y_max)
+  list(P = P, D = D)
+}
+
+#' Wegpunkte einer TSP-Tour im Lager (Gangwechsel über den kürzeren Quergang)
+tour_wp <- function(t, P, y_max = Y) {
+  tt <- c(t, t[1]); wp <- list(P[tt[1], ])
+  for (k in 2:length(tt)) {
+    p <- P[tt[k - 1], ]; q <- P[tt[k], ]
+    if (p[1] != q[1]) {
+      yy <- if (p[2] + q[2] <= 2 * y_max - p[2] - q[2]) 0 else y_max
+      wp <- c(wp, list(c(p[1], yy), c(q[1], yy)))
+    }
+    wp <- c(wp, list(q))
+  }
+  do.call(rbind, wp)
+}
+
+#' Klassenbasierte Lagerplatzvergabe (ABC-Zonen, zufällig innerhalb der Zone)
+#' @param fach_reihenfolge Fächer von gut nach schlecht erreichbar.
+#' @param kl ABC-Klasse je Artikel.
+#' @return Fachnummer je Artikel.
+zuordnung_klasse <- function(fach_reihenfolge, kl = klasse) {
+  out <- integer(length(kl))
+  for (k in c("A", "B", "C")) {
+    idx <- which(kl == k)
+    out[idx] <- sample(fach_reihenfolge[idx])
+  }
+  out
+}
+
+
+# ─── 9. TRANSPORTKOSTEN ────────────────────────────────────────────────────────
+
+#' Fahrzeugkostenrechnung: fixe und variable Kosten, Kostensätze
+#' @param p Liste mit A, RW, N, i, versicherung, steuer, sonst_fix,
+#'   energie_km, wartung_km, reifen_km, maut_km.
+#' @param km_jahr Jahresfahrleistung.
+fahrzeugkosten <- function(p, km_jahr) {
+  afa    <- (p$A - p$RW) / p$N                 # lineare Abschreibung
+  zins   <- (p$A + p$RW) / 2 * p$i             # kalk. Zinsen auf Ø Kapital
+  fix    <- afa + zins + p$versicherung + p$steuer + p$sonst_fix
+  var_km <- p$energie_km + p$wartung_km + p$reifen_km + p$maut_km
+  list(afa = afa, zins = zins, fix = fix, var_km = var_km,
+       fix_km = fix / km_jahr, gesamt_km = fix / km_jahr + var_km,
+       gesamt_jahr = fix + var_km * km_jahr)
+}
+
+#' Hauptlauf vom Depot zu einem Zielknoten (Pendelfahrten mit vollen Lkw)
+#' @param ziel,von Koordinaten (lon, lat).
+#' @param boxen Menge.
+#' @param kap Boxen je Lkw.
+#' @param fix,kkm,kh Kostensätze (€/Tag, €/km, €/h).
+#' @param v,t_load Geschwindigkeit, Ladezeit.
+hauptlauf <- function(ziel, boxen, von = depot, umweg_f = umweg, kap = 900,
+                      fix = fix_tag, kkm = k_km, kh = k_h, v = v_kmh,
+                      t_load = t_lade) {
+  d <- umweg_f * haversine(von["lat"], von["lon"], ziel["lat"], ziel["lon"])
+  fahrten <- ceiling(boxen / kap)           # kap Boxen je Lkw (Einheit Tourenplanung)
+  km <- 2 * d * fahrten; h <- km / v + fahrten * 2 * t_load
+  list(d = unname(d), fahrten = fahrten, km = unname(km),
+       kosten = unname(fahrten * fix + kkm * km + kh * h))
 }

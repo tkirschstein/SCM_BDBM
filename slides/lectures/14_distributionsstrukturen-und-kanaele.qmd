@@ -5,8 +5,10 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden (u. a. haversine())
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 
 library(tidyverse)
 library(plotly)
@@ -14,31 +16,6 @@ library(knitr)
 library(kableExtra)
 
 knitr::opts_chunk$set(fig.width = 9.5, fig.height = 6)
-
-# ── Hilfsfunktionen ──────────────────────────────────────────────────────────
-fmt <- function(x, d = 2) formatC(x, format = "f", digits = d,
-                                   big.mark = ".", decimal.mark = ",")
-eur <- function(x, d = 0) paste0(fmt(x, d), " €")
-
-kbl_sf <- function(df, ..., font_size = 22, first_col = TRUE,
-                   col1_bg = "#2F3E46") {
-  out <- kbl(df, ...) |>
-    kable_styling(bootstrap_options = c("condensed", "striped"),
-                  full_width = TRUE, font_size = font_size) |>
-    row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
-  if (first_col) out <- out |>
-    column_spec(1, bold = TRUE, background = col1_bg, color = "white")
-  out
-}
-
-plt_layout <- function(p, xt = "", yt = "", h = 480, w = 760, legend = TRUE) {
-  p |> layout(xaxis = list(title = xt), yaxis = list(title = yt),
-              showlegend = legend,
-              legend = list(orientation = "h", x = 0, y = -0.18),
-              margin = list(l = 70, r = 20, t = 20, b = 60),
-              plot_bgcolor = "white", paper_bgcolor = "white",
-              height = h, width = w)
-}
 
 # ── Kostensätze aus Einheit 12 (7,5-t-Diesel-Kühl-Lkw) ───────────────────────
 fix_tag <- 90.28    # Fahrzeug-Fixkosten je Einsatztag (€)
@@ -67,50 +44,13 @@ P_rm <- rbind(depot, as.matrix(maerkte[, c("lon", "lat")]))
 D_rm <- outer(seq_len(nrow(P_rm)), seq_len(nrow(P_rm)), Vectorize(function(i, j)
   umweg * haversine(P_rm[i, 2], P_rm[i, 1], P_rm[j, 2], P_rm[j, 1])))
 
-# Savings-Verfahren mit Kapazitäts- und Dauerrestriktion (Einheit 11)
-savings_vrp <- function(D, q, cap, t_max) {
-  k <- length(q); touren <- as.list(2:(k + 1))
-  dauer <- function(t) {
-    tt <- c(1, t, 1)
-    sum(D[cbind(head(tt, -1), tt[-1])]) / v_kmh + length(t) * t_stopp + t_lade
-  }
-  s <- which(upper.tri(D[-1, -1]), arr.ind = TRUE)
-  s <- data.frame(i = s[, 1] + 1, j = s[, 2] + 1)
-  s$s <- D[1, s$i] + D[1, s$j] - D[cbind(s$i, s$j)]
-  s <- s[order(-s$s), ]
-  for (r in seq_len(nrow(s))) {
-    i <- s$i[r]; j <- s$j[r]
-    ti <- which(sapply(touren, function(t) i %in% t))
-    tj <- which(sapply(touren, function(t) j %in% t))
-    if (ti == tj) next
-    A <- touren[[ti]]; B <- touren[[tj]]
-    if (sum(q[c(A, B) - 1]) > cap) next
-    if (tail(A, 1) == i && B[1] == j) neu <- c(A, B)
-    else if (A[1] == i && tail(B, 1) == j) neu <- c(B, A)
-    else if (tail(A, 1) == i && tail(B, 1) == j) neu <- c(A, rev(B))
-    else if (A[1] == i && B[1] == j) neu <- c(rev(A), B)
-    else next
-    if (dauer(neu) > t_max) next
-    touren[[ti]] <- neu; touren <- touren[-tj]
-  }
-  touren
-}
-tour_km <- function(t, D) { tt <- c(1, t, 1); sum(D[cbind(head(tt, -1), tt[-1])]) }
-
 # Variante A: Direktbelieferung aller Märkte
 touren_A <- savings_vrp(D_rm, maerkte$boxen, kap_lkw, t_max)
-km_A <- sapply(touren_A, tour_km, D = D_rm)
+km_A <- sapply(touren_A, depot_tour_length, D = D_rm)
 h_A  <- km_A / v_kmh + lengths(touren_A) * t_stopp + t_lade
 kosten_A_transport <- sum(fix_tag + k_km * km_A + k_h * h_A)
 
 # Varianten B und C: Hauptlauf zu einem Knoten des Händlers
-hauptlauf <- function(ziel, boxen) {
-  d <- umweg * haversine(depot["lat"], depot["lon"], ziel["lat"], ziel["lon"])
-  fahrten <- ceiling(boxen / 900)          # 900 Boxen je Lkw (Einheit 11)
-  km <- 2 * d * fahrten; h <- km / v_kmh + fahrten * 2 * t_lade
-  list(d = unname(d), fahrten = fahrten, km = unname(km),
-       kosten = unname(fahrten * fix_tag + k_km * km + k_h * h))
-}
 hl_B <- hauptlauf(zlager, n_boxen)
 hl_C <- hauptlauf(xdock, n_boxen)
 
@@ -126,103 +66,6 @@ varianten <- data.frame(
          gesamt = transport + entgelt + abschr,
          je_box = gesamt / n_boxen)
 
-# ── Plot: Karte mit Märkten und Touren ───────────────────────────────────────
-km_x <- function(lon) lon * 111.32 * cos(50.4 * pi / 180)
-km_y <- function(lat) lat * 111.32
-rm_plot <- function(touren = NULL, ziel = NULL, ziel_name = "",
-                    height = 520, width = 640) {
-  p <- plot_ly(type = "scatter", mode = "markers")
-  farben <- c("#0B6E4F", "#2A7ACA", "#D97B29", "#9B59B6", "#C00000", "#2D9E8E",
-              "#F4A259")
-  if (!is.null(touren)) for (k in seq_along(touren)) {
-    tt <- c(1, touren[[k]], 1)
-    p <- p |> add_trace(x = km_x(P_rm[tt, 1]), y = km_y(P_rm[tt, 2]), mode = "lines",
-                        line = list(color = farben[(k - 1) %% 7 + 1], width = 2.5),
-                        name = paste("Tour", k), hoverinfo = "skip")
-  }
-  if (!is.null(ziel)) p <- p |>
-    add_trace(x = km_x(c(depot["lon"], ziel["lon"])), y = km_y(c(depot["lat"], ziel["lat"])),
-              mode = "lines", line = list(color = "#2F3E46", width = 6),
-              name = "Hauptlauf", hoverinfo = "skip") |>
-    add_trace(x = km_x(ziel["lon"]), y = km_y(ziel["lat"]), mode = "markers+text",
-              text = ziel_name, textposition = "top center",
-              marker = list(symbol = "square", size = 22, color = "#F4A259",
-                            line = list(color = "#2F3E46", width = 2)),
-              showlegend = FALSE, hoverinfo = "skip")
-  p |>
-    add_trace(x = km_x(maerkte$lon), y = km_y(maerkte$lat), mode = "markers",
-              marker = list(size = 6 + maerkte$boxen / 6, color = "#2D9E8E",
-                            line = list(color = "white", width = 1)),
-              text = paste0(maerkte$id, ": ", maerkte$boxen, " Boxen"),
-              hoverinfo = "text", name = "Markt") |>
-    add_trace(x = km_x(depot["lon"]), y = km_y(depot["lat"]), mode = "markers+text",
-              text = "Raunheim", textposition = "bottom center",
-              marker = list(symbol = "hexagon", size = 24, color = "#BFDBF7",
-                            line = list(color = "#2F3E46", width = 2)),
-              showlegend = FALSE, hoverinfo = "skip") |>
-    layout(xaxis = list(visible = FALSE, fixedrange = TRUE,
-                        scaleanchor = "y", scaleratio = 1),
-           yaxis = list(visible = FALSE, fixedrange = TRUE),
-           legend = list(orientation = "h", x = 0, y = -0.02),
-           margin = list(l = 5, r = 5, t = 5, b = 5),
-           plot_bgcolor = "transparent", paper_bgcolor = "transparent",
-           height = height, width = width)
-}
-
-# ── Schemata für Netzstrukturen ──────────────────────────────────────────────
-netz_panel <- function(typ) {
-  kunden <- data.frame(x = rep(c(0.12, 0.31, 0.5, 0.69, 0.88), 2)[1:8],
-                       y = 0.08)
-  kunden$x <- seq(0.06, 0.94, length.out = 8)
-  werk <- c(0.5, 0.92)
-  p <- plot_ly(type = "scatter", mode = "markers")
-  seg <- function(p, a, b, col = "#2F3E46", w = 2, dash = "solid")
-    add_segments(p, x = a[1], xend = b[1], y = a[2], yend = b[2],
-                 line = list(color = col, width = w, dash = dash),
-                 hoverinfo = "skip", showlegend = FALSE)
-  lager <- NULL
-  if (typ == "direkt") {
-    for (k in seq_len(nrow(kunden))) p <- seg(p, werk, unlist(kunden[k, ]), "#9AA5B1", 1.5)
-  } else if (typ == "zentral") {
-    lager <- data.frame(x = 0.5, y = 0.5)
-    p <- seg(p, werk, c(0.5, 0.5), "#2F3E46", 5)
-    for (k in seq_len(nrow(kunden))) p <- seg(p, c(0.5, 0.5), unlist(kunden[k, ]), "#9AA5B1", 1.5)
-  } else if (typ == "zweistufig") {
-    lager <- data.frame(x = c(0.5, 0.25, 0.75), y = c(0.62, 0.36, 0.36))
-    p <- seg(p, werk, c(0.5, 0.62), "#2F3E46", 5)
-    p <- seg(p, c(0.5, 0.62), c(0.25, 0.36), "#2F3E46", 3.5)
-    p <- seg(p, c(0.5, 0.62), c(0.75, 0.36), "#2F3E46", 3.5)
-    for (k in seq_len(nrow(kunden))) {
-      l <- if (kunden$x[k] < 0.5) c(0.25, 0.36) else c(0.75, 0.36)
-      p <- seg(p, l, unlist(kunden[k, ]), "#9AA5B1", 1.5)
-    }
-  } else if (typ == "crossdock") {
-    werke <- data.frame(x = c(0.2, 0.5, 0.8), y = 0.92)
-    lager <- data.frame(x = 0.5, y = 0.5)
-    for (k in 1:3) p <- seg(p, unlist(werke[k, ]), c(0.5, 0.5), "#2F3E46", 4)
-    for (k in seq_len(nrow(kunden))) p <- seg(p, c(0.5, 0.5), unlist(kunden[k, ]), "#D97B29", 1.5)
-    p <- p |> add_trace(x = werke$x, y = werke$y, mode = "markers",
-                        marker = list(symbol = "hexagon", size = 18, color = "#BFDBF7",
-                                      line = list(color = "#2F3E46", width = 1.5)),
-                        hoverinfo = "skip", showlegend = FALSE)
-  }
-  if (typ != "crossdock") p <- p |> add_trace(
-    x = werk[1], y = werk[2], mode = "markers",
-    marker = list(symbol = "hexagon", size = 20, color = "#BFDBF7",
-                  line = list(color = "#2F3E46", width = 1.5)),
-    hoverinfo = "skip", showlegend = FALSE)
-  if (!is.null(lager)) p <- p |> add_trace(
-    x = lager$x, y = lager$y, mode = "markers",
-    marker = list(symbol = if (typ == "crossdock") "diamond" else "square",
-                  size = 18, color = "#F4A259",
-                  line = list(color = "#2F3E46", width = 1.5)),
-    hoverinfo = "skip", showlegend = FALSE)
-  p |> add_trace(x = kunden$x, y = kunden$y, mode = "markers",
-                 marker = list(size = 11, color = "#2D9E8E"),
-                 hoverinfo = "skip", showlegend = FALSE) |>
-    layout(xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
-           yaxis = list(visible = FALSE, range = c(0, 1.02), fixedrange = TRUE))
-}
 ```
 
 # Distributionsstrukturen und -kanäle

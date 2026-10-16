@@ -8,7 +8,10 @@
 ```{r}
 #| include: false
 
+# Zentrale Funktionen einbinden: Fachmodelle (scm_functions.R) und
+# Darstellungshilfen (scm_helpers.R)
 source("../R/scm_functions.R")
+source("../R/scm_helpers.R")
 
 library(ggplot2)
 library(dplyr)
@@ -30,97 +33,7 @@ overage_cost <- c - v
 critical_ratio <- underage_cost / (underage_cost + overage_cost)
 q_star <- qnorm(critical_ratio, mean = mu, sd = sigma)
 
-# Lokale Hilfsfunktion für die Visualisierung ----------------------------
 
-plot_newsvendor_distribution <- function(
-    mean_demand,
-    sd_demand,
-    order_quantity,
-    critical_ratio = NULL,
-    title = "Newsvendor-Modell: Nachfrage und Bestellmenge"
-) {
-  stopifnot(
-    is.finite(mean_demand),
-    is.finite(sd_demand),
-    sd_demand > 0,
-    is.finite(order_quantity)
-  )
-
-  x_min <- min(0, mean_demand - 4 * sd_demand)
-  x_max <- max(order_quantity, mean_demand + 4 * sd_demand)
-
-  demand <- tibble(
-    demand = seq(x_min, x_max, length.out = 1000),
-    density = dnorm(demand, mean = mean_demand, sd = sd_demand)
-  )
-
-  left_area <- demand |> filter(demand <= order_quantity)
-  right_area <- demand |> filter(demand >= order_quantity)
-
-  ggplot(demand, aes(x = demand, y = density)) +
-    geom_area(
-      data = left_area,
-      fill = "#00843D",
-      alpha = 0.25
-    ) +
-    geom_area(
-      data = right_area,
-      fill = "#E85D04",
-      alpha = 0.20
-    ) +
-    geom_line(
-      linewidth = 1.1,
-      colour = "#1F2937"
-    ) +
-    geom_vline(
-      xintercept = mean_demand,
-      linetype = "dashed",
-      colour = "#6B7280"
-    ) +
-    geom_vline(
-      xintercept = order_quantity,
-      linewidth = 1.2,
-      colour = "#00843D"
-    ) +
-    annotate(
-      "text",
-      x = order_quantity,
-      y = max(demand$density) * 0.95,
-      label = paste0(
-        "Q* = ",
-        format(
-          round(order_quantity, 0),
-          big.mark = ".",
-          scientific = FALSE
-        )
-      ),
-      hjust = -0.05,
-      colour = "#00843D",
-      fontface = "bold"
-    ) +
-    labs(
-      title = title,
-      subtitle = if (is.null(critical_ratio)) {
-        NULL
-      } else {
-        paste0(
-          "Kritische Fraktil: ",
-          number(
-            critical_ratio,
-            accuracy = 0.001,
-            decimal.mark = ","
-          )
-        )
-      },
-      x = "Nachfrage",
-      y = "Dichte"
-    ) +
-    theme_minimal(base_size = 18) +
-    theme(
-      plot.title = element_text(face = "bold"),
-      panel.grid.minor = element_blank()
-    )
-}
 ```
 
 ------------------------------------------------------------------------------
@@ -138,13 +51,11 @@ Nach dieser Einheit können Sie …
 - den Einfluss zentraler Modellparameter auf die Bestellentscheidung
   erklären.
 
-
 **Literatur zur Vertiefung**
 
 - **Einführung Newsvendor:** [@thonemann2023operations, Kapitel 5].
 - **Einperiodige Bestandsmodelle und Critical-Fractile-Logik:** [@cachon2024matching, Kapitel 13].
 - **Newsvendor-Modelle im Kontext des Inventory Managements:** [@silver2017inventory, Kapitel 9].
-
 
 ------------------------------------------------------------------------------
 
@@ -294,7 +205,6 @@ plot_ly(
 > vorbereiten?
 :::
 
-
 ------------------------------------------------------------------------------
 
 ## Fallbeispiel {#newsvendor-fallbeispiel-parameters}
@@ -364,7 +274,6 @@ Zwei möglische Situation aus Sicht des Lieferanten
 - Opportunitätskosten aus entgangenem Deckungsbeitrag: $(D-q) \cdot c^u$
 :::
 
-
 ::: {.vspace-2}
 :::
 
@@ -404,7 +313,6 @@ Nachfrageszenarien:
 Erwartetes Ergebnis 
 :::
 
-
 ::::: columns
 ::: {.column width="55%"}
 
@@ -428,7 +336,6 @@ Erwartetes Ergebnis
 :::
 
 :::
-
 
 ::: {.column width="45%"}
 
@@ -656,7 +563,6 @@ $$ \underset{q}{\max} E(P(q)) = \mu \cdot c^u - E((D-q)^+) \cdot c^u - E((q-D)^+
 $\rightarrow$ minimiere das gewichtete Mittel aus erwarteter Fehlmenge $E((D-q)^+)$ und erwartetem Überbestand $E((q-D)^+)$
 :::
 
-
 ::: {.columns}
 ::: {.column width="50%"}
 
@@ -740,7 +646,6 @@ plot_ly(
     width = 650,
   height = 320
   )
-
 
 ```
 :::
@@ -832,7 +737,6 @@ plot_ly(
 :::
 :::
 
-
 ------------------------------------------------------------------------------
 
 ## Newsvendor-Modell {#newsvendor-formal-solution}
@@ -844,7 +748,6 @@ Formale Lösung
 Die optimale Bestellmenge $q^*$ ist, wo die Anstiege der erwarteten Fehlmengenkosten $E((D-q)^+) \cdot c^u$ und der Überbestandskosten $E((q-D)^+)\cdot c^o$ gleich sind:
 $$ \left(1 - F(q^*)\right) \cdot c^u \overset{!}{=} F(q^*) \cdot c^o \quad \Longrightarrow \quad q^* = F^{-1} \left( \frac{c^u}{c^o + c^u} \right)$$
 :::
-
 
 ::: {.small-text}
 ::: {.columns}
@@ -917,7 +820,6 @@ plot_ly(
   height = 320
   )
 
-
 ```
 :::
 :::
@@ -932,7 +834,6 @@ plot_ly(
 #| message: false
 #| fig-width: 7
 #| fig-height: 3.5
-
 
 df_exp_cont$cost <- cu * df_exp_cont$expected_loss + co * df_exp_cont$expected_sales
 
@@ -1063,14 +964,12 @@ $$z^* = \Phi^{-1} \left( \frac{c^u}{c^o + c^u} \right) \qquad q^*=\mu + \sigma \
 
 **Fallbeispiel** Filiale Frankfurt mit $N(280,55^2)$
 
-
 ::: {.small-text}
 ::: {.columns}
 
 ::: {.column width="32%"}
 ::: {.fragment .fade-up}
 **Fall 1: $c^u=1 < 5=c^o$**
-
 
 ```{r newsvendor-continuous-plot2a}
 #| echo: false
@@ -1138,7 +1037,6 @@ $q^* = 280 + 55 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(
 ::: {.fragment .fade-up}
 **Fall 2: $c^u = 3 = c^o$**
 
-
 ```{r newsvendor-continuous-plot2b}
 #| echo: false
 #| warning: false
@@ -1204,7 +1102,6 @@ $q^* = 280 + 55 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(
 ::: {.fragment .fade-up}
 **Fall 3: $c^u=5 > 1=c^o$**
 
-
 ```{r newsvendor-continuous-plot2c}
 #| echo: false
 #| warning: false
@@ -1268,7 +1165,6 @@ $q^* = 280 + 55 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(
 
 :::
 ::: 
-
 
 ------------------------------------------------------------------------------
 
