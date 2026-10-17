@@ -8,9 +8,9 @@ Prof. Dr. Thomas Kirschstein
 
 ## Kursüberblick
 
-Dieses Repository enthält alle Materialien zu den Lehrveranstaltungen *Supply Chain Management* und *Distribution* im Bachelorstudiengang Digital Business Management: Vorlesungsfolien, den begleitenden Reader, Fallstudien mit Klausuraufgaben und die zugehörige R-Funktionsbibliothek.
+Dieses Repository enthält alle Materialien zu den Lehrveranstaltungen *Supply Chain Management* und *Distribution* im Bachelorstudiengang Digital Business Management: Vorlesungsfolien, den begleitenden Reader, Fallstudien mit Übungsaufgaben und die zugehörige R-Funktionsbibliothek.
 
-Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des Supply Chain Managements und der Distribution. Im Mittelpunkt steht die Übertragung von Methoden aus der Vorlesung auf möglichst realistische Problemstellungen. Ein durchgängiges Fallbeispiel, die fiktive **SushiFresh GmbH**, verbindet alle Themen.
+Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des Supply Chain Managements und der Distributionsplanung. Im Mittelpunkt steht die Übertragung von Methoden aus der Vorlesung auf möglichst realistische Problemstellungen. Ein durchgängiges Fallbeispiel, die fiktive **SushiFresh GmbH**, verbindet alle Themen.
 
 | | |
 |---|---|
@@ -22,7 +22,7 @@ Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des 
 | **Prüfungsleistung** | Klausur |
 | **Voraussetzungen** | Grundkenntnisse in Statistik; Programmierkenntnisse sind hilfreich, aber nicht erforderlich (R-Startercode wird bereitgestellt) |
 
-**Lernziele:** Nach der Veranstaltung können die Studierenden
+**Lernziele:** Nach der Veranstaltung können Studierende
 
 - Supply Chains als Netzwerke beschreiben und ihre strategische Ausrichtung (Strategic Fit) beurteilen,
 - Zielkonflikte zwischen Kosten, Service und Nachhaltigkeit erkennen und bewerten,
@@ -47,53 +47,54 @@ In der Präsenzveranstaltung steht die Anwendung im Vordergrund. Ein Termin läu
 | Zeit | Block | Inhalt |
 |---|---|---|
 | 18:00–18:45 | **Rückfragen zum Thema** | Offene Fragen aus dem Selbststudium werden gemeinsam geklärt. Bringen Sie Ihre Fragen mit – je konkreter, desto besser. |
-| 18:45–19:15 | **Klausuraufgaben** | Bearbeitung von Teil 1 der zugehörigen Fallstudie in Kleingruppen, mit Stift und Papier |
+| 18:45–19:15 | **Übungsaufgaben** | Bearbeitung von Teil 1 der zugehörigen Fallstudie sowie der Verstädnisfragen im Reader in Kleingruppen, mit Stift und Papier |
 | 19:15–19:30 | Pause | |
 | 19:30–20:15 | **Besprechung** | Gemeinsame Besprechung der Lösungen, Diskussion von Lösungswegen und typischen Fehlern |
-| 20:15–21:00 | **Fallstudien und Vertiefung** | Präsentation und Diskussion fakultativer Gruppenfallstudien (Teil 2); sonst weitere Rückfragen und Vertiefung |
+| 20:15–21:00 | **Fallstudien und Vertiefung** | betreute Bearbeitung oder Präsentation / Diskussion  Gruppenfallstudien (Teil 2) |
 
 ### Fallstudien
 
 Zu jedem Thema gibt es eine Fallstudie im Ordner `case_studies` (Links siehe unten). Jede Fallstudie besteht aus zwei Teilen:
 
-- **Teil 1 – Klausurvorbereitung:** Aufgaben im Klausurstil zu einer neuen SushiFresh-Entscheidungssituation, lösbar mit Stift und Papier in 25–30 Minuten. Die Musterlösungen sind in der Fallstudie ausklappbar hinterlegt. Diese Aufgaben werden in der Veranstaltung bearbeitet.
-- **Teil 2 – Gruppenfallstudie (fakultativ):** eine vertiefende, meist datenbasierte Fallstudie für Gruppen von 3–6 Personen. Die Bearbeitung ist freiwillig und geht nicht in die Note ein. Gruppen können ihre Ergebnisse in einem der Termine nach dem jeweiligen Thema präsentieren (ca. 20 Minuten) und erhalten dazu Feedback. Bitte melden Sie Präsentationen spätestens eine Woche vorher an.
+- **Teil 1 – Klausurvorbereitung:** Übungsaufgaben im Klausurstil zu einer neuen SushiFresh-Entscheidungssituation, lösbar mit Stift und Papier in 25–30 Minuten. Die Musterlösungen sind in der Fallstudie ausklappbar hinterlegt. Diese Aufgaben werden in der Veranstaltung bearbeitet.
+- **Teil 2 – Gruppenfallstudie (fakultativ):** eine vertiefende, meist datenbasierte Fallstudie für Gruppen von 3–6 Personen. Die Bearbeitung ist freiwillig und geht nicht in die Note ein. Gruppen können ihre Ergebnisse in einem der Termine nach dem jeweiligen Thema präsentieren (ca. 20 Minuten) und erhalten dazu Feedback. Bitte melden Sie Präsentationen spätestens eine Woche vorher an. Die Bearbeitung kann auch in den Präsenzterminen geschehen. 
 
 ### Terminübersicht
 
-| Nr. | Datum | Thema | Folien / Reader-Kapitel | Klausuraufgaben (Teil 1) |
+| Nr. | Datum | Thema | Folien / Reader-Kapitel | Übungsaufgaben (Teil 1) |
 |---|---|---|---|---|
-| 1 | 19.10.2026 | Kick-off und Organisation; Einführung und Grundbegriffe des SCM; Wertschöpfung, strategische Fertigung und Strategic Fit | Einheiten 01 und 02 / Kapitel 1 und 2 | Fallstudie 1, Aufgaben 1–2 |
-| 2 | 26.10.2026 | Ziele, Zielkonflikte und Logistikkosten; Nachhaltigkeit; Fallbeispiel SushiFresh | Einheit 03 / Kapitel 3 | Fallstudie 1, Aufgabe 3 |
-| 3 | 02.11.2026 | Distributionsstrukturen und -kanäle | Einheit 14a / Kapitel 4 | Fallstudie 1, Aufgabe 4 |
-| 4 | 09.11.2026 | Standortplanung I: Nutzwertanalyse, AHP, Steiner-Weber-Modell | Einheit 04 / Kapitel 5 | Fallstudie 2 |
-| 5 | 16.11.2026 | Standortplanung II: Warehouse Location Problem | Einheit 05 / Kapitel 6 | Fallstudie 3, Aufgaben 1–3 |
-| 6 | 23.11.2026 | Transportplanung | Einheit 09 / Kapitel 7 | Fallstudie 3, Aufgaben 4–6 |
-| 7 | 30.11.2026 | Unsicherheit in Supply Chains: Kapazitäts- und Lagerbestandspooling | Einheit 06 / Kapitel 8 | Fallstudie 4 |
-| 8 | 07.12.2026 | Das Newsvendor-Modell | Einheit 07 / Kapitel 9 | Fallstudie 5 |
-| 9 | 14.12.2026 | Der Bullwhip-Effekt und das Beer Game | Einheit 08 / Kapitel 10 | Fallstudie 6 |
-| 10 | 21.12.2026 | Lagerplanung und Kommissionierung | Einheit 13 / Kapitel 11 | Fallstudie 7 |
-| – | 28.12.2026 | *keine Veranstaltung* | | Wiederholung: Teil 1 der Fallstudien 1–7 |
-| 11 | 04.01.2027 | Transportmittel, Antriebe und Transportkosten | Einheit 12 / Kapitel 12 | Fallstudie 8 |
-| 12 | 11.01.2027 | Kürzeste Wege | Einheit 10 / Kapitel 13 | Fallstudie 9 |
-| 13 | 18.01.2027 | Tourenplanung | Einheit 11 / Kapitel 14 | Fallstudie 10 |
-| 14 | 25.01.2027 | Klausurvorbereitung: Probeklausur, Besprechung und Fragestunde | alle | Probeklausur |
+| 1 | 19.10.2026 | Kick-off und Organisation; Einführung und Grundbegriffe des SCM; Wertschöpfung, strategische Fertigung und Strategic Fit | Kapitel 1 und 2 | --- |
+| 2 | 26.10.2026 | Ziele, Zielkonflikte und Logistikkosten; Nachhaltigkeit; Fallbeispiel SushiFresh |  Kapitel 3 | Fallstudie 1, Aufgaben 1-3 |
+| 3 | 02.11.2026 | Distributionsstrukturen und -kanäle | Kapitel 4 | Fallstudie 1, Aufgabe 4 |
+| 4 | 09.11.2026 | Standortplanung I: Nutzwertanalyse, AHP, Steiner-Weber-Modell | Kapitel 5 | Fallstudie 2 |
+| 5 | 16.11.2026 | Standortplanung II: Warehouse Location Problem | Kapitel 6 | Fallstudie 3, Aufgaben 1–3 |
+| 6 | 23.11.2026 | Transportplanung | Kapitel 7 | Fallstudie 3, Aufgaben 4–6 |
+| 7 | 30.11.2026 | Unsicherheit in Supply Chains: Kapazitäts- und Lagerbestandspooling | Kapitel 8 | Fallstudie 4 |
+| 8 | 07.12.2026 | Das Newsvendor-Modell | Kapitel 9 | Fallstudie 5 |
+| 9 | 14.12.2026 | Der Bullwhip-Effekt und das Beer Game | Kapitel 10 | Fallstudie 6 |
+| 10 | 21.12.2026 | Lagerplanung und Kommissionierung | Kapitel 11 | Fallstudie 7 |
+| – | 28.12.2026 | *keine Veranstaltung* | --- | --- |
+| 11 | 04.01.2027 | Transportmittel, Antriebe und Transportkosten | Kapitel 12 | Fallstudie 8 |
+| 12 | 11.01.2027 | Kürzeste Wege | Kapitel 13 | Fallstudie 9 |
+| 13 | 18.01.2027 | Tourenplanung | Kapitel 14 | Fallstudie 10 |
+| 14 | 25.01.2027 | Klausurvorbereitung: Besprechung und Fragestunde | alle | --- |
 
 **Hinweise zu einzelnen Terminen:**
 
 - **Termin 1:** Da vor dem ersten Termin keine Vorbereitung möglich ist, beginnt die Veranstaltung mit Organisation und einem kurzen Überblick. Für die übrigen Termine gilt der oben beschriebene Ablauf.
 - **Termin 9:** Ein großer Teil des Abends ist für das Beer Game reserviert (siehe unten).
-- **Termin 14:** Die Probeklausur wird unter Klausurbedingungen geschrieben und anschließend besprochen.
+- **Termin 14:** Wird zur Klausurvorbereitung genutzt.
 
 ---
 
-## Prüfungsleistung: Klausur
+## Prüfungsleistung: Klausuren
 
-- Die Klausur wird gemeinsam mit dem BBA-Kurs geschrieben.
-- **Prüfungsrelevant** sind die Inhalte der Folien und des Readers. R-Code und die R-Exkurse des Readers sind nicht klausurrelevant.
-- Die Klausuraufgaben entsprechen in Stil und Umfang den Aufgaben in **Teil 1 der Fallstudien**: Rechenaufgaben, die mit Stift und Papier lösbar sind, sowie Verständnis- und Transferfragen.
+- Es wird je eine Klausur für SCM und Distribution á 45 Minuten an einem gemeinsamen Termin geshrieben.
+- Beide Klausuren werden gemeinsam mit dem BBA-Kurs geschrieben und gestellt.
+- **Prüfungsrelevant** sind die Inhalte der Folien. R-Code und die R-Exkurse des Readers sind nicht klausurrelevant.
+- Beide Klausuren bestehen aus **Pflicht- und Wahlaufgaben**. Pflichtaufgaben behandeln Themen, die im BBA- und DBM-Kurs gleichermaßen behandelt werden. Wahlaufgaben gehen auf die spezifischen Schwerpunkte des BBA- und DBM-Kurses ein. Sie müssen **entweder** die Wahlaufgaben des BBA- **oder** des DBM-Teils wählen. Ihre Wahl ist unabhängig von ihrem Studiengang.
+- Die Wahlaufgaben entsprechen in Stil und Umfang den Aufgaben in **Teil 1 der Fallstudien**: Rechenaufgaben, die mit Stift und Papier lösbar sind. Die Pflichtaufgabem sind eher Verständnis- und Transferfragen.
 - Die Gruppenfallstudien (Teil 2) sind fakultativ und gehen nicht in die Note ein.
-- Zur Vorbereitung dienen die Kontrollfragen am Ende jedes Reader-Kapitels, die Klausuraufgaben mit Musterlösungen und die Probeklausur am 25.01.2027.
 
 ---
 
@@ -200,7 +201,7 @@ Für diejenigen, die sich mit R vertraut machen wollen, ist unter [Data Science]
 |---|---|---|
 | *Supply Chain Management: Strategy, Planning, and Operation* | Chopra & Meindl | alle Themen |
 | *Matching Supply with Demand* | Cachon & Terwiesch | Pooling, Newsvendor, Bullwhip |
-| *Sustainable Logistics and Supply Chain Management* | Grant et al. | Nachhaltigkeit |
+| *Operations Management* | Thonemann | alle Themen |
 
 Weitere Quellen sind im Reader und in den Fallstudien angegeben (`literature/!references.bib`).
 
