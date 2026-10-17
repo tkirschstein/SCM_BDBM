@@ -1,6 +1,6 @@
 ---
-title: "Fallstudie 3: Diskrete Standort- und Netzwerkplanung"
-subtitle: "Batterielogistik für die Automobilindustrie in Norddeutschland und Benelux"
+title: "Fallstudie 3: Diskrete Standortplanung und Transportplanung"
+subtitle: "SushiFresh-Übungen und Batterielogistik für die Automobilindustrie in Norddeutschland und Benelux"
 author: "Supply Chain Management – Gruppenarbeit"
 lang: de
 format:
@@ -22,41 +22,166 @@ execute:
 
 | | |
 |---|---|
-| **Thema** | Netzwerkdesign mit dem Warehouse Location Problem (WLP) |
-| **Vorlesungsbezug** | Kapitel 5 des Readers: unkapazitiertes und kapazitiertes WLP als MILP, Add-/Drop-Heuristik |
-| **Typ** | Datenbasierte Fallstudie: realistische Werks- und Standortkoordinaten, Mengen und Kosten realitätsnah geschätzt |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+| **Thema** | Netzwerkdesign mit dem Warehouse Location Problem (WLP), Belieferung als Transportproblem |
+| **Vorlesungsbezug** | Block 2 „Strategische Gestaltung von Supply Chains“: Diskrete Netzwerkplanung · Transportplanung |
+| **Teil 1** | Klausurvorbereitung: Aufgaben mit Stift und Papier zu einer neuen SushiFresh-Entscheidungssituation (25–30 Min.) |
+| **Teil 2** | Datenbasierte Fallstudie NordCell: realistische Werks- und Standortkoordinaten, Mengen und Kosten realitätsnah geschätzt |
+| **Gruppengröße** | 3–6 Personen (Teil 2) |
+| **Ergebnis** | Präsentation (20 Min.) + Diskussion (10 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
 :::
 
 # Lernziele
 
-Nach Bearbeitung der Fallstudie können Sie
+Nach Bearbeitung der Übungen und der Fallstudie können Sie
 
-- aus Geodaten eine Transportkostenmatrix  aufbauen,
-- ein **unkapazitiertes (UFLP) und ein kapazitiertes WLP (CFLP)** als gemischt-ganzzahliges lineares Programm formulieren und in R lösen,
-- Konstruktions- und Verbesserungsheuristiken (Add, Drop) anwenden und ihre Lösungsqualität gegenüber dem Optimum bewerten,
-- für ein gegebenes Netz die Belieferung als **Transportproblem** planen ,
-- Netzwerkentscheidungen unter unsicheren Zukunftsszenarien robust gestalten.
+- ein unkapazitiertes WLP mit Add- und Drop-Heuristik sowie exakt als MILP lösen,
+- die Lösungsqualität einer Heuristik gegenüber dem Optimum bewerten,
+- ein Transportproblem mit Nordwestecken-Regel, Vogel'scher Approximation und als LP lösen und
+- unbalancierte Transportprobleme mit einem Dummy-Knoten behandeln.
 
-# Ausgangslage
+# Teil 1 – Klausurvorbereitung: Küchen und Belieferung im Rhein-Neckar-Gebiet
 
-Die **NordCell Logistics GmbH** (fiktiv) ist ein auf Gefahrgut spezialisierter Kontraktlogistiker. Sie hat den Zuschlag erhalten, Lithium-Ionen-Batteriemodule für zehn Fahrzeugwerke in Norddeutschland, NRW, Hessen und Benelux zu lagern, zu sequenzieren und *just in sequence* anzuliefern. Die Module kommen aus zwei Quellen:
+::: {.callout-note}
+## Hinweise
+Bearbeitungszeit ca. **30 Minuten** · Hilfsmittel: nicht programmierbarer Taschenrechner · **30 Punkte**
+:::
 
-- **Importe aus Asien** über den Containerhafen **Hamburg** (60 % der Menge),
-- die **Zellfabrik in Salzgitter** (40 % der Menge).
+Für die Belieferung von vier Supermärkten im Rhein-Neckar-Gebiet kommen drei Küchenstandorte infrage. Die jährliche Nachfrage, die Fixkosten der Küchen und die Transportkosten sind bekannt:
 
-Lithium-Ionen-Batterien sind Gefahrgut der Klasse 9 (UN 3480/3481). Die Lager benötigen daher Brandabschnitte, Sprinkler- und Löschwasserrückhaltesysteme, eine Quarantänezone für beschädigte Module und behördliche Genehmigungen, was die **Fixkosten** eines Standorts erheblich erhöht. NordCell hat acht potenzielle Lagerstandorte in Gewerbe- und Logistikparks identifiziert und muss entscheiden,
+| Transportkosten [€/Box] | Mannheim | Ludwigshafen | Heidelberg | Weinheim | Fixkosten [T€/Jahr] |
+|---|:-:|:-:|:-:|:-:|:-:|
+| **K1** Mannheim-Hafen | 0,10 | 0,20 | 0,50 | 0,60 | 20 |
+| **K2** Schwetzingen | 0,40 | 0,50 | 0,15 | 0,45 | 18 |
+| **K3** Ladenburg | 0,30 | 0,45 | 0,25 | 0,20 | 25 |
+| **Nachfrage [T Boxen/Jahr]** | 70 | 30 | 50 | 20 | |
 
-1. **welche Lager eröffnet/umgerüstet werden** (strategische Entscheidung, Vertragslaufzeit 7-12 Jahre),
-2. **welches Werk aus welchem Lager beliefert wird** (taktische Planung, jährlich),
-3. wie robust dieses Netz gegenüber der unsicheren Hochlaufentwicklung der Elektromobilität ist.
+**Aufgabe 1 (5 Punkte) – Kostenmatrix.** Berechnen Sie die jährlichen Transportkosten (T€) für die Belieferung jedes Markts aus jeder Küche.
 
-# Daten
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 1
 
-Die Werksstandorte orientieren sich an realen Fahrzeugwerken. Die **Mengen und Kosten sind fiktiv**, aber in ihrer Größenordnung realitätsnah (1 MWh ≈ 6–7 t Batteriemodule inklusive Verpackung).
+Transportkosten = Kostensatz × Nachfrage (T€/Jahr):
 
-## Werke (Senken) und Jahresbedarf
+| | MA | LU | HD | WH | Summe |
+|---|:-:|:-:|:-:|:-:|:-:|
+| K1 | 7,0 | 6,0 | 25,0 | 12,0 | 50,0 |
+| K2 | 28,0 | 15,0 | 7,5 | 9,0 | 59,5 |
+| K3 | 21,0 | 13,5 | 12,5 | 4,0 | 51,0 |
+
+*Bewertung:* 5 Punkte (je Zeile 1–2 Punkte).
+:::
+
+**Aufgabe 2 (8 Punkte) – Add- und Drop-Heuristik.** Lösen Sie das unkapazitierte Warehouse Location Problem mit der Add-Heuristik und mit der Drop-Heuristik. Dokumentieren Sie jede Iteration mit den Gesamtkosten.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 2
+
+**Add-Heuristik** (jeder Markt wird von der günstigsten offenen Küche beliefert):
+
+| Iteration | Kandidat | Fixkosten | Transport | Gesamt |
+|---|---|:-:|:-:|:-:|
+| 1 | {K1} | 20 | 50,0 | **70,0** |
+| | {K2} | 18 | 59,5 | 77,5 |
+| | {K3} | 25 | 51,0 | 76,0 |
+| 2 | {K1, K2} | 38 | 7 + 6 + 7,5 + 9 = 29,5 | **67,5** |
+| | {K1, K3} | 45 | 7 + 6 + 12,5 + 4 = 29,5 | 74,5 |
+| 3 | {K1, K2, K3} | 63 | 7 + 6 + 7,5 + 4 = 24,5 | 87,5 → keine Verbesserung, Stopp |
+
+**Drop-Heuristik** (Start mit allen Küchen, 87,5):
+
+| Iteration | Kandidat | Gesamt |
+|---|---|:-:|
+| 1 | ohne K1: {K2, K3} | 89,0 |
+| | ohne K2: {K1, K3} | 74,5 |
+| | ohne K3: {K1, K2} | **67,5** |
+| 2 | ohne K1: {K2} | 77,5 |
+| | ohne K2: {K1} | 70,0 → keine Verbesserung, Stopp |
+
+Beide Heuristiken eröffnen **K1 und K2** mit Gesamtkosten von **67,5 T€/Jahr** (K1 beliefert Mannheim und Ludwigshafen, K2 Heidelberg und Weinheim).
+
+*Bewertung:* Add 4 Punkte, Drop 4 Punkte.
+:::
+
+**Aufgabe 3 (3 Punkte) – Optimum.** Wie viele Kombinationen offener Küchen gibt es? Prüfen Sie durch Vollenumeration, ob die Heuristiken das Optimum gefunden haben.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 3
+
+Es gibt $2^3 - 1 = 7$ nichtleere Kombinationen: {K1} 70,0; {K2} 77,5; {K3} 76,0; {K1, K2} **67,5**; {K1, K3} 74,5; {K2, K3} 89,0; {K1, K2, K3} 87,5. Beide Heuristiken haben das Optimum gefunden.
+
+*Bewertung:* 1 Punkt Anzahl, 2 Punkte Enumeration.
+:::
+
+Es werden **K1** (Kapazität 250 Boxen/Tag) und **K2** (Kapazität 200 Boxen/Tag) eröffnet. Die Tagesnachfrage beträgt Mannheim 160, Ludwigshafen 70, Heidelberg 110 und Weinheim 60 Boxen. Es gelten die Transportkosten der Tabelle oben.
+
+**Aufgabe 4 (2 Punkte) – Balance.** Ist das Transportproblem balanciert? Führen Sie gegebenenfalls einen Dummy-Knoten ein und erläutern Sie, welche Kosten Sie für ihn ansetzen.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 4
+
+Angebot 250 + 200 = 450 > Nachfrage 160 + 70 + 110 + 60 = 400. Das Problem ist nicht balanciert. Ein **Dummy-Markt** nimmt die Überkapazität von 50 Boxen auf. Seine Kosten sind 0, weil diese Menge gar nicht produziert und transportiert wird (oder, falls die Küche trotzdem produziert, ein entgangener bzw. verlorener Wert).
+
+*Bewertung:* 2 Punkte.
+:::
+
+**Aufgabe 5 (10 Punkte) – Eröffnungsverfahren.** Bestimmen Sie eine Lösung mit der Nordwestecken-Regel und mit der Vogel'schen Approximationsmethode und berechnen Sie jeweils die Transportkosten pro Tag. Ordnen Sie einen Dummy-Knoten als letzte Zeile bzw. Spalte an. Bei gleichen Differenzen wählen Sie die Zeile bzw. Spalte mit dem kleinsten Kostensatz.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 5
+
+**Nordwestecken-Regel** (Dummy als letzte Spalte):
+
+| | MA | LU | HD | WH | Dummy | Angebot |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| K1 | 160 | 70 | 20 | | | 250 |
+| K2 | | | 90 | 60 | 50 | 200 |
+
+Kosten: $160 \cdot 0{,}10 + 70 \cdot 0{,}20 + 20 \cdot 0{,}50 + 90 \cdot 0{,}15 + 60 \cdot 0{,}45 = 16 + 14 + 10 + 13{,}5 + 27 = $ **80,50 €/Tag**.
+
+**Vogel'sche Approximationsmethode:**
+
+| Schritt | Differenzen (Zeilen; Spalten) | Größte Differenz | Zuordnung |
+|---|---|---|---|
+| 1 | K1 0,10; K2 0,15; MA 0,30; LU 0,30; HD 0,35; WH 0,15; Dummy 0 | HD 0,35 | K2 → HD 110 |
+| 2 | K1 0,10; K2 0,40; MA 0,30; LU 0,30; WH 0,15; Dummy 0 | K2 0,40 | K2 → Dummy 50 |
+| 3 | K1 0,10; K2 0,05; MA 0,30; LU 0,30; WH 0,15 | MA/LU 0,30 (Gleichstand, kleinster Kostensatz: MA) | K1 → MA 160 |
+| 4 | K1 0,40; K2 0,05; LU 0,30; WH 0,15 | K1 0,40 | K1 → LU 70 |
+| 5 | nur noch WH | | K1 → WH 20, K2 → WH 40 |
+
+| | MA | LU | HD | WH | Dummy |
+|---|:-:|:-:|:-:|:-:|:-:|
+| K1 | 160 | 70 | | 20 | |
+| K2 | | | 110 | 40 | 50 |
+
+Kosten: $16 + 14 + 12 + 16{,}5 + 18 = $ **76,50 €/Tag**.
+
+*Bewertung:* Nordwestecke 3 Punkte, VAM 6 Punkte, Kostenvergleich 1 Punkt.
+:::
+
+**Aufgabe 6 (2 Punkte) – Verbesserung.** Begründen Sie ohne Rechenverfahren, ob die VAM-Lösung optimal ist. Gibt es eine günstigere Zuordnung?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 6
+
+Die VAM-Lösung ist **nicht optimal**. Der Dummy mit Kosten 0 erzeugt in Schritt 2 eine hohe Differenz bei K2, sodass die günstige Küche K2 ihre Kapazität an den Dummy „verliert“ und Weinheim teilweise aus K1 (0,60 €) beliefert wird. Besser: K2 beliefert Heidelberg (110) und Weinheim vollständig (60), K1 Mannheim und Ludwigshafen; der Dummy erhält 20 von K1 und 30 von K2. Kosten: $16 + 14 + 16{,}5 + 27 = $ **73,50 €/Tag**. Das ist optimal, weil jeder Markt aus seiner jeweils günstigsten Küche beliefert wird.
+
+*Bewertung:* 2 Punkte.
+:::
+
+# Teil 2 – Fallstudie: Batterielogistik in Norddeutschland und Benelux
+
+## Ausgangslage
+
+Die **NordCell Logistics GmbH** (fiktiv) ist ein auf Gefahrgut spezialisierter Kontraktlogistiker. Sie hat den Zuschlag erhalten, Lithium-Ionen-Batteriemodule für zehn Fahrzeugwerke in Norddeutschland, NRW, Hessen und Benelux zu lagern, zu sequenzieren und *just in sequence* anzuliefern. Die Module kommen zu 60 % als Importe über den Hafen **Hamburg** und zu 40 % aus der **Zellfabrik Salzgitter**.
+
+Batterien sind Gefahrgut der Klasse 9. Die Lager benötigen Brandabschnitte, Sprinkler- und Löschwasserrückhaltesysteme und behördliche Genehmigungen, was die **Fixkosten** stark erhöht. NordCell hat acht potenzielle Lagerstandorte identifiziert und muss entscheiden,
+
+1. **welche Lager eröffnet werden** (strategisch, Vertragslaufzeit 7–12 Jahre) und
+2. **welches Werk aus welchem Lager beliefert wird** (taktisch, jährlich).
+
+## Daten
+
+Die Werksstandorte orientieren sich an realen Fahrzeugwerken. **Mengen und Kosten sind fiktiv**, aber in ihrer Größenordnung realitätsnah.
 
 ```{r}
 #| label: daten-werke
@@ -70,28 +195,12 @@ werke <- data.frame(
   d2027 = c(28000, 22000, 18500, 12000, 25000, 20000, 15000, 30000, 14000, 11000),
   d2030 = c(42000, 26000, 28000, 12000, 31000, 27000, 21000, 36000, 17000,  6000)
 )
-knitr::kable(werke, format.args = list(big.mark = ".", decimal.mark = ","),
-             col.names = c("#", "Werk", "Breite", "Länge",
-                           "Bedarf 2027 [MWh/a]", "Szenario 2030 [MWh/a]"))
-```
-
-## Quellen
-
-```{r}
-#| label: daten-quellen
 quellen <- data.frame(
   quelle = c("Hafen Hamburg", "Zellfabrik Salzgitter"),
   lat    = c(53.540, 52.160),
   lon    = c( 9.970, 10.400),
   anteil = c(0.60, 0.40)
 )
-knitr::kable(quellen, col.names = c("Quelle", "Breite", "Länge", "Mengenanteil"))
-```
-
-## Standortkandidaten
-
-```{r}
-#| label: daten-lager
 lager <- data.frame(
   id   = 1:8,
   ort  = c("Gütersloh", "Düren", "Dorsten/Marl", "Peine", "Langenhagen",
@@ -101,47 +210,39 @@ lager <- data.frame(
   fix  = c(2400, 2600, 2500, 2300, 2700, 2800, 2600, 3000),   # T€/Jahr
   kap  = c(90, 110, 80, 70, 100, 120, 90, 80) * 1000           # MWh/Jahr
 )
+knitr::kable(werke, format.args = list(big.mark = ".", decimal.mark = ","),
+             col.names = c("#", "Werk", "Breite", "Länge",
+                           "Bedarf 2027 [MWh/a]", "Szenario 2030 [MWh/a]"))
 knitr::kable(lager, format.args = list(big.mark = ".", decimal.mark = ","),
              col.names = c("#", "Standort", "Breite", "Länge",
                            "Fixkosten [T€/a]", "Kapazität [MWh/a]"))
 ```
 
+**Transportkostensätze (Richtwerte):** Zulauf Quelle → Lager 0,25 €/(MWh·km), Auslieferung Lager → Werk 0,45 €/(MWh·km), jeweils auf die Haversine-Distanz mit Umwegfaktor 1,2.
 
-# Aufgaben
+## Aufgaben
 
-## Teil A – Datenaufbereitung
+### Teil A – Datenaufbereitung
 
-**A1.** Ermitteln Sie Transportkostensätze für dei Batteriesysteme (in €/MWh$\cdot$km). Welche Annahmen liegen dabei zu grunde?
+**A1.** Stellen Sie Quellen, Lagerkandidaten und Werke auf einer Karte dar und berechnen Sie die Kostenmatrix $c_{ij}$ in €/MWh (Zulauf und Auslieferung, siehe Startercode). Prüfen Sie für zwei Relationen, wie gut Haversine-Distanz × 1,2 die Straßendistanz eines Routenplaners trifft.
 
-**A2.** Stellen Sie Quellen, Lagerkandidaten und Werke auf einer Karte dar und berechnen Sie die Transportdistanzen, Transportkostenmatrix $c_{ij}$ (€/MWh) sowie die jährlichen Transportkosten. Vergleichen Sie für zwei Relationen die Haversine-Distanz × 1,2 mit der Straßendistanz eines Routenplaners.
+### Teil B – Unkapazitiertes WLP (Bedarf 2027)
 
-## Teil B – Unkapazitiertes WLP (Bedarf 2027)
+**B1.** Lösen Sie das WLP mit der Add- oder Drop-Heuristik und exakt mit `ompr`. Welche Lager werden eröffnet, wie hoch sind die Gesamtkosten, und wie weit liegt die Heuristik vom Optimum entfernt?
 
-**B1.** Lösen Sie das Problem mit der **Add- oder Drop-Heuristik** (`add_heuristic_wlp()`, `drop_heuristic_wlp()`) und exakt mit `ompr` + GLPK. Wie weit liegt die Heuristik vom Optimum entfernt?
+### Teil C – Transportproblem
 
-**B2.** Adaptieren Sie das MILP und bestimmen Sie die optimalen Gesamtkosten bei fest vorgegebener Anzahl offener Lager ($\sum_i y_i = k$, $k = 1, \dots, 4$). Welche Standorte werden jeweils eröffnet und welche Gesamtkosten ergeben sich?
+**C1.** Halten Sie die Standortentscheidung aus B1 fest und berücksichtigen Sie nun die **Lagerkapazitäten**. Lösen Sie die Zuordnung Lager → Werke als Transportproblem (VAM und LP). Reichen die Kapazitäten der eröffneten Lager aus? Welche Werke werden gegenüber B1 anders beliefert, und was kostet das?
 
-## Teil C – Kapazitiertes WLP und Transportproblem
+### Teil D – Szenario, Empfehlung und Reflexion
 
-**C1.** Erweitern Sie das Modell um die Lagerkapazitäten (CFLP). Wie ändert sich die Lösung? 
+**D1.** Prüfen Sie Ihr Netz mit dem Bedarf des **Szenarios 2030**: Reichen die Kapazitäten noch, und wie stark steigen die Kosten? Formulieren Sie eine Netzempfehlung für NordCell mit Standorten, Kosten und Risiken.
 
-**C2.** Fixieren Sie die Lagerentscheidung aus C1 und lösen Sie das **Umladeproblem** für 2027. D. h. bestimmen Sie die transportkosten-optimalen Liefermengen von Quellen -> Lager -> Werke. 
+**D2. Reflexion.** Beantworten Sie in der Präsentation:
 
-## Teil D – Szenarien, Empfehlung und Reflexion
-
-**D1. Szenario 2030.** Lösen Sie das CFLP für das Szenario 2030. Ist das Netz aus 2027 noch zulässig bzw. optimal? Bestimmen Sie ein Netz, das für **beide Szenarien** gut ist, z. B. durch Minimierung der erwarteten Kosten (50 % / 50 %) oder des maximalen Bedauerns (*Minimax-Regret*).
-
-**D2. Sensitivität.** Untersuchen Sie eine weitere Sensitivität: CO₂-Preis von 150 €/t, Wegfall der Zellfabrik Salzgitter oder Schließung des Werks VDL Nedcar Born.
-
-**D3. Empfehlung.** Formulieren Sie eine Netzempfehlung für NordCell mit Kosten, Standorten, Risiken und Ausbauoptionen.
-
-**D4. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
-
-1. Die Kostenfunktion ist in der Nähe des Optimums flach. Was bedeutet das für die Aussagekraft des Optimums, und welche Rolle sollten qualitative Kriterien (vgl. Fallstudie 2) bei der endgültigen Auswahl spielen?
-2. Welche Modellannahme halten Sie für die kritischste (Luftlinie × Umwegfaktor, lineare Transportkosten, deterministische Nachfrage, geschätzte Fixkosten), und wie könnte sie Ihre Empfehlung verändern?
+1. Die Kostenfunktion ist in der Nähe des Optimums oft flach. Welche Rolle sollten qualitative Kriterien (vgl. Fallstudie 2) bei der endgültigen Auswahl spielen?
+2. Welche Modellannahme halten Sie für die kritischste (Luftlinie × Umwegfaktor, lineare Transportkosten, deterministische Nachfrage)?
 3. Wann würden Sie in der Praxis eine Heuristik statt eines exakten Verfahrens einsetzen?
-4. Welche nicht modellierten Faktoren könnten die Entscheidung kippen, z. B. Genehmigungsverfahren für Gefahrgutlager, Arbeitsmarkt oder grenzüberschreitende Regulierung zwischen Deutschland, den Niederlanden und Belgien?
-5. Wie würden Sie das Ergebnis einer Geschäftsführung ohne Optimierungskenntnisse vermitteln, damit sie dem Modell vertraut, ohne es blind zu übernehmen?
 
 # Anhang: R-Startercode
 
@@ -149,16 +250,15 @@ knitr::kable(lager, format.args = list(big.mark = ".", decimal.mark = ","),
 #| label: starter
 #| eval: false
 source("../R/scm_functions.R")   # haversine(), add_heuristic_wlp(), drop_heuristic_wlp(), vogels_approximation()
-source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 library(ompr); library(ompr.roi); library(ROI.plugin.glpk); library(dplyr)
 
 uf <- 1.2
-# Inbound-Kosten je MWh für jedes Lager (gewichtet über die Quellen)
+# Zulaufkosten je MWh für jedes Lager (gewichtet über die Quellen)
 c_in <- sapply(seq_len(nrow(lager)), function(i)
   sum(quellen$anteil * 0.25 * uf *
         haversine(lager$lat[i], lager$lon[i], quellen$lat, quellen$lon)))
 
-# Outbound-Kosten je MWh (Lager x Werk)
+# Auslieferkosten je MWh (Lager x Werk)
 c_out <- outer(seq_len(nrow(lager)), seq_len(nrow(werke)), Vectorize(function(i, j)
   0.45 * uf * haversine(lager$lat[i], lager$lon[i], werke$lat[j], werke$lon[j])))
 
@@ -180,7 +280,9 @@ m <- MIPModel() |>
 
 res <- solve_model(m, with_ROI(solver = "glpk"))
 objective_value(res)
-get_solution(res, y[i]) |> filter(value > 0.5)
+offen <- get_solution(res, y[i]) |> filter(value > 0.5) |> pull(i)
 
-# CFLP: zusätzlich  sum_j d[j] * x[i,j] <= kap[i] * y[i]
+# Teil C: Transportproblem mit den Kapazitäten der eröffneten Lager
+vogels_approximation(C[offen, , drop = FALSE],
+                     supply = lager$kap[offen], demand = d)
 ```

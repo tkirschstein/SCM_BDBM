@@ -62,5 +62,3 @@ source("../R/scm_helpers.R")
 {{< include lectures/10_kuerzeste-wege.qmd >}}
 
 {{< include lectures/11_tourenplanung-tsp.qmd >}}
-
-{{< include lectures/14b_distributionssystem-gestalten.qmd >}}

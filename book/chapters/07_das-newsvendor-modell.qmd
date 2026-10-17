@@ -3,17 +3,22 @@
 ::: {.lernziele}
 **Lernziele**
 
-Nach diesem Kapitel können Sie...
+Nach diesem Kapitel können Sie …
 
-- das **Newsvendor-Problem** als typische Einperioden-Bestellmengenentscheidung unter Nachfrageunsicherheit einordnen und von mehrperiodigen Bestandsproblemen abgrenzen,
-- **Unterdeckungs-** und **Überdeckungskosten** aus einer gegebenen Erlös- und Kostenstruktur herleiten,
-- die **kritische Verhältniszahl (Critical Ratio)** aus einer Grenzkostenbetrachtung ableiten und ökonomisch interpretieren,
-- die optimale Bestellmenge sowohl bei **diskreter** als auch bei **stetiger (normalverteilter)** Nachfrage berechnen,
-- den Zusammenhang zwischen kritischer Verhältniszahl und **Servicegrad** erklären,
-- eine eigene, mehrzeilige R-Funktion schreiben, die ein komplettes Entscheidungsmodell kapselt,
-- numerische Wurzelfindung (`uniroot()`) und Optimierung (`optimize()`) als Alternative zu geschlossenen Lösungsformeln einsetzen,
-- eine Sensitivitätsanalyse durch Vektorisierung eines Modells über einen Parametervektor durchführen und deren Ergebnis grafisch aufbereiten.
+- das **Newsvendor-Problem** als einmalige Bestellentscheidung bei unsicherer Nachfrage **einordnen**,
+- Über- und Unterdeckungskosten **bestimmen**,
+- die kritische Fraktilregel **herleiten und interpretieren**,
+- eine optimale Bestellmenge bei gegebener Nachfrageverteilung **berechnen**,
+- den Einfluss zentraler Modellparameter auf die Bestellentscheidung **erklären**,
+- numerische Wurzelfindung (`uniroot()`) und Optimierung (`optimize()`) als Alternative zu geschlossenen Lösungsformeln einsetzen.
+
+**Literatur zur Vertiefung**
+
+- Einführung Newsvendor: @thonemann2023operations, Kapitel 5.
+- Einperiodige Bestandsmodelle und Critical-Fractile-Logik: @cachon2024matching, Kapitel 13.
+- Newsvendor-Modelle im Kontext des Inventory Managements: @silver2017inventory, Kapitel 9.
 :::
+
 
 ## Einperiodige Entscheidungen unter Unsicherheit
 
@@ -555,4 +560,10 @@ Das Newsvendor-Modell beantwortet die Frage nach der optimalen Bestellmenge bei 
 6. Erklären Sie den Zusammenhang zwischen der kritischen Verhältniszahl und dem Zyklus-Servicegrad. Worin unterscheidet sich der Zyklus-Servicegrad vom Fill Rate?
 7. In welchen Situationen würden Sie `uniroot()` bzw. `optimize()` gegenüber einer analytischen Lösungsformel wie $q^* = \mu + \sigma \cdot \Phi^{-1}(CR)$ bevorzugen? Nennen Sie ein Beispiel für eine Nachfrageverteilung, bei der dies sinnvoll ist.
 8. Nennen Sie drei typische Anwendungsbereiche des Newsvendor-Modells sowie zwei zentrale Annahmen, die in der Praxis kritisch zu hinterfragen sind.
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 5: Das Newsvendor-Modell in der Praxis](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_05_newsvendor_baeckerei)**.
 :::

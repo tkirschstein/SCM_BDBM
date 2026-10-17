@@ -22,22 +22,22 @@ knitr::knit_hooks$set(inline = function(x) {
 ::: {.lernziele}
 **Lernziele**
 
-Nach der Bearbeitung dieses Kapitels können Sie …
+Nach diesem Kapitel können Sie …
 
-- das **Traveling Salesman Problem (TSP)** als Grundproblem der Tourenplanung beschreiben und als binäres Optimierungsmodell formulieren,
-- die **Komplexität** des TSP einschätzen und den Einsatz von Heuristiken begründen,
-- Touren mit dem **Nearest-Neighbor-Verfahren** konstruieren und mit **2-opt** verbessern sowie lokale und globale Optima unterscheiden,
+- das **Traveling Salesman Problem (TSP)** als Grundproblem der Tourenplanung **beschreiben** und **formulieren**,
+- die **Komplexität** des TSP **einschätzen** und den Einsatz von Heuristiken **begründen**,
+- Touren mit dem **Nearest-Neighbor-Verfahren** **konstruieren** und mit **2-opt** **verbessern**,
+- heuristische Lösungen im Vergleich zur Optimallösung **bewerten** und Erweiterungen zum **Vehicle Routing Problem** **einordnen**,
 - das TSP mit `ompr` und der **MTZ-Formulierung** exakt lösen,
-- Touren mit Kostensätzen bewerten und **Reichweiten** als Nebenbedingung berücksichtigen,
-- Tourenplanungsprobleme mit mehreren Fahrzeugen (**VRP**) mit dem **Savings-Verfahren** lösen,
 - Teilvektoren mit `rev()` umkehren, zyklische Indizes mit `%%` bilden und Index-Filter in `ompr` einsetzen.
 
 **Literatur zur Vertiefung**
 
-- **Rundreise- und Tourenplanung:** [@domschke2010rundreisen].
-- **TSP – Geschichte, Modelle, exakte Verfahren:** [@applegate2006traveling]; [@dantzig1954solution].
-- **Vehicle Routing Problems:** [@toth2014vehicle]; [@clarke1964scheduling].
+- Rundreise- und Tourenplanung: @domschke2010rundreisen.
+- TSP – Geschichte, Modelle, exakte Verfahren: @applegate2006traveling.
+- Vehicle Routing Problems: @toth2014vehicle.
 :::
+
 
 ## Von Pendelfahrten zur Rundtour
 
@@ -90,6 +90,16 @@ Gegeben sind $n$ Orte, ein **Depot** und $n-1$ Kunden, sowie die Entfernungen $d
 :::
 
 Das TSP ist eines der am besten untersuchten Probleme der kombinatorischen Optimierung [@applegate2006traveling]. Kürzeste-Wege-Probleme fragen, wie man von $i$ nach $j$ kommt. Das TSP fragt, in welcher **Reihenfolge** man alle Orte besucht. Beide Probleme hängen zusammen: Die Distanzen $d_{ij}$ des TSP sind kürzeste Wege im Netz.
+
+### Begriffe und Varianten
+
+Eine **Tour** (Hamiltonkreis) ist eine Reihenfolge $(v_1, v_2, \ldots, v_n, v_1)$, die jeden Ort genau einmal besucht und zum Ausgangsort zurückkehrt. Man unterscheidet:
+
+- das **symmetrische TSP** mit $d_{ij} = d_{ji}$ (wie bei SushiFresh),
+- das **asymmetrische TSP** mit $d_{ij} \neq d_{ji}$, etwa durch Einbahnstraßen oder richtungsabhängigen Stadtverkehr, und
+- das **metrische TSP**, bei dem die Dreiecksungleichung $d_{ik} \leq d_{ij} + d_{jk}$ gilt – das ist automatisch der Fall, wenn die Distanzen wie hier aus kürzesten Wegen stammen (Kapitel [-@sec-kuerzeste-wege]).
+
+Zur Abgrenzung: Das Kürzeste-Wege-Problem fragt, *wie* man von $i$ nach $j$ kommt; das TSP fragt, in welcher **Reihenfolge** alle Orte besucht werden.
 
 ### Mathematisches Modell
 
@@ -202,6 +212,14 @@ c(Tour = paste(c(res_2opt$tour, "R"), collapse = " → "),
 ```
 
 Ein einziger Zug genügt: Die Kanten (Wiesbaden, Offenbach) und (Frankfurt, Darmstadt) werden durch (Wiesbaden, Frankfurt) und (Offenbach, Darmstadt) ersetzt. Das spart `r res_2opt$zuege$Ersparnis[1]` km und löst die Kreuzung auf. Danach findet 2-opt keinen verbessernden Zug mehr.
+
+::: {.callout-tip}
+## Varianten des Verfahrens
+- **Best improvement** (hier verwendet): In jeder Iteration werden alle Züge geprüft und der beste ausgeführt.
+- **First improvement**: Der erste verbessernde Zug wird sofort ausgeführt; das ist je Iteration schneller.
+- **Or-opt** verschiebt Teilstücke aus ein bis drei Orten an eine andere Stelle der Tour.
+- **3-opt** tauscht drei Kanten; das ist mächtiger, kostet aber $\mathcal{O}(n^3)$ Prüfungen je Durchlauf.
+:::
 
 ### Lokales und globales Optimum
 
@@ -368,7 +386,7 @@ tibble(Tour = map_chr(touren, ~ paste(c("R", .x, "R"), collapse = " → ")),
        km = map_dbl(touren, ~ tour_laenge(c("R", .x), D)))
 ```
 
-Das Verfahren bildet eine **Westtour** über Wiesbaden, Mainz und Rüsselsheim und eine **Osttour** über Frankfurt, Offenbach und Darmstadt. Beide halten die Kapazität von 500 Boxen ein, zusammen sind sie `r sum(map_dbl(touren, ~ tour_laenge(c("R", .x), D)))` km lang, nur wenig mehr als die optimale Einzeltour. Das ist der Preis der kleineren Fahrzeuge. Weitere Restriktionen wie eine maximale Tourdauer lassen sich als zusätzliche Prüfung vor dem Verbinden einbauen. Kapitel [-@sec-distributionssystem] nutzt genau das für die Belieferung von 40 Supermärkten.
+Das Verfahren bildet eine **Westtour** über Wiesbaden, Mainz und Rüsselsheim und eine **Osttour** über Frankfurt, Offenbach und Darmstadt. Beide halten die Kapazität von 500 Boxen ein, zusammen sind sie `r sum(map_dbl(touren, ~ tour_laenge(c("R", .x), D)))` km lang, nur wenig mehr als die optimale Einzeltour. Das ist der Preis der kleineren Fahrzeuge. Weitere Restriktionen wie eine maximale Tourdauer lassen sich als zusätzliche Prüfung vor dem Verbinden einbauen.
 
 ## Zusammenfassung
 
@@ -388,4 +406,10 @@ Auf der R-Seite haben Sie Teilvektoren mit `rev()` umgekehrt, zyklische Indizes 
 7. SushiFresh gewinnt eine siebte Filiale in Hofheim am Taunus (C7), die über eine 9 km lange Straße mit dem Wiesbadener Kreuz und eine 12 km lange Straße mit dem Mönchhof-Dreieck verbunden ist. Ergänzen Sie das Netz, berechnen Sie die Distanzmatrix neu und bestimmen Sie eine Tour mit Nearest Neighbor und 2-opt.
 8. Berechnen Sie die Savings für das Kundenpaar Mainz/Rüsselsheim von Hand. Warum werden Frankfurt und Offenbach zuerst verbunden?
 9. Welche Bedingungen müssen im Savings-Verfahren erfüllt sein, damit zwei Touren verbunden werden dürfen?
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 10: Tourenplanung](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_10_tourenplanung)**.
 :::

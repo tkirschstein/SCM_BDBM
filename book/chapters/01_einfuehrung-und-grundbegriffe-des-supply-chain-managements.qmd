@@ -3,12 +3,20 @@
 ::: {.lernziele}
 **Lernziele**
 
-- zentrale Begriffe, Akteure und Flüsse einer Supply Chain erläutern,
-- Supply Chain Management gegenüber Logistik und Beschaffung abgrenzen,
-- strategische, taktische und operative Entscheidungen in Supply Chains unterscheiden,
-- die Bedeutung von Koordination für Wertschöpfung und Wettbewerbsfähigkeit beurteilen,
-- die grundlegende Arbeitsweise von R, RStudio und Quarto nachvollziehen und einfache Vektoren, Tabellen und Grafiken selbst erstellen.
+Nach diesem Kapitel können Sie …
+
+- zentrale Begriffe, Akteure und Flüsse einer Supply Chain **erläutern**,
+- Supply Chain Management gegenüber Logistik und Beschaffung **abgrenzen**,
+- strategische, taktische und operative Entscheidungen in Supply Chains **unterscheiden**,
+- die Bedeutung von Koordination für Wertschöpfung und Wettbewerbsfähigkeit **beurteilen**.
+
+**Literatur zur Vertiefung**
+
+- SCM-Grundlagen und Entscheidungsebenen: @chopra2025supply, Kapitel 1–3.
+- Strategien, Instrumente und Controlling im deutschsprachigen Kontext: @werner2020supply, Kapitel 1–3.
+- Fallorientierte Einführung in Supply-Chain-Strukturen: @sople2011supply, Kapitel 1–3.
 :::
+
 
 ## Supply Chains sind keine Erfindung der Moderne
 
@@ -481,4 +489,10 @@ Parallel dazu wurden die ersten Bausteine der Programmiersprache R eingeführt: 
 8. Wählen Sie zwei der folgenden Produkte — eine Glasflasche Cola, ein T-Shirt, ein Gravel-Bike, eine Tafel Schokolade — und skizzieren Sie stichpunktartig deren Supply-Chain-Struktur: Welche Rohstoffe und Bauteile sind beteiligt, welche Produktionsschritte lassen sich unterscheiden, und wie könnten strategische, taktische und operative Entscheidungen in dieser Kette aussehen?
 9. Erläutern Sie das Prinzip der doppelten Marginalisierung. Um wie viel Prozent sinkt im linearen Modell der Kettengewinn, wenn Hersteller und Händler ihre Preise unabhängig voneinander setzen?
 10. Warum war die Magellan-Expedition trotz des Verlusts von vier Schiffen profitabel, und welches allgemeine Muster von Netzwerkentscheidungen illustriert ihre Bilanz?
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 1: Grundlagen des Supply Chain Managements](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_01_strategie_frosch)**.
 :::

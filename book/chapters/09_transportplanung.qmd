@@ -23,20 +23,21 @@ knitr::knit_hooks$set(inline = function(x) {
 ::: {.lernziele}
 **Lernziele**
 
-Nach der Bearbeitung dieses Kapitels können Sie …
+Nach diesem Kapitel können Sie …
 
-- das klassische **Transportproblem** als lineares Optimierungsmodell formulieren und vom Warehouse Location Problem abgrenzen,
-- balancierte und unbalancierte Transportprobleme unterscheiden und über **Dummy-Quellen und -Senken** ausgleichen,
-- Startlösungen mit der **Nordwestecken-Regel** und der **Vogel'schen Approximationsmethode (VAM)** von Hand und in R berechnen,
-- die Lösungsgüte heuristischer Verfahren im Vergleich zur **LP-Optimallösung** beurteilen,
+- das klassische **Transportproblem** als lineares Optimierungsmodell **formulieren**,
+- balancierte und unbalancierte Transportprobleme **unterscheiden** und durch Dummy-Knoten **ausgleichen**,
+- Startlösungen mit der **Nordwestecken-Regel** und der **Vogel'schen Approximationsmethode (VAM)** **berechnen**,
+- die Lösungsqualität heuristischer Verfahren im Vergleich zur LP-Optimallösung **beurteilen**,
 - einen Algorithmus mit einer `while`-Schleife implementieren, der seine Zwischenschritte in einer Liste **protokolliert**, und gezielt einzelne Zellen einer Matrix über **Indexmatrizen** ansprechen.
 
 **Literatur zur Vertiefung**
 
-- **Transport- und Netzwerkmodelle:** [@guenther2012produktion, Kapitel 4].
-- **Transportproblem und Tableauverfahren:** [@domschke2007transport].
-- **Ursprung der Methoden:** [@hitchcock1941distribution]; [@reinfeld1958mathematical].
+- Transport- und Netzwerkmodelle: @guenther2012produktion, Kapitel 4.
+- Transportproblem und Lösungsverfahren (Tableau, VAM, MODI): @domschke2007transport.
+- Ursprung der Vogel'schen Approximationsmethode: @reinfeld1958mathematical.
 :::
+
 
 ## Vom Warehouse Location Problem zum Transportproblem
 
@@ -124,7 +125,13 @@ Ist das Angebot größer als die Nachfrage, ergänzt man eine **Dummy-Senke** mi
 
 ## Eröffnungsverfahren
 
-Zur Lösung von Transportproblemen wurden **Tableau-Verfahren** entwickelt, die auf der Simplex-Idee aufbauen, aber die spezielle Struktur ausnutzen [@domschke2007transport]. Sie arbeiten in zwei Phasen: Ein **Eröffnungsverfahren** konstruiert eine zulässige Startlösung, ein **Verbesserungsverfahren** (Stepping-Stone- oder MODI-Methode) verbessert sie schrittweise bis zum Optimum. Wir behandeln zwei Eröffnungsverfahren und lösen das Problem anschließend exakt mit einem LP-Solver.
+Zur Lösung von Transportproblemen wurden **Tableau-Verfahren** entwickelt, die auf der Simplex-Idee aufbauen, aber die spezielle Struktur ausnutzen [@domschke2007transport]. Sie arbeiten in zwei Phasen: Ein **Eröffnungsverfahren** konstruiert eine zulässige Startlösung, ein **Verbesserungsverfahren** (Stepping-Stone- oder MODI-Methode) verbessert sie schrittweise bis zum Optimum. Gängige Eröffnungsverfahren sind:
+
+- die **Nordwestecken-Regel**, die die Kosten ignoriert,
+- die **Matrixminimum-Methode**, die stets die insgesamt günstigste noch freie Zelle beliefert, und
+- die **Vogel'sche Approximationsmethode (VAM)**, die Opportunitätskosten (Differenzen zwischen kleinstem und zweitkleinstem Kostensatz) berücksichtigt.
+
+Wir behandeln die Nordwestecken-Regel und die VAM ausführlich und lösen das Problem anschließend exakt mit einem LP-Solver. Die Matrixminimum-Methode ist intuitiv, kann aber in eine Sackgasse laufen: Wer zuerst die billigsten Zellen belegt, muss die Restmengen am Ende oft über sehr teure Verbindungen verteilen – genau dieses Problem vermeidet die VAM.
 
 ### Nordwestecken-Regel
 
@@ -353,4 +360,10 @@ Auf der R-Seite haben Sie Algorithmen mit `while`-Schleifen und Zustandsvariable
 6. Am 18. Dezember fällt in Raunheim eine Kühlzelle aus, die Kapazität sinkt auf 700 Boxen. Formulieren Sie das unbalancierte Problem mit einer Dummy-Küche, deren Kosten dem entgangenen Deckungsbeitrag von 4,50 € je Box entsprechen, und lösen Sie es mit `vogels_approximation()` und `ompr`. Welche Filialen erhalten weniger Ware?
 7. Was geben die Potenziale $u_i$ und $v_j$ der MODI-Methode ökonomisch an?
 8. Welche Annahmen des Transportproblems sind für die tägliche Belieferung der Filialen unrealistisch, und welche Modelle heben sie auf?
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 3: Diskrete Standortplanung und Transportplanung](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_03_wlp_batterielogistik)**.
 :::

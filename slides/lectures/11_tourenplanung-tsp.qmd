@@ -60,6 +60,11 @@ tour_2o  <- res_2opt$tour
 len_2o   <- tour_length(tour_2o, D)
 len_star <- 2 * sum(D["R", -1])
 
+# Geschätzte Direktdistanzen Raunheim -> Filialen aus Einheit Standortplanung II
+# (Kostensatz €/Box / 0,02 €/(Box·km)); in Einheit Verkehrsmittel und Antriebe verwendet
+d_schaetz <- c(C1 = 0.48168, C2 = 0.27202, C3 = 0.17036, C4 = 0.54650,
+               C5 = 0.44772, C6 = 0.12592) / 0.02
+
 # Exakte Lösung durch vollständige Enumeration (n = 7 → 360 Touren)
 alle_touren <- lapply(perms(stops[-1]), function(p) c("R", p))
 alle_len    <- sapply(alle_touren, tour_length, D = D)
@@ -71,13 +76,12 @@ vrp     <- savings_cw(D, q_norm, cap = 500)
 vrp_len <- sapply(vrp$touren, function(t) tour_length(c("R", t), D))
 ```
 
-## Distributionslogistik {#tsp-outline}
+# operative Distributionsplanung - Tourenplanung
 
-- Lager und Kommissionierung
-- Verkehrsmittel, Antriebe und Kosten
+## Operative Distributionsplanung {#sp-outline}
+
 - Kürzeste Wege
 - **Tourenplanung**
-- Distributionssystem gestalten
 
 ---
 
@@ -124,7 +128,7 @@ Im Normalbetrieb liefert ein **Kühltransporter** (Kapazität 900 Boxen) jeden M
 :::
 
 ::: {.fragment .fade-up}
-Täglich gefahrene Strecke: $2 \cdot \sum_j d_{Rj} =$ **`r len_star` km**
+Täglich gefahrene Strecke: $2 \cdot \sum_j d_{Rj} =$ **`r len_star` km** [(Straßennetz; Schätzung aus der Standortplanung II: `r fmt(2 * sum(d_schaetz), 0)` km)]{.tiny-text}
 :::
 
 ::: {.fragment .fade-up}
@@ -1106,33 +1110,7 @@ p
 
 ## Übung {#tsp-exercise}
 
-::: {.exercise-slide}
-::: {.exercise-header}
-Tourenplanung SushiFresh – Neue Filiale in Hofheim
-:::
-
-::: {.columns .exercise-content}
-::: {.column width="55%"}
-SushiFresh gewinnt eine siebte Filiale in **Hofheim am Taunus** (C7). Sie ist über eine 9 km lange Straße mit dem Wiesbadener Kreuz und über eine 12 km lange Straße mit dem Mönchhof-Dreieck verbunden.
-
-- Ergänzen Sie das Netz und berechnen Sie die Entfernungen von C7 zu allen anderen Orten mit `dijkstra()`.
-- Bestimmen Sie von Hand eine Tour mit **Nearest Neighbor** ab Raunheim.
-- Prüfen Sie alle 2-opt-Züge. Welche Tour ergibt sich?
-- Vergleichen Sie mit `two_opt()` und der exakten Lösung mit `ompr`.
-:::
-::: {.column width="42%"}
-```{r tsp-exercise-hint}
-#| echo: true
-#| eval: false
-
-W2 <- rbind(cbind(W, C7 = 0), C7 = 0)
-W2["C7", c("WK", "MH")] <- c(9, 12)
-W2[c("WK", "MH"), "C7"] <- c(9, 12)
-
-stops2 <- c(stops, "C7")
-D2 <- t(sapply(stops2, function(s)
-  dijkstra(W2, s)[stops2]))
-```
-:::
-:::
+::: {.callout-tip appearance="simple"}
+## Übungsaufgaben zu dieser Einheit
+Aufgaben zur Klausurvorbereitung (Teil 1) und eine vertiefende Fallstudie (Teil 2) finden Sie in **Fallstudie 10: Tourenplanung**.
 :::

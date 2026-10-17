@@ -17,12 +17,21 @@ library(knitr)       # kable() für Tabellen
 ::: {.lernziele}
 **Lernziele**
 
-- Sie können den Wertschöpfungsprozess einer Supply Chain in die Stufen Beschaffung, Produktion, Distribution und Absatz **strukturieren**.
-- Sie können die strategische Fertigungsentscheidung (Make-or-Buy) und die Lage des Entkopplungspunkts (Make-to-stock vs. Make-to-order) **erläutern**.
-- Sie können implizierte Nachfrageunsicherheit und die Reaktionsfähigkeit einer Supply Chain **gegenüberstellen**.
-- Sie können den Strategic Fit einer Supply-Chain-Konfiguration anhand von Wettbewerbsstrategie und implizierter Unsicherheit **beurteilen**.
-- Sie können in R eigene Funktionen schreiben, Kontrollfluss mit `if`/`else` einsetzen und Tabellen mit `mutate()`, `filter()` und `select()` auswerten.
+Nach diesem Kapitel können Sie …
+
+- Wertschöpfungsprozesse und die zentralen Treiber einer Supply Chain **strukturieren**,
+- die Begriffe Reaktionsfähigkeit und Effizienz **erläutern**,
+- die implizierte Unsicherheit eines Marktes und die Reaktionsfähigkeit einer Supply Chain **gegenüberstellen**,
+- den Strategic Fit einer Supply-Chain-Konfiguration **beurteilen**,
+- in R eigene Funktionen schreiben, Kontrollfluss mit `if`/`else` einsetzen und Tabellen mit `mutate()`, `filter()` und `select()` auswerten.
+
+**Literatur zur Vertiefung**
+
+- Strategic Fit, Supply-Chain-Treiber und implizierte Unsicherheit: @chopra2025supply, Kapitel 2–3.
+- Abstimmung von Nachfrage und operativer Leistungsfähigkeit: @cachon2024matching, Kapitel 1–3.
+- Supply-Chain-Strategie und wertorientierte Logistik: @christopher2023logistics, Kapitel 2–4.
 :::
+
 
 ## Einleitung
 
@@ -247,6 +256,12 @@ wertschoepfung_erweitert |>
 Der Pipe-Operator `|>` (aus Kapitel [-@sec-einfuehrung] bereits bekannt) verkettet diese Schritte lesbar von links nach rechts: "Nimm die Tabelle, dann erzeuge neue Spalten, dann filtere, dann wähle Spalten aus." Diese drei Verben — zusammen mit `arrange()` (Sortieren) und `summarise()` (Aggregieren), die in späteren Kapiteln folgen — bilden das Rückgrat der Datenanalyse mit `dplyr`.
 :::
 
+### Rollen und Risikoallokation in der Supply Chain
+
+Die implizierte Unsicherheit muss nicht von jeder Stufe der Supply Chain in gleichem Maß getragen werden. Chopra und Meindl betonen, dass sich die **Rollen** der Stufen und damit die **Allokation des Risikos** gezielt gestalten lassen [@chopra2025supply]: Eine Stufe kann einen großen Teil der Unsicherheit übernehmen, etwa indem sie Sicherheitsbestände hält oder flexible Kapazität vorhält, und damit den übrigen Stufen ermöglicht, effizient zu arbeiten. Ein Händler, der mit einem breiten Lagerbestand kurzfristige Nachfrageschwankungen abfängt, entlastet den Hersteller, der dann in großen, kostengünstigen Losen fertigen kann. Umgekehrt kann ein Hersteller mit flexiblen Fertigungsanlagen dem Handel kleine Bestände und häufige Nachlieferungen ermöglichen.
+
+Für den Strategic Fit bedeutet das: Nicht jede Stufe muss gleich reaktionsfähig sein. Entscheidend ist, dass die Supply Chain **insgesamt** die geforderte Reaktionsfähigkeit erreicht und dass die Stufe, die das Risiko trägt, dafür geeignet ist und angemessen vergütet wird (vgl. die Risikoprämie im Gewürzhandel in Kapitel [-@sec-einfuehrung]).
+
 ## Reaktionsfähigkeit und Effizienz
 
 Nachdem die implizierte Unsicherheit als Eigenschaft der Nachfrageseite eingeführt wurde, stellt sich die Frage, wie eine Supply Chain darauf reagieren sollte. Hier kommen zwei gegensätzliche strategische Grundausrichtungen ins Spiel:
@@ -448,4 +463,10 @@ In R haben Sie in diesem Kapitel gelernt, eigene Funktionen mit `function() { ..
 6. Was besagt das Konzept des Strategic Fit, und wie lässt es sich grafisch anhand von Nachfrageunsicherheit und Supply-Chain-Optimierungsziel darstellen?
 7. Nennen Sie die fünf strategischen Treiber, über die eine Supply Chain zwischen Effizienz und Reaktionsfähigkeit positioniert werden kann, und je ein Beispiel für einen Stellhebel je Treiber.
 8. Wie verändert sich die für einen Kostenführer sinnvolle Supply-Chain-Konfiguration im Vergleich zu einem Serviceführer, und warum?
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 1: Grundlagen des Supply Chain Managements](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_01_strategie_frosch)**.
 :::

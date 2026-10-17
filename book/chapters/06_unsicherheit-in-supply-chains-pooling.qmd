@@ -3,12 +3,21 @@
 ::: {.lernziele}
 **Lernziele**
 
-- Sie können Quellen und Auswirkungen von Unsicherheit in Supply Chains **erläutern** und zwischen Nachfrageunsicherheit, Liefervariabilität und implizierter Unsicherheit **unterscheiden**.
-- Sie können den Zusammenhang zwischen Sicherheitsbestand, Servicegrad und Nachfrageverteilung **herleiten** und für gegebene Daten **berechnen**.
-- Sie können das Konzept des **Pooling** (Risikoausgleich) auf Kapazitäten und auf Lagerbestände **anwenden** und seinen Nutzen **quantifizieren**.
-- Sie können das **Quadratwurzelgesetz des Pooling** algebraisch **herleiten**, in R **implementieren** und seine Voraussetzungen **kritisch einordnen**.
-- Sie können Zufallszahlen in R **erzeugen**, mit `set.seed()` **reproduzierbar** machen, einfache **Monte-Carlo-Simulationen** durchführen und empirische Verteilungen mit `ecdf()` **auswerten**.
+Nach diesem Kapitel können Sie …
+
+- Quellen und Auswirkungen von Unsicherheit in Supply Chains **erläutern**,
+- Nachfrageunsicherheit, implizierte Unsicherheit und Reaktionsfähigkeit **voneinander abgrenzen**,
+- den Effekt von Risikopooling auf Nachfragevarianz und Sicherheitsbestände **analysieren**,
+- zentrale und dezentrale Bestandsstrukturen unter Unsicherheit **vergleichen und beurteilen**,
+- das **Quadratwurzelgesetz des Pooling** algebraisch **herleiten**, in R **implementieren** und seine Voraussetzungen **kritisch einordnen**,
+- Zufallszahlen in R **erzeugen**, mit `set.seed()` **reproduzierbar** machen, einfache **Monte-Carlo-Simulationen** durchführen und empirische Verteilungen mit `ecdf()` **auswerten**.
+
+**Literatur zur Vertiefung**
+
+- Pooling, Nachfragevariabilität und Bestandsentscheidungen: @cachon2024matching, Kapitel 10–13.
+- Sicherheitsbestände, Servicegrade und Inventory-Management: @silver2017inventory, Kapitel 6–8.
 :::
+
 
 ```{r}
 #| label: ch6-setup
@@ -924,4 +933,10 @@ Auf der R-Seite wurden in diesem Kapitel die Werkzeuge zur **Modellierung von Un
 6. Leiten Sie die Formel für den zentralen Sicherheitsbestand zweier gepoolter, normalverteilter Standorte her. Für welchen Wert der Korrelation $\rho$ verschwindet der Pooling-Nutzen vollständig, und warum?
 7. Berechnen Sie für die sechs SushiFresh-Filialen den dezentralen und den zentralen Sicherheitsbestand bei $\alpha = 95\,\%$. Warum liegt die tatsächliche Einsparung (56,0 %) unter der Einsparung, die sich für sechs *identische* Standorte mit derselben Durchschnittsstreuung ergäbe (59,2 %)?
 8. In welchen Situationen sollte der Sicherheitsbestand empirisch statt parametrisch (über die Normalverteilung) bestimmt werden? Nutzen Sie in Ihrer Antwort die Ergebnisse des simulierten Frankfurt/Offenbach-Fallbeispiels.
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 4: Kapazitäts- und Lagerbestandspooling](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_04_pooling_einzelhandel)**.
 :::

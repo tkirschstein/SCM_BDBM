@@ -22,22 +22,21 @@ knitr::knit_hooks$set(inline = function(x) {
 ::: {.lernziele}
 **Lernziele**
 
-Nach der Bearbeitung dieses Kapitels können Sie …
+Nach diesem Kapitel können Sie …
 
-- die **Funktionen** eines Lagers und die Prozesskette vom Wareneingang bis zum Versand beschreiben,
-- statische und automatisierte **Lagersysteme** unterscheiden und für ein Sortiment auswählen,
-- feste, chaotische und zugriffsorientierte **Lagerplatzvergabe** vergleichen, den Platzbedarf berechnen und Artikel mit **ABC-Analyse** und **Cube-per-Order-Index** Plätzen zuordnen,
-- **Kommissionierverfahren** einordnen und die Kommissionierzeit eines Auftrags berechnen,
-- Kommissioniertouren mit **S-Shape**, **Return** und **Largest Gap** bestimmen und mit der optimalen Tour vergleichen,
-- das Zusammenspiel von Lagerplatzvergabe und Routing mit einer **Simulationsstudie** bewerten,
+- Lagertypen und Kommissionierverfahren **unterscheiden** und für ein Sortiment **auswählen**,
+- feste, chaotische und zugriffsorientierte **Lagerplatzvergabe** (ABC, COI) **vergleichen** und anwenden,
+- Kommissioniertouren mit **S-Shape**, **Return** und **Largest Gap** **bestimmen** und mit der optimalen Tour **vergleichen**,
+- das Zusammenspiel von **Lagerplatzvergabe und Routing** **beurteilen**,
 - Layouts mit `expand.grid()` erzeugen, Szenarien systematisch durchrechnen und **rekursive Funktionen** schreiben.
 
 **Literatur zur Vertiefung**
 
-- **Lager- und Kommissioniersysteme:** [@tenhompel2010warehouse]; [@guenther2012produktion].
-- **Kommissionierplanung im Überblick:** [@dekoster2007design].
-- **Routing und Lagerplatzvergabe:** [@ratliff1983order]; [@hall1993distance]; [@petersen1999evaluation].
+- Lager- und Kommissioniersysteme: @tenhompel2010warehouse; @guenther2012produktion.
+- Übersicht zur Kommissionierplanung: @dekoster2007design.
+- Routing und Lagerplatzvergabe: @ratliff1983order; @hall1993distance; @petersen1999evaluation.
 :::
+
 
 ## Lager in der Supply Chain
 
@@ -473,7 +472,7 @@ Im Beispiel ist **Return** am schlechtesten: Einige Picks liegen tief in den Gä
 
 ## Lagerplatzvergabe und Routing gemeinsam bewerten
 
-Ein einzelner Auftrag ist kein verlässlicher Maßstab. Um Strategien zu bewerten, simulieren wir 300 typische Aufträge mit fünf bis zehn Positionen, deren Artikel gemäß ihrer Zugriffshäufigkeit gezogen werden, und berechnen für jede Kombination aus Lagerplatzvergabe und Routing die mittlere Weglänge. Als Referenz nahe am Optimum dient eine TSP-Heuristik aus Kapitel [-@sec-tourenplanung] (Nearest Neighbor mit 2-opt-Verbesserung).
+Ein einzelner Auftrag ist kein verlässlicher Maßstab. Um Strategien zu bewerten, simulieren wir 300 typische Aufträge mit fünf bis zehn Positionen, deren Artikel gemäß ihrer Zugriffshäufigkeit gezogen werden, und berechnen für jede Kombination aus Lagerplatzvergabe und Routing die mittlere Weglänge. Als Referenz nahe am Optimum dient eine allgemeine TSP-Heuristik (Nearest Neighbor mit 2-opt-Verbesserung), die in Kapitel [-@sec-tourenplanung] ausführlich behandelt wird.
 
 ::: {.r-exkurs}
 **R-Exkurs: Szenarien systematisch durchrechnen**
@@ -600,4 +599,10 @@ Auf der R-Seite haben Sie Gitter mit `expand.grid()` erzeugt, Layouts mit `geom_
 6. Erklären Sie, warum eine gangweise ABC-Zonierung zu S-Shape, eine Zonierung am Gangkopf dagegen zu Return passt.
 7. Was versteht man unter *common random numbers*, und warum ist das Verfahren bei Simulationsvergleichen sinnvoll?
 8. Welche Vor- und Nachteile hat die Sammelkommissionierung gegenüber der auftragsweisen Kommissionierung?
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 7: Lagerplanung und Kommissionierung](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_07_lager_kommissionierung)**.
 :::

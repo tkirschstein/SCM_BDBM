@@ -53,15 +53,19 @@ sp_W[cbind(sp_edges$to, sp_edges$from)] <- sp_edges$km
 
 sp_res <- dijkstra_trace(sp_W, "R")
 
+# Geschätzte Direktdistanzen Raunheim -> Filialen aus Einheit Standortplanung II
+# (Kostensatz €/Box / 0,02 €/(Box·km)); in Einheit Verkehrsmittel und Antriebe verwendet
+d_schaetz <- c(C1 = 0.48168, C2 = 0.27202, C3 = 0.17036, C4 = 0.54650,
+               C5 = 0.44772, C6 = 0.12592) / 0.02
+
 ```
 
-## Distributionslogistik {#sp-outline}
+# operative Distributionsplanung
 
-- Lager und Kommissionierung
-- Verkehrsmittel, Antriebe und Kosten
+## Distributionsplanung {#sp-outline}
+
 - **Kürzeste Wege**
 - Tourenplanung
-- Distributionssystem gestalten
 
 ---
 
@@ -635,7 +639,7 @@ D <- t(sapply(stops, function(s)
 ::: {.fragment .fade-up}
 ::: {.callout-important appearance="simple"}
 ## Ausblick auf Einheit Tourenplanung
-Fährt der Kühltransporter jede Filiale einzeln an (**Pendelverkehr**), legt er täglich $2 \cdot \sum_j d_{Rj} =$ **`r 2 * sum(sp_D["R", -1])` km** zurück. Geht das mit einer **Rundtour** kürzer?
+Fährt der Kühltransporter jede Filiale einzeln an (**Pendelverkehr**), legt er täglich $2 \cdot \sum_j d_{Rj} =$ **`r 2 * sum(sp_D["R", -1])` km** zurück, `r sprintf("%.0f", (sum(sp_D["R", -1]) / sum(d_schaetz) - 1) * 100)` % mehr als mit den **geschätzten** Distanzen der Standortplanung II (`r fmt(2 * sum(d_schaetz), 0)` km, Einheit Verkehrsmittel und Antriebe). Geht das mit einer **Rundtour** kürzer?
 :::
 :::
 
@@ -692,28 +696,7 @@ Je nach Zielgröße ergeben sich **unterschiedliche** kürzeste Wege.
 
 ## Übung {#sp-exercise}
 
-::: {.exercise-slide}
-::: {.exercise-header}
-Kürzeste Wege – Baustelle auf der A3
-:::
-
-::: {.columns .exercise-content}
-::: {.column width="52%"}
-Wegen einer Vollsperrung ist die Verbindung **Mönchhof-Dreieck – Frankfurter Kreuz** (10 km) für drei Wochen gesperrt.
-
-- Führen Sie den Dijkstra-Algorithmus ab Raunheim **von Hand** im Tableau durch.
-- Welche Filialen sind betroffen? Wie ändern sich die Entfernungen?
-- Wie viele Kilometer mehr fährt der Kühltransporter im Pendelverkehr pro Tag?
-- Prüfen Sie Ihr Ergebnis mit der Funktion `dijkstra()`.
-:::
-::: {.column width="45%"}
-```{r sp-exercise-plot}
-#| echo: false
-#| warning: false
-#| message: false
-
-sp_plot(removed = "FK-MH", height = 470, width = 680)
-```
-:::
-:::
+::: {.callout-tip appearance="simple"}
+## Übungsaufgaben zu dieser Einheit
+Aufgaben zur Klausurvorbereitung (Teil 1) und eine vertiefende Fallstudie (Teil 2) finden Sie in **Fallstudie 9: Kürzeste Wege**.
 :::

@@ -50,6 +50,10 @@ Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des 
   - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_04_pooling_einzelhandel
   - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_05_newsvendor_baeckerei
   - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_06_bullwhip
+  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_07_lager_kommissionierung
+  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_08_transportmittel_antriebe
+  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_09_kuerzeste_wege
+  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_10_tourenplanung
 
 ---
 
@@ -115,7 +119,9 @@ install.packages(c(
   "zoo",              # gleitende Durchschnitte (Fallstudie 4)
   "knitr", "kableExtra",
   "plotly",           # interaktive Grafiken im Reader
-  "ompr", "ompr.roi", "ROI", "ROI.plugin.glpk",  # MILP (Fallstudie 3)
+  "ompr", "ompr.roi", "ROI", "ROI.plugin.glpk",  # MILP (Fallstudien 3 und 10)
+  "readxl",           # Excel-Import (Fallstudie 7)
+  "leaflet", "osrm",  # Karten und Routing (Fallstudie 9)
   "lpSolve",          # Transportproblem
   "MASS"
 ))

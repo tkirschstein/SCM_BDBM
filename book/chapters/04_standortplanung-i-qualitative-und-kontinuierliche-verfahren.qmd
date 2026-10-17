@@ -3,13 +3,22 @@
 ::: {.lernziele}
 **Lernziele**
 
-- Standortentscheidungen im strategischen Supply-Chain-Design **einordnen** und von operativen Entscheidungen **abgrenzen**,
+Nach diesem Kapitel können Sie …
+
+- Standortentscheidungen im strategischen Supply-Chain-Design **einordnen**,
 - qualitative Standortfaktoren systematisch **erfassen und bewerten**,
-- die Nutzwertanalyse und den Analytic Hierarchy Process (AHP) **erläutern und auf ein Fallbeispiel anwenden**,
-- die Eigenschaften unterschiedlicher Distanzmetriken (euklidisch, Manhattan, geografisch) **erläutern** und diese in R **berechnen**,
-- das Center-of-Gravity-Verfahren und den Weiszfeld-Algorithmus **herleiten, selbst programmieren und interpretieren**,
+- das AHP-Verfahren und Nutzwertverfahren **erläutern und anwenden**,
+- die Eigenschaften unterschiedlicher Distanzmetriken **erläutern** und diese **berechnen**,
+- kontinuierliche Standortverfahren auf einfache Entscheidungsprobleme **anwenden und interpretieren**,
 - grundlegende R-Kontrollstrukturen (Schleifen, Matrizen, `apply`-Funktionen, eigene Funktionen mit Abbruchkriterium) **anwenden**.
+
+**Literatur zur Vertiefung**
+
+- Modellgestützte regionale Standortplanung und -entwicklung: @kik2022standortplanung.
+- Standortplanung und kontinuierliche Entscheidungsmodelle: @thonemann2023operations, Kapitel 3.
+- Kontinuierliche Standortmodelle und lokale Gleichgewichte: @cooper1968locational.
 :::
+
 
 ```{r}
 #| label: ch4-setup
@@ -57,7 +66,7 @@ Welche Standortfaktoren dabei überhaupt relevant sind, hängt stark vom Einzelf
 
 ### Die Fallstudie dieses Kapitels: SushiFresh GmbH
 
-Alle Verfahren dieses Kapitels wenden wir durchgängig auf ein und dasselbe, durchgehende Fallbeispiel an, das uns auch in den folgenden Kapiteln zur Netzwerk- und Bestandsplanung begleiten wird: die **SushiFresh GmbH**, ein fiktiver regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet. SushiFresh beliefert täglich sechs Supermarkt-Filialen mit unterschiedlicher, aber weitgehend bekannter Nachfrage:
+Alle Verfahren dieses Kapitels wenden wir auf das in Abschnitt [-@sec-sushifresh-intro] eingeführte Fallbeispiel an, das uns auch in den folgenden Kapiteln zur Netzwerk- und Bestandsplanung begleitet: die **SushiFresh GmbH**, ein fiktiver regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet. SushiFresh beliefert täglich sechs Supermarkt-Filialen mit unterschiedlicher, aber weitgehend bekannter Nachfrage:
 
 ```{r}
 #| label: ch4-sushifresh-filialen
@@ -331,8 +340,8 @@ konsistenz
 Mit $CI \approx `r sprintf("%.3f", konsistenz$CI)`$ und $CR \approx `r sprintf("%.2f", konsistenz$CR)`$ liegt die Kriterienmatrix **über** der 10-%-Schwelle. Die oben beschriebene Intransitivität zwischen Transportnähe, Fachkräften und Mietkosten ist also zu groß, als dass man die Gewichte ungeprüft übernehmen sollte. In der Praxis würde man die Entscheider bitten, ihre Vergleiche zu überdenken – etwa den Vergleich Transportnähe gegenüber Fachkräften von 2 auf 1/2 zu korrigieren, was die Matrix nahezu konsistent machen würde. Für das Lehrbeispiel rechnen wir mit den Originalurteilen der Vorlesung weiter, behalten diesen Vorbehalt aber im Hinterkopf: Er zeigt gerade den Nutzen des AHP, der Inkonsistenzen – anders als die Nutzwertanalyse – überhaupt sichtbar macht.
 
 ::: {.callout-note}
-## Hinweis zu den Vorlesungsfolien
-Auf den Folien wird der Konsistenzwert $CI = (\bar{P}-n)/(n-1) \approx 0{,}08$ berechnet. Dieser Wert ist der **Konsistenzindex** $CI$. Für das Urteil "konsistent/inkonsistent" muss er noch durch den Random Index $RI = 0{,}58$ (für $n=3$) geteilt werden; erst die resultierende Konsistenzrate $CR \approx 0{,}14$ wird mit der 10-%-Schwelle verglichen.
+## Hinweis: Konsistenzindex und Konsistenzrate
+Auf den Folien wird der Konsistenzwert $KI = CI = (\bar{P}-n)/(n-1) \approx 0{,}08$ berechnet. Dieser Wert ist der **Konsistenzindex** $CI$. Für das Urteil "konsistent/inkonsistent" muss er noch durch den Random Index $RI = 0{,}58$ (für $n=3$) geteilt werden; erst die resultierende Konsistenzrate $CR \approx 0{,}14$ wird mit der 10-%-Schwelle verglichen.
 :::
 
 Im letzten Schritt werden die Standort-Kriterien-Matrix und der Kriteriengewichtsvektor mit dem Matrixprodukt `%*%` zu einem **Gesamt-Score je Standort** verrechnet – genau die Operation, die im R-Exkurs zu Matrizen angekündigt wurde:
@@ -842,4 +851,10 @@ Beiden Verfahrensfamilien ist gemeinsam, dass sie den Standort entweder aus eine
 8. Warum ist die direkte Anwendung euklidischer Distanzen auf geografische Koordinaten (Breiten-/Längengrad) problematisch, und welche Alternative bietet die Haversine-Formel?
 9. Der AHP empfiehlt im Fallbeispiel knapp den Standort Mainz-Hechtsheim. Nennen Sie zwei Gründe, warum eine rein kostenbasierte Betrachtung (wie in Kapitel [-@sec-standort-2]) zu einem anderen Ergebnis kommen könnte.
 10. Ändern Sie im R-Code den Vergleich "Transportnähe gegenüber Fachkräften" von 2 auf 1/2. Wie verändern sich Konsistenzrate und Rangfolge der Standorte? Interpretieren Sie das Ergebnis.
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 2: Qualitative und kontinuierliche Standortplanung](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_02_standort_ahp_steiner_weber)**.
 :::

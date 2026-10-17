@@ -28,6 +28,9 @@ farbe_hintergrund <- "#F2F2F2"
 
 ```
 
+
+# Unsicherheits- und Risikomanagement in SCs - Bullwhip-Effekt
+
 ## Unsicherheit in Supply Chains  {#outline}
 
 - Pooling

@@ -1,0 +1,233 @@
+---
+title: "Fallstudie 9: Kürzeste Wege"
+subtitle: "SushiFresh-Übungen und Notfallbelieferung von Kliniken in der Rhein-Neckar-Region"
+author: "Supply Chain Management – Gruppenarbeit"
+lang: de
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    embed-resources: true
+    code-fold: show
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-note}
+## Steckbrief
+
+| | |
+|---|---|
+| **Thema** | Straßennetz als Graph, Dijkstra-Algorithmus, Distanz- und Fahrzeitmatrizen, Sperrungen |
+| **Vorlesungsbezug** | Block 5 „Operative Distributionsplanung“: Kürzeste Wege |
+| **Teil 1** | Klausurvorbereitung: Aufgaben mit Stift und Papier zu einer neuen SushiFresh-Entscheidungssituation (25–30 Min.) |
+| **Teil 2** | Fallstudie MedLog Rhein-Neckar (fiktiv) auf einem vereinfachten Straßennetz mit realen Koordinaten; Validierung mit einem Routing-Dienst |
+| **Gruppengröße** | 3–6 Personen (Teil 2) |
+| **Ergebnis** | Präsentation (20 Min.) + Diskussion (10 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+:::
+
+# Lernziele
+
+Nach Bearbeitung der Übungen und der Fallstudie können Sie
+
+- ein Straßennetz als gewichteten Graphen modellieren,
+- den Dijkstra-Algorithmus von Hand im Tableau und mit R durchführen,
+- kürzeste Wege nach Distanz und nach Fahrzeit unterscheiden und
+- die Auswirkungen von Sperrungen auf Entfernungen und Erreichbarkeit bewerten.
+
+# Teil 1 – Klausurvorbereitung: Das Straßennetz im Rhein-Neckar-Gebiet
+
+::: {.callout-note}
+## Hinweise
+Bearbeitungszeit ca. **25 Minuten** · Hilfsmittel: nicht programmierbarer Taschenrechner · **25 Punkte**
+:::
+
+Die neue Küche von SushiFresh liegt in Schwetzingen (K). Das vereinfachte Straßennetz umfasst einen Autobahnknoten (X) und fünf Filialen: Mannheim (MA), Ludwigshafen (LU), Heidelberg (HD), Weinheim (WH) und Speyer (SP). Alle Straßen sind in beide Richtungen befahrbar:
+
+| Verbindung | K–X | K–HD | K–SP | X–MA | X–HD | X–SP | MA–LU | MA–WH | MA–HD | HD–WH | LU–SP |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Länge [km] | 4 | 12 | 14 | 9 | 10 | 15 | 3 | 16 | 18 | 18 | 20 |
+
+**Aufgabe 1 (3 Punkte).** Zeichnen Sie das Netz als Graph.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 1
+
+Knoten K, X, MA, LU, HD, WH, SP mit den elf Kanten der Tabelle (ungerichtet, Kantengewicht = km).
+
+*Bewertung:* 3 Punkte.
+:::
+
+**Aufgabe 2 (12 Punkte).** Bestimmen Sie mit dem Dijkstra-Algorithmus die kürzesten Entfernungen von K zu allen Knoten. Dokumentieren Sie jede Iteration in einem Tableau (Marken, Vorgänger, markierter Knoten). Geben Sie den kürzesten Weg nach Weinheim an.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 2
+
+Tableau (Marke / Vorgänger; markierte Knoten fett):
+
+| Iteration | markiert | X | MA | LU | HD | WH | SP |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| 1 | K (0) | 4/K | ∞ | ∞ | 12/K | ∞ | 14/K |
+| 2 | X (4) | **4/K** | 13/X | ∞ | 12/K | ∞ | 14/K |
+| 3 | HD (12) | | 13/X | ∞ | **12/K** | 30/HD | 14/K |
+| 4 | MA (13) | | **13/X** | 16/MA | | 29/MA | 14/K |
+| 5 | SP (14) | | | 16/MA | | 29/MA | **14/K** |
+| 6 | LU (16) | | | **16/MA** | | 29/MA | |
+| 7 | WH (29) | | | | | **29/MA** | |
+
+Markenkorrekturen: über X wird MA = 4 + 9 = 13; HD bleibt 12 (4 + 10 = 14 > 12), SP bleibt 14 (4 + 15 = 19). Über HD wird WH = 30, über MA dann WH = 13 + 16 = 29 und LU = 16. Über SP bleibt LU = 16 (14 + 20 = 34).
+
+Entfernungen ab K: X 4, HD 12, MA 13, SP 14, LU 16, WH 29. Kürzester Weg nach Weinheim: **K → X → MA → WH** (29 km).
+
+*Bewertung:* 9 Punkte Tableau, 3 Punkte Ergebnis und Weg.
+:::
+
+**Aufgabe 3 (6 Punkte).** Die Rheinbrücke zwischen Mannheim und Ludwigshafen wird für zwei Wochen gesperrt.
+
+a) Welche Filialen sind betroffen, und wie ändern sich die Entfernungen? Müssen Sie den Algorithmus vollständig neu durchführen?
+
+b) Der Transporter fährt jede Filiale einzeln an (Pendelverkehr). Wie viele Kilometer mehr fallen pro Tag an?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 3
+
+a) Betroffen ist nur **Ludwigshafen**, weil nur LU über die Kante MA–LU erreicht wird. Neuer Weg K → SP → LU mit 14 + 20 = **34 km** (statt 16 km). Ein vollständiger Neulauf ist nicht nötig: Nur Knoten, deren kürzester Weg die gesperrte Kante nutzt (also im Teilbaum unter MA–LU liegen), müssen neu bestimmt werden.
+
+b) Pendelverkehr: $2 \cdot (34 - 16) = $ **36 km mehr pro Tag**.
+
+*Bewertung:* a) 4 Punkte, b) 2 Punkte.
+:::
+
+**Aufgabe 4 (4 Punkte).** Die Geschäftsführung schlägt vor, statt der Entfernung die Fahrzeit zu minimieren. Erläutern Sie, wie sich das Modell ändert, und nennen Sie eine Situation, in der der kürzeste Weg nicht der schnellste ist.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 4
+
+Die Kantengewichte werden durch Fahrzeiten ersetzt (Länge / Durchschnittsgeschwindigkeit je Straßentyp). Der Algorithmus bleibt gleich. Beispiel: Eine längere Autobahnverbindung ist schneller als eine kürzere Strecke durch die Innenstadt oder eine Baustelle mit Stau.
+
+*Bewertung:* 2 Punkte Modell, 2 Punkte Beispiel.
+:::
+
+# Teil 2 – Fallstudie: Notfallbelieferung von Kliniken
+
+## Ausgangslage
+
+Die **MedLog Rhein-Neckar GmbH** (fiktiv) betreibt in Walldorf ein Zentrallager für Arzneimittel und Medizinprodukte. Sie beliefert neun Kliniken in der Rhein-Neckar-Region. Neben der regulären Nachtbelieferung gibt es **Eilaufträge** (z. B. Blutprodukte, Antidote), die ein Kurier sofort zustellt. Die Kliniken erwarten, dass Eilaufträge **innerhalb von 30 Minuten** eintreffen.
+
+Die Geschäftsführung möchte wissen,
+
+1. welche Kliniken die 30-Minuten-Zusage heute einhalten können,
+2. ob die kürzeste Strecke auch die schnellste ist und
+3. wie empfindlich das Netz auf Sperrungen der Rheinbrücken reagiert.
+
+## Daten
+
+Das Netz ist **vereinfacht**: Die Koordinaten der Orte sind real (gerundet), die Kantenlängen werden aus der Luftlinie mit einem Umwegfaktor von 1,2 geschätzt. Für die Fahrzeit gelten mittlere Geschwindigkeiten je Straßentyp.
+
+```{r}
+#| label: daten-netz
+orte <- data.frame(
+  ID  = c("D", "KW", "KHD", "KMA", "KVI", "DHO", "KFT",
+          "HD", "MA", "LU", "SP", "SW", "WH", "SI", "BR", "WO"),
+  Name = c("Zentrallager Walldorf", "Walldorfer Kreuz", "Kreuz Heidelberg",
+           "Kreuz Mannheim", "Kreuz Viernheim", "Dreieck Hockenheim", "Kreuz Frankenthal",
+           "Heidelberg", "Mannheim", "Ludwigshafen", "Speyer", "Schwetzingen",
+           "Weinheim", "Sinsheim", "Bruchsal", "Worms"),
+  Typ = c("Depot", rep("Knoten", 6), rep("Klinik", 9)),
+  lat = c(49.306, 49.297, 49.425, 49.459, 49.528, 49.326, 49.546,
+          49.417, 49.493, 49.479, 49.320, 49.383, 49.551, 49.253, 49.124, 49.634),
+  lon = c(8.642, 8.663, 8.632, 8.565, 8.562, 8.555, 8.383,
+          8.667, 8.487, 8.420, 8.433, 8.572, 8.672, 8.877, 8.599, 8.358)
+)
+strassen <- data.frame(
+  from = c("D",  "D",  "KW",  "KW",  "KW", "KW", "KHD", "KHD", "KHD", "DHO", "DHO",
+           "DHO", "SW", "SW",  "KMA", "KMA", "KVI", "KVI", "KVI", "KFT", "KFT",
+           "MA", "SP", "SI", "BR"),
+  to   = c("KW", "HD", "KHD", "DHO", "SI", "BR", "HD",  "KMA", "WH",  "KMA", "SP",
+           "SW", "HD", "KMA", "MA",  "KVI", "MA",  "WH",  "KFT", "LU",  "WO",
+           "LU", "LU", "HD", "SP"),
+  typ  = c("Stadt", "Land", "Autobahn", "Autobahn", "Autobahn", "Autobahn", "Stadt",
+           "Autobahn", "Autobahn", "Autobahn", "Autobahn", "Land", "Land", "Land",
+           "Stadt", "Autobahn", "Autobahn", "Autobahn", "Autobahn", "Land", "Autobahn",
+           "Stadt", "Land", "Land", "Land")
+)
+v_kmh <- c(Autobahn = 90, Land = 60, Stadt = 30)   # mittlere Geschwindigkeit Kurierfahrzeug
+knitr::kable(orte[, c("ID", "Name", "Typ")])
+```
+
+## Aufgaben
+
+### Teil A – Netzmodell
+
+**A1.** Berechnen Sie für jede Straße die Länge (Haversine-Distanz × 1,2) und die Fahrzeit in Minuten. Stellen Sie das Netz auf einer Karte dar und bauen Sie zwei Gewichtsmatrizen auf: eine für Kilometer und eine für Minuten.
+
+### Teil B – Kürzeste und schnellste Wege
+
+**B1.** Bestimmen Sie mit `dijkstra()` ab dem Zentrallager die kürzesten Wege nach Distanz und nach Fahrzeit. Für welche Kliniken unterscheiden sich die beiden Wege? Welche Kliniken erreichen die 30-Minuten-Zusage?
+
+**B2.** Simulieren Sie zwei Sperrungen: (a) die Rheinbrücke Mannheim–Ludwigshafen (Kante MA–LU) und (b) zusätzlich die A6-Rheinbrücke (Kante KVI–KFT). Welche Kliniken verlieren die 30-Minuten-Zusage?
+
+**B3.** Prüfen Sie für zwei Relationen Ihr Modell mit einem Routing-Dienst (z. B. OpenStreetMap über das R-Paket `osrm` oder einen Routenplaner). Wie gut treffen Umwegfaktor und Durchschnittsgeschwindigkeiten die Realität?
+
+### Teil C – Empfehlung und Reflexion
+
+**C1.** Welche Maßnahmen empfehlen Sie, damit alle Kliniken die 30-Minuten-Zusage erhalten (z. B. ein zweiter Kurierstandort, Bestände in Kliniken, andere Fahrzeuge)? Begründen Sie mit Ihren Ergebnissen.
+
+**C2. Reflexion.** Beantworten Sie in der Präsentation:
+
+1. Was ist „kurz“: Distanz, Fahrzeit oder Kosten? Welches Kriterium passt zu welchem Planungsproblem?
+2. Wie würden Sie tageszeitabhängige Fahrzeiten (Berufsverkehr) berücksichtigen, und warum reicht dann ein einziger Dijkstra-Lauf nicht mehr aus?
+3. Navigationssysteme berechnen kürzeste Wege in Netzen mit Millionen Knoten in Sekundenbruchteilen. Welche Ideen stecken dahinter (z. B. A*, Contraction Hierarchies)?
+
+# Literatur
+
+- Dijkstra, E. W. (1959): A Note on Two Problems in Connexion with Graphs. *Numerische Mathematik* 1, 269–271.
+- Domschke, W.; Drexl, A.; Klein, R.; Scholl, A.: *Einführung in Operations Research*. Berlin: Springer (Kapitel Graphentheorie).
+- Giraud, T.: *osrm – Interface Between R and the OpenStreetMap-Based Routing Service OSRM*, R-Paket, <https://CRAN.R-project.org/package=osrm>.
+- Folien und Reader zur Vorlesung, Block 5.
+
+# Anhang: R-Startercode
+
+```{r}
+#| label: starter
+#| eval: false
+source("../R/scm_functions.R")   # haversine(), dijkstra(), dijkstra_trace(), pfad()
+
+# --- Kantenlängen und Fahrzeiten
+i <- match(strassen$from, orte$ID); j <- match(strassen$to, orte$ID)
+strassen$km  <- 1.2 * haversine(orte$lat[i], orte$lon[i], orte$lat[j], orte$lon[j])
+strassen$min <- strassen$km / v_kmh[strassen$typ] * 60
+
+# --- Gewichtsmatrizen
+gewichte <- function(spalte) {
+  M <- matrix(0, nrow(orte), nrow(orte), dimnames = list(orte$ID, orte$ID))
+  M[cbind(strassen$from, strassen$to)] <- strassen[[spalte]]
+  M[cbind(strassen$to, strassen$from)] <- strassen[[spalte]]
+  M
+}
+W_km  <- gewichte("km")
+W_min <- gewichte("min")
+
+kliniken <- orte$ID[orte$Typ == "Klinik"]
+round(rbind(km  = dijkstra(W_km,  "D")[kliniken],
+            min = dijkstra(W_min, "D")[kliniken]), 1)
+
+# Weg nach Fahrzeit zu einer Klinik
+pfad(dijkstra_trace(W_min, "D")$pred, "LU")
+
+# Sperrung MA-LU
+W_sperr <- W_min; W_sperr["MA", "LU"] <- W_sperr["LU", "MA"] <- 0
+round(dijkstra(W_sperr, "D")[kliniken], 1)
+
+# --- Karte
+library(leaflet)
+leaflet(orte) |> addTiles() |>
+  addCircleMarkers(~lon, ~lat, label = ~Name,
+                   color = ~ifelse(Typ == "Klinik", "#C00000", "#1F4E79")) |>
+  addPolylines(lng = c(rbind(orte$lon[i], orte$lon[j], NA)),
+               lat = c(rbind(orte$lat[i], orte$lat[j], NA)), weight = 2)
+```

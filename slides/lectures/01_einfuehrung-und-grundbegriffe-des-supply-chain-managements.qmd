@@ -48,30 +48,31 @@ Inverted classroom:
 :::: columns
 ::: {.column width="50%"}
 ::: {.gliederung style="font-size: 0.6em;"}
-1.  Grundlagen von Supply Chain Management & Distribution
-    i) Aufgaben, Begriffe und Konzepte
-    ii) Ziele & Zielkonflikte
-    iii) Kosten & Management
-    iv) Distributionsstrukturen
+1.  Grundlagen des Supply Chain Managements
+    1.  Aufgaben, Begriffe und Konzepte
+    2.  Wertschöpfung, strategische Fertigung & Strategic Fit
+    3.  Ziele, Zielkonflikte & Logistikkosten
+    4.  Distributionsstrukturen & -kanäle
 2.  Strategische Gestaltung von Supply Chains
-    1.  qualitative Standortplanung 
-    2.  diskrete Standortplanung 
-    3.  Transportplanung 
+    1.  Qualitative & kontinuierliche Standortplanung
+    2.  Diskrete Netzwerkplanung
+    3.  Transportplanung
 :::
 :::
 
 ::: {.column width="50%"}
 ::: {.gliederung style="font-size: 0.6em;"}
 3.  Unsicherheits- und Risikomanagement in Supply Chains
-    1.  Kapazitäts-Pooling
-    2.  Location Pooling
-    3.  Newsvendor-Modell
-    4.  Bullwhip-Effekt
-4.  Operative Distributionsplanung
-    1.  Lager- und Kommissionierplanung
-    2.  Transportmittel und Kostenrechnung
-    3.  Kürzeste Wege
-    4.  Tourenplanung
+    1.  Kapazitäts- & Lagerbestandspooling
+    2.  Newsvendor-Modell
+    3.  Bullwhip-Effekt
+4.  Distributionslogistik
+    1.  Lagerplanung & Kommissionierung
+    2.  Transportmittel & Antriebe
+5.  Operative Distributionsplanung
+    1.  Kürzeste Wege
+    2.  Tourenplanung
+
 :::
 :::
 ::::

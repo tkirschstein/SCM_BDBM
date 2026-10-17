@@ -23,6 +23,8 @@ library(osrm)
 
 ```
 
+# Strategische Gestaltung von Supply Chains - Warehouse Location Planning
+
 ---
 
 ## Strategische Gestaltung von Supply Chains {#slide-92}

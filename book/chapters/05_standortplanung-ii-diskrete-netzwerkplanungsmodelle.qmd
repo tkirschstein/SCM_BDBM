@@ -19,23 +19,23 @@ library(kableExtra)
 ::: {.lernziele}
 **Lernziele**
 
-Nach der Bearbeitung dieses Kapitels können Sie …
+Nach diesem Kapitel können Sie …
 
-- diskrete Standort- und Netzwerkplanungsprobleme von den kontinuierlichen Verfahren aus Kapitel [-@sec-standort-1] abgrenzen,
-- das klassische Transportproblem als Spezialfall der Netzwerkplanung mit festen Standorten einordnen,
-- das Warehouse Location Problem (WLP) als gemischt-ganzzahliges Optimierungsmodell aufstellen und seine Entscheidungsvariablen, Zielfunktion und Nebenbedingungen interpretieren,
+- diskrete Standort- und Netzwerkplanungsprobleme **formulieren**,
+- Transport-, Umschlags- und Standortentscheidungen in einem Netzwerk **modellieren**,
+- zentrale Entscheidungsvariablen, Zielfunktionen und Nebenbedingungen **interpretieren**,
+- Ergebnisse diskreter Netzwerkmodelle für strategische Standortentscheidungen **bewerten**,
 - ein WLP mit dem R-Paket `ompr` exakt lösen und das Ergebnis ökonomisch einordnen,
 - die Grundideen konstruktiver Add- und Drop-Heuristiken nachvollziehen, in R anwenden und ihre Lösungsgüte beurteilen,
-- die Empfindlichkeit einer Standortentscheidung gegenüber Modellannahmen (z. B. der Hochrechnung der Nachfrage) prüfen,
-- Listen, `purrr::map()` und Matrizen als R-Werkzeuge zur Strukturierung und Auswertung von Netzwerkplanungsdaten einsetzen,
-- qualitative Vorauswahlverfahren (Kapitel [-@sec-standort-1]) und quantitative Kostenoptimierung als **einander ergänzende** Bausteine einer Standortentscheidung einordnen.
+- Listen, `purrr::map()` und Matrizen als R-Werkzeuge zur Strukturierung und Auswertung von Netzwerkplanungsdaten einsetzen.
 
 **Literatur zur Vertiefung**
 
-- **Transport-, Umschlags- und Netzwerkmodelle:** [@guenther2012produktion, Kapitel 4].
-- **Diskrete Standortmodelle, Algorithmen und Anwendungen:** Kapitel 1–4 in [@daskin2013network].
-- **Theorie und Anwendungen der Standortplanung:** [@drezner2002facility] sowie [@kik2022standortplanung].
+- Transport-, Umschlags- und Netzwerkmodelle: @guenther2012produktion, Kapitel 4.
+- Diskrete Standortmodelle, Algorithmen und Anwendungen: @daskin2013network, Kapitel 1–4.
+- Theorie und Anwendungen der Standortplanung: @drezner2002facility.
 :::
+
 
 ## Von der kontinuierlichen zur diskreten Standortplanung
 
@@ -556,4 +556,10 @@ Auf der R-Seite haben Sie mit diesem Kapitel vier neue Bausteine kennengelernt: 
 6. Erklären Sie den Unterschied zwischen einer Liste (`list()`) und einem `data.frame`/`tibble`. Nennen Sie ein Beispiel aus diesem Kapitel, bei dem eine R-Funktion ihr Ergebnis sinnvollerweise als Liste zurückgibt.
 7. Warum ist im SushiFresh-Beispiel bei 365 Verkaufstagen ein Standort, bei 1.000 "Tagen" dagegen sind zwei Standorte optimal? Argumentieren Sie mit der Struktur der Zielfunktion.
 8. Die AHP-Analyse (Kapitel [-@sec-standort-1]) favorisiert Mainz-Hechtsheim, die WLP-Analyse Raunheim. Erklären Sie die Diskrepanz und diskutieren Sie, wie beide Verfahren in der Praxis sinnvoll kombiniert werden können.
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 3: Diskrete Standortplanung und Transportplanung](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_03_wlp_batterielogistik)**.
 :::

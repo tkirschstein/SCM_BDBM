@@ -23,20 +23,21 @@ knitr::knit_hooks$set(inline = function(x) {
 ::: {.lernziele}
 **Lernziele**
 
-Nach der Bearbeitung dieses Kapitels können Sie …
+Nach diesem Kapitel können Sie …
 
-- Straßennetze als **Graphen** mit Knoten, Kanten und Kantengewichten modellieren,
-- verschiedene Varianten des **Kürzeste-Wege-Problems** unterscheiden und es als Netzwerkflussproblem formulieren,
-- den **Dijkstra-Algorithmus** von Hand im Tableau durchführen, seine Korrektheit begründen und ihn in R implementieren,
-- aus kürzesten Wegen eine **Distanzmatrix** für Transport- und Tourenplanung ableiten und mit der Luftlinie vergleichen,
+- Straßennetze als **Graphen** mit Knoten, Kanten und Kantengewichten **modellieren**,
+- verschiedene Varianten des **Kürzeste-Wege-Problems** **unterscheiden**,
+- den **Dijkstra-Algorithmus** von Hand **durchführen** und in R **implementieren**,
+- aus kürzesten Wegen eine **Distanzmatrix** für Transport- und Tourenplanung **ableiten**,
 - Graphen in R als Kantenliste und Gewichtsmatrix darstellen und mit logischen Masken und benannten Vektoren arbeiten.
 
 **Literatur zur Vertiefung**
 
-- **Kürzeste Wege und Graphentheorie in der Logistik:** [@domschke2007transport].
-- **Originalarbeit:** [@dijkstra1959note].
-- **Transport- und Tourenplanung im Überblick:** [@guenther2012produktion].
+- Kürzeste Wege und Graphentheorie in der Logistik: @domschke2007transport.
+- Originalarbeit zum Algorithmus: @dijkstra1959note.
+- Transport- und Tourenplanung im Überblick: @guenther2012produktion.
 :::
+
 
 ## Woher kommen die Transportkosten?
 
@@ -314,4 +315,10 @@ Auf der R-Seite haben Sie Graphen als Kantenliste und Gewichtsmatrix gespeichert
 7. Was ist ein Umwegfaktor, und wofür lässt er sich in der Standortplanung nutzen?
 8. Warum erfüllt eine aus kürzesten Wegen berechnete Distanzmatrix immer die Dreiecksungleichung?
 9. Nennen Sie zwei Zielgrößen für „kurz“ neben der Distanz und eine Situation, in der sie zu einem anderen Weg führen.
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 9: Kürzeste Wege](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_09_kuerzeste_wege)**.
 :::

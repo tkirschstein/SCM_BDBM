@@ -98,9 +98,7 @@ klassen_farbe <- c(A = "#0B6E4F", B = "#F4A259", C = "#D0D5DD")
 
 - **Lager und Kommissionierung**
 - Verkehrsmittel, Antriebe und Kosten
-- Kürzeste Wege
-- Tourenplanung
-- Distributionssystem gestalten
+
 
 ---
 
@@ -731,7 +729,7 @@ Ein TSP im Lager
 ::: {.column width="48%"}
 
 ::: {.callout-note appearance="minimal" icon=false}
-**Problemstellung:** Gegeben ist eine Pickliste mit $n$ Positionen. Gesucht ist die **kürzeste Rundtour** vom Depot zu allen Pickpositionen und zurück. Das ist ein **Rundreiseproblem** (*Traveling Salesman Problem*, TSP) auf einem speziellen Graphen aus Gängen und Quergängen. Allgemein behandeln wir das TSP in der Einheit Tourenplanung.
+**Problemstellung:** Gegeben ist eine Pickliste mit $n$ Positionen. Gesucht ist die **kürzeste Rundtour** vom Depot zu allen Pickpositionen und zurück. Das ist ein **Rundreiseproblem** (*Traveling Salesman Problem*, TSP) auf einem speziellen Graphen aus Gängen und Quergängen. Allgemein behandeln wir das TSP später in der Einheit Tourenplanung.
 :::
 
 ::: {.fragment .fade-up}
@@ -757,7 +755,7 @@ Ein TSP im Lager
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## Lösungswege
-- **Optimal:** Für dieses Layout gibt es ein effizientes exaktes Verfahren (dynamische Programmierung) [@ratliff1983order]. Alternativ: allgemeine TSP-Heuristiken auf der Distanzmatrix (Einheit Tourenplanung)
+- **Optimal:** Für dieses Layout gibt es ein effizientes exaktes Verfahren (dynamische Programmierung) [@ratliff1983order]. Alternativ: allgemeine TSP-Heuristiken auf der Distanzmatrix (später in der Einheit Tourenplanung)
 - **Einfache Routingstrategien:** S-Shape, Return, Midpoint, Largest Gap [@hall1993distance]
 :::
 :::
@@ -971,7 +969,7 @@ Die optimale Tour (`r format(factorial(nrow(bsp_pk)), big.mark = ".", decimal.ma
 
 ::: {.fragment .fade-up}
 ::: {.smaller-text}
-Für größere Aufträge: Ratliff-Rosenthal-Algorithmus oder TSP-Heuristiken wie Nearest Neighbor + 2-opt (Einheit Tourenplanung).
+Für größere Aufträge: Ratliff-Rosenthal-Algorithmus oder TSP-Heuristiken wie Nearest Neighbor + 2-opt (behandelt in der späteren Einheit Tourenplanung).
 :::
 :::
 
@@ -1089,7 +1087,7 @@ best <- sim[which.min(sim$weg), ]
 - **S-Shape** profitiert von **gangweiser** ABC-Zonierung: Schnelldreher in wenigen Gängen → wenige Gänge zu durchlaufen.
 - **Return** profitiert von ABC **am Gangkopf**: Schnelldreher vorne → kurze Stichwege.
 - Die falsche Kombination verschenkt einen Großteil des Potenzials.
-- *NN + 2-opt* ist eine allgemeine TSP-Heuristik (Einheit Tourenplanung) und dient hier als Referenz nahe am Optimum.
+- *NN + 2-opt* ist eine allgemeine TSP-Heuristik (Nearest Neighbor als Startlösung, verbessert durch 2-opt; Details in der späteren Einheit Tourenplanung) und dient hier als Referenz nahe am Optimum.
 :::
 :::
 
@@ -1213,7 +1211,7 @@ Der Picker holt die Positionen **mehrerer Aufträge** in einer Tour (z. B. Wagen
 
 ::: {.fragment .fade-up}
 ::: {.smaller-text}
-Batchbildung ist selbst ein Optimierungsproblem, z. B. per Savings-Logik (Einheit Tourenplanung): Aufträge mit überlappenden Gängen kombinieren.
+Batchbildung ist selbst ein Optimierungsproblem, z. B. per Savings-Logik (Ausblick in der späteren Einheit Tourenplanung): Aufträge mit überlappenden Gängen kombinieren.
 :::
 :::
 
@@ -1239,36 +1237,7 @@ Batchbildung ist selbst ein Optimierungsproblem, z. B. per Savings-Logik (Einhei
 
 ## Übung {#lk-exercise}
 
-::: {.exercise-slide}
-::: {.exercise-header}
-Picker Routing – Auftrag 4712
-:::
-
-::: {.columns .exercise-content}
-::: {.column width="55%"}
-Auftrag 4712 enthält sechs Positionen in folgenden Gängen und Tiefen (Fachmitte in m ab vorderem Quergang; hinterer Quergang bei $Y = 20$ m; Gangabstand 4 m, Depot vorne links 4 m vor Gang 1):
-
-| Gang | 1 | 2 | 2 | 4 | 5 | 7 |
-|------|---|---|---|---|---|---|
-| Tiefe (m) | 4 | 3 | 17 | 16 | 10 | 2 |
-
-- Bestimmen Sie die Weglängen für **S-Shape**, **Return** und **Largest Gap** von Hand.
-- Welche Strategie ist hier am besten? Warum?
-- Prüfen Sie Ihr Ergebnis mit den Funktionen aus den Folien.
-:::
-::: {.column width="42%"}
-```{r lk-exercise-hint}
-#| echo: true
-#| eval: false
-
-pk <- data.frame(
-  gang = c(1, 2, 2, 4, 5, 7),
-  y    = c(4, 3, 17, 16, 10, 2))
-
-weg_laenge(route_sshape(pk))
-weg_laenge(route_return(pk))
-weg_laenge(route_lgap(pk))
-```
-:::
-:::
+::: {.callout-tip appearance="simple"}
+## Übungsaufgaben zu dieser Einheit
+Aufgaben zur Klausurvorbereitung (Teil 1) und eine vertiefende Fallstudie (Teil 2) finden Sie in **Fallstudie 7: Lagerplanung und Kommissionierung**.
 :::

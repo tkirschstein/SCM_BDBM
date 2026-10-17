@@ -4,27 +4,26 @@ project:
   execute-dir: project
 
 book:
-  title: "Supply Chain Management"
+  title: "Supply Chain Management & Distribution"
   subtitle: "Begleitendes Lehrbuch zur Vorlesung"
   author: "Prof. Dr. Thomas Kirschstein"
   date: last-modified
-  description: "Kursbegleitender Reader zur Vorlesung Supply Chain Management, Wintersemester 26/27"
+  description: "Kursbegleitender Reader zu den Vorlesungen Supply Chain Management & Distribution, Wintersemester 26/27"
   page-footer: "Supply Chain Management — Lehrbuch"
   chapters:
     - index.qmd
-    - part: "Grundlagen"
+    - part: "Grundlagen des Supply Chain Managements"
       chapters:
         - chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd
         - chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.qmd
         - chapters/03_ziele-zielkonflikte-und-logistikkosten.qmd
-        - chapters/09_nachhaltigkeit-im-supply-chain-management.qmd
         - chapters/14a_distributionsstrukturen.qmd
     - part: "Strategische Gestaltung von Supply Chains"
       chapters:
         - chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.qmd
         - chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.qmd
         - chapters/09_transportplanung.qmd
-    - part: "Unsicherheit und Koordination"
+    - part: "Unsicherheits- und Risikomanagement in Supply Chains"
       chapters:
         - chapters/06_unsicherheit-in-supply-chains-pooling.qmd
         - chapters/07_das-newsvendor-modell.qmd
@@ -33,9 +32,10 @@ book:
       chapters:
         - chapters/13_lagerplanung-und-kommissionierung.qmd
         - chapters/12_transportmittel-und-antriebe.qmd
+    - part: "Operative Distributionsplanung"
+      chapters:
         - chapters/10_kuerzeste-wege.qmd
         - chapters/11_tourenplanung-tsp.qmd
-        - chapters/14b_distributionssystem-gestalten.qmd
     - references.qmd
 
 lang: de

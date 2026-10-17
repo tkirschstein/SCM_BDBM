@@ -1,6 +1,6 @@
 ---
 title: "Fallstudie 5: Das Newsvendor-Modell in der Praxis"
-subtitle: "Tägliche Produktionsplanung einer französischen Bäckerei"
+subtitle: "SushiFresh-Übungen und tägliche Produktionsplanung einer französischen Bäckerei"
 author: "Supply Chain Management – Gruppenarbeit"
 lang: de
 format:
@@ -23,106 +23,166 @@ execute:
 | | |
 |---|---|
 | **Thema** | Einperiodige Bestandsplanung bei unsicherer Nachfrage für verderbliche Ware |
-| **Vorlesungsbezug** | Kapitel 7 des Readers: Newsvendor-Modell, kritisches Verhältnis, Unter- und Überbestandskosten, erwarteter Gewinn |
-| **Typ** | Datenbasierte Fallstudie mit **realen Kassendaten** einer französischen Bäckerei (Kaggle) |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+| **Vorlesungsbezug** | Block 3 „Unsicherheits- und Risikomanagement in Supply Chains“: Newsvendor-Modell |
+| **Teil 1** | Klausurvorbereitung: Aufgaben mit Stift und Papier zu einer neuen SushiFresh-Entscheidungssituation (25–30 Min.) |
+| **Teil 2** | Datenbasierte Fallstudie mit **realen Kassendaten** einer französischen Bäckerei (Kaggle) |
+| **Gruppengröße** | 3–6 Personen (Teil 2) |
+| **Ergebnis** | Präsentation (20 Min.) + Diskussion (10 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
 :::
 
 # Lernziele
 
-Nach Bearbeitung der Fallstudie können Sie
+Nach Bearbeitung der Übungen und der Fallstudie können Sie
 
-- aus Kassenbon-Daten tägliche Nachfragezeitreihen je Artikel erzeugen,
-- die Parameter des Newsvendor-Modells (Preis, Kosten, Restwert, Nachfrageverteilung) aus realen Daten und plausiblen Annahmen ableiten,
-- die optimale Produktionsmenge mit **Normalverteilung** und **empirischer Verteilung** bestimmen,
-- Nachfragesegmente (Wochentag, Saison) berücksichtigen und verschiedene Planungsregeln in einem **Backtest** vergleichen,
-- das Problem **zensierter Nachfrage** (Ausverkauf) erkennen und
-- ökonomische und ökologische Ziele (Lebensmittelabfall) gegeneinander abwägen.
+- Unter- und Überbestandskosten bestimmen und das kritische Verhältnis berechnen,
+- die optimale Menge für eine diskrete, eine normalverteilte und eine empirische Nachfrage bestimmen,
+- verschiedene Planungsregeln in einem **Backtest** vergleichen und
+- das Problem **zensierter Nachfrage** sowie den Zielkonflikt zwischen Gewinn und Lebensmittelabfall erkennen.
 
-# Ausgangslage
+# Teil 1 – Klausurvorbereitung: Poke-Bowls im Stadion und auf dem Weihnachtsmarkt
 
-Eine familiengeführte Bäckerei in Frankreich backt jeden Morgen Baguettes, Croissants, Pains au chocolat und weitere Backwaren. Die Ware wird am selben Tag verkauft; was abends übrig bleibt, kann nicht mehr regulär verkauft werden. Es wird gespendet, als Tierfutter abgegeben oder günstig über eine App gegen Lebensmittelverschwendung angeboten. Ist die Ware dagegen früh ausverkauft, gehen Umsätze verloren, und Stammkundschaft wandert zur Konkurrenz ab.
+::: {.callout-note}
+## Hinweise
+Bearbeitungszeit ca. **25 Minuten** · Hilfsmittel: nicht programmierbarer Taschenrechner · **25 Punkte**
+:::
 
-Die Backmengen legt bisher die Inhaberin nach Erfahrung fest, meist als feste Menge pro Wochentag. Sie möchte wissen, ob eine datenbasierte Planung den Gewinn steigern und gleichzeitig die Abfallmenge senken kann. Dafür stellt sie ihre Kassendaten von Januar 2021 bis September 2022 zur Verfügung.
+**Situation A – Heimspiel.** SushiFresh betreibt beim nächsten Heimspiel des SV Waldhof Mannheim einen Stand mit Poke-Bowls. Die Bowls müssen am Morgen vollständig vorbereitet werden. Verkaufspreis 12 €/Bowl, Herstellkosten 5 €/Bowl. Nicht verkaufte Bowls gibt SushiFresh am Abend für 1 €/Bowl an eine Tafel-Initiative ab (Restwert). Aus früheren Spielen schätzt SushiFresh:
 
-# Daten
+| Nachfrage [Bowls] | 400 | 500 | 600 | 700 |
+|---|:-:|:-:|:-:|:-:|
+| Wahrscheinlichkeit | 0,1 | 0,3 | 0,4 | 0,2 |
 
-## Datensatz
+**Aufgabe 1 (5 Punkte).** Bestimmen Sie die Unter- und Überbestandskosten, das kritische Verhältnis und die optimale Produktionsmenge.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 1
+
+$c^u = 12 - 5 = 7$ €, $c^o = 5 - 1 = 4$ €, also $CR = \dfrac{7}{7 + 4} = 0{,}636$.
+
+Verteilungsfunktion: $F(400) = 0{,}1$; $F(500) = 0{,}4$; $F(600) = 0{,}8$; $F(700) = 1{,}0$. Die kleinste Menge mit $F(q) \geq 0{,}636$ ist $q^* = $ **600 Bowls**.
+
+*Bewertung:* 3 Punkte für $c^u$, $c^o$, CR, 2 Punkte für $q^*$.
+:::
+
+**Aufgabe 2 (8 Punkte).** Berechnen Sie den erwarteten Gewinn für die Mengen 500, 600 und 700. Bestätigt die Rechnung Ihr Ergebnis aus Aufgabe 1?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 2
+
+Gewinn $= 12 \cdot \min(q, D) + 1 \cdot \max(q - D, 0) - 5 q$:
+
+| $q$ \\ $D$ | 400 (0,1) | 500 (0,3) | 600 (0,4) | 700 (0,2) | Erwartungswert |
+|---|:-:|:-:|:-:|:-:|:-:|
+| 500 | 2.400 | 3.500 | 3.500 | 3.500 | 3.390 € |
+| 600 | 2.000 | 3.100 | 4.200 | 4.200 | **3.650 €** |
+| 700 | 1.600 | 2.700 | 3.800 | 4.900 | 3.470 € |
+
+Der erwartete Gewinn ist bei 600 am höchsten. Das bestätigt das kritische Verhältnis.
+
+*Bewertung:* 2 Punkte je Zeile, 2 Punkte Vergleich.
+:::
+
+**Situation B – Weihnachtsmarkt.** Auf dem Heidelberger Weihnachtsmarkt ist die Tagesnachfrage normalverteilt mit $\mu = 300$ und $\sigma = 60$ Bowls. Verkaufspreis 8 €, Herstellkosten 3 €. Restware muss entsorgt werden (Restwert 0 €).
+
+| $\Phi^{-1}(x)$ | | | | | | | | | |
+|---|---|---|---|---|---|---|---|---|---|
+| $x$ | 0,600 | 0,625 | 0,650 | 0,700 | 0,750 | 0,800 | 0,833 | 0,900 | 0,950 |
+| $z$ | 0,253 | 0,319 | 0,385 | 0,524 | 0,674 | 0,842 | 0,967 | 1,282 | 1,645 |
+
+**Aufgabe 3 (6 Punkte).** Bestimmen Sie die optimale Menge und den zugehörigen α-Servicegrad.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 3
+
+$c^u = 8 - 3 = 5$ €, $c^o = 3 - 0 = 3$ €, also $CR = 5/8 = 0{,}625$ und $z = 0{,}319$.
+
+$q^* = 300 + 0{,}319 \cdot 60 \approx$ **319 Bowls**. Der α-Servicegrad entspricht dem kritischen Verhältnis: **62,5 %** der Tage ohne Ausverkauf.
+
+*Bewertung:* 4 Punkte Rechnung, 2 Punkte Servicegrad.
+:::
+
+**Aufgabe 4 (6 Punkte).** Eine App gegen Lebensmittelverschwendung kauft Restware für 2 €/Bowl.
+
+a) Wie ändert sich die optimale Menge?
+
+b) Führt die App zu mehr oder zu weniger Lebensmittelabfall? Begründen Sie mit Ihrem Ergebnis.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 4
+
+a) $c^o = 3 - 2 = 1$ €, also $CR = 5/6 = 0{,}833$, $z = 0{,}967$ und $q^* = 300 + 0{,}967 \cdot 60 \approx$ **358 Bowls**.
+
+b) Weil Überbestand billiger wird, produziert SushiFresh mehr; die erwartete Restmenge steigt (von rund 35 auf rund 63 Bowls). Ob mehr Lebensmittel weggeworfen werden, hängt davon ab, ob die App-Kunden die Restware tatsächlich essen. Der Restwert verringert zwar die Verschwendung je Bowl, setzt aber einen Anreiz zur Überproduktion („Rebound-Effekt“).
+
+*Bewertung:* a) 3 Punkte, b) 3 Punkte.
+:::
+
+# Teil 2 – Fallstudie: Eine französische Bäckerei
+
+## Ausgangslage
+
+Eine familiengeführte Bäckerei in Frankreich backt jeden Morgen Baguettes, Croissants, Pains au chocolat und weitere Backwaren. Was abends übrig bleibt, kann nicht mehr regulär verkauft werden; es wird gespendet, als Tierfutter abgegeben oder günstig über eine App angeboten. Ist die Ware früh ausverkauft, gehen Umsätze verloren.
+
+Die Backmengen legt die Inhaberin bisher nach Erfahrung fest, meist als feste Menge je Wochentag. Sie möchte wissen, ob eine datenbasierte Planung den Gewinn steigern und gleichzeitig den Abfall senken kann.
+
+## Daten
 
 **French bakery daily sales** (Kaggle): <https://www.kaggle.com/datasets/matthieugimbert/french-bakery-daily-sales>
 
-Die Datei `Bakery sales.csv` enthält rund 234.000 Kassenpositionen vom 01.01.2021 bis 30.09.2022 mit folgenden Spalten:
+Die Datei `Bakery sales.csv` enthält rund 234.000 Kassenpositionen vom 01.01.2021 bis 30.09.2022:
 
 | Spalte | Bedeutung |
 |---|---|
 | `date`, `time` | Datum und Uhrzeit des Verkaufs |
-| `ticket_number` | Bonnummer (ein Bon kann mehrere Positionen enthalten) |
-| `article` | Artikelbezeichnung (z. B. `TRADITIONAL BAGUETTE`, `CROISSANT`, `PAIN AU CHOCOLAT`, `BAGUETTE`, `COUPE`, `BANETTE`) |
-| `Quantity` | Menge (Achtung: auch negative Werte, d. h. Stornos und Rückgaben) |
-| `unit_price` | Stückpreis als Text, z. B. `"1,20 €"` (Dezimalkomma und Währungszeichen entfernen) |
+| `ticket_number` | Bonnummer |
+| `article` | Artikelbezeichnung (z. B. `TRADITIONAL BAGUETTE`, `CROISSANT`) |
+| `Quantity` | Menge (auch negative Werte, d. h. Stornos) |
+| `unit_price` | Stückpreis als Text, z. B. `"1,20 €"` |
 
 ::: {.callout-important}
 ## Hinweise zur Datenaufbereitung
-- Bereinigen Sie `unit_price` und prüfen Sie Artikel mit leerem oder Platzhalternamen.
-- Behandeln Sie negative Mengen begründet (z. B. Saldierung mit dem Verkauf desselben Bons).
-- Prüfen Sie, an welchen Tagen die Bäckerei geschlossen ist (Ruhetage, Urlaub). Solche Tage sind keine Nachfrage von 0.
-- Die Preise ändern sich im Zeitverlauf (Inflation 2022). Verwenden Sie für jeden Zeitraum den jeweils gültigen Preis.
+- Bereinigen Sie `unit_price` (Dezimalkomma, Währungszeichen).
+- Tage, an denen die Bäckerei geschlossen ist, sind keine Nachfrage von 0.
+- Die Preise steigen 2022 (Inflation). Verwenden Sie den jeweils gültigen Preis.
 :::
 
 ## Kostenannahmen
-
-Die Bäckerei hat die variablen Herstellkosten (Rohstoffe, Energie, variabler Lohnanteil) wie folgt geschätzt:
 
 | Artikel | Variable Kosten 2021 [€/Stück] | Variable Kosten 2022 [€/Stück] | Restwert [€/Stück] |
 |---|---:|---:|---:|
 | TRADITIONAL BAGUETTE | 0,40 | 0,48 | 0,10 (Paniermehl, Tierfutter) |
 | CROISSANT | 0,38 | 0,45 | 0,30 (Verkauf über App zum Abend) |
-| PAIN AU CHOCOLAT | 0,42 | 0,50 | 0,30 (Verkauf über App zum Abend) |
 
-Die Verkaufspreise entnehmen Sie den Daten. Für einen weiteren Artikel Ihrer Wahl treffen Sie eigene begründete Annahmen.
+## Aufgaben
 
-# Aufgaben
+### Teil A – Von Kassenbons zur Nachfragezeitreihe
 
-## Teil A – Von Kassenbons zur Nachfragezeitreihe
+**A1.** Erzeugen Sie für die beiden Artikel der Kostentabelle eine tägliche Absatzzeitreihe und dokumentieren Sie die Bereinigungsschritte. Analysieren Sie Wochentagseffekte und prüfen Sie die Verteilung der Tagesnachfrage (Histogramm). Ist eine Segmentierung nach Wochentag sinnvoll?
 
-**A1.** Bereiten Sie die Daten auf und erzeugen Sie für die drei Artikel der Kostentabelle eine tägliche Absatzzeitreihe. Dokumentieren Sie alle Bereinigungsschritte.
+### Teil B – Newsvendor-Modell
 
-**A2.** Analysieren Sie Wochentagseffekte, Saisonalität und Trend und prüfen Sie die Verteilung der Tagesnachfrage (Histogramm, QQ-Plot). Welche Segmentierung, z. B. nach Wochentag, halten Sie für sinnvoll, und ist die Normalverteilungsannahme gerechtfertigt?
+**B1.** Bestimmen Sie für die TRADITIONAL BAGUETTE mit den Daten von 2021 $c^u$, $c^o$ und das kritische Verhältnis. Berechnen Sie die optimale Backmenge je Wochentag (a) unter Normalverteilungsannahme und (b) als empirisches Quantil.
 
-## Teil B – Klassisches Newsvendor-Modell
+**B2.** Wiederholen Sie die Rechnung für das Croissant. Warum unterscheidet sich der optimale Servicegrad so stark von dem der Baguette?
 
-**B1.** Bestimmen Sie für die TRADITIONAL BAGUETTE mit den Daten von 2021 die Unterbestandskosten $c^u$, die Überbestandskosten $c^o$ und das kritische Verhältnis $CR = c^u/(c^u+c^o)$.
+### Teil C – Backtest
 
-**B2.** Berechnen Sie die optimale Backmenge $q^*$ und den erwarteten Gewinn (a) unter Normalverteilungsannahme für alle Tage gemeinsam (`newsvendor_normal()`), (b) unter Normalverteilungsannahme je Wochentag und (c) mit dem empirischen CR-Quantil je Wochentag.
-
-**B3.** Wiederholen Sie die Rechnung für das Croissant. Warum unterscheidet sich der optimale Servicegrad so stark von dem der Baguette?
-
-## Teil C – Backtest
-
-**C1.** Kalibrieren Sie die folgenden Planungsregeln mit den Daten von **2021** und testen Sie sie auf **Januar bis September 2022**:
+**C1.** Kalibrieren Sie zwei Planungsregeln mit den Daten von **2021** und testen Sie sie auf **Januar bis September 2022**:
 
 1. **Erfahrungsregel:** feste Menge je Wochentag = Mittelwert 2021 + 10 %,
-2. Newsvendor normalverteilt je Wochentag (B2b),
-3. Newsvendor empirisch je Wochentag (B2c).
+2. **Newsvendor empirisch** je Wochentag (B1b).
 
-Berechnen Sie für jede Regel den realisierten Gewinn, die Fehlmengen, die Abfallmenge und den erreichten α-Servicegrad. Optional: Entwickeln Sie eine eigene, bessere Regel.
+Vergleichen Sie realisierten Gewinn, Abfallmenge und den Anteil der Tage ohne Ausverkauf.
 
-## Teil D – Empfehlung und Reflexion
+### Teil D – Empfehlung und Reflexion
 
-**D1. Zensierte Nachfrage.** Die Kassendaten zeigen **Verkäufe, nicht Nachfrage**. Entwickeln Sie einen einfachen Indikator für Ausverkaufstage (z. B. Uhrzeit des letzten Verkaufs) und schätzen Sie, wie häufig Zensierung auftritt und in welche Richtung sie Ihr $q^*$ verzerrt.
+**D1.** Formulieren Sie eine praxistaugliche Empfehlung für die Inhaberin, z. B. als Tabelle »Backmenge je Wochentag«.
 
-**D2. Nachhaltigkeit.** Bestimmen Sie die gewinnmaximale Backmenge, wenn höchstens **5 %** der Produktion übrig bleiben dürfen, und quantifizieren Sie den entgangenen Gewinn gegenüber dem unbeschränkten Optimum.
+**D2. Reflexion.** Beantworten Sie in der Präsentation:
 
-**D3. Empfehlung.** Formulieren Sie eine praxistaugliche Empfehlung für die Inhaberin, z. B. als Tabelle »Backmenge je Wochentag«.
-
-**D4. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
-
-1. Warum schneidet das Newsvendor-Modell im Backtest besser oder schlechter ab als die Erfahrungsregel? Welches Wissen steckt in der »Erfahrung« der Inhaberin, das das Modell nicht kennt?
-2. Die Kosten und Restwerte sind Annahmen und stammen nicht aus den Daten. Wie stark hängt Ihre Empfehlung davon ab?
-3. Was bedeutet es für datengetriebene Entscheidungen allgemein, dass oft nur beobachtet wird, was verkauft wurde, und nicht, was nachgefragt wurde?
-4. Gewinn oder weniger Lebensmittelabfall: Wie sollte ein Unternehmen diesen Zielkonflikt entscheiden, und wer sollte die »Kosten der Nachhaltigkeit« tragen?
-5. Wären Ihre Ergebnisse auf eine Bäckerei in einem anderen Land übertragbar, etwa mit breiterem Sortiment und anderen Einkaufsgewohnheiten?
+1. Die Kassendaten zeigen **Verkäufe, nicht Nachfrage**. Wie erkennen Sie Ausverkaufstage (z. B. an der Uhrzeit des letzten Verkaufs), und in welche Richtung verzerrt das Ihr $q^*$?
+2. Welches Wissen steckt in der »Erfahrung« der Inhaberin, das das Modell nicht kennt?
+3. Gewinn oder weniger Lebensmittelabfall: Wie sollte die Bäckerei diesen Zielkonflikt entscheiden?
 
 # Anhang: R-Startercode
 
@@ -131,7 +191,6 @@ Berechnen Sie für jede Regel den realisierten Gewinn, die Fehlmengen, die Abfal
 #| eval: false
 library(tidyverse)
 source("../R/scm_functions.R")   # newsvendor_normal()
-source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 raw <- read_csv("Bakery sales.csv")
 
@@ -143,7 +202,7 @@ bakery <- raw |>
   )
 
 tagesabsatz <- bakery |>
-  filter(article %in% c("TRADITIONAL BAGUETTE", "CROISSANT", "PAIN AU CHOCOLAT")) |>
+  filter(article %in% c("TRADITIONAL BAGUETTE", "CROISSANT")) |>
   group_by(date, article) |>
   summarise(menge = sum(Quantity), preis = median(unit_price), .groups = "drop") |>
   mutate(wochentag = lubridate::wday(date, label = TRUE, week_start = 1),
@@ -154,9 +213,9 @@ b21 <- tagesabsatz |> filter(article == "TRADITIONAL BAGUETTE", jahr == 2021)
 newsvendor_normal(mu = mean(b21$menge), sigma = sd(b21$menge),
                   p = median(b21$preis), c = 0.40, s = 0.10)
 
-# Empirisches Quantil
+# Empirisches Quantil je Wochentag
 CR <- (median(b21$preis) - 0.40) / (median(b21$preis) - 0.10)
-quantile(b21$menge, CR, type = 1)
+b21 |> group_by(wochentag) |> summarise(q_emp = quantile(menge, CR, type = 1))
 
 # Realisierter Gewinn einer Menge q bei Nachfrage D
 gewinn <- function(q, D, p, c, s) p * pmin(q, D) + s * pmax(q - D, 0) - c * q

@@ -22,20 +22,21 @@ knitr::knit_hooks$set(inline = function(x) {
 ::: {.lernziele}
 **Lernziele**
 
-Nach der Bearbeitung dieses Kapitels können Sie …
+Nach diesem Kapitel können Sie …
 
-- ein Distributionssystem in seine **akquisitorische** (Absatzkanal) und seine **physische** Seite (Logistikkanal) zerlegen und begründen, warum beide nicht übereinstimmen müssen,
-- die Komponenten des **Lieferservice** benennen und mit Kennzahlen wie **OTIF** messen,
-- direkte und indirekte **Absatzkanäle** unterscheiden und die Funktionen von Handelsstufen erklären,
-- ein-, zwei- und mehrstufige **Distributionsstrukturen** sowie **Cross-Docking** beschreiben und ihre Vor- und Nachteile abwägen,
+- **Absatzkanal** und **Logistikkanal** eines Distributionssystems **unterscheiden**,
+- die Komponenten des **Lieferservice** **benennen** und mit Kennzahlen **messen**,
+- ein- und mehrstufige **Distributionsstrukturen** sowie **Cross-Docking** **beschreiben** und **bewerten**,
+- den Zusammenhang zwischen **Anzahl der Lager**, Kosten und Lieferzeit **erklären**,
 - den Zusammenhang zwischen **Anzahl der Lager**, Kostenkomponenten und Lieferzeit erklären und mit einem einfachen Kostenmodell in R untersuchen,
 - Tabellen mit `pivot_longer()` vom breiten in das lange Format überführen und Anteile mit logischen Vektoren berechnen.
 
 **Literatur zur Vertiefung**
 
-- **Distributionsnetzwerke und Gestaltungsoptionen:** [@chopra2025supply].
-- **Distributionslogistik und Lieferservice:** [@pfohl2018logistiksysteme]; [@guenther2012produktion].
+- Distributionsnetzwerke: @chopra2025supply; @guenther2012produktion.
+- Distributionslogistik und Lieferservice: @pfohl2018logistiksysteme.
 :::
+
 
 ## Vom Zielsystem zum Distributionssystem
 
@@ -56,7 +57,7 @@ Die Geschäftsführung diskutiert drei Wachstumsideen:
 2. **Lieferdienst:** Frische Boxen sollen direkt an Endkunden in Frankfurt geliefert werden.
 3. **Onlineshop „Sushi@Home“:** Haltbare Kits zum Selbermachen, Saucen und Zubehör werden bundesweit per Paket verschickt.
 
-Die drei Ideen unterscheiden sich in Kunde, Produkt und Lieferservice und führen deshalb zu **unterschiedlichen** Distributionssystemen. Wir werden sie im Verlauf des Readers schrittweise aufgreifen: Den Onlineshop in Kapitel [-@sec-lager], den Lieferdienst in Kapitel [-@sec-verkehrsmittel] und die RheinMarkt-Anfrage abschließend in Kapitel [-@sec-distributionssystem].
+Die drei Ideen unterscheiden sich in Kunde, Produkt und Lieferservice und führen deshalb zu **unterschiedlichen** Distributionssystemen. Wir werden sie im Verlauf des Readers schrittweise aufgreifen: Den Onlineshop in Kapitel [-@sec-lager] und den Lieferdienst in Kapitel [-@sec-verkehrsmittel]; für die RheinMarkt-Anfrage liefern die Standort-, Transport- und Tourenplanung (Kapitel [-@sec-standort-2], [-@sec-transportplanung] und [-@sec-tourenplanung]) die Werkzeuge.
 :::
 
 ## Das Distributionssystem
@@ -187,7 +188,7 @@ kbl(st, booktabs = TRUE) |>
 ::: {.vertiefung}
 **Theorie-Vertiefung: Lagergeschäft und Streckengeschäft im Lebensmittelhandel**
 
-Der deutsche Lebensmitteleinzelhandel hat seine Logistik in den vergangenen Jahrzehnten stark zentralisiert. Früher belieferten die Hersteller jede Filiale direkt (**Filialdirektbelieferung**). Heute läuft der größte Teil der Ware über handelseigene Zentral- und Regionallager (**Lagergeschäft**), weil der Handel so Anlieferungen bündelt, die Zahl der Lkw-Stopps an der Filialrampe senkt und Bestände zentral steuert. Ausnahmen sind Produkte mit sehr kurzer Haltbarkeit oder sehr hohem Volumen, etwa Backwaren, Molkereiprodukte, Getränke oder frische Convenience-Produkte. Für sie lohnt sich die Belieferung über **Frische-Cross-Docks** oder weiterhin die direkte Filialbelieferung durch den Hersteller (**Streckengeschäft**). Für einen Frischeproduzenten wie SushiFresh ist die Wahl zwischen diesen Wegen deshalb keine Detailfrage, sondern entscheidet über Haltbarkeit, Kosten und die Abhängigkeit vom Handel. Kapitel [-@sec-distributionssystem] rechnet diese Wahl für die RheinMarkt-Anfrage durch.
+Der deutsche Lebensmitteleinzelhandel hat seine Logistik in den vergangenen Jahrzehnten stark zentralisiert. Früher belieferten die Hersteller jede Filiale direkt (**Filialdirektbelieferung**). Heute läuft der größte Teil der Ware über handelseigene Zentral- und Regionallager (**Lagergeschäft**), weil der Handel so Anlieferungen bündelt, die Zahl der Lkw-Stopps an der Filialrampe senkt und Bestände zentral steuert. Ausnahmen sind Produkte mit sehr kurzer Haltbarkeit oder sehr hohem Volumen, etwa Backwaren, Molkereiprodukte, Getränke oder frische Convenience-Produkte. Für sie lohnt sich die Belieferung über **Frische-Cross-Docks** oder weiterhin die direkte Filialbelieferung durch den Hersteller (**Streckengeschäft**). Für einen Frischeproduzenten wie SushiFresh ist die Wahl zwischen diesen Wegen deshalb keine Detailfrage, sondern entscheidet über Haltbarkeit, Kosten und die Abhängigkeit vom Handel.
 :::
 
 ## Wie viele Lager? Kosten und Lieferzeit
@@ -318,4 +319,10 @@ Auf der R-Seite haben Sie gesehen, wie sich Anteile über logische Vektoren und 
 7. Verdoppeln Sie im R-Modell die Auslieferkosten. Wie verändert sich die kostenminimale Lageranzahl, und wie lässt sich das ökonomisch erklären?
 8. Ordnen Sie die drei Wachstumsideen von SushiFresh den Gestaltungsoptionen nach Chopra zu und begründen Sie Ihre Wahl.
 9. Unter welchen Voraussetzungen ist Cross-Docking einem Lager überlegen? Welches Risiko geht man dabei ein?
+:::
+
+
+::: {.callout-tip}
+## Übungen und Fallstudie
+Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine vertiefende Gruppenfallstudie (Teil 2) zu diesem Kapitel finden Sie in **[Fallstudie 1: Grundlagen des Supply Chain Managements](https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_01_strategie_frosch)**.
 :::

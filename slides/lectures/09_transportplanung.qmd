@@ -58,6 +58,8 @@ tp_nw_cost <- sum(tp_nw * tp_cost)
 tp_vam  <- vam_trace(tp_cost, tp_supply, tp_demand)
 ```
 
+# Strategische Gestaltung von Supply Chains - Transportplanung
+
 ## Strategische Gestaltung von Supply Chains {#tp-outline}
 
 - Multikriterielle Standortplanung
@@ -1008,32 +1010,7 @@ Umschlagpunkte (Transshipment), mehrere Produkte, Kapazitäten auf Verbindungen,
 
 ## Übung {#tp-exercise}
 
-::: {.exercise-slide}
-::: {.exercise-header}
-Transportplanung SushiFresh – Ausfall einer Kühlzelle
-:::
-
-::: {.columns .exercise-content}
-::: {.column width="55%"}
-Am 18. Dezember fällt in Raunheim eine Kühlzelle aus. Die Kapazität sinkt für einen Tag auf **300 Boxen**. Die anderen Küchen können nicht kurzfristig aufstocken.
-
-- Ist das Transportproblem noch balanciert? Führen Sie gegebenenfalls einen Dummy-Knoten ein.
-- Welche Kosten würden Sie für den Dummy-Knoten ansetzen? Begründen Sie mit einem Deckungsbeitrag von 4,50 €/Box.
-- Lösen Sie das Problem mit VAM (von Hand oder mit `vogels_approximation()`) und mit `ompr`.
-- Welche Filialen erhalten weniger Ware? Ist das aus Kundensicht sinnvoll?
-:::
-::: {.column width="42%"}
-```{r tp-exercise-hint}
-#| echo: true
-#| eval: false
-
-sup_18 <- c(S3 = 300, S1 = 400, S5 = 333)
-cost_18 <- rbind(tp_cost, Dummy = 4.5)
-
-vogels_approximation(cost_18,
-  supply = c(sup_18, Dummy = sum(tp_demand) - sum(sup_18)),
-  demand = tp_demand)
-```
-:::
-:::
+::: {.callout-tip appearance="simple"}
+## Übungsaufgaben zu dieser Einheit
+Aufgaben zur Klausurvorbereitung (Teil 1) und eine vertiefende Fallstudie (Teil 2) finden Sie in **Fallstudie 3: Diskrete Standortplanung und Transportplanung**.
 :::

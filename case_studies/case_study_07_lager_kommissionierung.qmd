@@ -1,0 +1,236 @@
+---
+title: "Fallstudie 7: Lagerplanung und Kommissionierung"
+subtitle: "SushiFresh-Übungen und Lagerplatzvergabe und Picker Routing für einen Online-Händler (Online-Retail-II-Daten)"
+author: "Supply Chain Management – Gruppenarbeit"
+lang: de
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    embed-resources: true
+    code-fold: show
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-note}
+## Steckbrief
+
+| | |
+|---|---|
+| **Thema** | ABC-Analyse, zugriffsorientierte Lagerplatzvergabe, Routingstrategien in der Kommissionierung |
+| **Vorlesungsbezug** | Block 4 „Distributionslogistik“: Lagerplanung & Kommissionierung |
+| **Teil 1** | Klausurvorbereitung: Aufgaben mit Stift und Papier zu einer neuen SushiFresh-Entscheidungssituation (25–30 Min.) |
+| **Teil 2** | Datenbasierte Fallstudie mit **realen Rechnungsdaten** eines Online-Händlers (*Online Retail II*, UCI Machine Learning Repository) |
+| **Gruppengröße** | 3–6 Personen (Teil 2) |
+| **Ergebnis** | Präsentation (20 Min.) + Diskussion (10 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+:::
+
+# Lernziele
+
+Nach Bearbeitung der Übungen und der Fallstudie können Sie
+
+- Weglängen der Routingstrategien S-Shape, Return und Largest Gap von Hand und mit R bestimmen,
+- Picker Routing als Rundreiseproblem (TSP) im Lager einordnen,
+- eine ABC-Analyse der Zugriffshäufigkeiten durchführen und
+- den Einfluss von Lagerplatzvergabe und Routingstrategie auf die Kommissionierwege mit realen Auftragsdaten bewerten.
+
+# Teil 1 – Klausurvorbereitung: Das Kommissionierlager in Mannheim
+
+::: {.callout-note}
+## Hinweise
+Bearbeitungszeit ca. **25 Minuten** · Hilfsmittel: nicht programmierbarer Taschenrechner · **25 Punkte**
+:::
+
+Für den Versand von Sushi-Kits und Zubehör im Rhein-Neckar-Gebiet richtet SushiFresh in Mannheim ein kleines Fachbodenlager ein: **6 Gänge** im Abstand von **5 m**, vorderer Quergang bei $y = 0$, hinterer Quergang bei $Y = 15$ m. Gang 1 liegt bei $x = 5$ m, das Depot (Packplatz) vorne bei $x = 0$. Die Breite der Gänge und Regale wird vernachlässigt.
+
+**Aufgabe 1 (12 Punkte) – Routingstrategien.** Auftrag 815 enthält fünf Positionen (Tiefe = Abstand vom vorderen Quergang):
+
+| Position | 1 | 2 | 3 | 4 | 5 |
+|---|:-:|:-:|:-:|:-:|:-:|
+| Gang | 1 | 3 | 3 | 4 | 6 |
+| Tiefe [m] | 12 | 4 | 10 | 13 | 3 |
+
+a) Skizzieren Sie das Lager und bestimmen Sie die Weglängen für **S-Shape**, **Return** und **Largest Gap**. Bei Largest Gap werden der erste und der letzte Gang mit Picks vollständig durchlaufen.
+
+b) Welche Strategie ist hier am besten? Begründen Sie mit der Lage der Picks.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 1
+
+Gänge mit Picks: 1, 3, 4, 6 (Lage $x$ = 5, 15, 20, 30 m).
+
+- **S-Shape:** vier Gänge (gerade Anzahl), jeder wird vollständig durchlaufen. Vertikal $4 \cdot 15 = 60$ m, horizontal hin und zurück $2 \cdot 30 = 60$ m, zusammen **120 m**.
+- **Return:** jeder Gang bis zum hintersten Pick und zurück. Vertikal $2 \cdot (12 + 10 + 13 + 3) = 76$ m, horizontal 60 m, zusammen **136 m**.
+- **Largest Gap:** Gang 1 und Gang 6 vollständig ($2 \cdot 15 = 30$ m), horizontal vorne 5 + 30 m und hinten 25 m (zusammen 60 m).
+  - Gang 3 (Picks bei 4 und 10): Lücken 4, 6, 5; die größte Lücke (6 m) zwischen den Picks wird nicht gelaufen. Von vorne bis 4 und zurück (8 m), von hinten bis 10 und zurück (10 m).
+  - Gang 4 (Pick bei 13): größte Lücke vorne (13 m). Von hinten bis 13 und zurück (4 m).
+  - Summe: $30 + 60 + 8 + 10 + 4 = $ **112 m**.
+
+b) **Largest Gap** ist am besten. Die Picks liegen teils tief im Gang (12, 13 m), teils weit vorne (3, 4 m). Largest Gap holt die tiefen Picks vom hinteren Quergang und die vorderen vom vorderen und läuft die große Lücke nicht. Return verliert, weil es tiefe Picks immer von vorne holt; S-Shape läuft Gänge vollständig, auch wenn nur ein Pick vorne liegt. (Zum Vergleich: Die optimale Tour ist 110 m lang.)
+
+*Bewertung:* je Strategie 3 Punkte, b) 3 Punkte.
+:::
+
+**Aufgabe 2 (8 Punkte) – ABC-Analyse.** Die Zugriffe der zehn wichtigsten Artikel pro Woche:
+
+| Artikel | A1 | A2 | A3 | A4 | A5 | A6 | A7 | A8 | A9 | A10 |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Zugriffe | 400 | 250 | 120 | 80 | 50 | 40 | 25 | 15 | 12 | 8 |
+
+Bilden Sie ABC-Klassen (A: bis 80 % der kumulierten Zugriffe, B: bis 95 %, C: Rest). Welchen Anteil der Artikel und welchen Anteil der Zugriffe hat die A-Klasse?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 2
+
+| Artikel | A1 | A2 | A3 | A4 | A5 | A6 | A7 | A8 | A9 | A10 |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Anteil [%] | 40,0 | 25,0 | 12,0 | 8,0 | 5,0 | 4,0 | 2,5 | 1,5 | 1,2 | 0,8 |
+| kumuliert [%] | 40,0 | 65,0 | 77,0 | 85,0 | 90,0 | 94,0 | 96,5 | 98,0 | 99,2 | 100 |
+| Klasse | A | A | A | B | B | B | C | C | C | C |
+
+Die A-Klasse umfasst **30 % der Artikel** (A1–A3) und **77 % der Zugriffe**.
+
+*Bewertung:* 4 Punkte Kumulierung, 2 Punkte Klassen, 2 Punkte Anteile.
+:::
+
+**Aufgabe 3 (5 Punkte) – Lagerplatzvergabe.** Wo würden Sie die A-Artikel platzieren, wenn die Kommissionierer (a) nach Return und (b) nach S-Shape laufen? Begründen Sie.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 3
+
+a) **Return:** A-Artikel vorne in den Gängen nahe am vorderen Quergang (Gangkopf), möglichst in den Gängen nahe am Depot, weil Return jeden Gang nur bis zum tiefsten Pick läuft.
+
+b) **S-Shape:** Ein Gang mit Pick wird vollständig durchlaufen, die Tiefe spielt keine Rolle. Entscheidend ist die Zahl der Gänge: A-Artikel **gangweise** in den ersten (depotnahen) Gängen konzentrieren, damit viele Aufträge nur wenige Gänge betreten.
+
+*Bewertung:* a) 2,5 Punkte, b) 2,5 Punkte.
+:::
+
+# Teil 2 – Fallstudie: Kommissionierung bei einem Online-Händler
+
+## Ausgangslage
+
+Ein britischer Online-Händler verkauft Geschenk- und Dekorationsartikel; zu den Kunden zählen viele Groß- und Wiederverkäufer. Bisher werden die Artikel **chaotisch** (zufällig) eingelagert, und die Kommissioniererinnen und Kommissionierer laufen nach der **S-Shape-Strategie**. Die Logistikleitung plant den Umzug in ein neues Fachbodenlager und fragt:
+
+1. Wie stark konzentrieren sich die Zugriffe auf wenige Artikel?
+2. Welche Kombination aus **Lagerplatzvergabe** und **Routingstrategie** minimiert die Kommissionierwege?
+
+Das neue Lager hat **10 Gänge** im Abstand von 4 m, je Gang 2 Regalseiten mit **15 Fächern** (1,2 m breit, Gangtiefe $Y = 20$ m), insgesamt also 300 Fächer für die 300 meistverkauften Artikel. Das Depot liegt vorne links.
+
+## Daten
+
+**Online Retail II** (UCI Machine Learning Repository, Lizenz CC BY 4.0):
+<https://archive.ics.uci.edu/dataset/502/online+retail+ii>
+
+Die Datei `online_retail_II.xlsx` enthält alle Rechnungspositionen von Dezember 2009 bis Dezember 2011 in zwei Tabellenblättern (`Year 2009-2010`, `Year 2010-2011`):
+
+| Spalte | Bedeutung |
+|---|---|
+| `Invoice` | Rechnungsnummer (beginnt mit `C` bei Stornos) |
+| `StockCode` | Artikelnummer |
+| `Description` | Artikelbezeichnung |
+| `Quantity` | Menge (negativ bei Stornos) |
+| `InvoiceDate` | Datum und Uhrzeit |
+| `Price` | Stückpreis (GBP) |
+| `Customer ID`, `Country` | Kunde und Land |
+
+::: {.callout-important}
+## Hinweise zur Datenaufbereitung
+- Verwenden Sie das Tabellenblatt `Year 2010-2011`. Schließen Sie Stornos, Mengen ≤ 0 und Nicht-Artikel (z. B. `POST`, `DOT`, `M`, `BANK CHARGES`) aus.
+- Eine Rechnung entspricht einem Kommissionierauftrag, eine Rechnungsposition einem Pick.
+- Für die Simulation betrachten Sie nur die 300 meistgegriffenen Artikel und Aufträge mit 5 bis 30 dieser Artikel.
+:::
+
+## Aufgaben
+
+### Teil A – Auftrags- und Artikelstruktur
+
+**A1.** Bestimmen Sie die Zugriffshäufigkeit (Anzahl Rechnungspositionen) je Artikel und führen Sie eine **ABC-Analyse** durch (Lorenzkurve, Klassengrenzen 80 % / 95 % der Zugriffe). Beschreiben Sie zusätzlich die Verteilung der Positionen je Auftrag.
+
+### Teil B – Lagerplatzvergabe und Routing
+
+**B1.** Ordnen Sie die 300 Top-Artikel drei Lagerplatzvergaben zu: **zufällig**, **ABC am Gangkopf** (A-Artikel vorne in allen Gängen) und **ABC gangweise** (A-Artikel in den ersten Gängen). Skizzieren Sie die Belegung.
+
+**B2.** Simulieren Sie 500 reale Aufträge und berechnen Sie die mittlere Weglänge für jede Kombination aus Platzvergabe und Routingstrategie (S-Shape, Return, Largest Gap). Welche Kombination ist am besten, und wie groß ist die Einsparung gegenüber dem heutigen Zustand (zufällig + S-Shape)?
+
+### Teil C – Empfehlung und Reflexion
+
+**C1.** Formulieren Sie eine Empfehlung an die Logistikleitung. Schätzen Sie die eingesparte Wegezeit pro Jahr bei einer Gehgeschwindigkeit von 0,8 m/s.
+
+**C2. Reflexion.** Beantworten Sie in der Präsentation:
+
+1. Die Daten zeigen Verkäufe vergangener Jahre. Wie stabil ist eine ABC-Einteilung über die Zeit (Saison, Weihnachtsgeschäft), und wie oft sollte umgelagert werden?
+2. Viele Aufträge enthalten nur wenige Positionen. Wie könnte **Sammelkommissionierung** (Batching) die Wege weiter verkürzen?
+3. Welche Faktoren außer der Weglänge (Greifhöhe, Gewicht, Staus in engen Gängen) sind für die Platzvergabe wichtig?
+
+# Literatur
+
+- Chen, D.: Online Retail II. *UCI Machine Learning Repository*, <https://archive.ics.uci.edu/dataset/502/online+retail+ii>.
+- De Koster, R.; Le-Duc, T.; Roodbergen, K. J. (2007): Design and Control of Warehouse Order Picking: A Literature Review. *European Journal of Operational Research* 182(2), 481–501.
+- Hall, R. W. (1993): Distance Approximations for Routing Manual Pickers in a Warehouse. *IIE Transactions* 25(4), 76–87.
+- Folien und Reader zur Vorlesung, Block 4.
+
+# Anhang: R-Startercode
+
+```{r}
+#| label: starter
+#| eval: false
+library(tidyverse)
+library(readxl)
+source("../R/scm_functions.R")   # route_sshape(), route_return(), route_lgap(), weg_laenge(), zuordnung_klasse()
+
+# --- Daten laden und bereinigen
+raw <- read_excel("online_retail_II.xlsx", sheet = "Year 2010-2011")
+pos <- raw |>
+  filter(!str_starts(as.character(Invoice), "C"), Quantity > 0,
+         !StockCode %in% c("POST", "DOT", "M", "BANK CHARGES", "AMAZONFEE", "C2"))
+
+# --- Zugriffshäufigkeit und ABC-Klassen
+zugriffe <- pos |> count(StockCode, name = "picks", sort = TRUE) |>
+  mutate(anteil_kum = cumsum(picks) / sum(picks),
+         abc = case_when(anteil_kum <= 0.80 ~ "A", anteil_kum <= 0.95 ~ "B", TRUE ~ "C"))
+
+# --- Lagerlayout: 10 Gänge, je 2 Seiten x 15 Fächer
+n_gang <- 10; n_tief <- 15; Y <- 20
+gang_x <- 4 * seq_len(n_gang)
+slots <- expand.grid(tiefe = 1:n_tief, seite = c("L", "R"), gang = 1:n_gang) |>
+  mutate(slot = row_number(), x = gang_x[gang], y = 1.2 * (tiefe - 0.5) + 1)
+
+# --- Top-300-Artikel mit Klassen für die Platzvergabe (A = 20 %, B = 30 %, C = 50 %)
+top <- zugriffe |> slice_head(n = nrow(slots)) |>
+  mutate(rang = row_number(),
+         klasse = c(rep("A", 60), rep("B", 90), rep("C", 150)))
+
+set.seed(2026)
+ord_gangkopf  <- slots |> arrange(y, gang) |> pull(slot)
+ord_gangweise <- slots |> arrange(gang, y) |> pull(slot)
+strategien <- list(
+  "Zufällig"      = sample(nrow(slots)),
+  "ABC Gangkopf"  = zuordnung_klasse(ord_gangkopf,  kl = top$klasse),
+  "ABC gangweise" = zuordnung_klasse(ord_gangweise, kl = top$klasse)
+)
+
+# --- Aufträge: Rechnungen mit 5 bis 30 Top-Artikeln
+auftraege <- pos |>
+  inner_join(top |> select(StockCode, rang), by = "StockCode") |>
+  distinct(Invoice, rang) |>
+  group_by(Invoice) |> filter(n() >= 5, n() <= 30) |>
+  summarise(artikel = list(rang)) |> slice_sample(n = 500)
+
+# --- Simulation: mittlere Weglänge je Platzvergabe und Routingstrategie
+ergebnis <- map_dfr(names(strategien), function(s) {
+  fach <- strategien[[s]]
+  wege <- sapply(auftraege$artikel, function(a) {
+    pk <- slots[fach[a], ]
+    c(`S-Shape`     = weg_laenge(route_sshape(pk)),
+      Return        = weg_laenge(route_return(pk)),
+      `Largest Gap` = weg_laenge(route_lgap(pk)))
+  })
+  tibble(platzvergabe = s, routing = rownames(wege), weg_m = rowMeans(wege))
+})
+ergebnis |> pivot_wider(names_from = routing, values_from = weg_m)
+```

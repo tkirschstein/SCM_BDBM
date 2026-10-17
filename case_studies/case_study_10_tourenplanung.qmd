@@ -1,0 +1,232 @@
+---
+title: "Fallstudie 10: Tourenplanung"
+subtitle: "SushiFresh-Übungen und Heuristiken im Benchmark-Test (TSPLIB und CVRPLIB)"
+author: "Supply Chain Management – Gruppenarbeit"
+lang: de
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    embed-resources: true
+    code-fold: show
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-note}
+## Steckbrief
+
+| | |
+|---|---|
+| **Thema** | Traveling Salesman Problem (TSP), Nearest Neighbor, 2-opt, exakte Lösung mit MTZ-Formulierung, Savings-Verfahren für Touren mit Kapazität |
+| **Vorlesungsbezug** | Block 5 „Operative Distributionsplanung“: Tourenplanung |
+| **Teil 1** | Klausurvorbereitung: Aufgaben mit Stift und Papier zu einer neuen SushiFresh-Entscheidungssituation (25–30 Min.) |
+| **Teil 2** | Datenbasierte Fallstudie mit **öffentlichen Benchmark-Instanzen** (TSPLIB, CVRPLIB) mit bekannten optimalen bzw. besten Lösungen |
+| **Gruppengröße** | 3–6 Personen (Teil 2) |
+| **Ergebnis** | Präsentation (20 Min.) + Diskussion (10 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+:::
+
+# Lernziele
+
+Nach Bearbeitung der Übungen und der Fallstudie können Sie
+
+- eine Rundtour mit Nearest Neighbor konstruieren und mit 2-opt verbessern,
+- ein TSP exakt mit der MTZ-Formulierung lösen und die Grenzen exakter Verfahren einschätzen,
+- Touren mit Kapazitätsrestriktion mit dem Savings-Verfahren bilden und
+- die Lösungsqualität von Heuristiken an bekannten Optima messen (Optimalitätslücke).
+
+# Teil 1 – Klausurvorbereitung: Touren im Rhein-Neckar-Gebiet
+
+::: {.callout-note}
+## Hinweise
+Bearbeitungszeit ca. **30 Minuten** · Hilfsmittel: nicht programmierbarer Taschenrechner · **30 Punkte**
+:::
+
+Die Küche in Schwetzingen (D) beliefert fünf Filialen. Die kürzesten Entfernungen (km) wurden bereits bestimmt:
+
+|   | D | 1 | 2 | 3 | 4 | 5 |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| **D** | – | 8 | 10 | 12 | 9 | 15 |
+| **1** | 8 | – | 5 | 12 | 11 | 17 |
+| **2** | 10 | 5 | – | 7 | 13 | 12 |
+| **3** | 12 | 12 | 7 | – | 8 | 6 |
+| **4** | 9 | 11 | 13 | 8 | – | 14 |
+| **5** | 15 | 17 | 12 | 6 | 14 | – |
+
+**Aufgabe 1 (6 Punkte) – Nearest Neighbor.** Bestimmen Sie ab D eine Rundtour mit dem Nearest-Neighbor-Verfahren und ihre Länge.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 1
+
+Ab D: nächster Knoten 1 (8) → von 1: 2 (5) → von 2: 3 (7) → von 3: 5 (6) → von 5: 4 (14) → zurück zu D (9).
+
+Tour **D – 1 – 2 – 3 – 5 – 4 – D** mit $8 + 5 + 7 + 6 + 14 + 9 = $ **49 km**.
+
+*Bewertung:* 4 Punkte Tour, 2 Punkte Länge.
+:::
+
+**Aufgabe 2 (8 Punkte) – 2-opt.** Prüfen Sie für die Tour aus Aufgabe 1 die 2-opt-Züge, die die Kante (5, 4) entfernen. Führen Sie den besten verbessernden Zug aus und geben Sie die neue Tour und ihre Länge an. Woran erkennen Sie ein lokales Optimum?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 2
+
+Die Kante (5, 4) kann mit den nicht benachbarten Kanten (D, 1), (1, 2) und (2, 3) getauscht werden:
+
+| Entfernte Kanten | Neue Kanten | Alt | Neu | Ersparnis |
+|---|---|:-:|:-:|:-:|
+| (D, 1), (5, 4) | (D, 5), (1, 4) | 8 + 14 = 22 | 15 + 11 = 26 | −4 |
+| (1, 2), (5, 4) | (1, 5), (2, 4) | 5 + 14 = 19 | 17 + 13 = 30 | −11 |
+| (2, 3), (5, 4) | (2, 5), (3, 4) | 7 + 14 = 21 | 12 + 8 = 20 | **+1** |
+
+Der dritte Zug kehrt das Teilstück 3 – 5 um: neue Tour **D – 1 – 2 – 5 – 3 – 4 – D** mit **48 km**. Ein lokales Optimum ist erreicht, wenn kein 2-opt-Zug mehr eine positive Ersparnis hat. (Hier ist 48 km zugleich das globale Optimum.)
+
+*Bewertung:* 5 Punkte Züge, 2 Punkte neue Tour, 1 Punkt lokales Optimum.
+:::
+
+**Aufgabe 3 (12 Punkte) – Savings-Verfahren.** Ein Fahrzeug fasst 100 Boxen. Die Filialen benötigen:
+
+| Filiale | 1 | 2 | 3 | 4 | 5 |
+|---|:-:|:-:|:-:|:-:|:-:|
+| Bedarf [Boxen] | 30 | 40 | 30 | 50 | 20 |
+
+a) Berechnen Sie die Savings $s_{ij} = d_{Di} + d_{Dj} - d_{ij}$ für alle Paare und sortieren Sie sie absteigend.
+
+b) Bilden Sie die Touren mit dem Savings-Verfahren (parallele Variante). Wie viele Fahrzeuge werden benötigt, und wie lang sind die Touren insgesamt?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 3
+
+a) Savings $s_{ij} = d_{Di} + d_{Dj} - d_{ij}$, absteigend:
+
+| Paar | (3,5) | (2,3) | (1,2) | (2,5) | (3,4) | (4,5) | (1,3) | (1,4) | (1,5) | (2,4) |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| $s_{ij}$ | 21 | 15 | 13 | 13 | 13 | 10 | 8 | 6 | 6 | 6 |
+
+b) Start mit fünf Pendeltouren (Länge $2 \cdot (8 + 10 + 12 + 9 + 15) = 108$ km).
+
+| Saving | Prüfung | Ergebnis |
+|---|---|---|
+| (3,5) 21 | 30 + 20 = 50 ≤ 100 | Tour 3 – 5 |
+| (2,3) 15 | 40 + 50 = 90 ≤ 100, 3 ist Randknoten | Tour 2 – 3 – 5 |
+| (1,2) 13 | 30 + 90 = 120 > 100 | abgelehnt |
+| (2,5) 13 | gleiche Tour | abgelehnt |
+| (3,4) 13 | 3 ist innerer Knoten | abgelehnt |
+| (4,5) 10 | 50 + 90 = 140 > 100 | abgelehnt |
+| (1,3) 8 | 3 innerer Knoten | abgelehnt |
+| (1,4) 6 | 30 + 50 = 80 ≤ 100 | Tour 1 – 4 |
+| übrige | Kapazität bzw. gleiche Tour | abgelehnt |
+
+Ergebnis: **zwei Fahrzeuge**, Touren D – 1 – 4 – D ($8 + 11 + 9 = 28$ km) und D – 2 – 3 – 5 – D ($10 + 7 + 6 + 15 = 38$ km), zusammen **66 km** (Ersparnis 108 − 66 = 42 = 21 + 15 + 6).
+
+*Bewertung:* a) 4 Punkte, b) 8 Punkte.
+:::
+
+**Aufgabe 4 (4 Punkte) – Exakte Verfahren.** Wie viele verschiedene Rundtouren gibt es bei 5 Filialen (symmetrische Entfernungen)? Wie viele wären es bei 15 Filialen? Was folgt daraus für die Praxis?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 4
+
+Bei $n$ Kunden und symmetrischen Entfernungen gibt es $n!/2$ verschiedene Rundtouren: bei 5 Filialen $120/2 = 60$, bei 15 Filialen $15!/2 \approx 6{,}5 \cdot 10^{11}$. Die Zahl wächst faktoriell, sodass vollständige Enumeration schnell unmöglich wird. In der Praxis werden deshalb Heuristiken oder spezialisierte exakte Verfahren eingesetzt.
+
+*Bewertung:* 2 Punkte Anzahl, 2 Punkte Folgerung.
+:::
+
+# Teil 2 – Fallstudie: Heuristiken im Benchmark-Test
+
+## Ausgangslage
+
+Ein Softwareanbieter für Tourenplanung möchte seinen Kunden (Pflegedienste, Servicetechniker, Getränkelieferanten) zeigen, wie gut einfache Heuristiken im Vergleich zu optimalen Lösungen abschneiden, und ab welcher Problemgröße exakte Verfahren an ihre Grenzen stoßen. Statt eigener Kundendaten verwendet er **öffentliche Benchmark-Instanzen**, für die die optimalen bzw. besten bekannten Lösungen veröffentlicht sind.
+
+## Daten
+
+**TSP: Instanz `fri26` aus der TSPLIB** (26 Städte, symmetrische Distanzmatrix, optimale Tourlänge **937**). Die Distanzmatrix steht als Textdatei bereit:
+<https://people.math.sc.edu/Burkardt/datasets/tsp/fri26_d.txt> (Übersicht: <https://people.math.sc.edu/Burkardt/datasets/tsp/tsp.html>).
+
+**Tourenplanung mit Kapazität: Instanz `A-n32-k5` aus der CVRPLIB** (Augerat et al. 1995; 31 Kunden, ein Depot, Fahrzeugkapazität 100). Instanz (`.vrp`) und beste bekannte Lösung (`.sol`) finden Sie unter <http://vrp.galgos.inf.puc-rio.br/index.php/en/> (Set A). Die Distanzen sind euklidisch und werden auf ganze Zahlen gerundet.
+
+## Aufgaben
+
+### Teil A – Konstruktionsverfahren
+
+**A1.** Lesen Sie die `fri26`-Matrix ein. Bestimmen Sie Nearest-Neighbor-Touren für **alle 26 Startknoten**. Wie stark schwanken die Tourlängen, und wie groß ist die Optimalitätslücke $(L - L^*)/L^*$ der besten und der schlechtesten Tour?
+
+### Teil B – Verbesserung und exakte Lösung
+
+**B1.** Verbessern Sie alle 26 Nearest-Neighbor-Touren mit `two_opt()`. Wie oft wird das Optimum erreicht, und wie groß ist die mittlere Optimalitätslücke danach?
+
+**B2.** Lösen Sie das TSP exakt mit der MTZ-Formulierung für die ersten 8, 10 und 12 Städte von `fri26` und messen Sie die Rechenzeit (`system.time()`). Was erwarten Sie für alle 26 Städte?
+
+### Teil C – Touren mit Kapazität
+
+**C1.** Lesen Sie `A-n32-k5` ein, berechnen Sie die Distanzmatrix und bilden Sie Touren mit `savings_cw()` (Kapazität 100). Verbessern Sie jede Tour mit `two_opt()`. Vergleichen Sie Anzahl der Fahrzeuge und Gesamtlänge mit der besten bekannten Lösung aus der `.sol`-Datei.
+
+**C2. Reflexion.** Beantworten Sie in der Präsentation:
+
+1. Wie gut sind einfache Heuristiken nach Ihren Ergebnissen? Reicht das für die Praxis?
+2. Warum wächst die Rechenzeit exakter Verfahren so stark mit der Problemgröße?
+3. Welche Restriktionen realer Tourenplanung (Zeitfenster, Fahrerpausen, Reichweite von E-Fahrzeugen, Verkehr) fehlen in den Benchmarks, und wie verändern sie die Wahl des Verfahrens?
+
+# Literatur
+
+- Reinelt, G. (1991): TSPLIB – A Traveling Salesman Problem Library. *ORSA Journal on Computing* 3(4), 376–384.
+- Augerat, P.; Belenguer, J. M.; Benavent, E.; Corberán, A.; Naddef, D.; Rinaldi, G. (1995): Computational Results with a Branch and Cut Code for the Capacitated Vehicle Routing Problem. Research Report 949-M, Université Joseph Fourier, Grenoble.
+- Clarke, G.; Wright, J. W. (1964): Scheduling of Vehicles from a Central Depot to a Number of Delivery Points. *Operations Research* 12(4), 568–581.
+- Miller, C. E.; Tucker, A. W.; Zemlin, R. A. (1960): Integer Programming Formulation of Traveling Salesman Problems. *Journal of the ACM* 7(4), 326–329.
+- Folien und Reader zur Vorlesung, Block 5.
+
+# Anhang: R-Startercode
+
+```{r}
+#| label: starter
+#| eval: false
+source("../R/scm_functions.R")   # nearest_neighbor(), two_opt(), tour_length(), savings_cw()
+library(ompr); library(ompr.roi); library(ROI.plugin.glpk); library(dplyr)
+
+# --- TSPLIB fri26
+D <- as.matrix(read.table("https://people.math.sc.edu/Burkardt/datasets/tsp/fri26_d.txt"))
+dimnames(D) <- NULL
+opt <- 937
+
+nn <- sapply(1:26, function(s) tour_length(nearest_neighbor(D, start = s), D))
+summary((nn - opt) / opt)
+
+# --- Exakte Lösung (MTZ) für die ersten n Städte
+tsp_mtz <- function(D) {
+  n <- nrow(D)
+  MIPModel() |>
+    add_variable(x[i, j], i = 1:n, j = 1:n, type = "binary") |>
+    add_variable(u[i], i = 1:n, lb = 1, ub = n) |>
+    set_objective(sum_expr(D[i, j] * x[i, j], i = 1:n, j = 1:n), "min") |>
+    add_constraint(x[i, i] == 0, i = 1:n) |>
+    add_constraint(sum_expr(x[i, j], j = 1:n) == 1, i = 1:n) |>
+    add_constraint(sum_expr(x[i, j], i = 1:n) == 1, j = 1:n) |>
+    add_constraint(u[i] - u[j] + 1 <= (n - 1) * (1 - x[i, j]),
+                   i = 2:n, j = 2:n, i != j) |>
+    solve_model(with_ROI(solver = "glpk"))
+}
+system.time(sol <- tsp_mtz(D[1:8, 1:8])); objective_value(sol)
+
+# --- CVRPLIB A-n32-k5 (Datei vorher herunterladen)
+lies_vrp <- function(datei) {
+  z <- trimws(readLines(datei))
+  cap <- as.numeric(sub(".*:", "", grep("^CAPACITY", z, value = TRUE)))
+  a <- grep("NODE_COORD_SECTION", z); b <- grep("DEMAND_SECTION", z)
+  e <- grep("DEPOT_SECTION", z)
+  xy <- read.table(text = z[(a + 1):(b - 1)])
+  dm <- read.table(text = z[(b + 1):(e - 1)])
+  list(cap = cap, xy = xy[, 2:3], q = dm[, 2])
+}
+inst <- lies_vrp("A-n32-k5.vrp")
+Dv <- round(as.matrix(dist(inst$xy)))
+ids <- c("Depot", paste0("K", 2:nrow(Dv)))
+dimnames(Dv) <- list(ids, ids)
+q <- setNames(inst$q[-1], ids[-1])
+
+vrp <- savings_cw(Dv, q, cap = inst$cap, depot = "Depot")
+length(vrp$touren)
+sum(sapply(vrp$touren, function(t) tour_length(c("Depot", t), Dv)))
+```

@@ -1,42 +1,43 @@
 # Vorwort {.unnumbered}
 
-Dieses Lehrbuch begleitet die Vorlesung **Supply Chain Management (SCM)** und vertieft die Inhalte der Vorlesungsfolien (`slides/`) in ausführlicher, textbasierter Form. Es ist als **Reader zum Selbststudium** gedacht: Während die Folien in der Vorlesung als visuelle Gedächtnisstütze dienen, erläutert dieses Buch dieselben Modelle, Verfahren und Fallbeispiele in vollständigen Sätzen, mit hergeleiteten Formeln und lauffähigem, kommentiertem R-Code.
+Dieses Lehrbuch begleitet die Vorlesungen **Supply Chain Management (SCM)** sowie **Distribution** und vertieft die Inhalte der Vorlesungsfolien (`slides/`) in ausführlicher, textbasierter Form. Es ist als **Reader zum Selbststudium** gedacht: Während die Folien in der Vorlesung als visuelle Gedächtnisstütze dienen, erläutert dieses Buch dieselben Modelle, Verfahren und Fallbeispiele in vollständigen Sätzen, mit hergeleiteten Formeln und lauffähigem, kommentiertem R-Code.
 
 **Dieser Reader ist primär KI-generiert und bedarf der weiteren Korrektur. Etwaige Fehler können an thomas.kirschstein@hs-rm.de gemeldet werden.**
 
 ## Aufbau des Buches
 
-Die Kapitel folgen den Vorlesungseinheiten und sind in vier Teile gegliedert.
+Die Kapitel folgen der Gliederung der Vorlesung und sind wie diese in fünf Teile gegliedert.
 
-**Teil I – Grundlagen**
+**Teil I – Grundlagen des Supply Chain Managements**
 
 1. **Einführung und Grundbegriffe des Supply Chain Managements** — Was ist eine Supply Chain? Flüsse, Akteure, Strukturen, SCM-Gewinn und doppelte Marginalisierung.
 2. **Wertschöpfung, strategische Fertigung und Strategic Fit** — Wertschöpfungsprozess, Entkopplungspunkt, Make-or-Buy, implizierte Unsicherheit, Strategic Fit.
-3. **Ziele, Zielkonflikte und Logistikkosten** — Zielsystem des SCM, das Tetraeder der Zielkonflikte, Kostenarten sowie die Einführung der Fallstudie **SushiFresh GmbH**.
-4. **Nachhaltigkeit im Supply Chain Management** — ökologischer Strategic Fit, ökologische SCM-Strategien, Kreislaufwirtschaft und Circular Supply Chains.
-5. **Distributionsstrukturen und -kanäle** — Absatz- und Logistikkanal, Lieferservice, Lagerstufen, Anzahl der Lager, Cross-Docking.
+3. **Ziele, Zielkonflikte und Logistikkosten** — Zielsystem des SCM, das Tetraeder der Zielkonflikte, Kostenarten, Nachhaltigkeit und Circular Supply Chains sowie die Einführung der Fallstudie **SushiFresh GmbH**.
+4. **Distributionsstrukturen und -kanäle** — Absatz- und Logistikkanal, Lieferservice, Lagerstufen, Anzahl der Lager, Cross-Docking.
 
 **Teil II – Strategische Gestaltung von Supply Chains**
 
-6. **Standortplanung I** — Qualitative Verfahren (Nutzwertanalyse, AHP) und kontinuierliche Verfahren (Center of Gravity, Weiszfeld-Algorithmus).
-7. **Standortplanung II** — Diskrete Netzwerkplanungsmodelle: Warehouse Location Problem, Heuristiken und exakte Verfahren.
-8. **Transportplanung** — Das Transportproblem, Nordwestecken-Regel, Vogel'sche Approximationsmethode und exakte Lösung als LP.
+5. **Standortplanung I** — Qualitative Verfahren (Nutzwertanalyse, AHP) und kontinuierliche Verfahren (Center of Gravity, Weiszfeld-Algorithmus).
+6. **Standortplanung II** — Diskrete Netzwerkplanungsmodelle: Warehouse Location Problem, Heuristiken und exakte Verfahren.
+7. **Transportplanung** — Das Transportproblem, Nordwestecken-Regel, Vogel'sche Approximationsmethode und exakte Lösung als LP.
 
-**Teil III – Unsicherheit und Koordination**
+**Teil III – Unsicherheits- und Risikomanagement in Supply Chains**
 
-9. **Unsicherheit in Supply Chains und Pooling** — Nachfrageunsicherheit, Kapazitäts- und Lagerbestandspooling, Sicherheitsbestände, das Quadratwurzelgesetz des Pooling.
-10. **Das Newsvendor-Modell** — Optimale Bestellmengen unter Unsicherheit, kritische Verhältniszahl, Servicegrad.
-11. **Der Bullwhip-Effekt und das Beergame** — Verstärkung von Nachfrageschwankungen entlang der Kette, Ursachen und Gegenmaßnahmen.
+8. **Unsicherheit in Supply Chains und Pooling** — Nachfrageunsicherheit, Kapazitäts- und Lagerbestandspooling, Sicherheitsbestände, das Quadratwurzelgesetz des Pooling.
+9. **Das Newsvendor-Modell** — Optimale Bestellmengen unter Unsicherheit, kritische Verhältniszahl, Servicegrad.
+10. **Der Bullwhip-Effekt und das Beergame** — Verstärkung von Nachfrageschwankungen entlang der Kette, Ursachen und Gegenmaßnahmen.
 
 **Teil IV – Distributionslogistik**
 
-12. **Lagerplanung und Kommissionierung** — Lagersysteme, Lagerplatzvergabe, ABC-Analyse, Kommissionierverfahren und Picker Routing.
-13. **Verkehrsmittel, Antriebe und Transportkosten** — Verkehrsträger, alternative Antriebe, letzte Meile, Transportkostensätze, Fremdvergabe und CO₂-Bilanzierung nach ISO 14083.
-14. **Kürzeste Wege** — Straßennetze als Graphen, Dijkstra-Algorithmus, Distanzmatrizen.
-15. **Tourenplanung** — Traveling Salesman Problem, Nearest Neighbor, 2-opt, exakte Lösung, Vehicle Routing und Savings-Verfahren.
-16. **Distributionssystem gestalten** — Variantenvergleich Direktbelieferung, Zentrallager und Cross-Docking, Hub-and-Spoke, Omnichannel, Retouren und Mehrweg.
+11. **Lagerplanung und Kommissionierung** — Lagersysteme, Lagerplatzvergabe, ABC-Analyse, Kommissionierverfahren und Picker Routing.
+12. **Verkehrsmittel, Antriebe und Transportkosten** — Verkehrsträger, alternative Antriebe, letzte Meile, Transportkostensätze, Fremdvergabe und CO₂-Bilanzierung nach ISO 14083.
 
-Ab Kapitel [-@sec-logistikkosten] begleitet ein durchgängiges Fallbeispiel den Reader: Die fiktive **SushiFresh GmbH** produziert frische Sushi-Boxen und verkauft sie über die Kühlregale von Supermärkten im Rhein-Main-Gebiet. An ihr werden – wie in der Vorlesung – Distributionsstrukturen, Standortwahl, Transportplanung, Sicherheitsbestände, Produktionsmengen und der Bullwhip-Effekt durchgerechnet. Im Teil Distributionslogistik wächst das Unternehmen um einen Onlineshop, einen Lieferdienst und die Belieferung einer großen Supermarktkette, an denen Lager, Fuhrpark, Wege und Touren geplant werden.
+**Teil V – Operative Distributionsplanung**
+
+13. **Kürzeste Wege** — Straßennetze als Graphen, Dijkstra-Algorithmus, Distanzmatrizen.
+14. **Tourenplanung** — Traveling Salesman Problem, Nearest Neighbor, 2-opt, exakte Lösung, Vehicle Routing und Savings-Verfahren.
+
+Ab Kapitel [-@sec-logistikkosten] begleitet ein durchgängiges Fallbeispiel den Reader: Die fiktive **SushiFresh GmbH** produziert frische Sushi-Boxen und verkauft sie über die Kühlregale von Supermärkten im Rhein-Main-Gebiet. An ihr werden – wie in der Vorlesung – Distributionsstrukturen, Standortwahl, Transportplanung, Sicherheitsbestände, Produktionsmengen und der Bullwhip-Effekt durchgerechnet. In den Teilen IV und V wächst das Unternehmen um einen Onlineshop und einen Lieferdienst; an ihnen werden Lager, Fuhrpark, Wege und Touren geplant.
 
 Jedes Kapitel folgt derselben Struktur:
 
@@ -47,6 +48,7 @@ Jedes Kapitel folgt derselben Struktur:
 - **Mathematische Herleitungen** in nachvollziehbaren Schritten.
 - **Kommentierter R-Code**, der die Modelle direkt berechnet und visualisiert — jeder Code-Block ist lauffähig und so kommentiert, dass auch Studierende ohne Vorerfahrung in R den Ablauf nachvollziehen können. Neben den fachlichen Inhalten werden dabei grundlegende R-Konzepte (Vektoren, Funktionen, Datenrahmen, das `tidyverse`, Pipes `|>`, Visualisierung mit `ggplot2`) Schritt für Schritt eingeführt.
 - **Kontrollfragen** am Kapitelende zur Selbstüberprüfung.
+- **Übungen und Fallstudie**: Ein Verweis am Kapitelende führt zur passenden Fallstudie im Ordner `case_studies` mit Klausuraufgaben (inklusive Musterlösungen) und einer vertiefenden Gruppenfallstudie.
 
 ## Voraussetzungen
 
@@ -75,8 +77,9 @@ Viele Beispielfunktionen (z. B. für Center of Gravity, das Newsvendor-Modell, d
 
 ## Literaturempfehlungen
 
-Als Hauptlehrbuch dient:
+Als Hauptlehrbücher dient:
 
 > Chopra, S., & Meindl, P. *Supply Chain Management: Strategy, Planning, and Operation*. Pearson.
+> Thonemann, U. *Operations Management*. Pearson.
 
-Ergänzend werden im Text u. a. herangezogen: Thonemann, Günther & Tempelmeier, Cachon & Terwiesch, Pfohl sowie für die Distributionslogistik ten Hompel & Schmidt und Domschke (vollständige Angaben siehe [Literaturverzeichnis](references.qmd)).
+Ergänzend werden im Text u. a. herangezogen: Günther & Tempelmeier, Cachon & Terwiesch, Pfohl sowie für die Distributionslogistik ten Hompel & Schmidt und Domschke (vollständige Angaben siehe [Literaturverzeichnis](references.qmd)).

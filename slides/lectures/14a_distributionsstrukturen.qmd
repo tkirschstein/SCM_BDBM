@@ -19,7 +19,7 @@ knitr::opts_chunk$set(fig.width = 9.5, fig.height = 6)
 
 ```
 
-# Distributionsstrukturen und -kanäle
+# Grundlagen des SCM - Distributionsstrukturen und -kanäle
 
 ## Distributionsstrukturen und -kanäle {#dk-outline}
 
@@ -85,7 +85,7 @@ SushiFresh produziert in **einer** Küche und beliefert **sechs eigene Filialen*
 ::: {.fragment .fade-up}
 ::: {.callout-note appearance="simple"}
 ## Fahrplan des Semesters
-Wo produziert wird, klären die Einheiten zur **Standortplanung**. Wie viel Bestand nötig ist, die Einheiten zu **Beständen und Koordination**. Wie die Ware zum Kunden kommt, der Block **Distributionslogistik**. Am Ende des Semesters setzen wir alles zum **Distributionssystem** zusammen.
+Diese Einheit spannt den Rahmen für das Semester auf. Wo produziert und gelagert wird, klären anschließend die Einheiten zur **Standort- und Transportplanung**. Wie viel Bestand trotz unsicherer Nachfrage nötig ist, behandelt der Block **Unsicherheits- und Risikomanagement**. Wie die Ware kommissioniert und zum Kunden gebracht wird, zeigen die Blöcke **Distributionslogistik** und **operative Distributionsplanung**.
 :::
 :::
 
@@ -155,7 +155,7 @@ ls_tab <- data.frame(
             "Kann auf Sonderwünsche reagiert werden (Zeitfenster, Mengen)?",
             "Weiß der Kunde, wo seine Sendung ist?"),
   Kennzahl = c("Ø Lieferzeit, Anteil Same-Day", "Termintreue, OTIF",
-               "α-/β-Servicegrad (Einheiten Pooling und Newsvendor)", "Fehlerquote, Reklamationen",
+               "α-/β-Servicegrad (vertieft in Pooling und Newsvendor)", "Fehlerquote, Reklamationen",
                "Anteil erfüllter Sonderwünsche", "Tracking, Avis"),
   SushiFresh = c("Ware morgens im Regal", "vor Ladenöffnung (8 Uhr)",
                  "keine leeren Regale", "Kühlkette, Haltbarkeit",
@@ -293,7 +293,7 @@ n <- 1:12
 kost <- data.frame(
   n = n,
   Lager = 100 * n,                 # Fixkosten der Standorte
-  Bestand = 250 * sqrt(n),         # Wurzelgesetz (Einheit Pooling)
+  Bestand = 250 * sqrt(n),         # Wurzelgesetz (Herleitung folgt in Einheit Pooling)
   Hauptlauf = 30 * n,              # Belieferung der Lager
   Auslieferung = 3000 / sqrt(n)    # Ø Entfernung zum Kunden ~ 1/sqrt(n)
 ) |> mutate(Gesamt = Lager + Bestand + Hauptlauf + Auslieferung)
@@ -315,7 +315,7 @@ p |> add_markers(x = n_opt, y = min(kost$Gesamt), name = "Minimum",
 ::: {.fragment .fade-up}
 ::: {.callout-note appearance="simple"}
 ## Gegenläufige Effekte
-- **Lager-** und **Bestandskosten** steigen mit der Zahl der Lager. .
+- **Lager-** und **Bestandskosten** steigen mit der Zahl der Lager (Bestand nach dem **Wurzelgesetz**, Herleitung in der Einheit Pooling).
 - **Auslieferkosten** sinken, weil die Kunden näher am Lager liegen.
 - Die **Lieferzeit** sinkt mit jedem zusätzlichen Lager.
 :::
@@ -323,7 +323,7 @@ p |> add_markers(x = n_opt, y = min(kost$Gesamt), name = "Minimum",
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-Im Beispiel liegt das Kostenminimum bei **`r n_opt` Lagern**. Eine kürzere Lieferzeit erfordert mehr Lager, das ist ein Zielkonflikt zwischen Kosten und Service (Einheit Ziele und Logistikkosten). Wo die Lager stehen sollen, beantwortet das WLP in der Standortplanung.
+Im Beispiel liegt das Kostenminimum bei **`r n_opt` Lagern**. Eine kürzere Lieferzeit erfordert mehr Lager, das ist ein Zielkonflikt zwischen Kosten und Service (Einheit Ziele und Logistikkosten). Wo die Lager stehen sollen, beantwortet später das **Warehouse Location Problem** in der Standortplanung.
 :::
 :::
 
@@ -425,7 +425,7 @@ Verspätet sich **ein** Lieferant, verzögern sich alle abgehenden Touren oder d
 
 - Ein Distributionssystem hat eine **vertikale** Struktur (Absatzkanäle: wer verkauft?) und eine **horizontale** Struktur (Logistikkanal: Lagerstufen, Umschlagpunkte). Beide müssen nicht übereinstimmen.
 - Ziel ist ein angestrebter **Lieferservice** (Lieferzeit, Zuverlässigkeit, Lieferfähigkeit, Beschaffenheit, Flexibilität, Information) zu minimalen Kosten.
-- Mehr Lager bedeuten kürzere Lieferzeiten und Auslieferwege, aber mehr Fix- und Bestandskosten (**Wurzelgesetz**). Wo die Lager stehen, klärt die **Standortplanung**.
+- Mehr Lager bedeuten kürzere Lieferzeiten und Auslieferwege, aber mehr Fix- und Bestandskosten (**Wurzelgesetz**, siehe Einheit Pooling). Wo die Lager stehen, klärt die anschließende **Standortplanung**.
 - **Cross-Docking** bündelt Warenströme ohne Lagerbestand, verlangt aber eine enge **Synchronisation**.
 - Die passende Struktur folgt dem Produkt und dem geforderten Service (**Strategic Fit**).
 :::
@@ -434,22 +434,7 @@ Verspätet sich **ein** Lieferant, verzögern sich alle abgehenden Touren oder d
 
 ## Übung {#dk-exercise}
 
-::: {.exercise-slide}
-::: {.exercise-header}
-Distributionsstrukturen – Wachstumsoptionen für SushiFresh
-:::
-
-::: {.columns .exercise-content}
-::: {.column width="55%"}
-Betrachten Sie die drei Wachstumsideen (Handel, Lieferdienst, Onlineshop).
-
-- Skizzieren Sie für jede Idee den **Absatzkanal** und den **Logistikkanal**. Wo fallen sie auseinander?
-- Ordnen Sie jede Idee einer **Gestaltungsoption** nach Chopra zu. Begründen Sie mit Produkt (Haltbarkeit!) und Lieferservice.
-- Welche Lieferservice-Komponenten sind je Kanal **kritisch**?
-- Verdoppeln Sie im R-Code die Auslieferkosten. Wie verändert sich die kostenminimale Lageranzahl? Warum?
-:::
-::: {.column width="42%"}
-
-:::
-:::
+::: {.callout-tip appearance="simple"}
+## Übungsaufgaben zu dieser Einheit
+Aufgaben zur Klausurvorbereitung (Teil 1) und eine vertiefende Fallstudie (Teil 2) finden Sie in **Fallstudie 1: Grundlagen des Supply Chain Managements**.
 :::

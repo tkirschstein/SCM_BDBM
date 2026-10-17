@@ -1,0 +1,229 @@
+---
+title: "Fallstudie 8: Transportmittel, Antriebe und Transportkosten"
+subtitle: "SushiFresh-Übungen und die Elektrifizierung der Lkw-Flotte eines regionalen Getränkegroßhändlers"
+author: "Supply Chain Management – Gruppenarbeit"
+lang: de
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    embed-resources: true
+    code-fold: show
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-note}
+## Steckbrief
+
+| | |
+|---|---|
+| **Thema** | Fahrzeugkostenrechnung und Kostensätze, Diesel- vs. batterieelektrische Lkw, Reichweite, CO₂-Bilanzierung nach ISO 14083 |
+| **Vorlesungsbezug** | Block 4 „Distributionslogistik“: Transportmittel & Antriebe |
+| **Teil 1** | Klausurvorbereitung: Aufgaben mit Stift und Papier zu einer neuen SushiFresh-Entscheidungssituation (25–30 Min.) |
+| **Teil 2** | Parameterbasierte Fallstudie RheinQuell Getränke (fiktiv): Kostenannahmen gerundet, Stand Herbst 2026, eigene Recherche erwünscht |
+| **Gruppengröße** | 3–6 Personen (Teil 2) |
+| **Ergebnis** | Präsentation (20 Min.) + Diskussion (10 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+:::
+
+# Lernziele
+
+Nach Bearbeitung der Übungen und der Fallstudie können Sie
+
+- fixe und variable Fahrzeugkosten ermitteln und daraus Kostensätze (€/km, €/h, €/Box) ableiten,
+- Diesel- und batterieelektrische Lkw über die Gesamtkosten und die Break-even-Fahrleistung vergleichen,
+- die Machbarkeit von Touren mit Reichweite und Ladezeiten prüfen und
+- Transportemissionen Well-to-Wheel berechnen und Alternativen danach bewerten.
+
+# Teil 1 – Klausurvorbereitung: Ein Transporter für die Heimlieferung
+
+::: {.callout-note}
+## Hinweise
+Bearbeitungszeit ca. **30 Minuten** · Hilfsmittel: nicht programmierbarer Taschenrechner · **30 Punkte**
+:::
+
+Für einen Heimlieferdienst in Mannheim beschafft SushiFresh einen 3,5-t-Kühltransporter. Er fährt an 250 Tagen im Jahr eine Tour von 120 km. Zur Wahl stehen:
+
+| Parameter | Diesel | Elektro |
+|---|---:|---:|
+| Kaufpreis | 45.000 € | 60.000 € |
+| Restwert nach 6 Jahren | 9.000 € | 12.000 € |
+| Versicherung und Steuer | 2.000 €/Jahr | 1.800 €/Jahr |
+| Energieverbrauch | 10 l/100 km | 25 kWh/100 km |
+| Energiepreis | 1,80 €/l | 0,30 €/kWh |
+| Wartung und Reifen | 0,07 €/km | 0,045 €/km |
+| Nutzbare Batteriekapazität | – | 60 kWh |
+
+Kalkulationszins 5 % (kalkulatorische Zinsen auf das durchschnittlich gebundene Kapital $(A + RW)/2$), lineare Abschreibung.
+
+**Aufgabe 1 (10 Punkte) – Kostenrechnung.** Berechnen Sie für beide Fahrzeuge die fixen Kosten pro Jahr (Abschreibung, Zinsen, Versicherung und Steuer), die variablen Kosten pro km sowie die Gesamtkosten pro Jahr und pro km.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 1
+
+| | Diesel | Elektro |
+|---|---:|---:|
+| Abschreibung $(A - RW)/N$ | 36.000/6 = 6.000 € | 48.000/6 = 8.000 € |
+| Zinsen $(A + RW)/2 \cdot 5\,\%$ | 27.000 · 0,05 = 1.350 € | 36.000 · 0,05 = 1.800 € |
+| Versicherung und Steuer | 2.000 € | 1.800 € |
+| **Fixkosten pro Jahr** | **9.350 €** | **11.600 €** |
+| Energie | 0,10 · 1,80 = 0,180 €/km | 0,25 · 0,30 = 0,075 €/km |
+| Wartung und Reifen | 0,070 €/km | 0,045 €/km |
+| **Variable Kosten** | **0,250 €/km** | **0,120 €/km** |
+| Fahrleistung | 120 · 250 = 30.000 km | 30.000 km |
+| **Gesamtkosten pro Jahr** | 9.350 + 7.500 = **16.850 €** | 11.600 + 3.600 = **15.200 €** |
+| **Kosten pro km** | **0,562 €** | **0,507 €** |
+
+*Bewertung:* 3 Punkte je Fahrzeug Fixkosten, 2 Punkte variable Kosten, 2 Punkte Gesamtkosten.
+:::
+
+**Aufgabe 2 (4 Punkte) – Break-even.** Ab welcher Jahresfahrleistung ist das Elektrofahrzeug günstiger?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 2
+
+$9.350 + 0{,}25\,L = 11.600 + 0{,}12\,L \;\Rightarrow\; L = 2.250/0{,}13 \approx$ **17.300 km/Jahr**. Darüber ist das Elektrofahrzeug günstiger.
+
+*Bewertung:* 4 Punkte.
+:::
+
+**Aufgabe 3 (8 Punkte) – Reichweite.** Im Winter steigt der Verbrauch um 30 %.
+
+a) Reicht die Batterie im Winter für die Tour von 120 km?
+
+b) In der Adventszeit soll das Fahrzeug zwei Touren à 120 km am Tag fahren. Zwischen den Touren kann es 1 Stunde mit 11 kW laden. Ist das im Winter machbar?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 3
+
+a) Winterverbrauch $0{,}25 \cdot 1{,}3 = 0{,}325$ kWh/km, Reichweite $60/0{,}325 \approx 185$ km > 120 km. Die Tour ist machbar.
+
+b) Nach der ersten Tour sind $60 - 120 \cdot 0{,}325 = 21$ kWh übrig. In einer Stunde werden 11 kWh geladen (Ladeverluste vernachlässigt), also 32 kWh. Damit sind $32/0{,}325 \approx 98$ km möglich, **weniger als 120 km**. Zwei Touren sind im Winter nicht machbar. Lösungen: längere Ladezeit oder höhere Ladeleistung, Touren aufteilen, zweites Fahrzeug.
+
+*Bewertung:* a) 3 Punkte, b) 5 Punkte.
+:::
+
+**Aufgabe 4 (5 Punkte) – Emissionen.** Berechnen Sie die jährlichen Well-to-Wheel-Emissionen beider Fahrzeuge (Diesel 3,2 kg CO₂e/l; Strom 0,38 kg CO₂e/kWh; 10 % Ladeverluste; Sommerverbrauch).
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 4
+
+- Diesel: $30.000 \cdot 0{,}10\ \text{l/km} \cdot 3{,}2 = 9.600$ kg = **9,6 t CO₂e/Jahr**
+- Elektro: $30.000 \cdot 0{,}25\ \text{kWh/km} \cdot 1{,}1 \cdot 0{,}38 = 3.135$ kg ≈ **3,1 t CO₂e/Jahr**
+
+Das Elektrofahrzeug spart rund zwei Drittel der Emissionen.
+
+*Bewertung:* je Fahrzeug 2 Punkte, Vergleich 1 Punkt.
+:::
+
+**Aufgabe 5 (3 Punkte) – Kombinierter Verkehr.** Für den Zulauf von Thunfisch aus Rotterdam bietet ein Operateur kombinierten Verkehr an: 400 € je Sendung für Vor- und Nachlauf plus 0,90 € je km. Der reine Lkw-Transport kostet 1,40 € je km. Ab welcher Entfernung lohnt sich der kombinierte Verkehr?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 5
+
+$1{,}40\,d = 400 + 0{,}90\,d \;\Rightarrow\; d = 400/0{,}50 = $ **800 km**. Ab 800 km ist der kombinierte Verkehr günstiger.
+
+*Bewertung:* 3 Punkte.
+:::
+
+# Teil 2 – Fallstudie: Elektrifizierung einer Lkw-Flotte
+
+## Ausgangslage
+
+Die **RheinQuell Getränke GmbH** (fiktiv) ist ein Getränkefachgroßhändler mit Lager in Mainz. Sie beliefert Gastronomie, Getränkemärkte und Kantinen im Umkreis von rund 100 km mit sechs **18-t-Diesel-Lkw** (Wechselbrücke mit Ladebordwand). Die Fahrzeuge müssen im kommenden Jahr ersetzt werden.
+
+Ein großer Kunde verlangt ab 2028 eine CO₂-Bilanz der Belieferung nach ISO 14083 und eine Reduktion der Emissionen. Die Geschäftsführung prüft daher, die Flotte ganz oder teilweise durch **batterieelektrische Lkw** zu ersetzen.
+
+## Daten
+
+### Touren
+
+Jedes Fahrzeug fährt an 250 Tagen im Jahr eine feste Tour.
+
+```{r}
+#| label: daten-touren
+touren <- data.frame(
+  tour   = paste0("T", 1:6),
+  gebiet = c("Rheinhessen", "Taunus", "Mainz Stadt", "Hunsrück", "Rheingau", "Wiesbaden"),
+  km     = c(145, 210, 95, 260, 170, 120),     # km/Tag
+  stopps = c(14, 9, 18, 7, 12, 16),
+  fracht_t = c(9.5, 8.0, 11.0, 7.5, 10.0, 10.5) # ausgelieferte Tonnen/Tag
+)
+knitr::kable(touren, col.names = c("Tour", "Gebiet", "km/Tag", "Stopps", "Fracht [t/Tag]"))
+```
+
+### Fahrzeuge (Annahmen, netto, gerundet)
+
+| Parameter | 18-t-Diesel (Euro VI) | 18-t-E-Lkw |
+|---|---:|---:|
+| Kaufpreis | 110.000 € | 260.000 € |
+| Restwert nach 6 Jahren | 20.000 € | 50.000 € |
+| Versicherung | 5.500 €/Jahr | 6.500 €/Jahr |
+| Kfz-Steuer | 900 €/Jahr | 0 €/Jahr |
+| Sonstige Fixkosten | 3.000 €/Jahr | 7.000 €/Jahr (inkl. Ladepunkt am Depot) |
+| Energieverbrauch | 26 l/100 km | 110 kWh/100 km (Jahresmittel) |
+| Energiepreis | 2,00 €/l | 0,24 €/kWh (Depot) |
+| Wartung und Reifen | 0,14 €/km | 0,11 €/km |
+| Maut | 0,29 €/km, 60 % der Strecke mautpflichtig | mautbefreit (laut aktueller Rechtslage bis 2031) |
+| Nutzbare Batteriekapazität | – | 350 kWh |
+
+Weitere Annahmen: Kalkulationszins 5 %, Fahrerkosten 55.000 €/Jahr bei 1.650 produktiven Stunden, im Winter steigt der Verbrauch des E-Lkw um 20 %, eine Restladung von 10 % soll nicht unterschritten werden. Emissionsfaktoren (WTW): Diesel 3,20 kg CO₂e/l, Strom 0,38 kg CO₂e/kWh, Ladeverluste 10 %.
+
+## Aufgaben
+
+### Teil A – Kostenvergleich
+
+**A1.** Berechnen Sie mit `fahrzeugkosten()` für jede Tour die jährlichen Fahrzeugkosten und den Kostensatz in €/km für Diesel und E-Lkw. Bei welchen Touren ist der E-Lkw günstiger? Bestimmen Sie die Break-even-Fahrleistung.
+
+### Teil B – Machbarkeit und Emissionen
+
+**B1.** Prüfen Sie die Reichweite des E-Lkw für jede Tour im Sommer und im Winter. Welche Touren sind ohne Zwischenladen machbar? Welche Optionen gibt es für die übrigen Touren (Zwischenladen, Tourentausch, größere Batterie)?
+
+**B2.** Berechnen Sie die jährlichen WTW-Emissionen der Flotte für (a) sechs Diesel-Lkw und (b) Ihre bevorzugte gemischte Flotte. Wie hoch sind die **CO₂-Vermeidungskosten** (Mehrkosten je eingesparter Tonne CO₂e)?
+
+### Teil C – Empfehlung und Reflexion
+
+**C1.** Formulieren Sie eine Empfehlung für die Flottenerneuerung (Anzahl E-Lkw, Touren, Kosten, Emissionen, Risiken).
+
+**C2. Reflexion.** Beantworten Sie in der Präsentation:
+
+1. Welche Annahmen (Strompreis, Restwert, Maut, Verbrauch im Winter) beeinflussen das Ergebnis am stärksten? Führen Sie für eine davon eine Sensitivitätsanalyse durch.
+2. Wie würden Sie die Emissionen einer Tour nach ISO 14083 auf die einzelnen Kunden verteilen?
+3. Welche nicht monetären Faktoren (Fahrerakzeptanz, Ladeinfrastruktur, Kundenanforderungen) sprechen für oder gegen den Umstieg?
+
+# Literatur und Quellen
+
+- ISO 14083:2023: *Greenhouse gases – Quantification and reporting of greenhouse gas emissions arising from transport chain operations*.
+- Smart Freight Centre: *GLEC Framework for Logistics Emissions Accounting and Reporting*, <https://www.smartfreightcentre.org/en/our-programs/emissions-accounting/global-logistics-emissions-council/>.
+- Toll Collect: Mautsätze, <https://www.toll-collect.de>.
+- Folien und Reader zur Vorlesung, Block 4.
+
+# Anhang: R-Startercode
+
+```{r}
+#| label: starter
+#| eval: false
+source("../R/scm_functions.R")   # fahrzeugkosten()
+
+diesel_18t <- list(A = 110000, RW = 20000, N = 6, i = 0.05,
+                   versicherung = 5500, steuer = 900, sonst_fix = 3000,
+                   energie_km = 0.26 * 2.00, wartung_km = 0.10, reifen_km = 0.04,
+                   maut_km = 0.29 * 0.6)
+bev_18t <- list(A = 260000, RW = 50000, N = 6, i = 0.05,
+                versicherung = 6500, steuer = 0, sonst_fix = 7000,
+                energie_km = 1.10 * 0.24, wartung_km = 0.07, reifen_km = 0.04,
+                maut_km = 0)
+
+# Kostensatz je Tour (Fahrleistung = km/Tag x 250 Tage)
+touren$km_jahr   <- touren$km * 250
+touren$diesel_km <- sapply(touren$km_jahr, \(L) fahrzeugkosten(diesel_18t, L)$gesamt_km)
+touren$bev_km    <- sapply(touren$km_jahr, \(L) fahrzeugkosten(bev_18t, L)$gesamt_km)
+touren
+
+# Reichweite im Winter (km)
+350 * 0.9 / (1.10 * 1.2)
+```

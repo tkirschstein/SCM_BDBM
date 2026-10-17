@@ -1,6 +1,6 @@
 ---
-title: "Fallstudie 4: Risk Pooling im E-Commerce"
-subtitle: "Zentral- oder Regionallager für einen brasilianischen Online-Marktplatz (Olist-Daten)"
+title: "Fallstudie 4: Kapazitäts- und Lagerbestandspooling"
+subtitle: "SushiFresh-Übungen und Zentral- oder Regionallager für einen brasilianischen Online-Marktplatz (Olist-Daten)"
 author: "Supply Chain Management – Gruppenarbeit"
 lang: de
 format:
@@ -22,112 +22,198 @@ execute:
 
 | | |
 |---|---|
-| **Thema** | Standort- und Produkt-Pooling, Zentralisierung von Beständen |
-| **Vorlesungsbezug** | Kapitel 6 des Readers: Sicherheitsbestand, Servicegrad, Quadratwurzelgesetz, Einfluss der Korrelation |
-| **Typ** | Datenbasierte Fallstudie mit **realen Bestelldaten** (*Brazilian E-Commerce Public Dataset by Olist*, Kaggle) |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+| **Thema** | Kapazitätspooling, Sicherheitsbestand, Lagerbestandspooling (Zentralisierung), Einfluss der Korrelation |
+| **Vorlesungsbezug** | Block 3 „Unsicherheits- und Risikomanagement in Supply Chains“: Kapazitäts- & Lagerbestandspooling |
+| **Teil 1** | Klausurvorbereitung: Aufgaben mit Stift und Papier zu einer neuen SushiFresh-Entscheidungssituation (25–30 Min.) |
+| **Teil 2** | Datenbasierte Fallstudie mit **realen Bestelldaten** (*Brazilian E-Commerce Public Dataset by Olist*, Kaggle) |
+| **Gruppengröße** | 3–6 Personen (Teil 2) |
+| **Ergebnis** | Präsentation (20 Min.) + Diskussion (10 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
 :::
 
 # Lernziele
 
-Nach Bearbeitung der Fallstudie können Sie
+Nach Bearbeitung der Übungen und der Fallstudie können Sie
 
-- aus realen Bestelldaten die für die Bestandsplanung relevanten Kenngrößen (Mittelwert, Prognosefehler, Korrelation) ableiten,
-- Sicherheitsbestände für zentrale, regionale und hybride Lagerstrukturen berechnen,
-- das **Quadratwurzelgesetz** empirisch überprüfen und Abweichungen durch Korrelationen und ungleich große Regionen erklären,
-- Standort-Pooling und Produkt-Pooling unterscheiden und
+- den Nutzen flexibler Kapazitäten (Kapazitätspooling) an Auslastung und Lieferservice messen,
+- Sicherheitsbestände für einen α-Servicegrad bei dezentraler und zentraler Lagerung berechnen,
+- das **Quadratwurzelgesetz** anwenden und erklären, wie Korrelation und ungleich große Standorte den Pooling-Effekt verändern, und
 - den Pooling-Vorteil gegen Transportkosten und Lieferzeiten abwägen.
 
-# Ausgangslage
+# Teil 1 – Klausurvorbereitung: Lachsbestände und Küchenkapazität im Rhein-Neckar-Gebiet
 
-**Olist** ist ein brasilianischer Online-Marktplatz, über den kleine und mittlere Händler ihre Produkte auf großen Verkaufsplattformen anbieten. Bisher versenden die Händler selbst, die meisten davon aus dem Bundesstaat São Paulo. Kundinnen und Kunden im Norden und Nordosten Brasiliens warten deshalb oft zwei bis drei Wochen auf ihre Bestellung und zahlen deutlich höhere Frachtkosten.
+::: {.callout-note}
+## Hinweise
+Bearbeitungszeit ca. **25 Minuten** · Hilfsmittel: nicht programmierbarer Taschenrechner · **25 Punkte** · $z_{0{,}95} = 1{,}645$
+:::
 
-Das Management prüft daher den Aufbau eines eigenen **Fulfillment-Netzes**: Die Händler lagern ihre Ware bei Olist ein, und Olist übernimmt Lagerung und Versand. Für die umsatzstärksten Produktkategorien stehen drei Strukturen zur Diskussion:
+**Situation A – Kapazitätspooling.** SushiFresh betreibt in Mannheim und Heidelberg je eine kleine Küche mit einer Kapazität von 100 Boxen pro Tag. Bisher beliefert jede Küche nur „ihre“ Filiale. Nicht lieferbare Nachfrage geht verloren. Die Nachfrage einer typischen Woche:
+
+| Tag | Mo | Di | Mi | Do | Fr | Sa |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| Filiale Mannheim | 80 | 120 | 95 | 110 | 70 | 105 |
+| Filiale Heidelberg | 115 | 85 | 100 | 90 | 120 | 95 |
+
+**Aufgabe 1 (8 Punkte).**
+
+a) Berechnen Sie für beide Küchen die Auslastung und die verlorene Nachfrage (Lost Sales) der Woche sowie den Lieferservicegrad (gelieferte / nachgefragte Menge) jeder Filiale.
+
+b) Beide Küchen dürfen künftig beide Filialen beliefern (vollständige Flexibilität). Wie viel Nachfrage geht jetzt noch verloren? Wie hoch ist die Auslastung?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 1
+
+a) Getrennte Küchen (Kapazität je 100):
+
+| Tag | Mo | Di | Mi | Do | Fr | Sa | Summe |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Lieferung Mannheim | 80 | 100 | 95 | 100 | 70 | 100 | 545 |
+| Lieferung Heidelberg | 100 | 85 | 100 | 90 | 100 | 95 | 570 |
+
+| | Küche Mannheim | Küche Heidelberg |
+|---|:-:|:-:|
+| Auslastung | 545/600 = 90,8 % | 570/600 = 95,0 % |
+| Lost Sales | 580 − 545 = 35 | 605 − 570 = 35 |
+| Lieferservicegrad | 545/580 = 94,0 % | 570/605 = 94,2 % |
+
+b) Mit vollständiger Flexibilität steht eine Kapazität von 200 je Tag für die Gesamtnachfrage zur Verfügung:
+
+| Tag | Mo | Di | Mi | Do | Fr | Sa |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| Gesamtnachfrage | 195 | 205 | 195 | 200 | 190 | 200 |
+
+Nur am Dienstag gehen 5 Boxen verloren (statt 70). Die Auslastung steigt auf 1.180/1.200 = 98,3 %. Ausgeglichen wird, dass die Spitzen der beiden Filialen an unterschiedlichen Tagen auftreten.
+
+*Bewertung:* a) 5 Punkte, b) 3 Punkte.
+:::
+
+**Situation B – Lagerbestandspooling.** Der frische Lachs wird bisher in den vier Rhein-Neckar-Filialen gelagert. Die Tagesnachfrage (kg) ist normalverteilt und unabhängig:
+
+| Filiale | Mannheim | Ludwigshafen | Heidelberg | Weinheim |
+|---|:-:|:-:|:-:|:-:|
+| $\mu$ [kg/Tag] | 200 | 100 | 150 | 50 |
+| $\sigma$ [kg/Tag] | 40 | 30 | 30 | 20 |
+
+**Aufgabe 2 (9 Punkte).**
+
+a) Berechnen Sie den Sicherheitsbestand für einen α-Servicegrad von 95 % bei dezentraler Lagerung (je Filiale und gesamt) und bei Lagerung in einem Zentrallager.
+
+b) Um wie viel Prozent sinkt der Sicherheitsbestand? Vergleichen Sie mit dem Quadratwurzelgesetz für vier gleich große Filialen ($1 - 1/\sqrt{4}$) und erklären Sie den Unterschied.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 2
+
+a) Dezentral: $SB_i = 1{,}645 \cdot \sigma_i$
+
+| | MA | LU | HD | WH | Summe |
+|---|:-:|:-:|:-:|:-:|:-:|
+| $SB_i$ [kg] | 65,8 | 49,4 | 49,4 | 32,9 | **197,4** |
+
+Zentral: $\sigma_Z = \sqrt{40^2 + 30^2 + 30^2 + 20^2} = \sqrt{3.800} = 61{,}6$ kg, also $SB_Z = 1{,}645 \cdot 61{,}6 = $ **101,4 kg**.
+
+b) Einsparung: $1 - 101{,}4/197{,}4 = 48{,}6\,\%$. Das Quadratwurzelgesetz verspricht bei vier gleich großen Filialen $1 - 1/\sqrt 4 = 50\,\%$. Die Einsparung ist kleiner, weil die Filialen ungleich groß sind: Die große Filiale Mannheim dominiert die Gesamtstreuung und profitiert kaum vom Ausgleich.
+
+*Bewertung:* a) 6 Punkte, b) 3 Punkte.
+:::
+
+**Aufgabe 3 (5 Punkte).** Die Nachfragen in Mannheim und Ludwigshafen sind korreliert (Fußballspiele, Wetter). Berechnen Sie den gemeinsamen Sicherheitsbestand dieser beiden Filialen für $\rho = -0{,}5$, $\rho = 0$ und $\rho = 0{,}5$. Was bedeutet das für die Entscheidung über ein gemeinsames Lager?
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 3
+
+$SB = 1{,}645 \cdot \sqrt{40^2 + 30^2 + 2 \rho \cdot 40 \cdot 30}$:
+
+| $\rho$ | −0,5 | 0 | 0,5 | dezentral |
+|---|:-:|:-:|:-:|:-:|
+| $\sigma$ [kg] | 36,1 | 50,0 | 60,8 | 70 |
+| $SB$ [kg] | 59,3 | 82,3 | 100,1 | 115,2 |
+
+Je höher die Korrelation, desto kleiner die Einsparung. Bei $\rho = 1$ gäbe es keinen Pooling-Vorteil mehr. Gemeinsame Einflüsse wie Fußballspiele oder Wetter verringern also den Nutzen eines gemeinsamen Lagers.
+
+*Bewertung:* 3 Punkte Rechnung, 2 Punkte Interpretation.
+:::
+
+**Aufgabe 4 (3 Punkte).** Nennen Sie zwei Nachteile der Zentralisierung, die in der Rechnung fehlen.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 4
+
+Zum Beispiel: längere Transportwege und höhere Transportkosten zu den Filialen, längere Lieferzeit bzw. geringere Frische (kritisch bei Lachs), zusätzliche Umschlagvorgänge mit Risiko für die Kühlkette, Abhängigkeit von einem einzigen Standort (Ausfallrisiko).
+
+*Bewertung:* 1,5 Punkte je Nachteil.
+:::
+
+# Teil 2 – Fallstudie: Risk Pooling im E-Commerce
+
+## Ausgangslage
+
+**Olist** ist ein brasilianischer Online-Marktplatz, über den kleine und mittlere Händler ihre Produkte auf großen Verkaufsplattformen anbieten. Bisher versenden die Händler selbst, die meisten aus dem Bundesstaat São Paulo. Kundinnen und Kunden im Norden und Nordosten warten deshalb oft zwei bis drei Wochen und zahlen deutlich höhere Frachtkosten.
+
+Das Management prüft den Aufbau eines eigenen **Fulfillment-Netzes**. Für die umsatzstärksten Produktkategorien stehen drei Strukturen zur Diskussion:
 
 - **Struktur Z (zentral):** ein Fulfillment-Center in Cajamar (Großraum São Paulo) beliefert ganz Brasilien.
 - **Struktur R (regional):** fünf Regionallager, je eines pro Großregion: Cajamar (Sudeste), Curitiba (Sul), Goiânia (Centro-Oeste), Recife (Nordeste) und Belém (Norte).
-- **Struktur H (hybrid):** zwei Lager: Cajamar für Sudeste, Sul und Centro-Oeste sowie Recife für Nordeste und Norte.
+- **Struktur H (hybrid):** Cajamar für Sudeste, Sul und Centro-Oeste sowie Recife für Nordeste und Norte.
 
-Die Brasilien-Perspektive macht den Fall besonders lehrreich: Die Regionen unterscheiden sich stark in Größe, Kaufkraft und Erreichbarkeit, und die Nachfrage ist sehr ungleich verteilt.
+## Daten
 
-# Daten
-
-## Datensatz
-
-**Brazilian E-Commerce Public Dataset by Olist** (Kaggle, Lizenz CC BY-NC-SA 4.0, kein Wettbewerb):
+**Brazilian E-Commerce Public Dataset by Olist** (Kaggle, Lizenz CC BY-NC-SA 4.0):
 <https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce>
 
-Der Datensatz enthält rund 100.000 echte, anonymisierte Bestellungen aus den Jahren 2016 bis 2018. Für die Fallstudie benötigen Sie fünf der neun Tabellen:
+Rund 100.000 echte, anonymisierte Bestellungen aus den Jahren 2016 bis 2018. Sie benötigen fünf der neun Tabellen:
 
 | Datei | Relevante Spalten |
 |---|---|
-| `olist_orders_dataset.csv` | `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp`, `order_delivered_customer_date` |
-| `olist_order_items_dataset.csv` | `order_id`, `product_id`, `seller_id`, `price`, `freight_value` (eine Zeile je Artikel) |
-| `olist_customers_dataset.csv` | `customer_id`, `customer_state` (Bundesstaat, z. B. `SP`, `BA`) |
-| `olist_products_dataset.csv` | `product_id`, `product_category_name` (portugiesisch) |
+| `olist_orders_dataset.csv` | `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp` |
+| `olist_order_items_dataset.csv` | `order_id`, `product_id`, `price`, `freight_value` (eine Zeile je Artikel) |
+| `olist_customers_dataset.csv` | `customer_id`, `customer_state` (Bundesstaat) |
+| `olist_products_dataset.csv` | `product_id`, `product_category_name` |
 | `product_category_name_translation.csv` | Übersetzung der Kategorienamen ins Englische |
-
-Die Zuordnung der 27 Bundesstaaten zu den fünf Großregionen ist im Startercode enthalten.
 
 ::: {.callout-important}
 ## Hinweise zur Datenaufbereitung
-- Verwenden Sie als Nachfrage die **Anzahl bestellter Artikel** (Zeilen in `order_items`) je Woche, Region und Produktkategorie. Schließen Sie stornierte und nicht verfügbare Bestellungen aus.
-- Die Daten sind erst ab Anfang 2017 vollständig und enden im August 2018. Beschränken Sie die Analyse auf die Wochen vom **02.01.2017 bis 20.08.2018** (86 Wochen).
-- Das Geschäft wächst 2017 stark, und im November gibt es einen deutlichen Ausschlag (Black Friday). Rohe Standardabweichungen sind daher kein geeignetes Maß für die Unsicherheit.
-- Konzentrieren Sie sich auf die **10 größten Produktkategorien**.
+- Nachfrage = **Anzahl bestellter Artikel** je Woche, Region und Kategorie; stornierte und nicht verfügbare Bestellungen ausschließen.
+- Zeitraum **02.01.2017 bis 20.08.2018** (86 Wochen); Konzentration auf die **5 größten Produktkategorien**.
+- Das Geschäft wächst stark, im November gibt es einen Ausschlag (Black Friday). Verwenden Sie deshalb den **Prognosefehler** eines gleitenden Durchschnitts (8 Wochen) als Maß der Unsicherheit, nicht die Rohstreuung.
 :::
 
 ## Planungsparameter
 
 | Parameter | Wert |
 |---|---|
-| Hochrechnung | Der Datensatz ist ein Ausschnitt des Geschäfts. Rechnen Sie Mengen mit dem Faktor **50** auf das geplante Fulfillment-Volumen hoch. Unterstellen Sie dabei, dass der Variationskoeffizient der Prognosefehler gleich bleibt. |
+| Hochrechnung | Mengen und Standardabweichungen mit dem Faktor **50** auf das geplante Volumen hochrechnen |
 | Zielservicegrad (α) | 95 % |
-| Wiederbeschaffungszeit Händler → Lager | 2 Wochen (Recife und Belém: 3 Wochen) |
+| Wiederbeschaffungszeit Händler → Lager | 2 Wochen |
 | Warenwert | 60 % des Verkaufspreises (`price`) |
 | Lagerhaltungskostensatz | 25 % p. a. vom Warenwert |
-| Fracht zum Kunden | Zentrale Belieferung: durchschnittliche `freight_value` der jeweiligen Region laut Daten. Belieferung aus einem Lager in der eigenen Region: Frachtniveau der Region Sudeste. |
-| Nachschub in ein Regionallager | 4 BRL je Artikel (Komplettladungen ab São Paulo) |
-| Fixkosten je Lager (anteilig für die betrachteten Kategorien) | Cajamar: 2,0 Mio. BRL/Jahr, jedes weitere Lager: 0,9 Mio. BRL/Jahr |
+| Fixkosten je Lager (anteilig) | Cajamar: 2,0 Mio. BRL/Jahr, jedes weitere Lager: 0,9 Mio. BRL/Jahr |
 
-# Aufgaben
+## Aufgaben
 
-## Teil A – Datenaufbereitung und Exploration
+### Teil A – Datenaufbereitung
 
-**A1.** Verknüpfen Sie die Tabellen und erzeugen Sie für die 10 größten Kategorien die wöchentliche Artikelnachfrage je Region. Beschreiben Sie die Verteilung der Nachfrage auf die Regionen, den Trend und Sondereffekte. Stellen Sie außerdem die tatsächlichen Lieferzeiten (Bestellung bis Zustellung) und Frachtkosten je Region dar.
+**A1.** Verknüpfen Sie die Tabellen und erzeugen Sie für die 5 größten Kategorien die wöchentliche Artikelnachfrage je Region. Beschreiben Sie die Verteilung der Nachfrage auf die Regionen und stellen Sie die durchschnittlichen Frachtkosten (`freight_value`) je Region dar.
 
-**A2.** Bestimmen Sie je Kategorie und Region die Prognosefehler einer einfachen Prognose, z. B. gleitender Durchschnitt der letzten 8 Wochen. Begründen Sie, warum für den Sicherheitsbestand der Prognosefehler und nicht die Rohstreuung maßgeblich ist.
+### Teil B – Lagerbestandspooling
 
-## Teil B – Standort-Pooling
+**B1.** Berechnen Sie je Kategorie den Sicherheitsbestand $SB = z_\alpha\,\sigma\sqrt{L}$ in den Strukturen Z, R und H, und zwar (a) unter der Annahme **unabhängiger** Regionen und (b) mit der **empirischen Kovarianzmatrix** der Prognosefehler, $\sigma_{\text{pool}} = \sqrt{\mathbf 1^\top \Sigma\,\mathbf 1}$ (siehe Startercode). Warum fällt der Pooling-Effekt kleiner aus, als das Quadratwurzelgesetz mit $\sqrt{5}$ verspricht?
 
-**B1.** Berechnen Sie je Kategorie den Sicherheitsbestand $SB = z_\alpha\,\sigma\sqrt{L}$ in den Strukturen Z, R und H, und zwar (a) unter der Annahme **unabhängiger** regionaler Nachfragen (Quadratwurzelgesetz; beachten Sie die ungleich großen Regionen) und (b) mit der **empirischen Kovarianzmatrix** der Prognosefehler, $\sigma_{\text{pool}} = \sqrt{\mathbf 1^\top \Sigma\,\mathbf 1}$.
+**B2.** Bewerten Sie die Sicherheitsbestände mit Warenwert und Lagerhaltungskostensatz und stellen Sie sie den Fixkosten der Lager gegenüber. Ab welchem Bestandskostenvorteil würde sich ein zusätzliches Lager allein aus Bestandssicht lohnen?
 
-**B2.** Vergleichen Sie (a) und (b). Warum fällt der Pooling-Effekt deutlich kleiner aus, als das Quadratwurzelgesetz mit $\sqrt{5}$ verspricht? Unterscheiden Sie zwischen dem Einfluss der Korrelation und dem der ungleichen Regionsgrößen.
+### Teil C – Empfehlung und Reflexion
 
-**B3.** Vergleichen Sie die jährlichen Gesamtkosten der drei Strukturen: Lagerhaltungskosten der Sicherheitsbestände, Fracht zum Kunden, Nachschub und Fixkosten. Welche Struktur ist am günstigsten? Ab welchen Fixkosten je Regionallager kippt die Entscheidung (Break-even)?
+**C1.** Formulieren Sie eine Empfehlung an das Olist-Management. Berücksichtigen Sie neben den Kosten die Lieferzeit und die Frachtkosten als Wettbewerbsfaktor.
 
-## Teil C – Produkt-Pooling und selektive Bevorratung
+**C2. Reflexion.** Beantworten Sie in der Präsentation:
 
-**C1.** Vergleichen Sie den Variationskoeffizienten der Prognosefehler einer einzelnen Kategorie mit dem aller 10 Kategorien zusammen. Nutzen Sie das Ergebnis für eine **selektive Bevorratung**: Welche Kategorien sollten in Recife (Struktur H) vorrätig sein, und welche sollten nur zentral in Cajamar gelagert werden? Berücksichtigen Sie Volumen, Variabilität, Warenwert und Frachtkosten.
-
-## Teil D – Empfehlung und Reflexion
-
-**D1. Empfehlung.** Formulieren Sie eine Empfehlung an das Olist-Management. Berücksichtigen Sie dabei neben den Kosten auch die Lieferzeit als Wettbewerbsfaktor.
-
-**D2. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
-
-1. Wie gut hat das Quadratwurzelgesetz die realen Daten beschrieben? Was lernen Sie daraus über die Anwendung von Lehrbuchformeln auf reale Daten?
-2. In diesem Fall ist der Pooling-Vorteil vermutlich klein im Vergleich zu Fracht und Lieferzeit. Was bedeutet das für die Rolle von Bestandsargumenten bei Netzwerkentscheidungen?
-3. Welche Entscheidungen bei der Datenaufbereitung (Zeitraum, Kategorien, Prognosemethode) und welche Annahmen (Hochrechnungsfaktor, gleichbleibender Variationskoeffizient) beeinflussen Ihr Ergebnis am stärksten?
-4. Die Daten zeigen Bestellungen, nicht die Nachfrage, die bei kürzeren Lieferzeiten entstanden wäre. Wie könnte ein Regionallager im Nordosten die Nachfrage selbst verändern, und warum fehlt dieser Effekt in Ihrer Rechnung?
-5. Welche Besonderheiten eines großen Schwellenlandes wie Brasilien (Infrastruktur, Steuern zwischen Bundesstaaten, Kaufkraftunterschiede) spielen für die Standortfrage eine Rolle, die das Pooling-Modell nicht abbildet?
+1. Wie gut beschreibt das Quadratwurzelgesetz die realen Daten? Was lernen Sie über die Anwendung von Lehrbuchformeln auf reale Daten?
+2. Der Pooling-Vorteil ist vermutlich klein im Vergleich zu Fracht und Lieferzeit. Was bedeutet das für Bestandsargumente bei Netzwerkentscheidungen?
+3. Die Daten zeigen Bestellungen, nicht die Nachfrage, die bei kürzeren Lieferzeiten entstanden wäre. Wie könnte ein Regionallager im Nordosten die Nachfrage selbst verändern?
 
 # Literatur
 
 - Olist (2018): *Brazilian E-Commerce Public Dataset by Olist*. Kaggle, <https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce>.
 - Eppen, G. D. (1979): Effects of Centralization on Expected Costs in a Multi-Location Newsboy Problem. *Management Science* 25(5), 498–501.
-- Reader zur Vorlesung, Kapitel 6.
+- Folien und Reader zur Vorlesung, Block 3.
 
 # Anhang: R-Startercode
 
@@ -136,7 +222,6 @@ Die Zuordnung der 27 Bundesstaaten zu den fünf Großregionen ist im Startercode
 #| eval: false
 library(tidyverse)
 source("../R/scm_functions.R")   # pooling_safety_stock()
-source("../R/scm_helpers.R")     # Darstellungshilfen (Farben, Tabellen, Formatierung)
 
 pfad   <- "olist/"   # Ordner mit den entpackten CSV-Dateien
 orders <- read_csv(paste0(pfad, "olist_orders_dataset.csv"))
@@ -167,19 +252,19 @@ daten <- items |>
          woche = floor_date(as_date(order_purchase_timestamp), "week", week_start = 1)) |>
   filter(woche >= as.Date("2017-01-02"), woche <= as.Date("2018-08-20"))
 
-top10 <- daten |> count(kategorie, sort = TRUE) |> slice_head(n = 10) |> pull(kategorie)
+top5 <- daten |> count(kategorie, sort = TRUE) |> slice_head(n = 5) |> pull(kategorie)
 
 wochen <- daten |>
-  filter(kategorie %in% top10) |>
+  filter(kategorie %in% top5) |>
   count(kategorie, region, woche, name = "menge") |>
   complete(kategorie, region, woche, fill = list(menge = 0))
 
 # Beispiel: Prognosefehler (gleitender Durchschnitt über 8 Wochen) für eine Kategorie
 fehler <- wochen |>
-  filter(kategorie == "health_beauty") |>
+  filter(kategorie == top5[1]) |>
   group_by(region) |> arrange(woche) |>
   mutate(prognose = lag(zoo::rollmeanr(menge, 8, fill = NA)),
-         fehler   = menge - prognose) |>
+         fehler   = 50 * (menge - prognose)) |>          # Hochrechnung Faktor 50
   ungroup() |> drop_na(fehler) |>
   select(woche, region, fehler) |>
   pivot_wider(names_from = region, values_from = fehler)

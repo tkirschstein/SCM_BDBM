@@ -1,6 +1,6 @@
 ---
-title: "Fallstudie 1: Strategische Gestaltung von Supply Chains"
-subtitle: "Werner & Mertz und die Marke Frosch – Kreislaufwirtschaft als Wettbewerbsstrategie"
+title: "Fallstudie 1: Grundlagen des Supply Chain Managements"
+subtitle: "SushiFresh-Übungen und Werner & Mertz (Frosch) – Strategic Fit, Nachhaltigkeit und Distributionsstrukturen"
 author: "Supply Chain Management – Gruppenarbeit"
 lang: de
 format:
@@ -10,6 +10,11 @@ format:
     toc-depth: 2
     number-sections: true
     embed-resources: true
+    code-fold: show
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
 
 ::: {.callout-note}
@@ -17,99 +22,189 @@ format:
 
 | | |
 |---|---|
-| **Thema** | Strategische Gestaltung von Supply Chains, Strategic Fit, Nachhaltigkeit |
-| **Vorlesungsbezug** | Kapitel 1–3 der Vorlesungsmaterialien (Grundbegriffe, Strategic Fit, Ziele und Zielkonflikte, Nachhaltigkeit im SCM) |
-| **Typ** | Qualitative Fallstudie (Recherche und Argumentation, kein Datensatz erforderlich) |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz als PDF |
+| **Thema** | Supply Chains beschreiben, Strategic Fit, Zielkonflikte und Nachhaltigkeit, Distributionsstrukturen |
+| **Vorlesungsbezug** | Block 1 „Grundlagen des SCM“: Aufgaben, Begriffe und Konzepte · Wertschöpfung, strategische Fertigung & Strategic Fit · Ziele, Zielkonflikte & Logistikkosten · Distributionsstrukturen & -kanäle |
+| **Teil 1** | Klausurvorbereitung: Aufgaben mit Stift und Papier zu einer neuen SushiFresh-Entscheidungssituation (25–30 Min.) |
+| **Teil 2** | Qualitative Fallstudie Werner & Mertz / Frosch (Recherche und Argumentation, kein Datensatz erforderlich) |
+| **Gruppengröße** | 3–6 Personen (Teil 2) |
+| **Ergebnis** | Präsentation (20 Min.) + Diskussion (10 Min.), Foliensatz als PDF |
 :::
 
 # Lernziele
 
-Nach Bearbeitung der Fallstudie können Sie
+Nach Bearbeitung der Übungen und der Fallstudie können Sie
 
-- die Supply Chain eines realen Unternehmens als Netzwerk (fokales Unternehmen, Tier-n-Lieferanten, Kunden, Rückflüsse) modellieren,
-- Produkte und Märkte einordnen und die daraus folgende SC-Strategien ableiten,
-- den **Strategic Fit** zwischen Wettbewerbsstrategie und SC-Strategie anhand der SC-Treiber begründet beurteilen,
-- Zielkonflikte zwischen Kosten, Service und Nachhaltigkeit identifizieren und
-- eine Kreislauf-Supply-Chain (Closed-Loop) mit ihren spezifischen Risiken analysieren.
+- die Supply Chain eines Unternehmens mit Stufen, Partnern und Flüssen beschreiben,
+- die implizite Unsicherheit eines Produkts einschätzen und daraus eine passende SC-Strategie (effizient oder reaktionsfähig) ableiten,
+- Zielkonflikte zwischen Kosten, Service und Nachhaltigkeit benennen und
+- Absatz- und Logistikkanal unterscheiden und eine Distributionsstruktur begründet auswählen.
 
-# Ausgangslage
+# Teil 1 – Klausurvorbereitung: SushiFresh liefert ins Büro
 
-Die **Werner & Mertz GmbH** mit Sitz in Mainz ist ein Familienunternehmen, das 1867 als Wachswarenfabrik gegründet wurde und heute in fünfter Generation von Reinhard Schneider geführt wird. Bekannt wurde das Unternehmen zunächst mit der Schuhcreme **Erdal**. Seit 1986 vertreibt Werner & Mertz unter der Marke **Frosch** ökologisch positionierte Wasch-, Putz- und Reinigungsmittel. Frosch ist inzwischen die umsatzstärkste Marke des Unternehmens. Produziert wird im Wesentlichen in Mainz-Mombach und im österreichischen Hallein. Der Umsatz lag zuletzt bei rund einer halben Milliarde Euro (2024: ca. 611 Mio. €), beschäftigt sind gut 1.000 Mitarbeitende.
+::: {.callout-note}
+## Hinweise
+Bearbeitungszeit ca. **25 Minuten** · Hilfsmittel: nicht programmierbarer Taschenrechner · **25 Punkte**
+:::
 
-Frosch konkurriert im Drogerie- und Lebensmitteleinzelhandel mit globalen Konzernen wie Henkel, Procter & Gamble oder Unilever und mit den Handelsmarken von dm, Rossmann, Aldi oder Lidl. Das Unternehmen setzt dabei konsequent auf Umweltverträglichkeit als Differenzierungsmerkmal:
+SushiFresh beliefert bisher Supermärkte mit Sushi-Boxen. Nun soll ein zweites Geschäftsfeld entstehen: **Poke-Bowls für Firmenkantinen und Büros** in Mannheim. Die Unternehmen bestellen bis 10 Uhr am Vortag, geliefert wird zwischen 11:30 und 12:00 Uhr. Die Geschäftsführung hat beide Produkte verglichen:
 
-- **Recyclat-Initiative (seit 2012):** Gemeinsam mit Partnern aus Entsorgung, Recycling und Verpackungsherstellung (u. a. ALPLA, NABU, Fraunhofer-Institute) gewinnt Werner & Mertz Kunststoff aus dem Gelben Sack zurück und verarbeitet ihn zu neuen Flaschen. Der Anteil an Gelber-Sack-Material in den PET-Flaschen wurde schrittweise erhöht (2014: 20 %, 2021: 50 %, 2023: 75 %) und erreichte 2025 100 %. Im Juni 2025 feierte das Unternehmen die milliardste rPET-Flasche aus Recyclingmaterial. Inzwischen gibt es auch HDPE-Flaschen, Verschlüsse, Sprühköpfe und Standbodenbeutel aus Rezyklat.
-- **Zertifizierungen und Auszeichnungen:** Werner & Mertz ist seit 2003 EMAS-validiert, viele Frosch-Produkte sind *Cradle to Cradle Certified*. Außerdem erhielt das Unternehmen mehrere Deutsche Verpackungspreise und Deutsche Nachhaltigkeitspreise, und Reinhard Schneider wurde 2019 mit dem Deutschen Umweltpreis ausgezeichnet.
+| Merkmal | Sushi-Box im Supermarkt | Poke-Bowl für Büros |
+|---|---|---|
+| Variationskoeffizient der Tagesnachfrage | 0,35 | 0,10 |
+| Anzahl Varianten | 12 | 4 Basis-Bowls, 30 Kombinationen |
+| Bestellung → Verkauf | Regalware, keine Vorbestellung | Vorbestellung am Vortag |
+| Geforderte Lieferzeit | Ware morgens im Regal | Zustellfenster 30 Minuten |
+| Haltbarkeit | 24–36 Stunden | 6 Stunden |
+| Deckungsbeitrag | 2,50 €/Box | 4,00 €/Bowl |
+
+**Aufgabe 1 (7 Punkte) – Strategic Fit.** Ordnen Sie beide Produkte auf dem Spektrum der impliziten Unsicherheit ein und begründen Sie Ihre Einordnung mit mindestens drei Merkmalen der Tabelle. Leiten Sie für die Poke-Bowls ab, ob die Supply Chain eher effizient oder eher reaktionsfähig gestaltet sein sollte.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 1
+
+- **Sushi-Box: eher hohe implizite Unsicherheit.** Die Nachfrage schwankt stark (VK 0,35), es gibt keine Vorbestellung, die Haltbarkeit ist kurz, und die Ware muss täglich im Regal stehen.
+- **Poke-Bowl: geringere Nachfrageunsicherheit.** Die Mengen sind durch die Vorbestellung bekannt (VK 0,10). Die Unsicherheit liegt hier in den Anforderungen: 30 Kombinationen, 6 Stunden Haltbarkeit und ein Zustellfenster von 30 Minuten verlangen Reaktionsfähigkeit in Produktion und Zustellung.
+- **Empfehlung:** Für die Poke-Bowls eine **reaktionsfähige** Supply Chain bei der Zustellung (pünktlich, flexibel). Die Produktion selbst kann wegen der Vorbestellung effizient geplant werden (Auftragsfertigung, keine Fertigwarenbestände).
+
+*Bewertung:* 2 Punkte je Produkt für die Einordnung mit Begründung, 3 Punkte für die abgeleitete Strategie.
+:::
+
+**Aufgabe 2 (4 Punkte) – SC-Treiber.** Nennen Sie für die SC-Treiber *Bestand* und *Information* je eine Konsequenz für das neue Geschäftsfeld und begründen Sie kurz.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 2
+
+- **Bestand:** kaum Fertigwarenbestand, weil auf Bestellung produziert wird (Make-to-Order). Bestände nur bei Zutaten mit längerer Haltbarkeit (Reis, Saucen); frische Zutaten werden tagesgenau nach Auftragslage bestellt.
+- **Information:** Bestelldaten vom Vortag fließen direkt in Produktions- und Tourenplanung (Bestellportal, Schnittstelle zu den Kunden). Daneben Echtzeitinformation für die Zustellung (Lieferstatus, Zeitfenster).
+
+*Bewertung:* je 2 Punkte.
+:::
+
+**Aufgabe 3 (6 Punkte) – Logistikkosten.** Für die Zustellung stehen zwei Optionen zur Wahl:
+
+- **Eigene Fahrer:** Fixkosten 4.000 €/Monat (Fahrzeug, Grundlohn) plus 1,20 €/Bowl,
+- **Kurierdienst:** 2,80 €/Bowl, keine Fixkosten.
+
+a) Ab welcher Menge pro Monat ist die eigene Zustellung günstiger?
+
+b) Geplant sind 120 Bowls je Liefertag an 21 Liefertagen. Welche Option wählen Sie aus Kostensicht? Nennen Sie ein Argument, das unabhängig von den Kosten für die eigene Zustellung spricht.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 3
+
+a) Break-even: $4.000 + 1{,}20\,x = 2{,}80\,x \;\Rightarrow\; x = \dfrac{4.000}{1{,}60} = 2.500$ Bowls/Monat.
+
+b) Menge: $120 \cdot 21 = 2.520$ Bowls/Monat.
+
+| Option | Kosten/Monat |
+|---|---:|
+| Eigene Fahrer | $4.000 + 1{,}20 \cdot 2.520 = 7.024$ € |
+| Kurierdienst | $2{,}80 \cdot 2.520 = 7.056$ € |
+
+Die eigene Zustellung ist knapp günstiger (32 €/Monat); bei geringerer Menge kippt die Entscheidung. Argumente unabhängig von den Kosten: Kontrolle über Pünktlichkeit und Kühlkette, Kundenkontakt und Markenauftritt der Fahrer, Flexibilität bei kurzfristigen Änderungen.
+
+*Bewertung:* a) 2 Punkte, b) 2 Punkte Rechnung, 2 Punkte Argument.
+:::
+
+**Aufgabe 4 (8 Punkte) – Anzahl der Depots.** Langfristig sollen mehrere Städte beliefert werden. Für die Zahl $n$ der Ausliefer-Depots gilt vereinfacht (T€/Jahr):
+
+$$K(n) = \underbrace{30\,n}_{\text{Fixkosten}} + \underbrace{60\,\sqrt{n}}_{\text{Bestand}} + \underbrace{\frac{240}{\sqrt{n}}}_{\text{Auslieferung}}$$
+
+a) Berechnen Sie $K(n)$ für $n = 1, 2, 3, 4$ und bestimmen Sie die kostenminimale Anzahl Depots ($\sqrt 2 \approx 1{,}414$; $\sqrt 3 \approx 1{,}732$).
+
+b) Durch das engere Zustellfenster verdoppeln sich die Auslieferkosten. Wie ändert sich die optimale Anzahl? Erklären Sie das Ergebnis mit den gegenläufigen Effekten.
+
+::: {.callout-tip collapse="true"}
+## Musterlösung Aufgabe 4
+
+a)
+
+| $n$ | Fixkosten $30n$ | Bestand $60\sqrt n$ | Auslieferung $240/\sqrt n$ | $K(n)$ |
+|:-:|---:|---:|---:|---:|
+| 1 | 30,0 | 60,0 | 240,0 | 330,0 |
+| 2 | 60,0 | 84,9 | 169,7 | **314,6** |
+| 3 | 90,0 | 103,9 | 138,6 | 332,5 |
+| 4 | 120,0 | 120,0 | 120,0 | 360,0 |
+
+Optimal sind **2 Depots** mit 314,6 T€/Jahr.
+
+b) Mit $480/\sqrt n$:
+
+| $n$ | 1 | 2 | 3 | 4 |
+|---|---:|---:|---:|---:|
+| Auslieferung | 480,0 | 339,4 | 277,1 | 240,0 |
+| $K(n)$ | 570,0 | 484,3 | **471,1** | 480,0 |
+
+Optimal sind jetzt **3 Depots**. Fixkosten und Bestandskosten steigen mit der Zahl der Depots, die Auslieferkosten sinken. Werden die Auslieferkosten wichtiger, lohnt sich ein zusätzliches Depot, weil es die Wege zu den Kunden verkürzt.
+
+*Bewertung:* a) 5 Punkte, b) 3 Punkte.
+:::
+
+# Teil 2 – Fallstudie Werner & Mertz und die Marke Frosch
+
+## Ausgangslage
+
+Die **Werner & Mertz GmbH** mit Sitz in Mainz ist ein Familienunternehmen, das 1867 als Wachswarenfabrik gegründet wurde und heute in fünfter Generation von Reinhard Schneider geführt wird. Bekannt wurde das Unternehmen zunächst mit der Schuhcreme **Erdal**. Seit 1986 vertreibt Werner & Mertz unter der Marke **Frosch** ökologisch positionierte Wasch-, Putz- und Reinigungsmittel. Produziert wird im Wesentlichen in Mainz-Mombach und im österreichischen Hallein. Der Umsatz lag 2024 bei ca. 611 Mio. €, beschäftigt sind gut 1.000 Mitarbeitende.
+
+Frosch konkurriert im Drogerie- und Lebensmitteleinzelhandel mit Konzernen wie Henkel, Procter & Gamble oder Unilever und mit den Handelsmarken von dm, Rossmann, Aldi oder Lidl. Das Unternehmen setzt auf Umweltverträglichkeit als Differenzierungsmerkmal:
+
+- **Recyclat-Initiative (seit 2012):** Gemeinsam mit Partnern aus Entsorgung, Recycling und Verpackungsherstellung (u. a. ALPLA, NABU, Fraunhofer-Institute) gewinnt Werner & Mertz Kunststoff aus dem Gelben Sack zurück und verarbeitet ihn zu neuen Flaschen. Der Anteil an Gelber-Sack-Material in den PET-Flaschen stieg schrittweise (2014: 20 %, 2021: 50 %, 2023: 75 %) und erreichte 2025 100 %.
+- **Zertifizierungen:** EMAS-validiert seit 2003, viele Produkte *Cradle to Cradle Certified*; Deutscher Umweltpreis 2019 für Reinhard Schneider.
 - **Rohstoffe:** Tenside sollen verstärkt aus europäischen Pflanzen (z. B. Raps, Oliven, Leinsamen) statt aus tropischem Palm- oder Palmkernöl gewonnen werden.
 
-Die Geschäftsführung steht vor der Frage, **wie die Supply Chain in den nächsten fünf bis zehn Jahren weiterentwickelt werden soll**. Folgende Entwicklungen sind zu berücksichtigen:
+Die Geschäftsführung fragt, **wie die Supply Chain in den nächsten fünf bis zehn Jahren weiterentwickelt werden soll**. Zu berücksichtigen sind:
 
-1. Die EU-Verpackungsverordnung (PPWR) schreibt verbindliche Mindestrezyklatanteile vor. Dadurch steigt die Nachfrage nach hochwertigem Post-Consumer-Rezyklat europaweit, während das Angebot aus dem Gelben Sack begrenzt ist.
-2. Neuware (Virgin-PET) ist bei niedrigem Ölpreis oft günstiger als hochwertiges Rezyklat. Dadurch entsteht ein Kostennachteil gegenüber Wettbewerbern, die weniger konsequent vorgehen.
-3. Der Handel baut eigene »grüne« Handelsmarken auf, und die Preissensibilität der Konsumentinnen und Konsumenten schwankt mit der Konjunktur.
-4. Die Internationalisierung (u. a. Frankreich, Italien, Spanien, Nordamerika) wirft die Frage auf, ob weiterhin zentral aus Mainz/Hallein geliefert oder regional produziert bzw. abgefüllt werden soll.
+1. Die EU-Verpackungsverordnung (PPWR) schreibt Mindestrezyklatanteile vor. Die Nachfrage nach hochwertigem Rezyklat steigt europaweit, das Angebot aus dem Gelben Sack ist begrenzt.
+2. Neuware (Virgin-PET) ist bei niedrigem Ölpreis oft günstiger als Rezyklat.
+3. Der Handel baut eigene »grüne« Handelsmarken auf; gleichzeitig wächst der Onlinehandel mit Drogerieartikeln.
+4. Die Internationalisierung (u. a. Frankreich, Italien, Spanien, Nordamerika) wirft die Frage auf, ob weiterhin zentral aus Mainz/Hallein geliefert werden soll.
 
 ::: {.callout-important}
 ## Hinweis zur Recherche
-Die Angaben oben sind ein Ausgangspunkt. Recherchieren Sie selbst aktuelle Informationen, z. B. Nachhaltigkeitsberichte, die Unternehmenswebsite, Presseartikel und Fachliteratur zur Kreislaufwirtschaft. Geben Sie alle Quellen an. Wo Informationen fehlen, treffen Sie **plausible, explizit gekennzeichnete Annahmen**.
+Die Angaben oben sind ein Ausgangspunkt. Recherchieren Sie aktuelle Informationen (Nachhaltigkeitsberichte, Unternehmenswebsite, Presse, Fachliteratur) und geben Sie alle Quellen an. Wo Informationen fehlen, treffen Sie **plausible, explizit gekennzeichnete Annahmen**.
 :::
 
-# Aufgaben
+## Aufgaben
 
-## Teil A – Die Supply Chain von Frosch verstehen
+### Teil A – Supply Chain und Distribution verstehen
 
-**A1. Netzwerkmodell.** Skizzieren Sie die Supply Chain eines typischen Frosch-Produkts, z. B. des Frosch Essig-Reinigers in der 500-ml-Flasche, von den Rohstoffen bis zum Endkunden. Berücksichtigen Sie die Tier-Struktur (Tenside, Duftstoffe, Flaschen, Etiketten), die Distributionsstufen (Zentrallager des Handels, Filialen, Online-Handel) und den **Rückfluss** der Verpackungen (Haushalt → Gelber Sack → Sortierung → Recycling → Flaschenherstellung). Kennzeichnen Sie Material-, Informations- und Finanzflüsse. Handelt es sich um eine fokale oder eine polyzentrische Supply Chain?
+**A1.** Skizzieren Sie die Supply Chain des Frosch Essig-Reinigers (500-ml-Flasche) von den Rohstoffen bis zum Endkunden, einschließlich des **Rückflusses** der Verpackung (Haushalt → Gelber Sack → Sortierung → Recycling → Flaschenherstellung). Unterscheiden Sie dabei **Absatzkanal** (Drogerie, Lebensmittelhandel, online) und **Logistikkanal** (Zentrallager des Handels, Filialen, Paketversand).
 
-**A2. Produkt- und Nachfragecharakteristik.** Ordnen Sie typische Produkte des Frosch-Sortiments in das Strategic-Fit-Konzept ein und charakterisieren Sie die implizite Nachfrageunsicherheit anhand der Kriterien aus der Vorlesung. Unterscheiden sich einzelne Produktgruppen, z. B. Basisreiniger, Sondereditionen oder Nachfüllbeutel?
+### Teil B – Strategic Fit
 
-## Teil B – Strategic Fit
+**B1.** Beschreiben Sie die Wettbewerbsstrategie von Frosch und beurteilen Sie für die SC-Treiber, ob Werner & Mertz sie eher effizient oder eher reaktionsfähig ausgestaltet:
 
-**B1. Wettbewerbsstrategie und SC-Treiber.** Beschreiben Sie die Wettbewerbsstrategie von Frosch (z. B. nach Porter). Analysieren Sie anschließend für die sechs SC-Treiber, wie Werner & Mertz sie heute (vermutlich) ausgestaltet und ob dies eher effizient oder reaktionsfähig ist:
+| SC-Treiber | Ausgestaltung bei Frosch | effizient ↔ reaktionsfähig |
+|---|---|---|
+| Standorte | | |
+| Lagerbestand | | |
+| Transport | | |
+| Information | | |
+| Beschaffung | | |
 
-| SC-Treiber | Ausgestaltung bei Frosch | effizient ↔ reaktionsfähig | Begründung |
-|---|---|---|---|
-| Anlagen/Standorte | | | |
-| Lagerbestand | | | |
-| Transport | | | |
-| Information | | | |
-| Beschaffung | | | |
-| Preisgestaltung | | | |
+Positionieren Sie Frosch im Strategic-Fit-Diagramm. Welche Rolle spielt die **Beschaffungsunsicherheit** bei Rezyklat?
 
-**B2. Beurteilung.** Positionieren Sie Frosch im Strategic-Fit-Diagramm (implizite Unsicherheit vs. Reaktionsfähigkeit). In welchen Marktsegmenten liegt ein Strategic Fit vor? Welche Rolle spielt die Beschaffungsseite (**Supply Uncertainty** bei Rezyklat)?
+### Teil C – Zielkonflikte und Nachhaltigkeit
 
-## Teil C – Zielkonflikte und Nachhaltigkeit
+**C1.** Nennen Sie zwei konkrete Zielkonflikte der Frosch-Supply-Chain (z. B. Rezyklatanteil ↔ Materialkosten, zentrale Produktion ↔ Transportemissionen im Ausland). Erklären Sie anschließend, warum Werner & Mertz in die Recyclat-Initiative investiert hat, statt Rezyklat einfach am Markt zu kaufen (Make-or-Buy, vertikale Kooperation).
 
-**C1. Zielkonflikte.** Identifizieren Sie mindestens **zwei konkrete Zielkonflikte** der Supply Chain und veranschaulichen Sie einen davon qualitativ als Pareto-Front. Beispiele sind Rezyklatanteil ↔ Materialkosten und Verfügbarkeit oder zentrale Produktion ↔ Transportemissionen und Lieferzeit in Auslandsmärkten.
+### Teil D – Empfehlung und Reflexion
 
-**C2. Closed-Loop-Supply-Chain.** Analysieren Sie die Rückführungskette: Wer sind die Akteure (Duales System, Sortierer, Recycler), welche Risiken bestehen (Menge, Qualität, Preis, Regulierung), und warum hat Werner & Mertz in die Initiative investiert, statt Rezyklat einfach am Markt zu kaufen (Make-or-Buy, vertikale Kooperation)?
+**D1. Empfehlung.** Wählen Sie **eine** Option und bewerten Sie sie anhand von Strategic Fit, Zielkonflikten und Risiken:
 
-**C3. Nachhaltigkeitsstrategie.** Ordnen Sie die Nachhaltigkeitsstrategie von Werner & Mertz in die Matrix aus der Vorlesung ein (defensiv, offensiv, …). Welche Planungsaufgaben aus Kapitel 3 werden besonders adressiert?
+1. **Rückwärtsintegration:** eigene Sortier- oder Recyclinganlage zur Sicherung der Rezyklatversorgung,
+2. **Regionalisierung:** Abfüllung in Südeuropa oder Nordamerika statt zentraler Belieferung,
+3. **Direktvertrieb:** eigener Onlineshop mit Nachfüllsystem neben dem Handel.
 
-## Teil D – Empfehlung und Reflexion
+**D2. Reflexion.** Beantworten Sie in der Präsentation:
 
-**D1. Strategische Empfehlung.** Wählen Sie **eine** der folgenden Optionen und bewerten Sie sie anhand der SC-Treiber, des Strategic Fit, der Zielkonflikte und der Risiken:
-
-1. **Rückwärtsintegration:** Beteiligung an bzw. Aufbau einer eigenen Sortier- oder Recyclinganlage zur Sicherung der Rezyklatversorgung.
-2. **Regionalisierung:** Aufbau einer Abfüllung in Südeuropa oder Nordamerika statt zentraler Belieferung aus Mainz und Hallein.
-3. **Nachfüllsysteme und Konzentrate:** Umstellung wesentlicher Teile des Sortiments auf Konzentrate und Nachfüllbeutel.
-
-Formulieren Sie eine klare Handlungsempfehlung mit Begründung.
-
-**D2. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
-
-1. Ihre Analyse beruht weitgehend auf öffentlichen Informationen und Annahmen. Wie belastbar sind Ihre Aussagen, und welche internen Daten würden Sie benötigen, um sie abzusichern?
-2. Wo stößt das Strategic-Fit-Konzept an Grenzen, wenn Nachhaltigkeit und Beschaffungsunsicherheit im Zentrum stehen?
-3. Ist Nachhaltigkeit bei Frosch Teil der Wettbewerbsstrategie oder eine Restriktion für die SC-Strategie? Was folgt daraus für Unternehmen, die Nachhaltigkeit »nur« wegen Regulierung umsetzen?
-4. Welche Rolle spielen Werte und Eigentümerstruktur (Familienunternehmen) für SC-Entscheidungen, die sich kurzfristig ökonomisch nicht rechnen?
-5. Welche Erkenntnisse lassen sich auf internationale Märkte übertragen, in denen es kein vergleichbares Sammelsystem wie den Gelben Sack gibt?
-
+1. Wie belastbar sind Ihre Aussagen auf Basis öffentlicher Informationen, und welche internen Daten würden Sie benötigen?
+2. Ist Nachhaltigkeit bei Frosch Teil der Wettbewerbsstrategie oder eine Restriktion für die SC-Strategie?
+3. Was lässt sich aus dem Vergleich von Frosch (lange Haltbarkeit, Handel) und SushiFresh (24–36 Stunden, eigene Filialen) über den Zusammenhang von Produkt und Supply-Chain-Gestaltung lernen?
 
 # Literatur und Quellen (Einstieg)
 
 - Werner & Mertz: Recyclat-Initiative, <https://werner-mertz.de/en/recyclate-initiative/>
 - Fisher, M. L. (1997): What Is the Right Supply Chain for Your Product? *Harvard Business Review* 75(2), 105–116.
-- Chopra, S.; Meindl, P.: *Supply Chain Management – Strategy, Planning, and Operation*, Kapitel 1–3.
-- Porter, M. E. (1985): *Competitive Advantage*. New York: Free Press.
-- Reader zur Vorlesung, Kapitel 1–3.
+- Chopra, S.; Meindl, P.: *Supply Chain Management – Strategy, Planning, and Operation*, Kapitel 1–4.
+- Folien und Reader zur Vorlesung, Block 1.
