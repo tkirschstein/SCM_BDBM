@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supply Chain Management – Kursmaterialien</title>
+<meta name="description" content="Reader, Vorlesungsfolien und Fallstudien zur Veranstaltung Supply Chain Management &amp; Distribution (Bachelor Digital Business Management, Hochschule RheinMain).">
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --text: #1f2933;
+    --muted: #5b6875;
+    --border: #dde2e8;
+    --accent: #1f5fa8;
+    --accent-soft: #e7eff9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14181d;
+      --surface: #1c2229;
+      --text: #e6e9ed;
+      --muted: #a0abb7;
+      --border: #2f3842;
+      --accent: #7fb0ea;
+      --accent-soft: #22303f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 48px 16px 64px; }
+  header p { margin: 4px 0; color: var(--muted); }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 8px; }
+  h2 { font-size: 1.25rem; margin: 0 0 12px; }
+  h3 { font-size: 1rem; margin: 20px 0 4px; color: var(--muted); font-weight: 600; }
+  a { color: var(--accent); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 32px 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .card p { margin: 0 0 16px; color: var(--muted); flex: 1; }
+  .button {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .button:hover, .button:focus-visible { text-decoration: underline; }
+  section.box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  section.box > p { margin: 0 0 8px; color: var(--muted); }
+  ol { margin: 0; padding-left: 1.4em; }
+  li { margin: 8px 0; }
+  li span { display: block; color: var(--muted); font-size: 0.92rem; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+  td.nr, td.datum { white-space: nowrap; }
+  tr.frei td { color: var(--muted); font-style: italic; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Supply Chain Management &amp; Distribution</h1>
+    <p>Bachelor Digital Business Management · 3. Fachsemester · Wintersemester 2026/27</p>
+    <p>Hochschule RheinMain · Prof. Dr. Thomas Kirschstein · montags 18:00–21:00 Uhr</p>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Reader</h2>
+      <p>Das begleitende Lehrbuch mit allen Kapiteln, Herleitungen und dem durchgängigen Fallbeispiel SushiFresh GmbH. Bitte bereiten Sie vor jedem Termin das zugehörige Kapitel vor.</p>
+      <a class="button" href="book/index.html">Reader öffnen</a>
+    </div>
+    <div class="card">
+      <h2>Vorlesungsfolien</h2>
+      <p>Die Folien aller 14 Vorlesungseinheiten in einer Gesamtausgabe, in der Reihenfolge der Vorlesung.</p>
+      <a class="button" href="slides/scm-komplett.html">Folien öffnen</a>
+    </div>
+  </div>
+
+  <section class="box" aria-labelledby="fs-titel">
+    <h2 id="fs-titel">Fallstudien</h2>
+    <p>Jede Fallstudie enthält Aufgaben zur Klausurvorbereitung mit ausklappbaren Musterlösungen (Teil 1) und eine fakultative Gruppenfallstudie (Teil 2).</p>
+
+    <h3>Grundlagen des Supply Chain Managements</h3>
+    <ol start="1">
+      <li><a href="case_studies/case_study_01_strategie_frosch.html">Grundlagen des Supply Chain Managements</a>
+        <span>Werner &amp; Mertz und die Marke Frosch – Strategic Fit, Nachhaltigkeit und Distributionsstrukturen</span></li>
+    </ol>
+
+    <h3>Strategische Gestaltung von Supply Chains</h3>
+    <ol start="2">
+      <li><a href="case_studies/case_study_02_standort_ahp_steiner_weber.html">Qualitative und kontinuierliche Standortplanung</a>
+        <span>Ein Distributionshub für Lateinamerika – Nutzwertanalyse, AHP und Steiner-Weber-Modell</span></li>
+      <li><a href="case_studies/case_study_03_wlp_batterielogistik.html">Diskrete Standortplanung und Transportplanung</a>
+        <span>Batterielogistik für die Automobilindustrie in Norddeutschland und Benelux</span></li>
+    </ol>
+
+    <h3>Unsicherheits- und Risikomanagement in Supply Chains</h3>
+    <ol start="4">
+      <li><a href="case_studies/case_study_04_pooling_einzelhandel.html">Kapazitäts- und Lagerbestandspooling</a>
+        <span>Zentral- oder Regionallager für einen brasilianischen Online-Marktplatz (Olist-Daten)</span></li>
+      <li><a href="case_studies/case_study_05_newsvendor_baeckerei.html">Das Newsvendor-Modell in der Praxis</a>
+        <span>Tägliche Produktionsplanung einer französischen Bäckerei</span></li>
+      <li><a href="case_studies/case_study_06_bullwhip.html">Der Bullwhip-Effekt</a>
+        <span>Empirische Messung in US-Wirtschaftsdaten und Simulation von Gegenmaßnahmen</span></li>
+    </ol>
+
+    <h3>Distributionslogistik</h3>
+    <ol start="7">
+      <li><a href="case_studies/case_study_07_lager_kommissionierung.html">Lagerplanung und Kommissionierung</a>
+        <span>Lagerplatzvergabe und Picker Routing für einen Online-Händler (Online-Retail-II-Daten)</span></li>
+      <li><a href="case_studies/case_study_08_transportmittel_antriebe.html">Transportmittel, Antriebe und Transportkosten</a>
+        <span>Die Elektrifizierung der Lkw-Flotte eines regionalen Getränkegroßhändlers</span></li>
+    </ol>
+
+    <h3>Operative Distributionsplanung</h3>
+    <ol start="9">
+      <li><a href="case_studies/case_study_09_kuerzeste_wege.html">Kürzeste Wege</a>
+        <span>Notfallbelieferung von Kliniken in der Rhein-Neckar-Region</span></li>
+      <li><a href="case_studies/case_study_10_tourenplanung.html">Tourenplanung</a>
+        <span>Heuristiken im Benchmark-Test (TSPLIB und CVRPLIB)</span></li>
+    </ol>
+  </section>
+
+  <section class="box" aria-labelledby="plan-titel">
+    <h2 id="plan-titel">Terminübersicht</h2>
+    <p>Ablauf je Termin: Rückfragen zum Thema · Klausuraufgaben in Kleingruppen · Besprechung · fakultative Fallstudienpräsentationen.</p>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Nr.</th><th>Datum</th><th>Thema</th><th>Fallstudie</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="nr">1</td><td class="datum">19.10.2026</td><td>Kick-off; Einführung und Grundbegriffe; Strategic Fit</td><td><a href="case_studies/case_study_01_strategie_frosch.html">FS 1</a></td></tr>
+        <tr><td class="nr">2</td><td class="datum">26.10.2026</td><td>Ziele, Zielkonflikte und Logistikkosten; Nachhaltigkeit</td><td><a href="case_studies/case_study_01_strategie_frosch.html">FS 1</a></td></tr>
+        <tr><td class="nr">3</td><td class="datum">02.11.2026</td><td>Distributionsstrukturen und -kanäle</td><td><a href="case_studies/case_study_01_strategie_frosch.html">FS 1</a></td></tr>
+        <tr><td class="nr">4</td><td class="datum">09.11.2026</td><td>Standortplanung I: Nutzwertanalyse, AHP, Steiner-Weber</td><td><a href="case_studies/case_study_02_standort_ahp_steiner_weber.html">FS 2</a></td></tr>
+        <tr><td class="nr">5</td><td class="datum">16.11.2026</td><td>Standortplanung II: Warehouse Location Problem</td><td><a href="case_studies/case_study_03_wlp_batterielogistik.html">FS 3</a></td></tr>
+        <tr><td class="nr">6</td><td class="datum">23.11.2026</td><td>Transportplanung</td><td><a href="case_studies/case_study_03_wlp_batterielogistik.html">FS 3</a></td></tr>
+        <tr><td class="nr">7</td><td class="datum">30.11.2026</td><td>Kapazitäts- und Lagerbestandspooling</td><td><a href="case_studies/case_study_04_pooling_einzelhandel.html">FS 4</a></td></tr>
+        <tr><td class="nr">8</td><td class="datum">07.12.2026</td><td>Das Newsvendor-Modell</td><td><a href="case_studies/case_study_05_newsvendor_baeckerei.html">FS 5</a></td></tr>
+        <tr><td class="nr">9</td><td class="datum">14.12.2026</td><td>Der Bullwhip-Effekt und das Beer Game</td><td><a href="case_studies/case_study_06_bullwhip.html">FS 6</a></td></tr>
+        <tr><td class="nr">10</td><td class="datum">21.12.2026</td><td>Lagerplanung und Kommissionierung</td><td><a href="case_studies/case_study_07_lager_kommissionierung.html">FS 7</a></td></tr>
+        <tr class="frei"><td class="nr">–</td><td class="datum">28.12.2026</td><td>keine Veranstaltung</td><td></td></tr>
+        <tr><td class="nr">11</td><td class="datum">04.01.2027</td><td>Transportmittel, Antriebe und Transportkosten</td><td><a href="case_studies/case_study_08_transportmittel_antriebe.html">FS 8</a></td></tr>
+        <tr><td class="nr">12</td><td class="datum">11.01.2027</td><td>Kürzeste Wege</td><td><a href="case_studies/case_study_09_kuerzeste_wege.html">FS 9</a></td></tr>
+        <tr><td class="nr">13</td><td class="datum">18.01.2027</td><td>Tourenplanung</td><td><a href="case_studies/case_study_10_tourenplanung.html">FS 10</a></td></tr>
+        <tr><td class="nr">14</td><td class="datum">25.01.2027</td><td>Klausurvorbereitung: Probeklausur und Fragestunde</td><td></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <footer>
+    Quellcode und Kursinformationen: <a href="https://github.com/tkirschstein/SCM_BDBM">github.com/tkirschstein/SCM_BDBM</a>
+  </footer>
+</main>
+</body>
+</html>

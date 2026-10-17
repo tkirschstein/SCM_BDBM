@@ -8,17 +8,17 @@ Prof. Dr. Thomas Kirschstein
 
 ## Kursüberblick
 
-Dieses Repository enthält alle Materialien zu den Lehrveranstaltungen *Supply Chain Management* und *Distribution* im Bachelorstudiengang Digital Business Management: Vorlesungsfolien, den begleitenden Reader, Übungsaufgaben und die zugehörige R-Funktionsbibliothek.
+Dieses Repository enthält alle Materialien zu den Lehrveranstaltungen *Supply Chain Management* und *Distribution* im Bachelorstudiengang Digital Business Management: Vorlesungsfolien, den begleitenden Reader, Fallstudien mit Klausuraufgaben und die zugehörige R-Funktionsbibliothek.
 
-Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des Supply Chain Managements. Im Mittelpunkt steht die Übertragung von Methoden aus der Vorlesung auf möglichst realistische Problemstellungen. 
+Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des Supply Chain Managements und der Distribution. Im Mittelpunkt steht die Übertragung von Methoden aus der Vorlesung auf möglichst realistische Problemstellungen. Ein durchgängiges Fallbeispiel, die fiktive **SushiFresh GmbH**, verbindet alle Themen.
 
 | | |
 |---|---|
-| **Studiengang** | Bachelor Digital Business Management, 3. Fachsemester |
+| **Studiengang** | Bachelor Digital Business Management, 3. Fachsemester (Pflichtveranstaltung) |
 | **Umfang** | 2+2 SWS (seminaristische Vorlesung) |
-| **Termine** | montags, 19.10.2026 – 25.01.2027 (14 Termine, keine Veranstaltung am 28.12.) |
+| **Termine** | montags 18:00–21:00 Uhr, 19.10.2026 – 25.01.2027 (14 Termine, keine Veranstaltung am 28.12.) |
 | **Sprache** | Deutsch (Fachliteratur überwiegend Englisch) |
-| **Lehrformat** | Inverted Classroom: Vorbereitung mit dem Reader, in der Veranstaltung kurzer Input, Fallstudien-/Übungsbesprechung |
+| **Lehrformat** | Inverted Classroom: Selbststudium mit Folien und Reader vor dem Termin, in der Veranstaltung Rückfragen, Klausuraufgaben und Besprechung |
 | **Prüfungsleistung** | Klausur |
 | **Voraussetzungen** | Grundkenntnisse in Statistik; Programmierkenntnisse sind hilfreich, aber nicht erforderlich (R-Startercode wird bereitgestellt) |
 
@@ -26,15 +26,74 @@ Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des 
 
 - Supply Chains als Netzwerke beschreiben und ihre strategische Ausrichtung (Strategic Fit) beurteilen,
 - Zielkonflikte zwischen Kosten, Service und Nachhaltigkeit erkennen und bewerten,
-- Standortentscheidungen mit qualitativen (Nutzwertanalyse, AHP), kontinuierlichen (Steiner-Weber) und diskreten Modellen (WLP) vorbereiten,
+- Distributionsstrukturen und -kanäle unterscheiden und bewerten,
+- Standortentscheidungen mit qualitativen (Nutzwertanalyse, AHP), kontinuierlichen (Steiner-Weber) und diskreten Modellen (WLP) vorbereiten sowie Transportprobleme lösen,
 - Bestandsentscheidungen unter Unsicherheit (Pooling, Newsvendor) treffen,
-- die Ursachen des Bullwhip-Effekts erklären und Gegenmaßnahmen bewerten sowie
+- die Ursachen des Bullwhip-Effekts erklären und Gegenmaßnahmen bewerten,
+- Lager- und Kommissioniersysteme gestalten, Transportmittel und Antriebe über Kosten und Emissionen vergleichen,
+- kürzeste Wege und Touren mit exakten und heuristischen Verfahren planen sowie
 - die Aussagekraft und Grenzen quantitativer Modelle für reale Managemententscheidungen kritisch reflektieren.
+
+---
+
+## Ablauf der Veranstaltung
+
+### Inverted Classroom
+
+Die Veranstaltung arbeitet nach dem Prinzip *Inverted Classroom*. Einen festen Vortrag gibt es nicht. Die Inhalte eines Termins erarbeiten Sie **vorab im Selbststudium** mit den Folien und dem zugehörigen Reader-Kapitel (siehe Terminübersicht). Die R-Exkurse im Reader sind optional und nicht klausurrelevant.
+
+In der Präsenzveranstaltung steht die Anwendung im Vordergrund. Ein Termin läuft in der Regel so ab:
+
+| Zeit | Block | Inhalt |
+|---|---|---|
+| 18:00–18:45 | **Rückfragen zum Thema** | Offene Fragen aus dem Selbststudium werden gemeinsam geklärt. Bringen Sie Ihre Fragen mit – je konkreter, desto besser. |
+| 18:45–19:15 | **Klausuraufgaben** | Bearbeitung von Teil 1 der zugehörigen Fallstudie in Kleingruppen, mit Stift und Papier |
+| 19:15–19:30 | Pause | |
+| 19:30–20:15 | **Besprechung** | Gemeinsame Besprechung der Lösungen, Diskussion von Lösungswegen und typischen Fehlern |
+| 20:15–21:00 | **Fallstudien und Vertiefung** | Präsentation und Diskussion fakultativer Gruppenfallstudien (Teil 2); sonst weitere Rückfragen und Vertiefung |
+
+### Fallstudien
+
+Zu jedem Thema gibt es eine Fallstudie im Ordner `case_studies` (Links siehe unten). Jede Fallstudie besteht aus zwei Teilen:
+
+- **Teil 1 – Klausurvorbereitung:** Aufgaben im Klausurstil zu einer neuen SushiFresh-Entscheidungssituation, lösbar mit Stift und Papier in 25–30 Minuten. Die Musterlösungen sind in der Fallstudie ausklappbar hinterlegt. Diese Aufgaben werden in der Veranstaltung bearbeitet.
+- **Teil 2 – Gruppenfallstudie (fakultativ):** eine vertiefende, meist datenbasierte Fallstudie für Gruppen von 3–6 Personen. Die Bearbeitung ist freiwillig und geht nicht in die Note ein. Gruppen können ihre Ergebnisse in einem der Termine nach dem jeweiligen Thema präsentieren (ca. 20 Minuten) und erhalten dazu Feedback. Bitte melden Sie Präsentationen spätestens eine Woche vorher an.
+
+### Terminübersicht
+
+| Nr. | Datum | Thema | Folien / Reader-Kapitel | Klausuraufgaben (Teil 1) |
+|---|---|---|---|---|
+| 1 | 19.10.2026 | Kick-off und Organisation; Einführung und Grundbegriffe des SCM; Wertschöpfung, strategische Fertigung und Strategic Fit | Einheiten 01 und 02 / Kapitel 1 und 2 | Fallstudie 1, Aufgaben 1–2 |
+| 2 | 26.10.2026 | Ziele, Zielkonflikte und Logistikkosten; Nachhaltigkeit; Fallbeispiel SushiFresh | Einheit 03 / Kapitel 3 | Fallstudie 1, Aufgabe 3 |
+| 3 | 02.11.2026 | Distributionsstrukturen und -kanäle | Einheit 14a / Kapitel 4 | Fallstudie 1, Aufgabe 4 |
+| 4 | 09.11.2026 | Standortplanung I: Nutzwertanalyse, AHP, Steiner-Weber-Modell | Einheit 04 / Kapitel 5 | Fallstudie 2 |
+| 5 | 16.11.2026 | Standortplanung II: Warehouse Location Problem | Einheit 05 / Kapitel 6 | Fallstudie 3, Aufgaben 1–3 |
+| 6 | 23.11.2026 | Transportplanung | Einheit 09 / Kapitel 7 | Fallstudie 3, Aufgaben 4–6 |
+| 7 | 30.11.2026 | Unsicherheit in Supply Chains: Kapazitäts- und Lagerbestandspooling | Einheit 06 / Kapitel 8 | Fallstudie 4 |
+| 8 | 07.12.2026 | Das Newsvendor-Modell | Einheit 07 / Kapitel 9 | Fallstudie 5 |
+| 9 | 14.12.2026 | Der Bullwhip-Effekt und das Beer Game | Einheit 08 / Kapitel 10 | Fallstudie 6 |
+| 10 | 21.12.2026 | Lagerplanung und Kommissionierung | Einheit 13 / Kapitel 11 | Fallstudie 7 |
+| – | 28.12.2026 | *keine Veranstaltung* | | Wiederholung: Teil 1 der Fallstudien 1–7 |
+| 11 | 04.01.2027 | Transportmittel, Antriebe und Transportkosten | Einheit 12 / Kapitel 12 | Fallstudie 8 |
+| 12 | 11.01.2027 | Kürzeste Wege | Einheit 10 / Kapitel 13 | Fallstudie 9 |
+| 13 | 18.01.2027 | Tourenplanung | Einheit 11 / Kapitel 14 | Fallstudie 10 |
+| 14 | 25.01.2027 | Klausurvorbereitung: Probeklausur, Besprechung und Fragestunde | alle | Probeklausur |
+
+**Hinweise zu einzelnen Terminen:**
+
+- **Termin 1:** Da vor dem ersten Termin keine Vorbereitung möglich ist, beginnt die Veranstaltung mit Organisation und einem kurzen Überblick. Für die übrigen Termine gilt der oben beschriebene Ablauf.
+- **Termin 9:** Ein großer Teil des Abends ist für das Beer Game reserviert (siehe unten).
+- **Termin 14:** Die Probeklausur wird unter Klausurbedingungen geschrieben und anschließend besprochen.
 
 ---
 
 ## Prüfungsleistung: Klausur
 
+- Die Klausur wird gemeinsam mit dem BBA-Kurs geschrieben.
+- **Prüfungsrelevant** sind die Inhalte der Folien und des Readers. R-Code und die R-Exkurse des Readers sind nicht klausurrelevant.
+- Die Klausuraufgaben entsprechen in Stil und Umfang den Aufgaben in **Teil 1 der Fallstudien**: Rechenaufgaben, die mit Stift und Papier lösbar sind, sowie Verständnis- und Transferfragen.
+- Die Gruppenfallstudien (Teil 2) sind fakultativ und gehen nicht in die Note ein.
+- Zur Vorbereitung dienen die Kontrollfragen am Ende jedes Reader-Kapitels, die Klausuraufgaben mit Musterlösungen und die Probeklausur am 25.01.2027.
 
 ---
 
@@ -43,49 +102,51 @@ Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des 
 - Navigation: https://tkirschstein.github.io/SCM_BDBM/
 - Slides: https://tkirschstein.github.io/SCM_BDBM/slides/scm-komplett.html
 - Reader: https://tkirschstein.github.io/SCM_BDBM/book/index
-- Case-Studies: 
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_01_strategie_frosch
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_02_standort_ahp_steiner_weber
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_03_wlp_batterielogistik
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_04_pooling_einzelhandel
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_05_newsvendor_baeckerei
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_06_bullwhip
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_07_lager_kommissionierung
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_08_transportmittel_antriebe
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_09_kuerzeste_wege
-  - https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_10_tourenplanung
+- Fallstudien:
+  - Fallstudie 1 – Grundlagen des SCM: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_01_strategie_frosch
+  - Fallstudie 2 – Qualitative und kontinuierliche Standortplanung: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_02_standort_ahp_steiner_weber
+  - Fallstudie 3 – Diskrete Standortplanung und Transportplanung: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_03_wlp_batterielogistik
+  - Fallstudie 4 – Kapazitäts- und Lagerbestandspooling: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_04_pooling_einzelhandel
+  - Fallstudie 5 – Newsvendor-Modell: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_05_newsvendor_baeckerei
+  - Fallstudie 6 – Bullwhip-Effekt: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_06_bullwhip
+  - Fallstudie 7 – Lagerplanung und Kommissionierung: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_07_lager_kommissionierung
+  - Fallstudie 8 – Transportmittel, Antriebe und Transportkosten: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_08_transportmittel_antriebe
+  - Fallstudie 9 – Kürzeste Wege: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_09_kuerzeste_wege
+  - Fallstudie 10 – Tourenplanung: https://tkirschstein.github.io/SCM_BDBM/case_studies/case_study_10_tourenplanung
 
 ---
 
 ## Beer Game
 
-Das **Beer Distribution Game** (Sterman 1989) simuliert den Bullwhip-Effekt in einer vierstufigen Supply Chain (Einzelhandel → Großhandel → Distributor → Hersteller). Wir spielen das Spiel mehrfach in der Veranstaltung in der Regel mit folgendem Ablauf:
+Das **Beer Distribution Game** (Sterman 1989) simuliert den Bullwhip-Effekt in einer vierstufigen Supply Chain (Einzelhandel → Großhandel → Distributor → Hersteller). Wir spielen das Spiel am 14.12.2026 in der Veranstaltung, in der Regel mit folgendem Ablauf:
 
 1. Einführung in die Regeln/Annahmen (variieren während des Semesters),
 2. Spielrunden/Simulation,
 3. Auswertung der Bestell- und Bestandsverläufe und Diskussion.
 
-Online-Plattform: [Transentis](https://beergame.transentis.com/de). 
+Online-Plattform: [Transentis](https://beergame.transentis.com/de).
 
 Machen Sie sich gern vorab mit den Regeln und Ablauf vertraut.
 
 ---
 
-
 ## Aufbau des Repositories
 
 ```
-SCM/
+SCM_BDBM/
 ├── slides/                  # Vorlesungsfolien (Quarto revealjs) → docs/slides
-│   ├── lectures/            # 8 Vorlesungseinheiten (01–08)
-│   ├── scm-komplett.qmd     # Gesamtausgabe aller Einheiten
+│   ├── lectures/            # 14 Vorlesungseinheiten (Dateinummern 01–14a, Reihenfolge siehe Terminübersicht)
+│   ├── scm-komplett.qmd     # Gesamtausgabe aller Einheiten in Vorlesungsreihenfolge
 │   └── _quarto.yml
 ├── book/                    # Reader (Quarto Book) → docs/book
-│   ├── chapters/            # Kapitel 1–9
+│   ├── chapters/            # 14 Kapitel in fünf Teilen
 │   ├── index.qmd
 │   └── _quarto.yml
+├── case_studies/            # Fallstudien 1–10 (Klausuraufgaben + Gruppenfallstudie) → docs/case_studies
+├── data/                    # Datensätze für Übungen und Fallstudien
 ├── R/
-│   └── scm_functions.R      # R-Funktionsbibliothek des Kurses (roxygen2-dokumentiert)
+│   ├── scm_functions.R      # R-Funktionsbibliothek des Kurses (roxygen2-dokumentiert)
+│   └── scm_helpers.R        # Darstellungshilfen (Farben, Tabellen, Formatierung)
 └── docs/                    # gerenderte Ausgabe (HTML)
 ```
 
@@ -127,10 +188,9 @@ install.packages(c(
 ))
 ```
 
-Für die Fallstudien 4 und 5 ist ein (kostenloses) **Kaggle-Konto** erforderlich, um die Datensätze herunterzuladen.
+R wird nur für die fakultativen Gruppenfallstudien und die Vertiefungen im Reader benötigt. Für die Fallstudien 4 und 5 ist ein (kostenloses) **Kaggle-Konto** erforderlich, um die Datensätze herunterzuladen.
 
-Für diejenigen, die sich mit R vertraut machen wollen, ist unter [Data Science](https://ds-pl-r-book.netlify.app/) ein Einführungs-Kurs verfügbar. 
-
+Für diejenigen, die sich mit R vertraut machen wollen, ist unter [Data Science](https://ds-pl-r-book.netlify.app/) ein Einführungs-Kurs verfügbar.
 
 ---
 
