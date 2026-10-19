@@ -737,7 +737,7 @@ $\left(
 \text{= Score Raunheim}
 \end{array}$
 
-**Ergebnis:** Beste Alternative ist Mainz-Hechtheim — allerdings nur **knapp** vor Raunheim!
+**Ergebnis:** Beste Alternative ist Mainz-Hechtsheim — allerdings nur **knapp** vor Raunheim!
 
 ::: {.fragment .fade-up}
 **Vorteile AHP**
@@ -764,21 +764,22 @@ Analytical Hierarchy Process (AHP Methode) - Konsistenzindex
      1\!/\!2 & 5 & 1 \\
      \end{array}
      \right)\times\left(\begin{array}{c}
-     0.510\\
+     0.501\\
      0.118\\
      0.380\\
      \end{array}\right)=\left(\begin{array}{c}
-     1.624 \\
-     0.364\\
-     1.225\\
+     1.615 \\
+     0.361\\
+     1.221\\
      \end{array}\right)$$
 2.  Dividiere den Vektor komponentenweise durch die Präferenzwerte: $$\begin{align*}
-    1.624 / 0.510 &=  3.184\\
-    0.364 / 0.118 &=  3.085\\
-    1.225 / 0.380 &=  3.224\\
-    \text{average }\bar{P} &= 3.164
+    1.615 / 0.501 &=  3.224\\
+    0.361 / 0.118 &=  3.059\\
+    1.221 / 0.380 &=  3.212\\
+    \text{average }\bar{P} &= 3.165
     \end{align*}$$
-3.  Berechne den Konsistenzwert mit $n=3$ durch $$ KI =\frac{\bar{P}- n}{n-1} = 0.08. $$
+3.  Berechne den Konsistenzindex mit $n=3$ durch $$ KI =\frac{\bar{P}- n}{n-1} = \frac{3.165-3}{2} = 0.082. $$
+4.  Berechne die Konsistenzrate mit dem Random Index $RI$ (für $n=3$: $RI = 0.58$): $$ CR = \frac{KI}{RI} = \frac{0.082}{0.58} = 0.14. $$
 :::
 ::::
 
@@ -787,7 +788,9 @@ Analytical Hierarchy Process (AHP Methode) - Konsistenzindex
 ::: callout-note
 ## Interpretation
 
-Je näher $KI$ an 0 liegt, desto konsistenter ist die Präferenzmatrix. Wenn $KI=0$ ist sie perfekt konsistent. $\bar{P}$ ist der größte Eigenwert der Präferenzmatrix. Mit $CR \approx 0{,}08$ ist die Matrix sehr nah an 0 und kann damit als konsistent gelten.
+$\bar{P}$ ist der größte Eigenwert der Präferenzmatrix. Bei $KI=0$ ist sie perfekt konsistent. Geprüft wird aber die Konsistenzrate: Faustregel $CR < 0{,}1$. Mit $CR \approx 0{,}14$ ist die Kriterienmatrix **nicht hinreichend konsistent** – die Paarvergleiche sollten überprüft werden.
+
+$RI$ nach Saaty: $n=3$: 0,58; $n=4$: 0,90; $n=5$: 1,12
 :::
 :::
 ::::

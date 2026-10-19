@@ -341,7 +341,7 @@ Mit $CI \approx `r sprintf("%.3f", konsistenz$CI)`$ und $CR \approx `r sprintf("
 
 ::: {.callout-note}
 ## Hinweis: Konsistenzindex und Konsistenzrate
-Auf den Folien wird der Konsistenzwert $KI = CI = (\bar{P}-n)/(n-1) \approx 0{,}08$ berechnet. Dieser Wert ist der **Konsistenzindex** $CI$. Für das Urteil "konsistent/inkonsistent" muss er noch durch den Random Index $RI = 0{,}58$ (für $n=3$) geteilt werden; erst die resultierende Konsistenzrate $CR \approx 0{,}14$ wird mit der 10-%-Schwelle verglichen.
+Auf den Folien heißt der Konsistenzindex $KI$ (hier $KI = CI$). Ein kleiner Konsistenzindex allein genügt nicht für das Urteil „konsistent“: Er wird erst durch den Random Index $RI$ geteilt (für $n=3$: $RI = 0{,}58$), und die resultierende Konsistenzrate wird mit der 10-%-Schwelle verglichen. Im Beispiel ergibt sich aus $CI \approx 0{,}08$ die Konsistenzrate $CR \approx 0{,}14 > 0{,}1$.
 :::
 
 Im letzten Schritt werden die Standort-Kriterien-Matrix und der Kriteriengewichtsvektor mit dem Matrixprodukt `%*%` zu einem **Gesamt-Score je Standort** verrechnet – genau die Operation, die im R-Exkurs zu Matrizen angekündigt wurde:

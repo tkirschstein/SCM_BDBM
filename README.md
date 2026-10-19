@@ -145,6 +145,8 @@ SCM_BDBM/
 │   └── _quarto.yml
 ├── case_studies/            # Fallstudien 1–10 (Klausuraufgaben + Gruppenfallstudie) → docs/case_studies
 ├── data/                    # Datensätze für Übungen und Fallstudien
+├── quiz/                    # Quizfragen je Termin (R/exams) mit Particify-Export
+├── tutor/                   # KI-Tutor: Anweisungen, Wissensbasis, Testfragen
 ├── R/
 │   ├── scm_functions.R      # R-Funktionsbibliothek des Kurses (roxygen2-dokumentiert)
 │   └── scm_helpers.R        # Darstellungshilfen (Farben, Tabellen, Formatierung)

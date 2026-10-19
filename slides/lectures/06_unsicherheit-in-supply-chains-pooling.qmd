@@ -1149,7 +1149,7 @@ kpi_df <- data.frame(
     "Ø Produktion Wiesbaden (Einh.)",
     "Ø Produktion Mainz (Einh.)",
     "Ø Verkäufe Wiesbaden (Einh.)",
-    "Ø Verkäufe Mainz (Ei,nh.)",
+    "Ø Verkäufe Mainz (Einh.)",
     "Lost Sales Wiesbaden (Einh.)",
     "Lost Sales Mainz (Einh.)",
     "Auslastung Wiesbaden (%)",
@@ -2782,7 +2782,7 @@ fig_sb |> layout(
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-## Drei Szenarien (Frankfurt $\sigma_1=25$, Offenbach $\sigma_2=30$, $\alpha = 95\%$)
+## Drei Szenarien (Wiesbaden $\sigma_1=25$, Mainz $\sigma_2=30$, $\alpha = 95\%$)
 
 | $\rho$ | $sb_{zen}$ | Einsparung |
 |:---:|---:|---:|

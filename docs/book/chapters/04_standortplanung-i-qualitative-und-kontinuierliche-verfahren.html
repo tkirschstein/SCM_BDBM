@@ -753,7 +753,7 @@ $consistent
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Auf den Folien wird der Konsistenzwert <span class="math inline">\(KI = CI = (\bar{P}-n)/(n-1) \approx 0{,}08\)</span> berechnet. Dieser Wert ist der <strong>Konsistenzindex</strong> <span class="math inline">\(CI\)</span>. Für das Urteil “konsistent/inkonsistent” muss er noch durch den Random Index <span class="math inline">\(RI = 0{,}58\)</span> (für <span class="math inline">\(n=3\)</span>) geteilt werden; erst die resultierende Konsistenzrate <span class="math inline">\(CR \approx 0{,}14\)</span> wird mit der 10-%-Schwelle verglichen.</p>
+<p>Auf den Folien heißt der Konsistenzindex <span class="math inline">\(KI\)</span> (hier <span class="math inline">\(KI = CI\)</span>). Ein kleiner Konsistenzindex allein genügt nicht für das Urteil „konsistent“: Er wird erst durch den Random Index <span class="math inline">\(RI\)</span> geteilt (für <span class="math inline">\(n=3\)</span>: <span class="math inline">\(RI = 0{,}58\)</span>), und die resultierende Konsistenzrate wird mit der 10-%-Schwelle verglichen. Im Beispiel ergibt sich aus <span class="math inline">\(CI \approx 0{,}08\)</span> die Konsistenzrate <span class="math inline">\(CR \approx 0{,}14 &gt; 0{,}1\)</span>.</p>
 </div>
 </div>
 <p>Im letzten Schritt werden die Standort-Kriterien-Matrix und der Kriteriengewichtsvektor mit dem Matrixprodukt <code>%*%</code> zu einem <strong>Gesamt-Score je Standort</strong> verrechnet – genau die Operation, die im R-Exkurs zu Matrizen angekündigt wurde:</p>
@@ -2150,7 +2150,7 @@ Weiszfeld, Endre. 1937. <span>„Sur le point pour lequel la somme des distances
 <span id="cb55-361"><a href="#cb55-361" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb55-362"><a href="#cb55-362" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
 <span id="cb55-363"><a href="#cb55-363" aria-hidden="true" tabindex="-1"></a><span class="fu">## Hinweis: Konsistenzindex und Konsistenzrate</span></span>
-<span id="cb55-364"><a href="#cb55-364" aria-hidden="true" tabindex="-1"></a>Auf den Folien wird der Konsistenzwert $KI = CI = (\bar{P}-n)/(n-1) \approx 0{,}08$ berechnet. Dieser Wert ist der **Konsistenzindex** $CI$. Für das Urteil "konsistent/inkonsistent" muss er noch durch den Random Index $RI = 0{,}58$ (für $n=3$) geteilt werden; erst die resultierende Konsistenzrate $CR \approx 0{,}14$ wird mit der 10-%-Schwelle verglichen.</span>
+<span id="cb55-364"><a href="#cb55-364" aria-hidden="true" tabindex="-1"></a>Auf den Folien heißt der Konsistenzindex $KI$ (hier $KI = CI$). Ein kleiner Konsistenzindex allein genügt nicht für das Urteil „konsistent“: Er wird erst durch den Random Index $RI$ geteilt (für $n=3$: $RI = 0{,}58$), und die resultierende Konsistenzrate wird mit der 10-%-Schwelle verglichen. Im Beispiel ergibt sich aus $CI \approx 0{,}08$ die Konsistenzrate $CR \approx 0{,}14 &gt; 0{,}1$.</span>
 <span id="cb55-365"><a href="#cb55-365" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb55-366"><a href="#cb55-366" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb55-367"><a href="#cb55-367" aria-hidden="true" tabindex="-1"></a>Im letzten Schritt werden die Standort-Kriterien-Matrix und der Kriteriengewichtsvektor mit dem Matrixprodukt <span class="in">`%*%`</span> zu einem **Gesamt-Score je Standort** verrechnet – genau die Operation, die im R-Exkurs zu Matrizen angekündigt wurde:</span>
