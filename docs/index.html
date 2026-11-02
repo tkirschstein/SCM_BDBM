@@ -64,6 +64,7 @@
     font-weight: 600;
   }
   .button:hover, .button:focus-visible { text-decoration: underline; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 8px; }
   section.box {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -100,8 +101,11 @@
     </div>
     <div class="card">
       <h2>Vorlesungsfolien</h2>
-      <p>Die Folien aller 14 Vorlesungseinheiten in einer Gesamtausgabe, in der Reihenfolge der Vorlesung.</p>
-      <a class="button" href="slides/scm-komplett.html">Folien öffnen</a>
+      <p>Die Folien aller 14 Vorlesungseinheiten – kapitelweise (empfohlen für Smartphone und Tablet) oder als Gesamtausgabe in der Reihenfolge der Vorlesung.</p>
+      <div class="buttons">
+        <a class="button" href="slides/kapitel/index.html">Folien nach Kapiteln</a>
+        <a class="button" href="slides/scm-komplett.html">Gesamtausgabe</a>
+      </div>
     </div>
   </div>
 

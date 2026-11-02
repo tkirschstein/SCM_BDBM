@@ -16,6 +16,5 @@ format:
     height: 900
     margin: 0.04
     html-math-method: mathjax
-  pdf:
-    pdf-engine: xelatex
+
   

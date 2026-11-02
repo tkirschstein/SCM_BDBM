@@ -1,0 +1,14 @@
+# Profil "kapitel": rendert die Vorlesung kapitelweise in einen eigenen
+# Unterordner, damit die einzelnen Folienpräsentationen auch auf mobilen
+# Geräten handhabbar bleiben (jede Präsentation lädt nur die Bibliotheken
+# und Grafiken ihres eigenen Kapitels).
+#
+# Aufruf über das Skript render_kapitel.R (erzeugt die Kapitel-Wrapper,
+# rendert sie und schreibt die Übersichtsseite):
+#
+#   cd slides
+#   Rscript render_kapitel.R            # alle Kapitel
+#   Rscript render_kapitel.R 09 10      # nur ausgewählte Kapitel
+
+project:
+  output-dir: ../docs/slides/kapitel
